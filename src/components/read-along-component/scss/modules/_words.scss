@@ -1,0 +1,16 @@
+.sentence {
+    &__word {
+        border: em(.5) solid black;
+        margin: em(5);
+        padding: em(5);
+        line-height: 3;
+        border-radius: em(5);
+        &:hover {
+            color: white;
+            cursor: pointer;
+        }
+        &--playing {
+            color: map-get($ui-colors, accent )
+        }
+    }
+}
