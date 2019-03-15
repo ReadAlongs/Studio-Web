@@ -12,58 +12,66 @@ import '@stencil/core';
 
 export namespace Components {
 
-  interface MyComponent {
+  interface ReadAlong {
     /**
-    * The first name
+    * The alignment as SMIL
     */
-    'first': string;
+    'alignment': string;
     /**
-    * The last name
+    * The audio file
     */
-    'last': string;
+    'audio': string;
     /**
-    * The middle name
+    * Image
     */
-    'middle': string;
+    'image': string;
+    /**
+    * The text as TEI
+    */
+    'text': string;
   }
-  interface MyComponentAttributes extends StencilHTMLAttributes {
+  interface ReadAlongAttributes extends StencilHTMLAttributes {
     /**
-    * The first name
+    * The alignment as SMIL
     */
-    'first'?: string;
+    'alignment'?: string;
     /**
-    * The last name
+    * The audio file
     */
-    'last'?: string;
+    'audio'?: string;
     /**
-    * The middle name
+    * Image
     */
-    'middle'?: string;
+    'image'?: string;
+    /**
+    * The text as TEI
+    */
+    'text'?: string;
   }
 }
 
 declare global {
   interface StencilElementInterfaces {
-    'MyComponent': Components.MyComponent;
+    'ReadAlong': Components.ReadAlong;
   }
 
   interface StencilIntrinsicElements {
-    'my-component': Components.MyComponentAttributes;
+    'read-along': Components.ReadAlongAttributes;
   }
 
 
-  interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {}
-  var HTMLMyComponentElement: {
-    prototype: HTMLMyComponentElement;
-    new (): HTMLMyComponentElement;
+  interface HTMLReadAlongElement extends Components.ReadAlong, HTMLStencilElement {}
+  var HTMLReadAlongElement: {
+    prototype: HTMLReadAlongElement;
+    new (): HTMLReadAlongElement;
   };
 
   interface HTMLElementTagNameMap {
-    'my-component': HTMLMyComponentElement
+    'read-along': HTMLReadAlongElement
   }
 
   interface ElementTagNameMap {
-    'my-component': HTMLMyComponentElement;
+    'read-along': HTMLReadAlongElement;
   }
 
 
