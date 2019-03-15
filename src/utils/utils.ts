@@ -45,7 +45,7 @@ export function parseTEI(path: string) {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let word_ids = getElementByXpath('/document/s/w/@id', xml_text).map(x => x['value'])
+  let word_ids = getElementByXpath('/document/s/w/@id', xml_text).map(x => "s2.xml#" + x['value'])
   let word_vals = getElementByXpath('document/s/w', xml_text).map(x => x['innerHTML'])
   let result = zip([word_ids, word_vals])
   return result

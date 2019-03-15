@@ -29,27 +29,28 @@ export class ReadAlongComponent {
    */
   @Prop() image: string;
 
-  play(sprites?) {
+  play(sprites?, id?) {
+    var tag = id.path[0].id
     if (sprites) {
       var sound = new Howl({
         src: [this.audio],
         sprite: sprites
       })
+      sound.play(tag)
     } else {
       var sound = new Howl({
         src: [this.audio]
       })
     }
-    sound.play('s2.xml#s0w18')
   }
 
   // parse TEI text
-  private getText(): object {
+  private getText() {
     return parseTEI(this.text)
   }
 
   // parse alignments
-  private getAlignments(): object {
+  private getAlignments() {
     return parseSMIL(this.alignment)
   }
 
@@ -59,7 +60,13 @@ export class ReadAlongComponent {
     if (this.image) {
       return <img id='waveform' src={this.image} onClick={() => this.play(alignments)}></img>
     } else {
-      return <p>Hello World!</p>
+      return (
+        <div>
+          {text.map((seg) =>
+            <span id={seg[0]} onClick={(ev) => this.play(alignments, ev)}>{seg[1]} </span>
+          )}
+        </div>
+      )
     }
   }
 }
