@@ -1,6 +1,6 @@
 import { Component, Prop } from '@stencil/core';
 // import { Sprite } from '../../utils/sprite';
-import { Howl, Howler } from 'howler';
+import { Howl } from 'howler';
 import { parseSMIL, parseTEI } from '../../utils/utils'
 
 @Component({
@@ -13,13 +13,13 @@ export class ReadAlongComponent {
    * The text as TEI
    */
   @Prop() text: string;
-  processed_text;
+  processed_text: Array<string[]>;
 
   /**
    * The alignment as SMIL
    */
   @Prop() alignment: string;
-  processed_alignment;
+  processed_alignment: object;
 
   /**
    * The audio file
@@ -32,28 +32,37 @@ export class ReadAlongComponent {
    */
   @Prop() image: string;
 
-  play(id?) {
-    if (id) {
+  play(id) : void {
+    if (id !== 'all') {
       var tag = id.path[0].id
-      this.audio_howl.play(tag)
     } else {
-      this.audio_howl.play()
+      var tag = id
+    }
+    if (this.audio_howl._sounds[0]._seek > 0) {
+      this.audio_howl.play(tag) // play at seek
+    } else {
+      this.audio_howl.play(tag)
     }
   }
 
+  pause() : void {
+    this.audio_howl.pause()
+  }
+
   // parse TEI text
-  private getText() {
+  private getText() : Array<string[]> {
     return parseTEI(this.text)
   }
 
   // parse alignments
-  private getAlignments() {
+  private getAlignments() : object {
     return parseSMIL(this.alignment)
   }
 
-  componentWillLoad(){
+  componentWillLoad() {
     this.processed_alignment = this.getAlignments()
     this.processed_text = this.getText()
+    this.processed_alignment['all'] = [0, 19 * 1000] // needs to be fixed to use duration
     this.audio_howl = new Howl({
       src: [this.audio],
       sprite: this.processed_alignment
@@ -73,10 +82,10 @@ export class ReadAlongComponent {
           </div>
           <div class="control-panel">
             <button class="control-panel__control ripple">
-              <i class="material-icons" onClick={() => this.play(false)}>play_arrow</i>
+              <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
             </button>
             <button class="control-panel__control ripple">
-              <i class="material-icons">pause</i>
+              <i class="material-icons" onClick={() => this.pause()}>pause</i>
             </button>
             <button class="control-panel__control ripple">
               <i class="material-icons">loop</i>

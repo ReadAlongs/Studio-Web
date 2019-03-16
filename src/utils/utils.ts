@@ -31,7 +31,7 @@ function getElementByXpath(xpath: string, xml: Document): Node[] {
  * Return a zipped array of arrays
  * @param {array[]}
  */
-function zip(arrays): Array<string> {
+function zip(arrays): Array<any[]> {
   return arrays[0].map(function (_, i) {
     return arrays.map(function (array) { return array[i] })
   });
@@ -41,7 +41,7 @@ function zip(arrays): Array<string> {
  * Return useful data from TEI xml file
  * @param {string} - the path to the TEI file
  */
-export function parseTEI(path: string) {
+export function parseTEI(path: string): Array<string[]> {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
@@ -55,7 +55,7 @@ export function parseTEI(path: string) {
  * Return useful data from SMIL xml file
  * @param {string} - the path to the SMIL file
  */
-export function parseSMIL(path: string) {
+export function parseSMIL(path: string): object {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")

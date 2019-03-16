@@ -7,11 +7,12 @@
 
 ## Properties
 
-| Property | Attribute | Description     | Type     | Default     |
-| -------- | --------- | --------------- | -------- | ----------- |
-| `first`  | `first`   | The first name  | `string` | `undefined` |
-| `last`   | `last`    | The last name   | `string` | `undefined` |
-| `middle` | `middle`  | The middle name | `string` | `undefined` |
+| Property    | Attribute   | Description           | Type     | Default     |
+| ----------- | ----------- | --------------------- | -------- | ----------- |
+| `alignment` | `alignment` | The alignment as SMIL | `string` | `undefined` |
+| `audio`     | `audio`     | The audio file        | `string` | `undefined` |
+| `image`     | `image`     | Image                 | `string` | `undefined` |
+| `text`      | `text`      | The text as TEI       | `string` | `undefined` |
 
 
 ----------------------------------------------
