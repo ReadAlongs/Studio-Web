@@ -1,21 +1,7 @@
-import { format } from './utils';
+import { zip } from './utils';
 
-describe('format', () => {
-  it('returns empty string for no names defined', () => {
-    expect(format(undefined, undefined, undefined)).toEqual('');
-  });
-
-  it('formats just first names', () => {
-    expect(format('Joseph', undefined, undefined)).toEqual('Joseph');
-  });
-
-  it('formats first and last names', () => {
-    expect(format('Joseph', undefined, 'Publique')).toEqual('Joseph Publique');
-  });
-
-  it('formats first, middle and last names', () => {
-    expect(format('Joseph', 'Quincy', 'Publique')).toEqual(
-      'Joseph Quincy Publique'
-    );
+describe('zip', () => {
+  it('should zip two arrays like Python does', () => {
+    expect(zip([['a', 'b'], [1, 2]])).toEqual([['a', 1], ['b', 2]]);
   });
 });
