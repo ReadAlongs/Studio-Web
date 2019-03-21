@@ -1,4 +1,5 @@
 import { Howl } from 'howler';
+import { Subject } from 'rxjs';
 
 /**
  * Gets XML from path
@@ -64,13 +65,13 @@ export function parseSMIL(path: string): object {
   let audio_begin = getElementByXpath('/smil/body/par/audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
   let audio_end = getElementByXpath('/smil/body/par/audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
   let audio_duration = []
-  for (var i = 0; i < audio_begin.length; i++){
+  for (var i = 0; i < audio_begin.length; i++) {
     let duration = audio_end[i] - audio_begin[i]
     audio_duration.push(duration)
   }
   let audio = zip([audio_begin, audio_duration])
   let result = {}
-  for (var i = 0; i < text.length; i++){
+  for (var i = 0; i < text.length; i++) {
     result[text[i]] = audio[i]
   }
   return result
@@ -80,7 +81,7 @@ export function parseSMIL(path: string): object {
  * Sprite class containing the state of our sprites to play and their progress.
  * @param {Object} options Settings to pass into and setup the sound and visuals.
  */
-export var Sprite = function(options) {
+export var Sprite = function (options) {
   var self = this;
 
   self.sounds = [];
@@ -89,6 +90,10 @@ export var Sprite = function(options) {
   self._width = options.width;
   self._left = options.left;
   self._sprite = options.sprite;
+  self._reading$ = new Subject;
+  self._tinySprite = Object.keys(options.sprite).map((str) => [self._sprite[str][0], str]);
+  // remove the 'all' sprite
+  self._tinySprite.pop()
   // self.setupListeners();
 
   // Create our audio sprite definition.
@@ -96,6 +101,7 @@ export var Sprite = function(options) {
     src: options.src,
     sprite: options.sprite
   });
+
 
   // Setup a resize event and fire it to setup our sprite overlays.
   // window.addEventListener('resize', function() {
@@ -126,34 +132,32 @@ Sprite.prototype = {
    * Play a sprite when clicked and track the progress.
    * @param  {String} key Key in the sprite map object.
    */
-  play: function(key) {
+  play: function (key) {
     var self = this;
+    self._spriteLeft = self._tinySprite
     var sprite = key;
     // Play the sprite sound and capture the ID.
     var id = self.sound.play(sprite);
     return id
-    // // Create a progress element and begin visually tracking it.
-    // var elm = document.createElement('div');
-    // elm.className = 'progress';
-    // elm.id = id;
-    // elm.dataset.sprite = sprite;
-    // // window[key].appendChild(elm); // use shadow dom?
-    // self.sounds.push(elm);
+  },
 
-    // // When this sound is finished, remove the progress element.
-    // self.sound.once('end', function() {
-    //   var index = self.sounds.indexOf(elm);
-    //   if (index >= 0) {
-    //     self.sounds.splice(index, 1);
-    //     // window[key].removeChild(elm); // use shadow dom?
-    //   }
-    // }, id);
+  /**
+   * Play a sprite when clicked and track the progress.
+   * @param  {String} key Key in the sprite map object.
+   */
+  pause: function () {
+    var self = this;
+    // remove reading
+    self._reading$.next('')
+    // Play the sprite sound and capture the ID.
+    var id = self.sound.stop();
+    return id
   },
 
   /**
    * Called on window resize to correctly position and size the click overlays.
    */
-  resize: function() {
+  resize: function () {
     var self = this;
 
     // Calculate the scale of our window from "full" size.
@@ -161,7 +165,7 @@ Sprite.prototype = {
 
     // Resize and reposition the sprite overlays.
     var keys = Object.keys(self._spriteMap);
-    for (var i=0; i<keys.length; i++) {
+    for (var i = 0; i < keys.length; i++) {
       var sprite = window[keys[i]];
       sprite.style.width = Math.round(self._width[i] * scale) + 'px';
       if (self._left[i]) {
@@ -173,17 +177,25 @@ Sprite.prototype = {
   /**
    * The step called within requestAnimationFrame to update the playback positions.
    */
-  step: function() {
+  step: function () {
     var self = this;
-
     // Loop through all active sounds and update their progress bar.
-    for (var i=0; i<self.sounds.length; i++) {
+    for (var i = 0; i < self.sounds.length; i++) {
       var id = parseInt(self.sounds[i].id, 10);
       var offset = self._sprite[self.sounds[i].dataset.sprite][0];
       var seek = (self.sound.seek(id) || 0) - (offset / 1000);
-      self.sounds[i].style.width = (((seek / self.sound.duration(id)) * 103) || 0) + '%';
+      for (var j = 0; j < self._spriteLeft.length; j++) {
+        // if stopped
+        if (seek > 0) {
+          // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
+          if (seek * 1000 >= self._spriteLeft[j][0]) {
+            self._reading$.next(self._spriteLeft[j][1])
+            self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length)
+          }
+        }
+      }
+      self.sounds[i].style.width = (((seek / self.sound.duration(id)) * 100) || 0) + '%';
     }
-
     requestAnimationFrame(self.step.bind(self));
   }
 };

@@ -5,11 +5,11 @@
     transition: background 0.8s;
 }
 
-.ripple:hover {
+.ripple:hover, .reading {
     background: map-get($ui-colors, accent) radial-gradient(circle, transparent 1%, map-get($ui-colors, accent) 1%) center/15000%;
 }
 
-.ripple:active {
+.ripple:active, .reading {
   background-color: lighten(map-get($ui-colors, accent), 50);
   background-size: 100%;
   transition: background 0s;
@@ -22,4 +22,9 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.1);
     width: 0;
+    border-radius: em(5);
 } 
+
+.reading {
+    color: white;
+}

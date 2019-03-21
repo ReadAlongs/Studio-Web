@@ -1,4 +1,5 @@
 .sentence {
+    position: relative;
     &__word {
         border: em(.5) solid black;
         margin: em(5);
