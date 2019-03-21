@@ -49,6 +49,12 @@ export class ReadAlongComponent {
     this.sprites.forEach(s => this.audio_howl_sprites.play(s))
   }
 
+  tagToQuery(id) {
+    id = id.replace(".", "\\.")
+    id = id.replace("#", "\\#")
+    return "#" + id
+  }
+
   playSprite(id): void {
     var tag = id.path[0].id;
     var play_id = this.audio_howl_sprites.play(tag)
@@ -57,7 +63,8 @@ export class ReadAlongComponent {
     elm.className = 'progress';
     elm.id = play_id;
     elm.dataset.sprite = tag;
-    this.el.shadowRoot.querySelector('span').appendChild(elm);
+    let query = this.tagToQuery(tag);
+    this.el.shadowRoot.querySelector(query).appendChild(elm);
     this.audio_howl_sprites.sounds.push(elm);
 
     // When this sound is finished, remove the progress element.
@@ -65,7 +72,7 @@ export class ReadAlongComponent {
       var index = this.audio_howl_sprites.sounds.indexOf(elm);
       if (index >= 0) {
         this.audio_howl_sprites.sounds.splice(index, 1);
-        this.el.shadowRoot.querySelector('span').removeChild(elm);
+        this.el.shadowRoot.querySelector(query).removeChild(elm);
       }
     }, play_id);
 
@@ -89,18 +96,8 @@ export class ReadAlongComponent {
 
     // Setup our new sprite class and pass in the options.
     var sprite = new Sprite({
-      width: [78, 60, 62, 70, 62, 1895],
-      left: [0, 342, 680, 1022, 1361],
       src: [audio],
       sprite: alignment,
-      // spriteMap: {
-      //   s0w0: 'one',
-      //   sprite1: 'two',
-      //   sprite2: 'three',
-      //   sprite3: 'four',
-      //   sprite4: 'five',
-      //   sprite5: 'beat'
-      // }
     });
     return sprite
   }
@@ -111,23 +108,15 @@ export class ReadAlongComponent {
     this.processed_text = this.getText()
     this.sprites = Object.keys(this.processed_alignment)
     this.audio_howl_source = new Howl({
-      src: [this.audio]
+      src: [this.audio],
+      preload: true,
     })
+    // Turn into Sprite
+    this.audio_howl_source.once('load', () => {
+      this.audio_howl_source = this.buildSprite(this.audio, { 'all': [0, this.audio_howl_source.duration()] })
+    })
+    console.log(this.audio_howl_source)
   }
-
-  componentDidLoad() {
-    console.log(this.el.shadowRoot.querySelector('#s2.xml\#s0w0')) // This is how we need to create the progress bar
-    // this is how observers are set up
-    this.ro = new ResizeObserver(entries => {
-      console.log(entries)
-      // Do stuff!
-    });
-  }
-
-  componentDidUnload() {
-    this.ro.disconnect();
-  }
-
 
   render() {
     if (this.image) {
@@ -137,12 +126,12 @@ export class ReadAlongComponent {
         <div>
           <div class='sentence'>
             {this.processed_text.map((seg) =>
-              <span class='sentence__word ripple' id={seg[0]} onClick={(ev) => this.playSprite(ev)}>{seg[1]} </span>
+              <span class='sentence__word' id={seg[0]} onClick={(ev) => this.playSprite(ev)}>{seg[1]} </span>
             )}
           </div>
           <div class="control-panel">
             <button class="control-panel__control ripple">
-              <i class="material-icons" onClick={() => this.playAllSprites()}>play_arrow</i>
+              <i class="material-icons" onClick={() => this.playSprite('all')}>play_arrow</i>
             </button>
             <button class="control-panel__control ripple">
               <i class="material-icons" onClick={() => this.pause()}>pause</i>

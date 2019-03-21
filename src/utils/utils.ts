@@ -181,8 +181,7 @@ Sprite.prototype = {
       var id = parseInt(self.sounds[i].id, 10);
       var offset = self._sprite[self.sounds[i].dataset.sprite][0];
       var seek = (self.sound.seek(id) || 0) - (offset / 1000);
-      console.log(seek)
-      self.sounds[i].style.width = (((seek / self.sound.duration(id)) * 100) || 0) + '%';
+      self.sounds[i].style.width = (((seek / self.sound.duration(id)) * 103) || 0) + '%';
     }
 
     requestAnimationFrame(self.step.bind(self));

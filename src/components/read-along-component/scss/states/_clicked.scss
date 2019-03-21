@@ -1,13 +1,25 @@
 /* Ripple effect */
+
 .ripple {
     background-position: center;
     transition: background 0.8s;
-  }
-  .ripple:hover {
-    background: map-get($ui-colors, accent ) radial-gradient(circle, transparent 1%, map-get($ui-colors, accent) 1%) center/15000%;
-  }
-  .ripple:active {
-    background-color: lighten(map-get($ui-colors, accent), 50);
-    background-size: 100%;
-    transition: background 0s;
-  }
+}
+
+.ripple:hover {
+    background: map-get($ui-colors, accent) radial-gradient(circle, transparent 1%, map-get($ui-colors, accent) 1%) center/15000%;
+}
+
+.ripple:active {
+  background-color: lighten(map-get($ui-colors, accent), 50);
+  background-size: 100%;
+  transition: background 0s;
+}
+
+.progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+    width: 0;
+} 
