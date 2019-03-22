@@ -31,7 +31,7 @@ export class ReadAlongComponent {
   @Prop() audio: string;
   audio_howl_sprites: Howl;
   sprites: string[];
-  test_sprite;
+  reading$;
 
   /**
    * Image
@@ -55,19 +55,19 @@ export class ReadAlongComponent {
       var tag = id.path[0].id;
     } else {
       var tag = id
+      // subscribe to reading subject and update element class
+      this.reading$ = this.audio_howl_sprites._reading$.pipe(
+        distinctUntilChanged()
+      ).subscribe(x => {
+        if (x) {
+          let query = this.tagToQuery(x);
+          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+          this.el.shadowRoot.querySelector(query).classList.add('reading')
+        }
+      })
     }
+    console.log(tag)
     var play_id = this.audio_howl_sprites.play(tag)
-
-    // subscribe to reading subject and update element class
-    this.audio_howl_sprites._reading$.pipe(
-      distinctUntilChanged()
-    ).subscribe(x => {
-      if (x) {
-        let query = this.tagToQuery(x);
-        this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-        this.el.shadowRoot.querySelector(query).classList.add('reading')
-      }
-    })
 
     // Create a progress element and begin visually tracking it.
     var elm = document.createElement('div');
@@ -91,6 +91,10 @@ export class ReadAlongComponent {
 
   pause(): void {
     this.audio_howl_sprites.pause()
+    this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+    if (this.reading$){
+      this.reading$.unsubscribe()
+    }
   }
 
   // parse TEI text
