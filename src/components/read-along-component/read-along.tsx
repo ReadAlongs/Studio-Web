@@ -162,9 +162,6 @@ export class ReadAlongComponent {
           <button class="control-panel__control ripple">
             <i class="material-icons" onClick={() => this.stop()}>stop</i>
           </button>
-          <button class="control-panel__control ripple">
-            <i class="material-icons">loop</i>
-          </button>
         </div>
       </div>
     )
