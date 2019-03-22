@@ -85,16 +85,14 @@ export var Sprite = function (options) {
   var self = this;
 
   self.sounds = [];
-
   // Setup the options to define this sprite display.
-  self._width = options.width;
-  self._left = options.left;
   self._sprite = options.sprite;
+  // Create new Subject tracking which element is being read
   self._reading$ = new Subject;
+  // List of all non-"all" sprites 
   self._tinySprite = Object.keys(options.sprite).map((str) => [self._sprite[str][0], str]);
   // remove the 'all' sprite
   self._tinySprite.pop()
-  // self.setupListeners();
 
   // Create our audio sprite definition.
   self.sound = new Howl({
@@ -102,37 +100,16 @@ export var Sprite = function (options) {
     sprite: options.sprite
   });
 
-
-  // Setup a resize event and fire it to setup our sprite overlays.
-  // window.addEventListener('resize', function() {
-  //   self.resize();
-  // }, false);
-  // self.resize();
-
   // Begin the progress step tick.
   requestAnimationFrame(self.step.bind(self));
 };
 
 Sprite.prototype = {
   /**
-   * Setup the listeners for each sprite click area.
-   */
-  // setupListeners: function() {
-  //   var self = this;
-  //   var keys = Object.keys(self._spriteMap);
-
-  //   keys.forEach(function(key) {
-  //     window[key].addEventListener('click', function() {
-  //       self.play(key);
-  //     }, false);
-  //   });
-  // },
-
-  /**
    * Play a sprite when clicked and track the progress.
    * @param  {String} key Key in the sprite map object.
    */
-  play: function (key) {
+  play: function (key): number {
     var self = this;
     self._spriteLeft = self._tinySprite
     var sprite = key;
@@ -142,10 +119,9 @@ Sprite.prototype = {
   },
 
   /**
-   * Play a sprite when clicked and track the progress.
-   * @param  {String} key Key in the sprite map object.
+   * Stop the sound
    */
-  pause: function () {
+  stop: function (): number {
     var self = this;
     // remove reading
     self._reading$.next('')
@@ -155,29 +131,9 @@ Sprite.prototype = {
   },
 
   /**
-   * Called on window resize to correctly position and size the click overlays.
-   */
-  resize: function () {
-    var self = this;
-
-    // Calculate the scale of our window from "full" size.
-    var scale = window.innerWidth / 3600;
-
-    // Resize and reposition the sprite overlays.
-    var keys = Object.keys(self._spriteMap);
-    for (var i = 0; i < keys.length; i++) {
-      var sprite = window[keys[i]];
-      sprite.style.width = Math.round(self._width[i] * scale) + 'px';
-      if (self._left[i]) {
-        sprite.style.left = Math.round(self._left[i] * scale) + 'px';
-      }
-    }
-  },
-
-  /**
    * The step called within requestAnimationFrame to update the playback positions.
    */
-  step: function () {
+  step: function (): void {
     var self = this;
     // Loop through all active sounds and update their progress bar.
     for (var i = 0; i < self.sounds.length; i++) {
