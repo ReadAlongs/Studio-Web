@@ -15,6 +15,7 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 | `alignment` | `alignment` | The alignment as SMIL | `string` | `undefined` |
 | `audio`     | `audio`     | The audio file        | `string` | `undefined` |
 | `text`      | `text`      | The text as TEI       | `string` | `undefined` |
+| `theme`     | `theme`     | The colour theme      | `string` | `light`     |
 
 
 ## Test with your site
@@ -30,6 +31,33 @@ Then, you can add as many read-along components to your page as you like simply 
 ```html
 <read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav"></read-along>
 ```
+
+## Theming
+
+There are two themes out-of-the-box: `light` and `dark`. You set them as a property on the `<read-along></read-along>` web component. If you want to add your own theme, it's as easy as adding your colour palette to the `$ui-themes` variable in `src/components/read-along-component/scss/utilities/_colors.scss`:
+
+```scss
+$ui-themes: (
+    light: (
+        primary:             $hopbush,
+        accent:              $black,
+        shadow:              $venus,
+        text:                $black,
+        text-accent:         lighten($black, 75%),
+        bg:                  $white
+    ),
+    dark: (
+        primary:             lighten($black, 45%),
+        accent:              $white,
+        shadow:              $venus,
+        text:                $white,
+        text-accent:         darken($white, 75%),
+        bg:                  lighten($black, 30%)
+    )
+);
+```
+
+
 
 
 

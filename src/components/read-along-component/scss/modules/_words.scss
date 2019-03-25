@@ -2,15 +2,11 @@
     cursor: pointer;
 }
 
-@each $name, $value in $font-sizes {
-    .font-#{$name} {
-        font-size: em($value);
-    }
-  }
-
 .sentence {
+    border-radius: em(5);
     &.theme {
-        @each $theme, $value in $ui-themes {
+        @each $theme,
+        $value in $ui-themes {
             &--#{$theme} {
                 background-color: map-deep-get($ui-themes, $theme, bg)
             }
@@ -25,7 +21,8 @@
         position: relative;
         &.theme {
             // style all buttons with theme background color and text color
-            @each $theme, $value in $ui-themes {
+            @each $theme,
+            $value in $ui-themes {
                 &--#{$theme} {
                     border: em(.5) solid map-deep-get($ui-themes, $theme, accent);
                     color: map-deep-get($ui-themes, $theme, text);
@@ -36,7 +33,8 @@
                     &--playing {
                         color: map-deep-get($ui-themes, $theme, accent)
                     }
-                };
+                }
+                ;
             }
         }
     }

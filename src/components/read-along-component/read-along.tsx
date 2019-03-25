@@ -155,6 +155,8 @@ export class ReadAlongComponent {
   render() {
     return (
       <div>
+        <slot name="read-along-header" />
+        <slot name="read-along-subheader" />
         <div class={'sentence theme--' + this.theme} id='all'>
           {this.processed_text.map((seg) =>
             <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>

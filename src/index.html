@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
@@ -7,9 +8,14 @@
   <script src="/build/read-along.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Lato|Material+Icons" rel="stylesheet">
 </head>
+
 <body>
 
-  <read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav" theme="dark"></read-along>
+  <read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav" theme="dark">
+    <h1 slot="read-along-header">Atikamekw Story</h1>
+    <h4 slot="read-along-subheader">by Pat Littell</h4>
+  </read-along>
 
 </body>
+
 </html>
