@@ -167,10 +167,10 @@ export class ReadAlongComponent {
           )}
         </div>
         <div class={"control-panel background--" + this.theme}>
-          <button class={"control-panel__control ripple theme--" + this.theme}>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
             <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
           </button>
-          <button class={"control-panel__control ripple theme--" + this.theme}>
+          <button class={"control-panel__control ripple theme--" + this.theme  + " background--" + this.theme}>
             <i class="material-icons" onClick={() => this.stop()}>stop</i>
           </button>
         </div>

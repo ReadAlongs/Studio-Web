@@ -3,10 +3,9 @@
 %ripple {
     background-position: center;
     transition: background 0.8s;
-    @extend %themed-buttons--strong;
+    @extend %themed-buttons;
     &:hover {
         @extend %hover-shared;
-        @extend %themed-buttons--stronger;
     }
 
     &:active {
