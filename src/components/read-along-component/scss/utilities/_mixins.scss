@@ -156,7 +156,16 @@
         }
     }
   }
-  
+
+  // Background word button color
+  //
+  // Change the background and text colors of word buttons
+  //
+  @mixin word-button-colors($bg-color, $text-color) {
+    color: $text-color;
+    background: $bg-color radial-gradient(circle, transparent 1%, $bg-color 1%) center/15000%;
+  }
+
   // Text color
   //
   // Change text color

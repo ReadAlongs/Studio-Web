@@ -29,6 +29,10 @@ export namespace Components {
     * The text as TEI
     */
     'text': string;
+    /**
+    * Theme to use: ['light', 'dark'] defaults to 'dark'
+    */
+    'theme': string;
   }
   interface ReadAlongAttributes extends StencilHTMLAttributes {
     /**
@@ -47,6 +51,10 @@ export namespace Components {
     * The text as TEI
     */
     'text'?: string;
+    /**
+    * Theme to use: ['light', 'dark'] defaults to 'dark'
+    */
+    'theme'?: string;
   }
 }
 

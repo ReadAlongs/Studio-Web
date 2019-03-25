@@ -36,6 +36,11 @@ export class ReadAlongComponent {
   @Prop() image: string;
 
   /**
+  * Theme to use: ['light', 'dark'] defaults to 'dark'
+  */
+  @Prop() theme: string = 'light';
+
+  /**
    * Add escape characters to query selector param
    * @param id string
    */
@@ -150,16 +155,16 @@ export class ReadAlongComponent {
   render() {
     return (
       <div>
-        <div class='sentence' id='all'>
+        <div class={'sentence theme--' + this.theme} id='all'>
           {this.processed_text.map((seg) =>
-            <span class='sentence__word' id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
+            <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
           )}
         </div>
         <div class="control-panel">
-          <button class="control-panel__control ripple">
+          <button class={"control-panel__control ripple theme--" + this.theme}>
             <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
           </button>
-          <button class="control-panel__control ripple">
+          <button class={"control-panel__control ripple theme--" + this.theme}>
             <i class="material-icons" onClick={() => this.stop()}>stop</i>
           </button>
         </div>

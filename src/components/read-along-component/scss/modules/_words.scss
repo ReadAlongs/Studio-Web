@@ -1,19 +1,43 @@
+%hover-shared {
+    cursor: pointer;
+}
+
+@each $name, $value in $font-sizes {
+    .font-#{$name} {
+        font-size: em($value);
+    }
+  }
+
 .sentence {
+    &.theme {
+        @each $theme, $value in $ui-themes {
+            &--#{$theme} {
+                background-color: map-deep-get($ui-themes, $theme, bg)
+            }
+        }
+    }
     position: relative;
     &__word {
-        border: em(.5) solid black;
         margin: em(5);
         padding: em(5);
         line-height: 3;
         border-radius: em(5);
         position: relative;
-        &:hover {
-            color: white;
-            cursor: pointer;
-            background: map-get($ui-colors, accent) radial-gradient(circle, transparent 1%, map-get($ui-colors, accent) 1%) center/15000%;
-        }
-        &--playing {
-            color: map-get($ui-colors, accent)
+        &.theme {
+            // style all buttons with theme background color and text color
+            @each $theme, $value in $ui-themes {
+                &--#{$theme} {
+                    border: em(.5) solid map-deep-get($ui-themes, $theme, accent);
+                    color: map-deep-get($ui-themes, $theme, text);
+                    &:hover {
+                        @extend %hover-shared;
+                        @include word-button-colors(map-deep-get($ui-themes, $theme, accent), map-deep-get($ui-themes, $theme, text-accent));
+                    }
+                    &--playing {
+                        color: map-deep-get($ui-themes, $theme, accent)
+                    }
+                };
+            }
         }
     }
 }

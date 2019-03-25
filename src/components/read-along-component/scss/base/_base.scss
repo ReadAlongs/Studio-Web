@@ -51,7 +51,6 @@ h6 {
   // font-family: $font-family-display;
   font-family: $font-family-accent;
   font-weight: normal;
-  @include colors($ui-colors);
 }
 
 p, mat-chip, mat-tab-label, span, button, a {
@@ -79,21 +78,6 @@ p, mat-chip, mat-tab-label, span, button, a {
     border-radius: 5px;
 }
 
-// Colors
-
-@for $i from 1 through length($other-highlights) {
-  .highlight-#{$i} {
-      color: map-get($other-highlights, $i)
-  }
-};
-
-span, p, mat-chip, mat-button-toggle, button, mat-icon {
-  @include colors($ui-colors);
-}
-
-div, nav, button, mat-chip, mat-toolbar, mat-grid-tile {
-  @include bg-colors($ui-colors);
-}
 
 @each $name, $value in $font-sizes {
   .font-#{$name} {

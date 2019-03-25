@@ -6,13 +6,27 @@
 }
 
 .ripple:hover, .reading {
-    background: map-get($ui-colors, accent) radial-gradient(circle, transparent 1%, map-get($ui-colors, accent) 1%) center/15000%;
+    &.theme {
+        &--dark {
+            @include word-button-colors(map-deep-get($ui-themes, dark, accent), map-deep-get($ui-themes, dark, text-accent));
+        }
+        &--light {
+            @include word-button-colors(map-deep-get($ui-themes, light, accent), map-deep-get($ui-themes, light, text-accent));
+        }
+    }
 }
 
 .ripple:active, .reading {
-  background-color: lighten(map-get($ui-colors, accent), 50);
   background-size: 100%;
   transition: background 0s;
+  &.theme {
+    &--dark {
+        background-color: lighten(map-deep-get($ui-themes, dark, accent), 0);
+    }
+    &--light {
+        background-color: darken(map-deep-get($ui-themes, light, accent), 0);
+    }
+}
 }
 
 .progress {
