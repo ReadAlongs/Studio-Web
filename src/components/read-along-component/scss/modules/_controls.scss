@@ -1,6 +1,5 @@
 .control-panel {
-    // border: 1px solid black;
-    @extend %border-strong;
+    @extend %border--strong;
     border-radius: em(5);
     padding: em(5);
     width: fit-content;
