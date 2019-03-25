@@ -97,3 +97,10 @@ table {
 .container {
   max-width: em(map-get($breakpoints, xlarge));
 }
+
+@each $theme, $value in $ui-themes {
+  .background--#{$theme} {
+    background: map-get($value, bg)
+  }
+  
+}

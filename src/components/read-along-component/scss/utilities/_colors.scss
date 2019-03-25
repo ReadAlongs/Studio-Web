@@ -22,18 +22,22 @@ $white:                     #fff;
 $ui-themes: (
     light: (
         primary:             $hopbush,
-        accent:              $black,
+        accent--strong:      darken($white, 50%),
+        accent--stronger:    darken($white, 60%),
         shadow:              $venus,
         text:                $black,
-        text-accent:         lighten($black, 75%),
+        text--strong:        $white,
+        text--stronger:      $white,
         bg:                  $white
     ),
     dark: (
         primary:             lighten($black, 45%),
-        accent:              $white,
+        accent--strong:      darken($white, 35%),
+        accent--stronger:    $white,
         shadow:              $venus,
         text:                $white,
-        text-accent:         darken($white, 75%),
+        text--strong:        $white,
+        text--stronger:      $black,
         bg:                  lighten($black, 30%)
     )
 );

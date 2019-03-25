@@ -155,14 +155,18 @@ export class ReadAlongComponent {
   render() {
     return (
       <div>
-        <slot name="read-along-header" />
-        <slot name="read-along-subheader" />
+        <h1 class="slot__header">
+          <slot name="read-along-header" />
+        </h1>
+        <h3 class="slot__subheader">
+          <slot name="read-along-subheader" />
+        </h3>
         <div class={'sentence theme--' + this.theme} id='all'>
           {this.processed_text.map((seg) =>
             <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
           )}
         </div>
-        <div class="control-panel">
+        <div class={"control-panel background--" + this.theme}>
           <button class={"control-panel__control ripple theme--" + this.theme}>
             <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
           </button>

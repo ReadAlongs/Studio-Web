@@ -1,33 +1,26 @@
 /* Ripple effect */
 
-.ripple {
+%ripple {
     background-position: center;
     transition: background 0.8s;
+    @extend %themed-buttons--strong;
+    &:hover {
+        @extend %hover-shared;
+        @extend %themed-buttons--stronger;
+    }
+
+    &:active {
+        background-size: 100%;
+        transition: background 0s;
+        @extend %themed-buttons--strong;
+    }
 }
 
-.ripple:hover, .reading {
-    &.theme {
-        &--dark {
-            @include word-button-colors(map-deep-get($ui-themes, dark, accent), map-deep-get($ui-themes, dark, text-accent));
-        }
-        &--light {
-            @include word-button-colors(map-deep-get($ui-themes, light, accent), map-deep-get($ui-themes, light, text-accent));
-        }
-    }
+.ripple,
+.reading {
+    @extend %ripple;
 }
 
-.ripple:active, .reading {
-  background-size: 100%;
-  transition: background 0s;
-  &.theme {
-    &--dark {
-        background-color: lighten(map-deep-get($ui-themes, dark, accent), 0);
-    }
-    &--light {
-        background-color: darken(map-deep-get($ui-themes, light, accent), 0);
-    }
-}
-}
 
 .progress {
     position: absolute;
@@ -37,8 +30,4 @@
     background-color: rgba(0, 0, 0, 0.1);
     width: 0;
     border-radius: em(5);
-} 
-
-.reading {
-    color: white;
 }

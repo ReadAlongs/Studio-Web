@@ -1,17 +1,17 @@
 .control-panel {
-    border: 1px solid black;
+    // border: 1px solid black;
     border-radius: em(5);
     padding: em(5);
     width: fit-content;
     margin: em(25) auto;
+
     &__control {
         border-radius: em(5);
+
         &:focus {
             outline: none;
-        }
-        &--selected {
+        };
 
-        }
-
+        margin: em(5);
     }
 }

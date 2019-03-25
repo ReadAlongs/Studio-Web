@@ -1,7 +1,3 @@
-%hover-shared {
-    cursor: pointer;
-}
-
 .sentence {
     border-radius: em(5);
     &.theme {
@@ -19,23 +15,14 @@
         line-height: 3;
         border-radius: em(5);
         position: relative;
-        &.theme {
-            // style all buttons with theme background color and text color
-            @each $theme,
-            $value in $ui-themes {
-                &--#{$theme} {
-                    border: em(.5) solid map-deep-get($ui-themes, $theme, accent);
-                    color: map-deep-get($ui-themes, $theme, text);
-                    &:hover {
-                        @extend %hover-shared;
-                        @include word-button-colors(map-deep-get($ui-themes, $theme, accent), map-deep-get($ui-themes, $theme, text-accent));
-                    }
-                    &--playing {
-                        color: map-deep-get($ui-themes, $theme, accent)
-                    }
-                }
-                ;
-            }
+        @extend %themed-buttons;
+        @extend %border--strong;
+        &:hover {
+            @extend %hover-shared;
+            @extend %themed-buttons--strong;
+        }
+        &.reading {
+            @extend %themed-buttons--stronger;
         }
     }
 }
