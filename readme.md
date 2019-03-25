@@ -34,7 +34,7 @@ Then, you can add as many read-along components to your page as you like simply 
 
 ## Theming
 
-There are two themes out-of-the-box: `light` and `dark`. You set them as a property on the `<read-along></read-along>` web component. If you want to add your own theme, it's as easy as adding your colour palette to the `$ui-themes` variable in `src/components/read-along-component/scss/utilities/_colors.scss`:
+There are two themes out-of-the-box: `light` and `dark`. You set them as a property on the `<read-along></read-along>` web component. If you want to add your own theme, it's as easy as adding your colour palette to the `$ui-themes` variable in `src/components/read-along-component/scss/utilities/_colors.scss`. Note you will have to rebuild the web component from source to do this, or submit your theme as a pull-request!
 
 ```scss
 $ui-themes: (
@@ -57,6 +57,20 @@ $ui-themes: (
 );
 ```
 
+## Slots
+
+Slots allow you to add custom html into specific "slots" within the web component. For example, to add an optional header to the `<read-along></read-along` component, you would write:
+
+```html
+<read-along>
+  <h1 slot="read-along-header">Hello World!</h1
+</read-along
+```
+
+| Slot                    | Description           | Suggested Element |
+| ----------------------- | --------------------- | ----------------- |
+| `read-along-header`     | The read along header | `h1`              |
+| `read-along-subheader`  | Subheader (ie authors)| `h3`              |
 
 
 
