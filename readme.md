@@ -63,8 +63,8 @@ Slots allow you to add custom html into specific "slots" within the web componen
 
 ```html
 <read-along>
-  <h1 slot="read-along-header">Hello World!</h1
-</read-along
+  <h1 slot="read-along-header">Hello World!</h1>
+</read-along>
 ```
 
 | Slot                    | Description           | Suggested Element |
