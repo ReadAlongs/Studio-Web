@@ -76,7 +76,7 @@ export class ReadAlongComponent {
 
     // Create a progress element and begin visually tracking it.
     var elm = document.createElement('div');
-    elm.className = 'progress';
+    elm.className = 'progress theme--' + this.theme;
     elm.id = play_id;
     elm.dataset.sprite = tag;
     let query = this.tagToQuery(tag);
@@ -161,17 +161,24 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div class={'sentence theme--' + this.theme} id='all'>
+        <div class={'sentence theme--' + this.theme}>
           {this.processed_text.map((seg) =>
             <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
           )}
         </div>
+        <div id='all' class={"theme--" + this.theme}></div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
           <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
             <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
           </button>
-          <button class={"control-panel__control ripple theme--" + this.theme  + " background--" + this.theme}>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons" onClick={() => this.play('all')}>replay_5</i>
+          </button>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
             <i class="material-icons" onClick={() => this.stop()}>stop</i>
+          </button>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons" onClick={() => this.play('all')}>style</i>
           </button>
         </div>
       </div>

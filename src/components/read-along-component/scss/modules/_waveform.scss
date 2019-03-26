@@ -8,3 +8,11 @@
     top: 0;
     left: 0;
 }
+
+#all {
+    height: em(50);
+    border-radius: em(5);
+    margin-top: em(20);
+    position: relative;
+    @extend %border--strong;
+}
