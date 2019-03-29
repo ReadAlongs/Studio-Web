@@ -118,6 +118,18 @@ Sprite.prototype = {
     return id
   },
 
+  goBack: function (id, s): number {
+    var self = this;
+    console.log(self.sound.seek(id=id) - s)
+    if (self.sound.seek(id=id) - 5 > 0) {
+      var id = self.sound.seek(self.sound.seek(id=id) - s, id);
+      return id
+    } else {
+      return 0
+    }
+
+  },
+
   /**
    * Stop the sound
    */

@@ -40,6 +40,8 @@ export class ReadAlongComponent {
   */
   @Prop() theme: string = 'light';
 
+  play_id: number;
+
   /**
    * Add escape characters to query selector param
    * @param id string
@@ -73,6 +75,9 @@ export class ReadAlongComponent {
       })
     }
     var play_id = this.audio_howl_sprites.play(tag)
+    if (id === 'all') {
+      this.play_id = play_id
+    }
 
     // Create a progress element and begin visually tracking it.
     var elm = document.createElement('div');
@@ -94,6 +99,18 @@ export class ReadAlongComponent {
     }, play_id);
   }
 
+  /**
+   *  Go back s milliseconds
+   * 
+   * @param id string
+   * @param s number
+   */
+
+  goBack(s): void {
+    if (this.play_id) {
+      this.audio_howl_sprites.goBack(this.play_id, s)
+    }
+  }
 
   /**
    * Stop the sound and remove all active reading styling
@@ -172,7 +189,7 @@ export class ReadAlongComponent {
             <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
           </button>
           <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.play('all')}>replay_5</i>
+            <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
           </button>
           <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
             <i class="material-icons" onClick={() => this.stop()}>stop</i>
