@@ -1,0 +1,55 @@
+%themed-buttons {
+    &.theme {
+
+        @each $theme,
+        $value in $ui-themes {
+            &--#{$theme} {
+                color: map-deep-get($ui-themes, $theme, text);
+            }
+        }
+    }
+
+    &--strong {
+        &.theme {
+
+            @each $theme,
+            $value in $ui-themes {
+                &--#{$theme} {
+                    @include word-button-colors(map-deep-get($ui-themes, $theme, accent--strong), map-deep-get($ui-themes, $theme, text--strong));
+                }
+            }
+        }
+    }
+
+    &--stronger {
+        &.theme {
+
+            @each $theme,
+            $value in $ui-themes {
+                &--#{$theme} {
+                    @include word-button-colors(map-deep-get($ui-themes, $theme, accent--stronger), map-deep-get($ui-themes, $theme, text--stronger));
+                }
+            }
+        }
+
+    }
+}
+
+%border--strong {
+    &.theme {
+        @each $theme,
+        $value in $ui-themes {
+            &--#{$theme} {
+                border: em(.5) solid map-deep-get($ui-themes, $theme, accent--strong);
+            }
+        }
+    }
+}
+
+%hover-shared {
+    cursor: pointer;
+}
+
+// &:hover {
+//     @extend %hover-shared;
+// }

@@ -1,0 +1,18 @@
+#waveform {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#all {
+    height: em(50);
+    border-radius: em(5);
+    margin-top: em(20);
+    position: relative;
+    @extend %border--strong;
+}

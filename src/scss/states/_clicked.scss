@@ -1,0 +1,40 @@
+/* Ripple effect */
+
+%ripple {
+    background-position: center;
+    transition: background 0.8s;
+    @extend %themed-buttons;
+
+    &:hover {
+        @extend %hover-shared;
+    }
+
+    &:active {
+        background-size: 100%;
+        transition: background 0s;
+        @extend %themed-buttons--strong;
+    }
+}
+
+.ripple,
+.reading {
+    @extend %ripple;
+}
+
+
+.progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    // background-color: rgba(0, 0, 0, 0.1);
+    width: 0;
+    border-radius: em(5);
+
+    @each $theme,
+    $value in $ui-themes {
+        &.theme--#{$theme} {
+            background-color: rgba(map-deep-get($ui-themes, $theme, accent--strong), .2);
+        }
+    }
+}

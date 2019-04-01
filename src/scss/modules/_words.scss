@@ -1,0 +1,28 @@
+.sentence {
+    border-radius: em(5);
+    &.theme {
+        @each $theme,
+        $value in $ui-themes {
+            &--#{$theme} {
+                background-color: map-deep-get($ui-themes, $theme, bg)
+            }
+        }
+    }
+    position: relative;
+    &__word {
+        margin: em(5);
+        padding: em(5);
+        line-height: 3;
+        border-radius: em(5);
+        position: relative;
+        @extend %themed-buttons;
+        @extend %border--strong;
+        &:hover {
+            @extend %hover-shared;
+            @extend %themed-buttons--strong;
+        }
+        &.reading {
+            @extend %themed-buttons--stronger;
+        }
+    }
+}
