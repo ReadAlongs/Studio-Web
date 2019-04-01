@@ -118,15 +118,44 @@ Sprite.prototype = {
     return id
   },
 
+  pause: function (): number {
+    var self = this;
+    self.sound.pause()
+    return self.sound.id
+  },
+
+  /**
+   * Go back s seconds, or if current position - s is less than 0
+   * go back to the beginning.
+   * 
+   * @param id: number - the id of the audio to roll back
+   * @param s: number - the number of seconds to go back
+   */
   goBack: function (id, s): number {
     var self = this;
-    console.log(self.sound.seek(id=id) - s)
-    if (self.sound.seek(id=id) - 5 > 0) {
-      var id = self.sound.seek(self.sound.seek(id=id) - s, id);
-      return id
+    // reset sprites left
+    self._spriteLeft = self._tinySprite
+    // if current_seek - s is greater than 0, find the closest sprite
+    // and highlight it; seek to current_seek -s.
+    if (self.sound.seek(id = id) - s > 0) {
+      var id = self.sound.seek(self.sound.seek(id = id) - s, id);
+      // move highlight back TODO: refactor out into its own function and combine with version in step()
+      var seek = self.sound.seek(id = id)
+      for (var j = 0; j < self._spriteLeft.length; j++) {
+        // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
+        if (seek * 1000 >= self._spriteLeft[j][0]) {
+          self._reading$.next(self._spriteLeft[j][1])
+          self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length)
+        }
+      }
+      // else, return back to beginning
     } else {
-      return 0
+      var id = self.sound.seek(0, id);
+      self._reading$.next(self._spriteLeft[0][1])
     }
+
+    return id
+
 
   },
 
@@ -152,7 +181,7 @@ Sprite.prototype = {
       var id = parseInt(self.sounds[i].id, 10);
       var offset = self._sprite[self.sounds[i].dataset.sprite][0];
       var seek = (self.sound.seek(id) || 0) - (offset / 1000);
-      for (var j = 0; j < self._spriteLeft.length; j++) {
+      for (var j = 0; j < self._spriteLeft.length; j++) { // TODO: refactor out into its own function and combine with version in step()
         // if stopped
         if (seek > 0) {
           // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left

@@ -1,11 +1,11 @@
-import { Component, Element, Prop } from '@stencil/core';
+import { Component, Element, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Howl } from 'howler';
 import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
 
 @Component({
   tag: 'read-along',
-  styleUrl: 'scss/styles.scss',
+  styleUrl: '../../scss/styles.scss',
   shadow: true
 })
 export class ReadAlongComponent {
@@ -40,6 +40,8 @@ export class ReadAlongComponent {
   */
   @Prop() theme: string = 'light';
 
+  @State() playing: boolean = false;
+
   play_id: number;
 
   /**
@@ -58,11 +60,11 @@ export class ReadAlongComponent {
    * @param id string
    */
   play(id): void {
+    this.playing = true;
     if (id !== 'all') {
       var tag = id.path[0].id;
     } else {
       var tag = id
-
       // subscribe to reading subject and update element class
       this.reading$ = this.audio_howl_sprites._reading$.pipe(
         distinctUntilChanged()
@@ -74,10 +76,19 @@ export class ReadAlongComponent {
         }
       })
     }
-    var play_id = this.audio_howl_sprites.play(tag)
     if (id === 'all') {
-      this.play_id = play_id
+      // If already playing once, continue playing
+      if (this.play_id) {
+        this.audio_howl_sprites.play(this.play_id)
+        // else, start a new play
+      } else {
+        var play_id = this.audio_howl_sprites.play(tag)
+        this.play_id = play_id
+      }
+    } else {
+      this.audio_howl_sprites.play(tag)
     }
+
 
     // Create a progress element and begin visually tracking it.
     var elm = document.createElement('div');
@@ -100,6 +111,16 @@ export class ReadAlongComponent {
   }
 
   /**
+   * Pause a sprite from the audio, and subscribe to the sprite's 'reading' subject 
+   * in order to asynchronously apply styles as the sprite is played
+   * @param id string
+   */
+  pause() {
+    this.playing = false;
+    this.audio_howl_sprites.pause()
+  }
+
+  /**
    *  Go back s milliseconds
    * 
    * @param id string
@@ -116,6 +137,7 @@ export class ReadAlongComponent {
    * Stop the sound and remove all active reading styling
    */
   stop(): void {
+    this.playing = false;
     this.audio_howl_sprites.stop()
     this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
     if (this.reading$) {
@@ -170,35 +192,71 @@ export class ReadAlongComponent {
   }
 
   render() {
-    return (
-      <div>
-        <h1 class="slot__header">
-          <slot name="read-along-header" />
-        </h1>
-        <h3 class="slot__subheader">
-          <slot name="read-along-subheader" />
-        </h3>
-        <div class={'sentence theme--' + this.theme}>
-          {this.processed_text.map((seg) =>
-            <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
-          )}
+    // TODO: refactor control panel as its own component so we don't need to re-render the entire readalong
+    // on state changes
+    if (this.playing) {
+      return (
+        <div>
+          <h1 class="slot__header">
+            <slot name="read-along-header" />
+          </h1>
+          <h3 class="slot__subheader">
+            <slot name="read-along-subheader" />
+          </h3>
+          <div class={'sentence theme--' + this.theme}>
+            {this.processed_text.map((seg) =>
+              <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
+            )}
+          </div>
+          <div id='all' class={"theme--" + this.theme}></div>
+          <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.pause()}>pause</i>
+            </button>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
+            </button>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.stop()}>stop</i>
+            </button>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.play('all')}>style</i>
+            </button>
+          </div>
         </div>
-        <div id='all' class={"theme--" + this.theme}></div>
-        <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
-          </button>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
-          </button>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.stop()}>stop</i>
-          </button>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.play('all')}>style</i>
-          </button>
+      )
+    } else {
+      return (
+        <div>
+          <h1 class="slot__header">
+            <slot name="read-along-header" />
+          </h1>
+          <h3 class="slot__subheader">
+            <slot name="read-along-subheader" />
+          </h3>
+          <div class={'sentence theme--' + this.theme}>
+            {this.processed_text.map((seg) =>
+              <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
+            )}
+          </div>
+          <div id='all' class={"theme--" + this.theme}></div>
+          <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
+            </button>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
+            </button>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.stop()}>stop</i>
+            </button>
+            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons" onClick={() => this.play('all')}>style</i>
+            </button>
+          </div>
         </div>
-      </div>
-    )
+      )
+    }
+
   }
 }
