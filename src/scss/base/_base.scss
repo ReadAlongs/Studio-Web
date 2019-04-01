@@ -100,7 +100,7 @@ table {
 
 @each $theme, $value in $ui-themes {
   .background--#{$theme} {
-    background: map-get($value, bg)
+    background: map-get($value, primary)
   }
   
 }

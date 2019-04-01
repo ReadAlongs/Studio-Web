@@ -21,24 +21,28 @@ $white:                     #fff;
 
 $ui-themes: (
     light: (
-        primary:             $hopbush,
-        accent--strong:      darken($white, 50%),
-        accent--stronger:    darken($white, 60%),
-        shadow:              $venus,
+        primary:             $white,
+        secondary:           darken($white, 50%),
+        accent:              darken($white, 60%),
         text:                $black,
-        text--strong:        $white,
-        text--stronger:      $white,
-        bg:                  $white
+        text--secondary:     $white,
+        text--accent:        $white,
     ),
     dark: (
-        primary:             lighten($black, 45%),
-        accent--strong:      darken($white, 35%),
-        accent--stronger:    $white,
-        shadow:              $venus,
+        primary:             lighten($black, 30%),
+        secondary:           darken($white, 35%),
+        accent:              $white,
         text:                $white,
-        text--strong:        $white,
-        text--stronger:      $black,
-        bg:                  lighten($black, 30%)
+        text--secondary:     $white,
+        text--accent:        $black
+    ),
+    candy: (
+        primary:             pink,
+        secondary:           darken(pink, 15%),
+        accent:              darken(pink, 30%),
+        text:                $black,
+        text--secondary:     $black,
+        text--accent:        $white
     )
 );
 

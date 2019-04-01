@@ -40,6 +40,9 @@ export class ReadAlongComponent {
   */
   @Prop() theme: string = 'light';
 
+  /**
+   * Whether audio is playing or not
+   */
   @State() playing: boolean = false;
 
   play_id: number;

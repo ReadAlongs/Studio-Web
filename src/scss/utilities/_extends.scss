@@ -15,7 +15,7 @@
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
-                    @include word-button-colors(map-deep-get($ui-themes, $theme, accent--strong), map-deep-get($ui-themes, $theme, text--strong));
+                    @include word-button-colors(map-deep-get($ui-themes, $theme, secondary), map-deep-get($ui-themes, $theme, text--secondary));
                 }
             }
         }
@@ -27,7 +27,7 @@
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
-                    @include word-button-colors(map-deep-get($ui-themes, $theme, accent--stronger), map-deep-get($ui-themes, $theme, text--stronger));
+                    @include word-button-colors(map-deep-get($ui-themes, $theme, accent), map-deep-get($ui-themes, $theme, text--accent));
                 }
             }
         }
@@ -40,7 +40,7 @@
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
-                border: em(.5) solid map-deep-get($ui-themes, $theme, accent--strong);
+                border: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
             }
         }
     }

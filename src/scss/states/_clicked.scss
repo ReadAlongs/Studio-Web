@@ -34,7 +34,7 @@
     @each $theme,
     $value in $ui-themes {
         &.theme--#{$theme} {
-            background-color: rgba(map-deep-get($ui-themes, $theme, accent--strong), .2);
+            background-color: rgba(map-deep-get($ui-themes, $theme, secondary), .2);
         }
     }
 }

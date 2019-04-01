@@ -4,7 +4,7 @@
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
-                background-color: map-deep-get($ui-themes, $theme, bg)
+                background-color: map-deep-get($ui-themes, $theme, primary)
             }
         }
     }
