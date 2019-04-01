@@ -60,7 +60,6 @@ export class ReadAlongComponent {
    * @param id string
    */
   play(id): void {
-    this.playing = true;
     if (id !== 'all') {
       var tag = id.path[0].id;
     } else {
@@ -77,6 +76,7 @@ export class ReadAlongComponent {
       })
     }
     if (id === 'all') {
+      this.playing = true;
       // If already playing once, continue playing
       if (this.play_id) {
         this.audio_howl_sprites.play(this.play_id)
@@ -86,7 +86,7 @@ export class ReadAlongComponent {
         this.play_id = play_id
       }
     } else {
-      this.audio_howl_sprites.play(tag)
+      var play_id = this.audio_howl_sprites.play(tag)
     }
 
 
