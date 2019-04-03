@@ -68,23 +68,21 @@ export class ReadAlongComponent {
       this.audio_howl_sprites.pause()
     } else {
 
-
       if (id !== 'all') {
         var tag = id.path[0].id;
+        var play_id = this.audio_howl_sprites.play(tag)
       } else {
         var tag = id
         // subscribe to reading subject and update element class
         this.reading$ = this.audio_howl_sprites._reading$.pipe(
           distinctUntilChanged()
         ).subscribe(x => {
-          if (x) {
+          if (this.playing) {
             let query = this.tagToQuery(x);
             this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
             this.el.shadowRoot.querySelector(query).classList.add('reading')
           }
         })
-      }
-      if (id === 'all') {
         this.playing = true;
         // If already playing once, continue playing
         if (this.play_id) {
@@ -94,10 +92,8 @@ export class ReadAlongComponent {
           var play_id = this.audio_howl_sprites.play(tag)
           this.play_id = play_id
         }
-      } else {
-        var play_id = this.audio_howl_sprites.play(tag)
-      }
 
+      }
 
       // Create a progress element and begin visually tracking it.
       var elm = document.createElement('div');
@@ -114,10 +110,21 @@ export class ReadAlongComponent {
         if (index >= 0) {
           this.audio_howl_sprites.sounds.splice(index, 1);
           this.el.shadowRoot.querySelector(query).removeChild(elm);
-          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+          this.el.shadowRoot.querySelector(query).classList.remove('reading')
         }
       }, play_id);
+
+
     }
+  }
+
+  /**
+   * Go to seek
+   * 
+   * @param s number
+   */
+  goTo(s): void {
+    console.log(s)
   }
 
   /**
@@ -204,7 +211,7 @@ export class ReadAlongComponent {
 
   render() {
     return (
-      <div>
+      <div class='read-along-container'>
         <h1 class="slot__header">
           <slot name="read-along-header" />
         </h1>
