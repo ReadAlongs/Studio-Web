@@ -211,7 +211,7 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div class={'sentence theme--' + this.theme}>
+        <div class={'sentence animate-transition theme--' + this.theme}>
           {this.processed_text.map((seg) =>
             <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.playPause(ev)}>{seg[1]} </span>
           )}

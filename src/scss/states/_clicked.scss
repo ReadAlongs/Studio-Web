@@ -1,8 +1,15 @@
 /* Ripple effect */
 
+%transition {
+    transition: background 0.4s;
+    &:active { 
+        transition: background 0s;
+    }
+}
+
 %ripple {
     background-position: center;
-    transition: background 0.8s;
+    @extend %transition;
     @extend %themed-buttons;
 
     &:hover {
@@ -11,9 +18,12 @@
 
     &:active {
         background-size: 100%;
-        transition: background 0s;
         @extend %themed-buttons--strong;
     }
+}
+
+.animate-transition {
+    @extend %transition;
 }
 
 .ripple,
@@ -27,7 +37,6 @@
     top: 0;
     left: 0;
     height: 100%;
-    // background-color: rgba(0, 0, 0, 0.1);
     width: 0;
     border-radius: em(5);
 
