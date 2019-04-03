@@ -35,14 +35,6 @@ $ui-themes: (
         text:                $white,
         text--secondary:     $white,
         text--accent:        $black
-    ),
-    candy: (
-        primary:             pink,
-        secondary:           darken(pink, 15%),
-        accent:              darken(pink, 30%),
-        text:                $black,
-        text--secondary:     $black,
-        text--accent:        $white
     )
 );
 

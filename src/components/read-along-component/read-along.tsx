@@ -38,7 +38,7 @@ export class ReadAlongComponent {
   /**
   * Theme to use: ['light', 'dark'] defaults to 'dark'
   */
-  @Prop() theme: string = 'light';
+  @Prop({ mutable: true }) theme: string = 'light';
 
   /**
    * Whether audio is playing or not
@@ -62,65 +62,62 @@ export class ReadAlongComponent {
    * in order to asynchronously apply styles as the sprite is played
    * @param id string
    */
-  play(id): void {
-    if (id !== 'all') {
-      var tag = id.path[0].id;
+  playPause(id?): void {
+    if (this.playing) {
+      this.playing = false;
+      this.audio_howl_sprites.pause()
     } else {
-      var tag = id
-      // subscribe to reading subject and update element class
-      this.reading$ = this.audio_howl_sprites._reading$.pipe(
-        distinctUntilChanged()
-      ).subscribe(x => {
-        if (x) {
-          let query = this.tagToQuery(x);
-          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-          this.el.shadowRoot.querySelector(query).classList.add('reading')
+
+
+      if (id !== 'all') {
+        var tag = id.path[0].id;
+      } else {
+        var tag = id
+        // subscribe to reading subject and update element class
+        this.reading$ = this.audio_howl_sprites._reading$.pipe(
+          distinctUntilChanged()
+        ).subscribe(x => {
+          if (x) {
+            let query = this.tagToQuery(x);
+            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+            this.el.shadowRoot.querySelector(query).classList.add('reading')
+          }
+        })
+      }
+      if (id === 'all') {
+        this.playing = true;
+        // If already playing once, continue playing
+        if (this.play_id) {
+          this.audio_howl_sprites.play(this.play_id)
+          // else, start a new play
+        } else {
+          var play_id = this.audio_howl_sprites.play(tag)
+          this.play_id = play_id
         }
-      })
-    }
-    if (id === 'all') {
-      this.playing = true;
-      // If already playing once, continue playing
-      if (this.play_id) {
-        this.audio_howl_sprites.play(this.play_id)
-        // else, start a new play
       } else {
         var play_id = this.audio_howl_sprites.play(tag)
-        this.play_id = play_id
       }
-    } else {
-      var play_id = this.audio_howl_sprites.play(tag)
+
+
+      // Create a progress element and begin visually tracking it.
+      var elm = document.createElement('div');
+      elm.className = 'progress theme--' + this.theme;
+      elm.id = play_id;
+      elm.dataset.sprite = tag;
+      let query = this.tagToQuery(tag);
+      this.el.shadowRoot.querySelector(query).appendChild(elm);
+      this.audio_howl_sprites.sounds.push(elm);
+
+      // When this sound is finished, remove the progress element.
+      this.audio_howl_sprites.sound.once('end', () => {
+        var index = this.audio_howl_sprites.sounds.indexOf(elm);
+        if (index >= 0) {
+          this.audio_howl_sprites.sounds.splice(index, 1);
+          this.el.shadowRoot.querySelector(query).removeChild(elm);
+          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+        }
+      }, play_id);
     }
-
-
-    // Create a progress element and begin visually tracking it.
-    var elm = document.createElement('div');
-    elm.className = 'progress theme--' + this.theme;
-    elm.id = play_id;
-    elm.dataset.sprite = tag;
-    let query = this.tagToQuery(tag);
-    this.el.shadowRoot.querySelector(query).appendChild(elm);
-    this.audio_howl_sprites.sounds.push(elm);
-
-    // When this sound is finished, remove the progress element.
-    this.audio_howl_sprites.sound.once('end', () => {
-      var index = this.audio_howl_sprites.sounds.indexOf(elm);
-      if (index >= 0) {
-        this.audio_howl_sprites.sounds.splice(index, 1);
-        this.el.shadowRoot.querySelector(query).removeChild(elm);
-        this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-      }
-    }, play_id);
-  }
-
-  /**
-   * Pause a sprite from the audio, and subscribe to the sprite's 'reading' subject 
-   * in order to asynchronously apply styles as the sprite is played
-   * @param id string
-   */
-  pause() {
-    this.playing = false;
-    this.audio_howl_sprites.pause()
   }
 
   /**
@@ -146,6 +143,17 @@ export class ReadAlongComponent {
     if (this.reading$) {
       // unsubscribe to Subject
       this.reading$.unsubscribe()
+    }
+  }
+
+  /**
+   * Change theme
+   */
+  changeTheme(): void {
+    if (this.theme === 'light') {
+      this.theme = 'dark'
+    } else {
+      this.theme = 'light'
     }
   }
 
@@ -195,71 +203,35 @@ export class ReadAlongComponent {
   }
 
   render() {
-    // TODO: refactor control panel as its own component so we don't need to re-render the entire readalong
-    // on state changes
-    if (this.playing) {
-      return (
-        <div>
-          <h1 class="slot__header">
-            <slot name="read-along-header" />
-          </h1>
-          <h3 class="slot__subheader">
-            <slot name="read-along-subheader" />
-          </h3>
-          <div class={'sentence theme--' + this.theme}>
-            {this.processed_text.map((seg) =>
-              <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
-            )}
-          </div>
-          <div id='all' class={"theme--" + this.theme}></div>
-          <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.pause()}>pause</i>
-            </button>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
-            </button>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.stop()}>stop</i>
-            </button>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.play('all')}>style</i>
-            </button>
-          </div>
+    return (
+      <div>
+        <h1 class="slot__header">
+          <slot name="read-along-header" />
+        </h1>
+        <h3 class="slot__subheader">
+          <slot name="read-along-subheader" />
+        </h3>
+        <div class={'sentence theme--' + this.theme}>
+          {this.processed_text.map((seg) =>
+            <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.playPause(ev)}>{seg[1]} </span>
+          )}
         </div>
-      )
-    } else {
-      return (
-        <div>
-          <h1 class="slot__header">
-            <slot name="read-along-header" />
-          </h1>
-          <h3 class="slot__subheader">
-            <slot name="read-along-subheader" />
-          </h3>
-          <div class={'sentence theme--' + this.theme}>
-            {this.processed_text.map((seg) =>
-              <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.play(ev)}>{seg[1]} </span>
-            )}
-          </div>
-          <div id='all' class={"theme--" + this.theme}></div>
-          <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.play('all')}>play_arrow</i>
-            </button>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
-            </button>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.stop()}>stop</i>
-            </button>
-            <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons" onClick={() => this.play('all')}>style</i>
-            </button>
-          </div>
+        <div id='all' class={"theme--" + this.theme}></div>
+        <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons" onClick={() => this.playPause('all')}>{this.playing ? 'pause' : 'play_arrow'}</i>
+          </button>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
+          </button>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons" onClick={() => this.stop()}>stop</i>
+          </button>
+          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons-outlined" onClick={() => this.changeTheme()}>style</i>
+          </button>
         </div>
-      )
-    }
-
+      </div>
+    )
   }
 }
