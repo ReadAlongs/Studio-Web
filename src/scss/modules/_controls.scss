@@ -15,3 +15,31 @@
         margin: em(5);
     }
 }
+
+.settings {
+    margin-left: 0;
+    margin-right: 0;
+    text-align: center;
+    
+    &__divider {
+
+    }
+
+    &__option {
+
+        &__container {
+
+        }
+
+        &__header {
+            margin-bottom: em(8)
+
+        }
+
+        &__setting {
+
+        }
+
+    }
+
+}

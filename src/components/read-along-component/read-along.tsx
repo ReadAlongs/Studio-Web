@@ -44,8 +44,10 @@ export class ReadAlongComponent {
    * Whether audio is playing or not
    */
   @State() playing: boolean = false;
+  @State() settings: boolean = false;
 
   play_id: number;
+  playback_rate: number = 1;
 
   /**
    * Add escape characters to query selector param
@@ -165,6 +167,23 @@ export class ReadAlongComponent {
   }
 
   /**
+   * Toggle settigs
+   * 
+   */
+  toggleSettings(): void {
+    this.settings = !this.settings;
+    console.log(this.settings)
+  }
+
+  /**
+   * Change playback between .75 and 1.25
+   */
+  changePlayback(v): void {
+    this.playback_rate = v.path[0].value / 100
+    this.audio_howl_sprites.sound.rate(this.playback_rate)
+  }
+
+  /**
    * Parse TEI-style text
    */
   private getText(): Array<string[]> {
@@ -188,6 +207,7 @@ export class ReadAlongComponent {
     return new Sprite({
       src: [audio],
       sprite: alignment,
+      rate: this.playback_rate
     });
   }
 
@@ -209,6 +229,23 @@ export class ReadAlongComponent {
     this.processed_text = this.getText()
   }
 
+  render_settings() {
+    if (this.settings) {
+      return (
+        <div class="settings">
+          <hr class="settings__divider"></hr>
+          <div class="settings__option__container">
+            <h5 class={"settings__option__header color--" + this.theme}>Playback speed</h5>
+            <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider settings__option__setting" id="myRange" onInput={(v) => this.changePlayback(v)} />
+          </div>
+          <h5 class={"settings__option__header color--" + this.theme}>Change style</h5>
+          <button onClick={() => this.changeTheme()} class={"settings__option__setting ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons-outlined">style</i>
+          </button>
+        </div>)
+    } else { <div><p>hello</p></div> }
+  }
+
   render() {
     return (
       <div class='read-along-container'>
@@ -225,20 +262,21 @@ export class ReadAlongComponent {
         </div>
         <div id='all' class={"theme--" + this.theme}></div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.playPause('all')}>{this.playing ? 'pause' : 'play_arrow'}</i>
+          <button onClick={() => this.playPause('all')} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
           </button>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.goBack(5)}>replay_5</i>
+          <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons">replay_5</i>
           </button>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons" onClick={() => this.stop()}>stop</i>
+          <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons">stop</i>
           </button>
-          <button class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons-outlined" onClick={() => this.changeTheme()}>style</i>
+          <button onClick={() => this.toggleSettings()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <i class="material-icons-outlined">settings</i>
           </button>
+          {this.render_settings()}
         </div>
-      </div>
+      </div >
     )
   }
 }

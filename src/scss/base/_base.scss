@@ -1,4 +1,6 @@
-@viewport { width: device-width; }
+@viewport {
+    width: device-width;
+}
 
 button {
     border: 0;
@@ -6,40 +8,45 @@ button {
 }
 
 html {
-  background-color: $color-background;
-  box-sizing: border-box;
-  height: 100%;
+    background-color: $color-background;
+    box-sizing: border-box;
+    height: 100%;
 }
 
 * {
-  &:before,
-  &:after { box-sizing: inherit; }
+
+    &:before,
+    &:after {
+        box-sizing: inherit;
+    }
 }
 
 body {
-  -webkit-font-smoothing: antialiased;
-  color: $color-text;
-  font-family: $font-family-default;
-  min-height: 100%;
-  overflow-x: hidden;
-  overflow-y: hidden;
-  text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    color: $color-text;
+    font-family: $font-family-default;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    text-rendering: optimizeLegibility;
 }
 
 a {
-  background: transparent;
-  color: $color-link;
-  text-decoration: none;
-  transition: color .2s;
-  outline: none;
-  &:active, &:focus {
+    background: transparent;
+    color: $color-link;
+    text-decoration: none;
+    transition: color .2s;
     outline: none;
-  }
+
+    &:active,
+    &:focus {
+        outline: none;
+    }
 }
 
 img {
-  height: auto;
-  max-width: 100%;
+    height: auto;
+    max-width: 100%;
 }
 
 h1,
@@ -48,59 +55,76 @@ h3,
 h4,
 h5,
 h6 {
-  // font-family: $font-family-display;
-  font-family: $font-family-accent;
-  font-weight: normal;
+    // font-family: $font-family-display;
+    font-family: $font-family-accent;
+    font-weight: normal;
 }
 
-p, mat-chip, mat-tab-label, span, button, a {
-  font-family: $font-family-display;
+p,
+mat-chip,
+mat-tab-label,
+span,
+button,
+a {
+    font-family: $font-family-display;
 }
 
 .bg-img {
-  /* The image used */
-  background-image: url("../assets/img/bg.jpg");
-  /* Full height */
-  height: 100vh; 
-  overflow: overlay;
-  overflow-x: hidden;
-  /* Center and scale the image nicely */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  min-height: 100%;
+    /* The image used */
+    background-image: url("../assets/img/bg.jpg");
+    /* Full height */
+    height: 100vh;
+    overflow: overlay;
+    overflow-x: hidden;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100%;
 }
 
 .shadow-box {
-    box-shadow: 0 0.3125rem 1rem 0 rgba(0,0,0,0.24);
+    box-shadow: 0 0.3125rem 1rem 0 rgba(0, 0, 0, 0.24);
     padding: 25px;
-    background: rgba(255,255,255,.94);
+    background: rgba(255, 255, 255, .94);
     border-radius: 5px;
 }
 
 
-@each $name, $value in $font-sizes {
-  .font-#{$name} {
-      font-size: em($value);
-  }
+@each $name,
+$value in $font-sizes {
+    .font-#{$name} {
+        font-size: em($value);
+    }
 }
 
 .faded {
-  opacity: .2;
-  color: black;
+    opacity: .2;
+    color: black;
 }
 
 table {
-  table-layout: fixed;
+    table-layout: fixed;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 .container {
-  max-width: em(map-get($breakpoints, xlarge));
+    max-width: em(map-get($breakpoints, xlarge));
 }
 
-@each $theme, $value in $ui-themes {
-  .background--#{$theme} {
-    background: map-get($value, primary)
-  }
-  
+@each $theme,
+$value in $ui-themes {
+    .background--#{$theme} {
+        background: map-get($value, primary)
+    }
+
+    .color--#{$theme} {
+        color: map-get($value, text)
+    }
+
 }

@@ -97,7 +97,8 @@ export var Sprite = function (options) {
   // Create our audio sprite definition.
   self.sound = new Howl({
     src: options.src,
-    sprite: options.sprite
+    sprite: options.sprite,
+    rate: options.rate
   });
 
   // Begin the progress step tick.
