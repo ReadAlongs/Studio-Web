@@ -29,6 +29,7 @@ export class ReadAlongComponent {
   @Prop() audio: string;
   audio_howl_sprites: Howl;
   reading$;
+  duration: number;
 
   /**
    * Image
@@ -71,7 +72,8 @@ export class ReadAlongComponent {
     } else {
 
       if (id !== 'all') {
-        var tag = id.path[0].id;
+        let path = id.composedPath();
+        var tag = path[0].id;
         var play_id = this.audio_howl_sprites.play(tag)
       } else {
         var tag = id
@@ -125,8 +127,20 @@ export class ReadAlongComponent {
    * 
    * @param s number
    */
-  goTo(s): void {
-    console.log(s)
+  goTo(ev): void {
+    // get composed path
+    let path = ev.composedPath()
+    // query select the progress bar
+    let progress_el = path[2].querySelector('#all')
+    // get offset of clicked element
+    let offset = progress_el.offsetLeft
+    // get width of clicked element
+    let width = progress_el.offsetWidth
+    // get click point
+    let click = ev.pageX - offset
+    // get seek
+    let seek = (click / width) * this.duration
+    this.audio_howl_sprites.goTo(this.play_id, seek)
   }
 
   /**
@@ -179,7 +193,8 @@ export class ReadAlongComponent {
    * Change playback between .75 and 1.25
    */
   changePlayback(v): void {
-    this.playback_rate = v.path[0].value / 100
+    let path = v.composedPath()
+    this.playback_rate = path[0].value / 100
     this.audio_howl_sprites.sound.rate(this.playback_rate)
   }
 
@@ -224,6 +239,7 @@ export class ReadAlongComponent {
     // Once loaded, get duration and build Sprite
     this.audio_howl_sprites.once('load', () => {
       this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
+      this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
     })
     this.processed_text = this.getText()
@@ -243,7 +259,7 @@ export class ReadAlongComponent {
             <i class="material-icons-outlined">style</i>
           </button>
         </div>)
-    } else { <div><p>hello</p></div> }
+    }
   }
 
   render() {
@@ -260,7 +276,7 @@ export class ReadAlongComponent {
             <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.playPause(ev)}>{seg[1]} </span>
           )}
         </div>
-        <div id='all' class={"theme--" + this.theme}></div>
+        <div id='all' class={"theme--" + this.theme} onClick={(e) => this.goTo(e)}></div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
           <button onClick={() => this.playPause('all')} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
             <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
