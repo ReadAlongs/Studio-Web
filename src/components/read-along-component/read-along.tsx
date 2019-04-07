@@ -227,8 +227,21 @@ export class ReadAlongComponent {
    * Change playback between .75 and 1.25
    */
   changePlayback(v): void {
+    // let notches = [.75, .875, 1, 1.125, 1.25]
+    // let window = 0.05
     let path = v.composedPath()
-    this.playback_rate = path[0].value / 100
+    let absolute_rate = path[0].value / 100
+    // for (let notch of notches) {
+      // console.log(absolute_rate)
+      // console.log(notch)
+      // if (absolute_rate <= notch + window && absolute_rate > notch) {
+      //   this.playback_rate = notch
+      //   break;
+      // }
+      this.playback_rate = absolute_rate
+    // }
+    // console.log(this.playback_rate)
+    
     this.audio_howl_sprites.sound.rate(this.playback_rate)
   }
 
