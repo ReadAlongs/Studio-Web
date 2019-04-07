@@ -64,17 +64,27 @@ export class ReadAlongComponent {
    * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject 
    * in order to asynchronously apply styles as the sprite is played
    * @param id string
+   * TODO: Refactor this ugliness
    */
   playPause(id?): void {
-    if (this.playing) {
+    // if main sprite is playing and play/pause is for main sprite, then pause it
+    if (this.playing && id === 'all') {
       this.playing = false;
       this.audio_howl_sprites.pause()
     } else {
-
+      // if playing a smaller sprite, seek main sprite to there and play it
       if (id !== 'all') {
         let path = id.composedPath();
         var tag = path[0].id;
-        var play_id = this.audio_howl_sprites.play(tag)
+        let seek = this.processed_alignment[tag][0]
+        this.goTo(seek)
+        this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+        this.el.shadowRoot.querySelector(this.tagToQuery(tag)).classList.add('reading')
+        if (!this.playing) {
+          var play_id = this.audio_howl_sprites.play(tag)
+        }
+        // if main sprite is selected, but not playing then set up reading$ highlighter sbject
+        // and play the main sprite
       } else {
         var tag = id
         // subscribe to reading subject and update element class
@@ -93,32 +103,50 @@ export class ReadAlongComponent {
           this.audio_howl_sprites.play(this.play_id)
           // else, start a new play
         } else {
+
           var play_id = this.audio_howl_sprites.play(tag)
           this.play_id = play_id
+          if (this.el.shadowRoot.querySelectorAll('.reading').length > 0) {
+            let reading_el_id = this.el.shadowRoot.querySelector(".reading").id
+            this.goTo(this.processed_alignment[reading_el_id][0])
+          }
         }
 
+        // Create a progress element and begin visually tracking it.
+        var elm = document.createElement('div');
+        elm.className = 'progress theme--' + this.theme;
+        elm.id = play_id;
+        elm.dataset.sprite = tag;
+        let query = this.tagToQuery(tag);
+        this.el.shadowRoot.querySelector(query).appendChild(elm);
+        this.audio_howl_sprites.sounds.push(elm);
+
+        // When this sound is finished, remove the progress element.
+        this.audio_howl_sprites.sound.once('end', () => {
+          var index = this.audio_howl_sprites.sounds.indexOf(elm);
+          if (index >= 0) {
+            this.audio_howl_sprites.sounds.splice(index, 1);
+            this.el.shadowRoot.querySelector(query).removeChild(elm);
+            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+          }
+        }, this.play_id);
       }
+    }
+  }
 
-      // Create a progress element and begin visually tracking it.
-      var elm = document.createElement('div');
-      elm.className = 'progress theme--' + this.theme;
-      elm.id = play_id;
-      elm.dataset.sprite = tag;
-      let query = this.tagToQuery(tag);
-      this.el.shadowRoot.querySelector(query).appendChild(elm);
-      this.audio_howl_sprites.sounds.push(elm);
-
-      // When this sound is finished, remove the progress element.
-      this.audio_howl_sprites.sound.once('end', () => {
-        var index = this.audio_howl_sprites.sounds.indexOf(elm);
-        if (index >= 0) {
-          this.audio_howl_sprites.sounds.splice(index, 1);
-          this.el.shadowRoot.querySelector(query).removeChild(elm);
-          this.el.shadowRoot.querySelector(query).classList.remove('reading')
-        }
-      }, play_id);
-
-
+  /**
+   * Remove highlighting from every other word and add it closest to second s
+   * 
+   * @param s seconds
+   */
+  highlightClosestTo(s) {
+    let keys = Object.keys(this.processed_alignment)
+    for (var i = 1; i < keys.length; i++) {
+      if (s * 1000 > this.processed_alignment[keys[i]][0] && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
+        this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+        this.el.shadowRoot.querySelector(this.tagToQuery(keys[i])).classList.add('reading')
+        break;
+      }
     }
   }
 
@@ -128,18 +156,25 @@ export class ReadAlongComponent {
    * @param s number
    */
   goTo(ev): void {
-    // get composed path
-    let path = ev.composedPath()
-    // query select the progress bar
-    let progress_el = path[2].querySelector('#all')
-    // get offset of clicked element
-    let offset = progress_el.offsetLeft
-    // get width of clicked element
-    let width = progress_el.offsetWidth
-    // get click point
-    let click = ev.pageX - offset
-    // get seek
-    let seek = (click / width) * this.duration
+    let seek = ev
+    if (typeof (ev) !== 'number') {
+      // get composed path
+      let path = ev.composedPath()
+      // query select the progress bar
+      let progress_el = path[2].querySelector('#all')
+      // get offset of clicked element
+      let offset = progress_el.offsetLeft
+      // get width of clicked element
+      let width = progress_el.offsetWidth
+      // get click point
+      let click = ev.pageX - offset
+      // get seek
+      seek = (click / width) * this.duration
+
+      this.highlightClosestTo(seek)
+    } else {
+      seek = seek / 1000
+    }
     this.audio_howl_sprites.goTo(this.play_id, seek)
   }
 
@@ -186,7 +221,6 @@ export class ReadAlongComponent {
    */
   toggleSettings(): void {
     this.settings = !this.settings;
-    console.log(this.settings)
   }
 
   /**
