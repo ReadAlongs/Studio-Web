@@ -39,20 +39,20 @@ There are two themes out-of-the-box: `light` and `dark`. You set them as a prope
 ```scss
 $ui-themes: (
     light: (
-        primary:             $hopbush,
-        accent:              $black,
-        shadow:              $venus,
+        primary:             $white,
+        secondary:           darken($white, 50%),
+        accent:              darken($white, 60%),
         text:                $black,
-        text-accent:         lighten($black, 75%),
-        bg:                  $white
+        text--secondary:     $white,
+        text--accent:        $white,
     ),
     dark: (
-        primary:             lighten($black, 45%),
+        primary:             lighten($black, 30%),
+        secondary:           darken($white, 35%),
         accent:              $white,
-        shadow:              $venus,
         text:                $white,
-        text-accent:         darken($white, 75%),
-        bg:                  lighten($black, 30%)
+        text--secondary:     $white,
+        text--accent:        $black
     )
 );
 ```
@@ -63,14 +63,14 @@ Slots allow you to add custom html into specific "slots" within the web componen
 
 ```html
 <read-along>
-  <h1 slot="read-along-header">Hello World!</h1>
+  <span slot="read-along-header">Hello World!</span>
 </read-along>
 ```
 
 | Slot                    | Description           | Suggested Element |
 | ----------------------- | --------------------- | ----------------- |
-| `read-along-header`     | The read along header | `h1`              |
-| `read-along-subheader`  | Subheader (ie authors)| `h3`              |
+| `read-along-header`     | The read along header | `span`              |
+| `read-along-subheader`  | Subheader (ie authors)| `span`              |
 
 
 
