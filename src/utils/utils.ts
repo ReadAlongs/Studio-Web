@@ -18,13 +18,25 @@ function getXML(path: string): string {
  * @param {Document} xml - the xml to evaluate
  */
 function getElementByXpath(xpath: string, xml: Document): Node[] {
+  let xmlns = xml.lookupNamespaceURI(null);
+  if (xmlns === null) {
+    console.log("Your XML file is missing an XML namespace.");
+  }
+  function nsResolver(prefix) {
+    var ns = {
+      'i': xmlns
+    };
+    return ns[prefix] || null;
+  }
+
   let result_container: Node[] = []
-  let results = xml.evaluate(xpath, xml, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+  let results = xml.evaluate(xpath, xml, nsResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
   let node = results.iterateNext();
   while (node) {
     result_container.push(node);
     node = results.iterateNext()
   }
+  // console.log(result_container)
   return result_container
 }
 
@@ -47,7 +59,7 @@ export function parseTEI(path: string): Array<string[]> {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let word_ids = getElementByXpath('/document/s/w/@id', xml_text).map(x => "s2.xml#" + x['value'])
+  let word_ids = getElementByXpath('/document/s/w/@id', xml_text).map(x => x['value'])
   let word_vals = getElementByXpath('document/s/w', xml_text).map(x => x['innerHTML'])
   let result = zip([word_ids, word_vals])
   return result
@@ -61,9 +73,14 @@ export function parseSMIL(path: string): object {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let text = getElementByXpath('/smil/body/par/text/@src', xml_text).map(x => x['value'])
-  let audio_begin = getElementByXpath('/smil/body/par/audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
-  let audio_end = getElementByXpath('/smil/body/par/audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
+  let text = getElementByXpath('/i:smil/i:body/i:par/i:text/@src', xml_text).map(x => {
+    let split = x['value'].split('#');
+    return split[split.length - 1]
+  }
+  )
+  console.log(text)
+  let audio_begin = getElementByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
+  let audio_end = getElementByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
   let audio_duration = []
   for (var i = 0; i < audio_begin.length; i++) {
     let duration = audio_end[i] - audio_begin[i]
