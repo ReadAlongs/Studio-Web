@@ -46,10 +46,11 @@ export class ReadAlongComponent {
    * Whether audio is playing or not
    */
   @State() playing: boolean = false;
-  @State() settings: boolean = false;
 
   play_id: number;
   playback_rate: number = 1;
+
+  @State() fullscreen: boolean = false;
 
   /**
    * Add escape characters to query selector param
@@ -129,6 +130,7 @@ export class ReadAlongComponent {
             this.audio_howl_sprites.sounds.splice(index, 1);
             this.el.shadowRoot.querySelector(query).removeChild(elm);
             this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+            this.playing = false;
           }
         }, this.play_id);
       }
@@ -217,14 +219,6 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Toggle settigs
-   * 
-   */
-  toggleSettings(): void {
-    this.settings = !this.settings;
-  }
-
-  /**
    * Change playback between .75 and 1.25
    */
   changePlayback(v): void {
@@ -268,6 +262,38 @@ export class ReadAlongComponent {
   }
 
   /**
+   * Make Fullscreen
+   */
+  private toggleFullscreen() {
+    if (!this.fullscreen) {
+      var elem: any = this.el.shadowRoot.getElementById('sentence')
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) { /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
+      this.el.shadowRoot.getElementById('sentence').classList.add('read-along-container--fullscreen')
+    } else {
+      var document: any = this.el.ownerDocument
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) { /* Firefox */
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { /* IE/Edge */
+        document.msExitFullscreen();
+      }
+      this.el.shadowRoot.getElementById('sentence').classList.remove('read-along-container--fullscreen')
+    }
+    this.fullscreen = !this.fullscreen
+  }
+
+  /**
    * Lifecycle hook: Before component loads, build the Sprite and parse the files necessary
    */
   componentWillLoad() {
@@ -286,6 +312,8 @@ export class ReadAlongComponent {
     this.processed_text = this.renderText()
   }
 
+  // RENDER FUNCTIONS
+
   /**
    * Turn parsed TEI-style text into JSX.Element
    */
@@ -294,7 +322,6 @@ export class ReadAlongComponent {
     let sent_els = parsed.map((s) =>
       <div class="sentence" id={s['id']}>
         {Array.from(s.childNodes).map((child) => {
-          console.log(child);
           if (child.nodeName === '#text') {
             return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
           } else if (child.nodeName === 'w') {
@@ -307,32 +334,34 @@ export class ReadAlongComponent {
   }
 
   render_settings() {
-    if (this.settings) {
-      return (
-        <div class="settings">
-          <hr class="settings__divider"></hr>
-          <div class="settings__option__container">
-            <h5 class={"settings__option__header color--" + this.theme}>Playback speed</h5>
-            <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider settings__option__setting" id="myRange" onInput={(v) => this.changePlayback(v)} />
-          </div>
-          <h5 class={"settings__option__header color--" + this.theme}>Change style</h5>
-          <button onClick={() => this.changeTheme()} class={"settings__option__setting ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons-outlined">style</i>
-          </button>
-        </div>)
-    }
+    return (
+      <div class="settings">
+        <hr class="settings__divider"></hr>
+        <div class="settings__option__container">
+          <h5 class={"settings__option__header color--" + this.theme}>Playback speed</h5>
+          <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider settings__option__setting" id="myRange" onInput={(v) => this.changePlayback(v)} />
+        </div>
+      </div>)
   }
 
   render() {
     return (
-      <div class='read-along-container'>
+      <div id='read-along-container' class='read-along-container'>
         <h1 class="slot__header">
           <slot name="read-along-header" />
         </h1>
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div class={'sentence__container animate-transition theme--' + this.theme}>
+        <div id="sentence" class={'sentence__container animate-transition theme--' + this.theme}>
+          <div class="sentence__container__buttons">
+            <button onClick={() => this.changeTheme()} class={"settings__option__setting ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons-outlined">style</i>
+            </button>
+            <button onClick={() => this.toggleFullscreen()} class={"settings__option__setting ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
+            </button>
+          </div>
           {this.renderText()}
         </div>
         <div id='all' class={"theme--" + this.theme} onClick={(e) => this.goTo(e)}></div>
@@ -345,9 +374,6 @@ export class ReadAlongComponent {
           </button>
           <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
             <i class="material-icons">stop</i>
-          </button>
-          <button onClick={() => this.toggleSettings()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons-outlined">settings</i>
           </button>
           {this.render_settings()}
         </div>

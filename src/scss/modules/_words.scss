@@ -20,14 +20,21 @@
 .sentence {
     border-radius: em(5);
     margin-bottom: em(24);
-    position: relative;
     @extend %themed-bg;
 
     &__container {
         margin: em(48) auto;
         padding: em(16);
         border-radius: em(5);
+        position: relative;
         @extend %themed-bg;
+        @extend %border--strong;
+
+        &__buttons {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
     }
 
     &__text {
@@ -40,7 +47,6 @@
         @extend %themed-text;
         @extend %basic-text;
 
-        // @extend %border--strong;
         &:hover {
             @extend %hover-shared;
             @extend %themed-text--strong;
@@ -55,4 +61,8 @@
 .read-along-container {
     max-width: 35em;
     margin: 0 auto;
+    &--fullscreen {
+        max-width: 80%;
+        min-width: 80%;
+    }
 }
