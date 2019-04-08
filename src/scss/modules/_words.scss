@@ -1,6 +1,6 @@
-.sentence {
-    border-radius: em(5);
+%themed-bg {
     &.theme {
+
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
@@ -8,21 +8,46 @@
             }
         }
     }
+}
+
+%basic-text {
+    padding: em(2);
+    line-height: 1.5;
+    border-radius: em(5);
     position: relative;
-    &__word {
-        margin: em(5);
-        padding: em(5);
-        line-height: 3;
+}
+
+.sentence {
+    border-radius: em(5);
+    margin-bottom: em(24);
+    position: relative;
+    @extend %themed-bg;
+
+    &__container {
+        margin: em(48) auto;
+        padding: em(16);
         border-radius: em(5);
-        position: relative;
-        @extend %themed-buttons;
-        @extend %border--strong;
+        @extend %themed-bg;
+    }
+
+    &__text {
+        @extend %basic-text;
+        @extend %themed-text;
+    }
+
+    &__word {
+
+        @extend %themed-text;
+        @extend %basic-text;
+
+        // @extend %border--strong;
         &:hover {
             @extend %hover-shared;
-            @extend %themed-buttons--strong;
+            @extend %themed-text--strong;
         }
+
         &.reading {
-            @extend %themed-buttons--stronger;
+            @extend %themed-text--stronger;
         }
     }
 }

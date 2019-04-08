@@ -52,17 +52,42 @@ export function zip(arrays): Array<any[]> {
 }
 
 /**
- * Return useful data from TEI xml file
+ * 
+ * @param nodes
+ */
+export function mergeTextAndVals(nodes: Node[]) {
+  let merged_words = []
+  let current_text = ""
+  for (let n of nodes) {
+    if (n.nodeName === '#text') {
+      current_text += n.textContent
+      // if at end, add whatever text is left over to the last word
+      if (nodes.indexOf(n) === nodes.length - 1) {
+        merged_words[merged_words.length - 1] += current_text
+      }
+    } else if (n.nodeName === 'w') {
+      current_text += n.textContent
+      merged_words.push(current_text)
+      current_text = ""
+    } else {
+      console.log(n.nodeName + " is not recognized")
+    }
+  }
+  console.log(merged_words)
+  return merged_words
+}
+
+
+/**
+ * Return sentences from TEI xml file
  * @param {string} - the path to the TEI file
  */
-export function parseTEI(path: string): Array<string[]> {
+export function parseTEI(path: string): Array<Node> {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let word_ids = getElementByXpath('/document/s/w/@id', xml_text).map(x => x['value'])
-  let word_vals = getElementByXpath('document/s/w', xml_text).map(x => x['innerHTML'])
-  let result = zip([word_ids, word_vals])
-  return result
+  let sentences = getElementByXpath('/document/s', xml_text)
+  return sentences
 }
 
 /**

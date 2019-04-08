@@ -10,7 +10,7 @@
 %ripple {
     background-position: center;
     @extend %transition;
-    @extend %themed-buttons;
+    @extend %themed-text;
 
     &:hover {
         @extend %hover-shared;
@@ -18,7 +18,7 @@
 
     &:active {
         background-size: 100%;
-        @extend %themed-buttons--strong;
+        @extend %themed-text--strong;
     }
 }
 

@@ -2,6 +2,7 @@ import { Component, Element, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Howl } from 'howler';
 import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
+// import { parse } from 'querystring';
 
 @Component({
   tag: 'read-along',
@@ -15,7 +16,7 @@ export class ReadAlongComponent {
    * The text as TEI
    */
   @Prop() text: string;
-  processed_text: Array<string[]>;
+  processed_text: Array<JSX.Element>;
 
   /**
    * The alignment as SMIL
@@ -232,24 +233,17 @@ export class ReadAlongComponent {
     let path = v.composedPath()
     let absolute_rate = path[0].value / 100
     // for (let notch of notches) {
-      // console.log(absolute_rate)
-      // console.log(notch)
-      // if (absolute_rate <= notch + window && absolute_rate > notch) {
-      //   this.playback_rate = notch
-      //   break;
-      // }
-      this.playback_rate = absolute_rate
+    // console.log(absolute_rate)
+    // console.log(notch)
+    // if (absolute_rate <= notch + window && absolute_rate > notch) {
+    //   this.playback_rate = notch
+    //   break;
+    // }
+    this.playback_rate = absolute_rate
     // }
     // console.log(this.playback_rate)
-    
-    this.audio_howl_sprites.sound.rate(this.playback_rate)
-  }
 
-  /**
-   * Parse TEI-style text
-   */
-  private getText(): Array<string[]> {
-    return parseTEI(this.text)
+    this.audio_howl_sprites.sound.rate(this.playback_rate)
   }
 
   /**
@@ -289,7 +283,27 @@ export class ReadAlongComponent {
       this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
     })
-    this.processed_text = this.getText()
+    this.processed_text = this.renderText()
+  }
+
+  /**
+   * Turn parsed TEI-style text into JSX.Element
+   */
+  private renderText() {
+    let parsed = parseTEI(this.text)
+    let sent_els = parsed.map((s) =>
+      <div class="sentence" id={s['id']}>
+        {Array.from(s.childNodes).map((child) => {
+          console.log(child);
+          if (child.nodeName === '#text') {
+            return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
+          } else if (child.nodeName === 'w') {
+            return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playPause(ev)}>{child['textContent']}</span>
+          }
+
+        })}
+      </div>)
+    return sent_els
   }
 
   render_settings() {
@@ -318,10 +332,8 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div class={'sentence animate-transition theme--' + this.theme}>
-          {this.processed_text.map((seg) =>
-            <span class={'sentence__word theme--' + this.theme} id={seg[0]} onClick={(ev) => this.playPause(ev)}>{seg[1]} </span>
-          )}
+        <div class={'sentence__container animate-transition theme--' + this.theme}>
+          {this.renderText()}
         </div>
         <div id='all' class={"theme--" + this.theme} onClick={(e) => this.goTo(e)}></div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
