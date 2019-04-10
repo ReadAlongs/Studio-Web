@@ -128,3 +128,22 @@ $value in $ui-themes {
     }
 
 }
+
+.abs {
+    position: absolute;
+}
+
+// larger margins/padding top/bottom/left/right
+$space: 0;
+@while $space <= 50 {
+    .top-#{$space} {
+        top: em($space);
+    }
+    .left-#{$space} {
+        left: em($space);
+    }
+    .right-#{$space} {
+        right: em($space);
+    }
+    $space: $space + 5;
+}

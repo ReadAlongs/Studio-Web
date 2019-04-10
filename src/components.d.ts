@@ -24,7 +24,7 @@ export namespace Components {
     /**
     * Image
     */
-    'image': string;
+    'img': string;
     /**
     * The text as TEI
     */
@@ -46,7 +46,7 @@ export namespace Components {
     /**
     * Image
     */
-    'image'?: string;
+    'img'?: string;
     /**
     * The text as TEI
     */

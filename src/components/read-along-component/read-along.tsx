@@ -35,7 +35,7 @@ export class ReadAlongComponent {
   /**
    * Image
    */
-  @Prop() image: string;
+  @Prop() img: string;
 
   /**
   * Theme to use: ['light', 'dark'] defaults to 'dark'
@@ -144,8 +144,10 @@ export class ReadAlongComponent {
    */
   highlightClosestTo(s) {
     let keys = Object.keys(this.processed_alignment)
+    // remove 'all' sprite
+    keys.pop()
     for (var i = 1; i < keys.length; i++) {
-      if (s * 1000 > this.processed_alignment[keys[i]][0] && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
+      if (s * 1000 > this.processed_alignment[keys[i]][0] && this.processed_alignment[keys[i + 1]] && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
         this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
         this.el.shadowRoot.querySelector(this.tagToQuery(keys[i])).classList.add('reading')
         break;
@@ -266,7 +268,7 @@ export class ReadAlongComponent {
    */
   private toggleFullscreen() {
     if (!this.fullscreen) {
-      var elem: any = this.el.shadowRoot.getElementById('sentence')
+      var elem: any = this.el.shadowRoot.getElementById('read-along-container')
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
       } else if (elem.mozRequestFullScreen) { /* Firefox */
@@ -276,7 +278,7 @@ export class ReadAlongComponent {
       } else if (elem.msRequestFullscreen) { /* IE/Edge */
         elem.msRequestFullscreen();
       }
-      this.el.shadowRoot.getElementById('sentence').classList.add('read-along-container--fullscreen')
+      this.el.shadowRoot.getElementById('read-along-container').classList.add('read-along-container--fullscreen')
     } else {
       var document: any = this.el.ownerDocument
       if (document.exitFullscreen) {
@@ -288,7 +290,7 @@ export class ReadAlongComponent {
       } else if (document.msExitFullscreen) { /* IE/Edge */
         document.msExitFullscreen();
       }
-      this.el.shadowRoot.getElementById('sentence').classList.remove('read-along-container--fullscreen')
+      this.el.shadowRoot.getElementById('read-along-container').classList.remove('read-along-container--fullscreen')
     }
     this.fullscreen = !this.fullscreen
   }
@@ -315,6 +317,14 @@ export class ReadAlongComponent {
   // RENDER FUNCTIONS
 
   /**
+   * Render waveform
+   */
+  private renderWaveForm() {
+    // preserveAspectRatio='none' viewBox="0 0 1000 450" fill='transparent' stroke='#3c4369'
+    return <object id='wave__container' type='image/svg+xml'  data='assets/s2.svg'></object>
+  }
+
+  /**
    * Turn parsed TEI-style text into JSX.Element
    */
   private renderText() {
@@ -333,17 +343,6 @@ export class ReadAlongComponent {
     return sent_els
   }
 
-  render_settings() {
-    return (
-      <div class="settings">
-        <hr class="settings__divider"></hr>
-        <div class="settings__option__container">
-          <h5 class={"settings__option__header color--" + this.theme}>Playback speed</h5>
-          <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider settings__option__setting" id="myRange" onInput={(v) => this.changePlayback(v)} />
-        </div>
-      </div>)
-  }
-
   render() {
     return (
       <div id='read-along-container' class='read-along-container'>
@@ -354,28 +353,41 @@ export class ReadAlongComponent {
           <slot name="read-along-subheader" />
         </h3>
         <div id="sentence" class={'sentence__container animate-transition theme--' + this.theme}>
-          <div class="sentence__container__buttons">
-            <button onClick={() => this.changeTheme()} class={"settings__option__setting ripple theme--" + this.theme + " background--" + this.theme}>
+          {this.renderText()}
+        </div>
+
+        <div id='all' class={"theme--" + this.theme} onClick={(e) => this.goTo(e)}>
+          {this.renderWaveForm()}
+        </div>
+        <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+          <div class="control-panel__buttons--left">
+            <button onClick={() => this.playPause('all')} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
+            </button>
+            <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons">replay_5</i>
+            </button>
+            <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+              <i class="material-icons">stop</i>
+            </button>
+          </div>
+
+          <div class="control-panel__buttons--center">
+            <div>
+              <h5 class={"control-panel__buttons__header color--" + this.theme}>Playback speed</h5>
+              <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control" id="myRange" onInput={(v) => this.changePlayback(v)} />
+            </div>
+          </div>
+
+          <div class="control-panel__buttons--right">
+            <button onClick={() => this.changeTheme()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
               <i class="material-icons-outlined">style</i>
             </button>
-            <button onClick={() => this.toggleFullscreen()} class={"settings__option__setting ripple theme--" + this.theme + " background--" + this.theme}>
+            <button onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
               <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
             </button>
           </div>
-          {this.renderText()}
-        </div>
-        <div id='all' class={"theme--" + this.theme} onClick={(e) => this.goTo(e)}></div>
-        <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-          <button onClick={() => this.playPause('all')} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
-          </button>
-          <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons">replay_5</i>
-          </button>
-          <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-            <i class="material-icons">stop</i>
-          </button>
-          {this.render_settings()}
+
         </div>
       </div >
     )

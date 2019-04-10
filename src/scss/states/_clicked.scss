@@ -38,7 +38,7 @@
     left: 0;
     height: 100%;
     width: 0;
-    border-radius: em(5);
+    // border-radius: em(5);
 
     @each $theme,
     $value in $ui-themes {

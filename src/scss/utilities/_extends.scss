@@ -35,12 +35,62 @@
     }
 }
 
+
+
 %border--strong {
     &.theme {
+
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
                 border: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+            }
+        }
+    }
+
+    &--left {
+        &.theme {
+            @each $theme,
+            $value in $ui-themes {
+                &--#{$theme} {
+                    border-left: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                }
+            }
+        }
+    }
+
+    &--right {
+        &.theme {
+
+            @each $theme,
+            $value in $ui-themes {
+                &--#{$theme} {
+                    border-right: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                }
+            }
+        }
+    }
+
+    &--top {
+        &.theme {
+
+            @each $theme,
+            $value in $ui-themes {
+                &--#{$theme} {
+                    border-top: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                }
+            }
+        }
+    }
+
+    &--bottom {
+        &.theme {
+
+            @each $theme,
+            $value in $ui-themes {
+                &--#{$theme} {
+                    border-bottom: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                }
             }
         }
     }
