@@ -1,5 +1,5 @@
 import { Howl } from 'howler';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 /**
  * Gets XML from path
@@ -135,6 +135,8 @@ export var Sprite = function (options) {
   self._tinySprite = Object.keys(options.sprite).map((str) => [self._sprite[str][0], str]);
   // remove the 'all' sprite
   self._tinySprite.pop()
+  // percentage finished
+  self._percentPlayed = new BehaviorSubject<string>('0%');
 
   // Create our audio sprite definition.
   self.sound = new Howl({
@@ -244,11 +246,9 @@ Sprite.prototype = {
    */
   step: function (): void {
     var self = this;
-    // Loop through all active sounds and update their progress bar.
+    // // Loop through all active sounds and update their progress bar.
     for (var i = 0; i < self.sounds.length; i++) {
-      var id = parseInt(self.sounds[i].id, 10);
-      var offset = self._sprite[self.sounds[i].dataset.sprite][0];
-      var seek = (self.sound.seek(id) || 0) - (offset / 1000);
+      var seek = (self.sound.seek() || 0);
       for (var j = 0; j < self._spriteLeft.length; j++) { // TODO: refactor out into its own function and combine with version in step()
         // if stopped
         if (seek > 0) {
@@ -259,7 +259,8 @@ Sprite.prototype = {
           }
         }
       }
-      self.sounds[i].style.width = (((seek / self.sound.duration(id)) * 100) || 0) + '%';
+      let percent = (((seek / self.sound.duration()) * 100) || 0) + '%';
+      self.sounds[i].setAttribute("offset", percent)
     }
     requestAnimationFrame(self.step.bind(self));
   }

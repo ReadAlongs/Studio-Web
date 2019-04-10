@@ -114,27 +114,40 @@ export class ReadAlongComponent {
           }
         }
 
-        // Create a progress element and begin visually tracking it.
-        var elm = document.createElement('div');
-        elm.className = 'progress theme--' + this.theme;
-        elm.id = play_id;
-        elm.dataset.sprite = tag;
-        let query = this.tagToQuery(tag);
-        this.el.shadowRoot.querySelector(query).appendChild(elm);
-        this.audio_howl_sprites.sounds.push(elm);
-
-        // When this sound is finished, remove the progress element.
+        // select svg container
+        let wave__container: any = this.el.shadowRoot.querySelector('#wave__container')
+        // use svg container to grab fill and trail
+        let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
+        let trail = wave__container.contentDocument.querySelector('#progress-trail')
+        let base = wave__container.contentDocument.querySelector('#progress-base')
+        fill.classList.add('stop-color--' + this.theme)
+        base.classList.add('stop-color--' + this.theme)
+        // push them to array to be changed in step()
+        this.audio_howl_sprites.sounds.push(fill)
+        this.audio_howl_sprites.sounds.push(trail)
+        // // When this sound is finished, remove the progress element.
         this.audio_howl_sprites.sound.once('end', () => {
-          var index = this.audio_howl_sprites.sounds.indexOf(elm);
-          if (index >= 0) {
-            this.audio_howl_sprites.sounds.splice(index, 1);
-            this.el.shadowRoot.querySelector(query).removeChild(elm);
-            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-            this.playing = false;
-          }
+          // var index = this.audio_howl_sprites.sounds.indexOf(fill);
+          this.audio_howl_sprites.sounds = []
+          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+          this.playing = false;
+          // }
         }, this.play_id);
       }
     }
+  }
+
+  changeFill() {
+    // find color
+
+    // select svg container
+    let wave__container: any = this.el.shadowRoot.querySelector('#wave__container')
+    // use svg container to grab fill and trail
+    let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
+    let base = wave__container.contentDocument.querySelector('#progress-base')
+
+    base.setAttribute('stop-color', '#BBC2E8')
+    fill.setAttribute('stop-color', '#3c4369')
   }
 
   /**
@@ -218,6 +231,7 @@ export class ReadAlongComponent {
     } else {
       this.theme = 'light'
     }
+    this.changeFill()
   }
 
   /**
@@ -321,7 +335,7 @@ export class ReadAlongComponent {
    */
   private renderWaveForm() {
     // preserveAspectRatio='none' viewBox="0 0 1000 450" fill='transparent' stroke='#3c4369'
-    return <object id='wave__container' type='image/svg+xml'  data='assets/s2.svg'></object>
+    return <object id='wave__container' type='image/svg+xml' data='assets/s2.svg'></object>
   }
 
   /**

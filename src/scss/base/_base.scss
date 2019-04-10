@@ -123,6 +123,10 @@ $value in $ui-themes {
         background: map-get($value, primary)
     }
 
+    .stop-color--#{$theme} {
+        fill: map-get($value, primary)
+    }
+
     .color--#{$theme} {
         color: map-get($value, text)
     }
