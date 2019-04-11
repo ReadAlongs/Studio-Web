@@ -9,6 +9,7 @@
 
 %ripple {
     background-position: center;
+    padding: em(2);
     @extend %transition;
     @extend %themed-text;
 
