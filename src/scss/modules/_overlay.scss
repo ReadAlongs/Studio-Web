@@ -1,0 +1,44 @@
+#waveform {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.low {
+
+    z-index: 700;
+}
+
+#overlay {
+
+    &__container {
+        height: em(50);
+        position: relative;
+        z-index: 800;
+        @extend %border--strong;
+        @extend %border--strong;
+    }
+
+    &__object {
+        z-index: 700;
+        max-height: 100%;
+        min-width: 100%;
+        fill: 'transparent';
+
+        &.theme {
+
+            @each $theme,
+            $value in $ui-themes {
+                &--#{$theme} {
+                    stroke: map-deep-get($ui-themes, $theme, secondary);
+                }
+            }
+        }
+
+    }
+}

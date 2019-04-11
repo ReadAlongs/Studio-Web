@@ -2,6 +2,7 @@ import { Component, Element, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Howl } from 'howler';
 import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
+
 // import { parse } from 'querystring';
 
 @Component({
@@ -115,7 +116,7 @@ export class ReadAlongComponent {
         }
 
         // select svg container
-        let wave__container: any = this.el.shadowRoot.querySelector('#wave__container')
+        let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
         // use svg container to grab fill and trail
         let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
         let trail = wave__container.contentDocument.querySelector('#progress-trail')
@@ -138,16 +139,22 @@ export class ReadAlongComponent {
   }
 
   changeFill() {
-    // find color
-
+    let contrast_el = window.getComputedStyle(this.el.shadowRoot.querySelector('.sentence__word'))
+    let contrast = contrast_el.color
+    // let color = container.color
+    
     // select svg container
-    let wave__container: any = this.el.shadowRoot.querySelector('#wave__container')
+    let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
     // use svg container to grab fill and trail
     let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
     let base = wave__container.contentDocument.querySelector('#progress-base')
 
-    base.setAttribute('stop-color', '#BBC2E8')
-    fill.setAttribute('stop-color', '#3c4369')
+    // select polygon
+    let polygon = wave__container.contentDocument.querySelector('#polygon')
+    polygon.setAttribute('stroke', contrast)
+
+    base.setAttribute('stop-color', contrast)
+    fill.setAttribute('stop-color', contrast)
   }
 
   /**
@@ -231,7 +238,6 @@ export class ReadAlongComponent {
     } else {
       this.theme = 'light'
     }
-    this.changeFill()
   }
 
   /**
@@ -328,14 +334,24 @@ export class ReadAlongComponent {
     this.processed_text = this.renderText()
   }
 
+  componentDidUpdate() {
+    this.changeFill()
+  }
+
+  componentDidLoad() {
+    // let color = this.el.shadowRoot.getElementById('overlay__container')
+    // let bg = this.el.shadowRoot.getElementById('overlay__container')
+    // console.log(color)
+    // console.log(bg)
+  }
+
   // RENDER FUNCTIONS
 
   /**
-   * Render waveform
+   * Render overlay
    */
-  private renderWaveForm() {
-    // preserveAspectRatio='none' viewBox="0 0 1000 450" fill='transparent' stroke='#3c4369'
-    return <object id='wave__container' type='image/svg+xml' data='assets/s2.svg'></object>
+  private renderOverlay() {
+    return <object id='overlay__object' type='image/svg+xml' data='assets/s2.svg'></object>
   }
 
   /**
@@ -357,6 +373,7 @@ export class ReadAlongComponent {
     return sent_els
   }
 
+
   render() {
     return (
       <div id='read-along-container' class='read-along-container'>
@@ -370,8 +387,8 @@ export class ReadAlongComponent {
           {this.renderText()}
         </div>
 
-        <div id='all' class={"theme--" + this.theme} onClick={(e) => this.goTo(e)}>
-          {this.renderWaveForm()}
+        <div id='overlay__container' class={"theme--" + this.theme + " background--" + this.theme} onClick={(e) => this.goTo(e)}>
+          {this.renderOverlay()}
         </div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
           <div class="control-panel__buttons--left">
