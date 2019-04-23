@@ -37,6 +37,12 @@ export class ReadAlongComponent {
    */
   @Prop() img: string;
 
+  /** 
+   * Overlay
+   * This is an SVG overlay to place over the progress bar
+   */
+  @Prop() svg_overlay: string;
+
   /**
   * Theme to use: ['light', 'dark'] defaults to 'dark'
   */
@@ -97,7 +103,6 @@ export class ReadAlongComponent {
             let query = this.tagToQuery(x);
             this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
             this.el.shadowRoot.querySelector(query).classList.add('reading')
-            console.log(this.inOverflow(this.el.shadowRoot.querySelector(query)))
           }
         })
         this.playing = true;
@@ -115,33 +120,54 @@ export class ReadAlongComponent {
           }
         }
 
-        // select svg container
-        let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
-        // use svg container to grab fill and trail
-        let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
-        let trail = wave__container.contentDocument.querySelector('#progress-trail')
-        let base = wave__container.contentDocument.querySelector('#progress-base')
-        fill.classList.add('stop-color--' + this.theme)
-        base.classList.add('stop-color--' + this.theme)
-        // push them to array to be changed in step()
-        this.audio_howl_sprites.sounds.push(fill)
-        this.audio_howl_sprites.sounds.push(trail)
-        // // When this sound is finished, remove the progress element.
-        this.audio_howl_sprites.sound.once('end', () => {
-          // var index = this.audio_howl_sprites.sounds.indexOf(fill);
-          this.audio_howl_sprites.sounds.forEach(x => {
-            x.setAttribute("offset", '0%');
-          });
-          // this.audio_howl_sprites = [];
-          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-          this.playing = false;
-          // }
-        }, this.play_id);
+        if (this.svg_overlay) {
+          // select svg container
+          let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
+          // use svg container to grab fill and trail
+          let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
+          let trail = wave__container.contentDocument.querySelector('#progress-trail')
+          let base = wave__container.contentDocument.querySelector('#progress-base')
+          fill.classList.add('stop-color--' + this.theme)
+          base.classList.add('stop-color--' + this.theme)
+
+          // push them to array to be changed in step()
+          this.audio_howl_sprites.sounds.push(fill)
+          this.audio_howl_sprites.sounds.push(trail)
+          // When this sound is finished, remove the progress element.
+          this.audio_howl_sprites.sound.once('end', () => {
+            // var index = this.audio_howl_sprites.sounds.indexOf(fill);
+            this.audio_howl_sprites.sounds.forEach(x => {
+              x.setAttribute("offset", '0%');
+            });
+            // this.audio_howl_sprites = [];
+            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+            this.playing = false;
+            // }
+          }, this.play_id);
+        } else {
+          var elm = document.createElement('div');
+          elm.className = 'progress theme--' + this.theme;
+          elm.id = play_id;
+          elm.dataset.sprite = tag;
+          let query = this.tagToQuery(tag);
+          this.el.shadowRoot.querySelector(query).appendChild(elm);
+          this.audio_howl_sprites.sounds.push(elm);
+
+          // When this sound is finished, remove the progress element.
+          this.audio_howl_sprites.sound.once('end', () => {
+            // this.audio_howl_sprites = [];
+            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+            this.playing = false;
+            // }
+          }, this.play_id);
+        }
+
+
       }
     }
   }
 
-  inOverflow(element){
+  inOverflow(element) {
     return element.scrollHeight > element.clientHeight
   }
 
@@ -187,7 +213,6 @@ export class ReadAlongComponent {
    * @param s number
    */
   goTo(ev): void {
-    console.log(ev)
     let seek = ev
     if (typeof (ev) !== 'number') {
       // get composed path
@@ -251,21 +276,9 @@ export class ReadAlongComponent {
    * Change playback between .75 and 1.25
    */
   changePlayback(v): void {
-    // let notches = [.75, .875, 1, 1.125, 1.25]
-    // let window = 0.05
     let path = v.composedPath()
     let absolute_rate = path[0].value / 100
-    // for (let notch of notches) {
-    // console.log(absolute_rate)
-    // console.log(notch)
-    // if (absolute_rate <= notch + window && absolute_rate > notch) {
-    //   this.playback_rate = notch
-    //   break;
-    // }
     this.playback_rate = absolute_rate
-    // }
-    // console.log(this.playback_rate)
-
     this.audio_howl_sprites.sound.rate(this.playback_rate)
   }
 
@@ -342,7 +355,9 @@ export class ReadAlongComponent {
   }
 
   componentDidUpdate() {
-    this.changeFill()
+    if (this.svg_overlay) {
+      this.changeFill()
+    }
   }
 
   // RENDER FUNCTIONS
@@ -351,7 +366,9 @@ export class ReadAlongComponent {
    * Render overlay
    */
   private renderOverlay() {
-    return <object onClick={(e) => this.goTo(e)} id='overlay__object' type='image/svg+xml' data='assets/s3.svg'></object>
+    if (this.svg_overlay) {
+      return <object onClick={(e) => this.goTo(e)} id='overlay__object' type='image/svg+xml' data={this.svg_overlay}></object>
+    }
   }
 
   /**
@@ -387,7 +404,7 @@ export class ReadAlongComponent {
           {this.renderText()}
         </div>
 
-        <div onClick={() => this.goBack(5)} id='overlay__container' class={"theme--" + this.theme + " background--" + this.theme}>
+        <div onClick={(e) => this.goTo(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.renderOverlay()}
         </div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>

@@ -260,6 +260,7 @@ Sprite.prototype = {
         }
       }
       let percent = (((seek / self.sound.duration()) * 100) || 0) + '%';
+      self.sounds[i].style.width = percent;
       self.sounds[i].setAttribute("offset", percent)
     }
     requestAnimationFrame(self.step.bind(self));

@@ -14,8 +14,7 @@
     z-index: 700;
 }
 
-#overlay {
-
+.overlay {
     &__container {
         height: em(50);
         position: relative;
@@ -23,6 +22,9 @@
         @extend %border--strong;
         @extend %border--strong;
     }
+}
+
+#overlay {
 
     &__object {
         z-index: 700;

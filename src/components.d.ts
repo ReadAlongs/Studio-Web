@@ -26,6 +26,10 @@ export namespace Components {
     */
     'img': string;
     /**
+    * Overlay This is an SVG overlay to place over the progress bar
+    */
+    'svg_overlay': string;
+    /**
     * The text as TEI
     */
     'text': string;
@@ -47,6 +51,10 @@ export namespace Components {
     * Image
     */
     'img'?: string;
+    /**
+    * Overlay This is an SVG overlay to place over the progress bar
+    */
+    'svg_overlay'?: string;
     /**
     * The text as TEI
     */
