@@ -1,9 +1,8 @@
 import { Component, Element, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { Howl } from 'howler';
 import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
-
-// import { parse } from 'querystring';
 
 @Component({
   tag: 'read-along',
@@ -30,7 +29,7 @@ export class ReadAlongComponent {
    */
   @Prop() audio: string;
   audio_howl_sprites: Howl;
-  reading$;
+  reading$: Subject<string>;
   duration: number;
 
   /**
@@ -98,6 +97,7 @@ export class ReadAlongComponent {
             let query = this.tagToQuery(x);
             this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
             this.el.shadowRoot.querySelector(query).classList.add('reading')
+            console.log(this.inOverflow(this.el.shadowRoot.querySelector(query)))
           }
         })
         this.playing = true;
@@ -129,7 +129,10 @@ export class ReadAlongComponent {
         // // When this sound is finished, remove the progress element.
         this.audio_howl_sprites.sound.once('end', () => {
           // var index = this.audio_howl_sprites.sounds.indexOf(fill);
-          this.audio_howl_sprites.sounds = []
+          this.audio_howl_sprites.sounds.forEach(x => {
+            x.setAttribute("offset", '0%');
+          });
+          // this.audio_howl_sprites = [];
           this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
           this.playing = false;
           // }
@@ -138,15 +141,18 @@ export class ReadAlongComponent {
     }
   }
 
+  inOverflow(element){
+    return element.scrollHeight > element.clientHeight
+  }
+
   changeFill() {
-    let contrast_el = window.getComputedStyle(this.el.shadowRoot.querySelector('.sentence__word'))
-    let contrast = contrast_el.color
-    // let color = container.color
-    
+    let contrast_el = this.el.shadowRoot.querySelector('.sentence__word')
+    let contrast = window.getComputedStyle(contrast_el).color
+
     // select svg container
     let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
     // use svg container to grab fill and trail
-    let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
+    let fill = wave__container.contentDocument.querySelector('#progress-fill')
     let base = wave__container.contentDocument.querySelector('#progress-base')
 
     // select polygon
@@ -181,6 +187,7 @@ export class ReadAlongComponent {
    * @param s number
    */
   goTo(ev): void {
+    console.log(ev)
     let seek = ev
     if (typeof (ev) !== 'number') {
       // get composed path
@@ -338,20 +345,13 @@ export class ReadAlongComponent {
     this.changeFill()
   }
 
-  componentDidLoad() {
-    // let color = this.el.shadowRoot.getElementById('overlay__container')
-    // let bg = this.el.shadowRoot.getElementById('overlay__container')
-    // console.log(color)
-    // console.log(bg)
-  }
-
   // RENDER FUNCTIONS
 
   /**
    * Render overlay
    */
   private renderOverlay() {
-    return <object id='overlay__object' type='image/svg+xml' data='assets/s2.svg'></object>
+    return <object onClick={(e) => this.goTo(e)} id='overlay__object' type='image/svg+xml' data='assets/s3.svg'></object>
   }
 
   /**
@@ -387,7 +387,7 @@ export class ReadAlongComponent {
           {this.renderText()}
         </div>
 
-        <div id='overlay__container' class={"theme--" + this.theme + " background--" + this.theme} onClick={(e) => this.goTo(e)}>
+        <div onClick={() => this.goBack(5)} id='overlay__container' class={"theme--" + this.theme + " background--" + this.theme}>
           {this.renderOverlay()}
         </div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
