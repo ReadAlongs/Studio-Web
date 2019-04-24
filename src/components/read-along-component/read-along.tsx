@@ -101,8 +101,12 @@ export class ReadAlongComponent {
         ).subscribe(x => {
           if (this.playing) {
             let query = this.tagToQuery(x);
+            let query_el = this.el.shadowRoot.querySelector(query);
             this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-            this.el.shadowRoot.querySelector(query).classList.add('reading')
+            query_el.classList.add('reading')
+            if (this.inOverflow(query_el)) {
+              this.scrollByHeight(query_el)
+            }
           }
         })
         this.playing = true;
@@ -121,54 +125,80 @@ export class ReadAlongComponent {
         }
 
         if (this.svg_overlay) {
-          // select svg container
-          let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
-          // use svg container to grab fill and trail
-          let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
-          let trail = wave__container.contentDocument.querySelector('#progress-trail')
-          let base = wave__container.contentDocument.querySelector('#progress-base')
-          fill.classList.add('stop-color--' + this.theme)
-          base.classList.add('stop-color--' + this.theme)
-
-          // push them to array to be changed in step()
-          this.audio_howl_sprites.sounds.push(fill)
-          this.audio_howl_sprites.sounds.push(trail)
-          // When this sound is finished, remove the progress element.
-          this.audio_howl_sprites.sound.once('end', () => {
-            // var index = this.audio_howl_sprites.sounds.indexOf(fill);
-            this.audio_howl_sprites.sounds.forEach(x => {
-              x.setAttribute("offset", '0%');
-            });
-            // this.audio_howl_sprites = [];
-            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-            this.playing = false;
-            // }
-          }, this.play_id);
+          this.animateOverlayFill();
         } else {
-          var elm = document.createElement('div');
-          elm.className = 'progress theme--' + this.theme;
-          elm.id = play_id;
-          elm.dataset.sprite = tag;
-          let query = this.tagToQuery(tag);
-          this.el.shadowRoot.querySelector(query).appendChild(elm);
-          this.audio_howl_sprites.sounds.push(elm);
-
-          // When this sound is finished, remove the progress element.
-          this.audio_howl_sprites.sound.once('end', () => {
-            // this.audio_howl_sprites = [];
-            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-            this.playing = false;
-            // }
-          }, this.play_id);
+          this.animateProgress(play_id, tag);
         }
-
 
       }
     }
   }
 
+  scrollByHeight(el) {
+    let sent_container = this.el.shadowRoot.querySelector('.sentence__container');
+    let anchor = el.getBoundingClientRect()
+    sent_container.scrollBy({
+      top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
+      left: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  scrollTo(el) {
+    el.scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
+
+  animateOverlayFill() {
+    // select svg container
+    let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
+    // use svg container to grab fill and trail
+    let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
+    let trail = wave__container.contentDocument.querySelector('#progress-trail')
+    let base = wave__container.contentDocument.querySelector('#progress-base')
+    fill.classList.add('stop-color--' + this.theme)
+    base.classList.add('stop-color--' + this.theme)
+
+    // push them to array to be changed in step()
+    this.audio_howl_sprites.sounds.push(fill)
+    this.audio_howl_sprites.sounds.push(trail)
+    // When this sound is finished, remove the progress element.
+    this.audio_howl_sprites.sound.once('end', () => {
+      // var index = this.audio_howl_sprites.sounds.indexOf(fill);
+      this.audio_howl_sprites.sounds.forEach(x => {
+        x.setAttribute("offset", '0%');
+      });
+      // this.audio_howl_sprites = [];
+      this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+      this.playing = false;
+      // }
+    }, this.play_id);
+  }
+
+  animateProgress(play_id, tag) {
+    var elm = document.createElement('div');
+    elm.className = 'progress theme--' + this.theme;
+    elm.id = play_id;
+    elm.dataset.sprite = tag;
+    let query = this.tagToQuery(tag);
+    this.el.shadowRoot.querySelector(query).appendChild(elm);
+    this.audio_howl_sprites.sounds.push(elm);
+
+    // When this sound is finished, remove the progress element.
+    this.audio_howl_sprites.sound.once('end', () => {
+      // this.audio_howl_sprites = [];
+      this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+      this.playing = false;
+      // }
+    }, this.play_id);
+  }
+
   inOverflow(element) {
-    return element.scrollHeight > element.clientHeight
+    let sent_el = this.el.shadowRoot.querySelector('.sentence__container');
+    let sent_rect = sent_el.getBoundingClientRect()
+    let el_rect = element.getBoundingClientRect()
+    return el_rect.top + el_rect.height > sent_rect.top + sent_rect.height
   }
 
   changeFill() {
@@ -190,21 +220,29 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Remove highlighting from every other word and add it closest to second s
+   * Return HTML element of word closest to second s
    * 
    * @param s seconds
    */
-  highlightClosestTo(s) {
+  returnWordClosestTo(s) {
     let keys = Object.keys(this.processed_alignment)
     // remove 'all' sprite
     keys.pop()
     for (var i = 1; i < keys.length; i++) {
       if (s * 1000 > this.processed_alignment[keys[i]][0] && this.processed_alignment[keys[i + 1]] && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
-        this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-        this.el.shadowRoot.querySelector(this.tagToQuery(keys[i])).classList.add('reading')
-        break;
+        return this.el.shadowRoot.querySelector(this.tagToQuery(keys[i]))
       }
     }
+  }
+
+  /**
+   * Remove highlighting from every other word and add it to el
+   * 
+   * @param el
+   */
+  addHighlightingTo(el) {
+    this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+    el.classList.add('reading')
   }
 
   /**
@@ -228,7 +266,9 @@ export class ReadAlongComponent {
       // get seek
       seek = (click / width) * this.duration
 
-      this.highlightClosestTo(seek)
+      let el = this.returnWordClosestTo(seek)
+      this.addHighlightingTo(el)
+      this.scrollTo(el)
     } else {
       seek = seek / 1000
     }

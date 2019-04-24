@@ -7,13 +7,14 @@
 
 ## Properties
 
-| Property    | Attribute   | Description                                        | Type     | Default     |
-| ----------- | ----------- | -------------------------------------------------- | -------- | ----------- |
-| `alignment` | `alignment` | The alignment as SMIL                              | `string` | `undefined` |
-| `audio`     | `audio`     | The audio file                                     | `string` | `undefined` |
-| `img`       | `img`       | Image                                              | `string` | `undefined` |
-| `text`      | `text`      | The text as TEI                                    | `string` | `undefined` |
-| `theme`     | `theme`     | Theme to use: ['light', 'dark'] defaults to 'dark' | `string` | `'light'`   |
+| Property      | Attribute     | Description                                                   | Type     | Default     |
+| ------------- | ------------- | ------------------------------------------------------------- | -------- | ----------- |
+| `alignment`   | `alignment`   | The alignment as SMIL                                         | `string` | `undefined` |
+| `audio`       | `audio`       | The audio file                                                | `string` | `undefined` |
+| `img`         | `img`         | Image                                                         | `string` | `undefined` |
+| `svg_overlay` | `svg_overlay` | Overlay This is an SVG overlay to place over the progress bar | `string` | `undefined` |
+| `text`        | `text`        | The text as TEI                                               | `string` | `undefined` |
+| `theme`       | `theme`       | Theme to use: ['light', 'dark'] defaults to 'dark'            | `string` | `'light'`   |
 
 
 ----------------------------------------------

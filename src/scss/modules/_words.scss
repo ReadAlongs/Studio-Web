@@ -21,6 +21,7 @@
     @extend %themed-bg;
 
     &__container {
+        scroll-behavior: smooth;
         margin: em(48) auto 0 auto;
         padding: em(16);
         border-radius: em(5) em(5) 0 0;
