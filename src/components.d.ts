@@ -30,7 +30,7 @@ export namespace Components {
     */
     'svg_overlay': string;
     /**
-    * The text as TEI
+    * ********** PROPS   * ********** The text as TEI
     */
     'text': string;
     /**
@@ -56,7 +56,7 @@ export namespace Components {
     */
     'svg_overlay'?: string;
     /**
-    * The text as TEI
+    * ********** PROPS   * ********** The text as TEI
     */
     'text'?: string;
     /**

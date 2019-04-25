@@ -44,3 +44,23 @@
 
     }
 }
+
+.scroll-guide {
+
+    &__container {
+        text-align: center;
+        z-index: 700;
+        width: 100%;
+        @extend %themed-bg;
+        @extend %border--strong;
+    }
+
+    &__text {
+        font-size: em(map-get($font-sizes, lg));
+        @extend %basic-text;
+        @extend %themed-text;
+    }
+
+
+
+}

@@ -1,4 +1,4 @@
-import { Component, Element, Prop, State } from '@stencil/core';
+import { Component, Element, Listen, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Howl } from 'howler';
@@ -11,6 +11,11 @@ import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
 })
 export class ReadAlongComponent {
   @Element() el: HTMLElement;
+
+
+  /************
+   *  PROPS   *
+   ************/
 
   /**
    * The text as TEI
@@ -48,6 +53,11 @@ export class ReadAlongComponent {
   */
   @Prop({ mutable: true }) theme: string = 'light';
 
+
+  /************
+   *  STATES  *
+   ************/
+
   /**
    * Whether audio is playing or not
    */
@@ -57,6 +67,45 @@ export class ReadAlongComponent {
   playback_rate: number = 1;
 
   @State() fullscreen: boolean = false;
+
+  @State() showScrollGuide: (string | boolean) = false;
+
+  /************
+  *  LISTENERS  *
+  ************/
+
+  @Listen('window:wheel')
+  wheelHandler(event) {
+    // only show guide if there is an actual highlighted element
+    if (this.el.shadowRoot.querySelector('.reading')) {
+      if (event['path'][0].classList.contains("sentence__word") || event['path'][0].classList.contains("sentence__container") || event['path'][0].classList.contains("sentence")) {
+        if (!this.showScrollGuide) {
+          let reading_el = this.el.shadowRoot.querySelector('.reading')
+          if (reading_el) {
+            this.showScrollGuide = this.inOverflow(reading_el);
+          }
+        }
+      }
+    }
+  }
+
+  /***********
+   *  UTILS  *
+   ***********/
+
+  /**
+  * Given an audio file path and a parsed alignment object,
+  * build a Sprite object
+  * @param audio string
+  * @param alignment object
+  */
+  private buildSprite(audio, alignment) {
+    return new Sprite({
+      src: [audio],
+      sprite: alignment,
+      rate: this.playback_rate
+    });
+  }
 
   /**
    * Add escape characters to query selector param
@@ -69,11 +118,93 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject 
-   * in order to asynchronously apply styles as the sprite is played
-   * @param id string
-   * TODO: Refactor this ugliness
+   * Parse SMIL alignments
    */
+  private getAlignments(): object {
+    return parseSMIL(this.alignment)
+  }
+
+  /**
+   * Return HTML element of word closest to second s
+   * 
+   * @param s seconds
+   */
+  returnWordClosestTo(s) {
+    let keys = Object.keys(this.processed_alignment)
+    // remove 'all' sprite
+    keys.pop()
+    for (var i = 1; i < keys.length; i++) {
+      if (s * 1000 > this.processed_alignment[keys[i]][0] && this.processed_alignment[keys[i + 1]] && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
+        return this.el.shadowRoot.querySelector(this.tagToQuery(keys[i]))
+      }
+    }
+  }
+
+
+  /*************
+   *   AUDIO   *
+   *************/
+
+  /**
+  * Change playback between .75 and 1.25
+  * 
+  * @param v number
+  */
+  changePlayback(v): void {
+    let path = v.composedPath()
+    let absolute_rate = path[0].value / 100
+    this.playback_rate = absolute_rate
+    this.audio_howl_sprites.sound.rate(this.playback_rate)
+  }
+
+  /**
+   *  Go back s milliseconds
+   * 
+   * @param id string
+   * @param s number
+   */
+
+  goBack(s): void {
+    if (this.play_id) {
+      this.audio_howl_sprites.goBack(this.play_id, s)
+    }
+  }
+
+  /**
+   * Go to seek
+   * 
+   * @param s number
+   */
+  goTo(ev): void {
+    let seek = ev
+    if (typeof (ev) !== 'number') {
+      // get composed path
+      let path = ev.composedPath()
+      // query select the progress bar
+      let progress_el = path[2].querySelector('#all')
+      // get offset of clicked element
+      let offset = progress_el.offsetLeft
+      // get width of clicked element
+      let width = progress_el.offsetWidth
+      // get click point
+      let click = ev.pageX - offset
+      // get seek
+      seek = (click / width) * this.duration
+      let el = this.returnWordClosestTo(seek)
+      this.addHighlightingTo(el)
+      this.scrollTo(el)
+    } else {
+      seek = seek / 1000
+    }
+    this.audio_howl_sprites.goTo(this.play_id, seek)
+  }
+
+  /**
+  * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject 
+  * in order to asynchronously apply styles as the sprite is played
+  * @param id string
+  * TODO: Refactor this ugliness
+  */
   playPause(id?): void {
     // if main sprite is playing and play/pause is for main sprite, then pause it
     if (this.playing && id === 'all') {
@@ -105,7 +236,12 @@ export class ReadAlongComponent {
             this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
             query_el.classList.add('reading')
             if (this.inOverflow(query_el)) {
-              this.scrollByHeight(query_el)
+              console.log(this.inOverflow(query_el))
+              if (this.showScrollGuide) {
+
+              } else if (!this.showScrollGuide) {
+                this.scrollByHeight(query_el)
+              }
             }
           }
         })
@@ -134,20 +270,35 @@ export class ReadAlongComponent {
     }
   }
 
-  scrollByHeight(el) {
-    let sent_container = this.el.shadowRoot.querySelector('.sentence__container');
-    let anchor = el.getBoundingClientRect()
-    sent_container.scrollBy({
-      top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
-      left: 0,
-      behavior: 'smooth'
-    });
+  /**
+   * Stop the sound and remove all active reading styling
+   */
+  stop(): void {
+    this.playing = false;
+    this.audio_howl_sprites.stop()
+    this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+
+    if (this.showScrollGuide) {
+      this.showScrollGuide = false;
+    }
+    if (this.reading$) {
+      // unsubscribe to Subject
+      this.reading$.unsubscribe()
+    }
   }
 
-  scrollTo(el) {
-    el.scrollIntoView({
-      behavior: 'smooth'
-    });
+  /*************
+   * ANIMATION *
+   *************/
+
+  /**
+   * Remove highlighting from every other word and add it to el
+   * 
+   * @param el
+   */
+  addHighlightingTo(el) {
+    this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+    el.classList.add('reading')
   }
 
   animateOverlayFill() {
@@ -194,13 +345,6 @@ export class ReadAlongComponent {
     }, this.play_id);
   }
 
-  inOverflow(element) {
-    let sent_el = this.el.shadowRoot.querySelector('.sentence__container');
-    let sent_rect = sent_el.getBoundingClientRect()
-    let el_rect = element.getBoundingClientRect()
-    return el_rect.top + el_rect.height > sent_rect.top + sent_rect.height
-  }
-
   changeFill() {
     let contrast_el = this.el.shadowRoot.querySelector('.sentence__word')
     let contrast = window.getComputedStyle(contrast_el).color
@@ -220,88 +364,6 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Return HTML element of word closest to second s
-   * 
-   * @param s seconds
-   */
-  returnWordClosestTo(s) {
-    let keys = Object.keys(this.processed_alignment)
-    // remove 'all' sprite
-    keys.pop()
-    for (var i = 1; i < keys.length; i++) {
-      if (s * 1000 > this.processed_alignment[keys[i]][0] && this.processed_alignment[keys[i + 1]] && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
-        return this.el.shadowRoot.querySelector(this.tagToQuery(keys[i]))
-      }
-    }
-  }
-
-  /**
-   * Remove highlighting from every other word and add it to el
-   * 
-   * @param el
-   */
-  addHighlightingTo(el) {
-    this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-    el.classList.add('reading')
-  }
-
-  /**
-   * Go to seek
-   * 
-   * @param s number
-   */
-  goTo(ev): void {
-    let seek = ev
-    if (typeof (ev) !== 'number') {
-      // get composed path
-      let path = ev.composedPath()
-      // query select the progress bar
-      let progress_el = path[2].querySelector('#all')
-      // get offset of clicked element
-      let offset = progress_el.offsetLeft
-      // get width of clicked element
-      let width = progress_el.offsetWidth
-      // get click point
-      let click = ev.pageX - offset
-      // get seek
-      seek = (click / width) * this.duration
-
-      let el = this.returnWordClosestTo(seek)
-      this.addHighlightingTo(el)
-      this.scrollTo(el)
-    } else {
-      seek = seek / 1000
-    }
-    this.audio_howl_sprites.goTo(this.play_id, seek)
-  }
-
-  /**
-   *  Go back s milliseconds
-   * 
-   * @param id string
-   * @param s number
-   */
-
-  goBack(s): void {
-    if (this.play_id) {
-      this.audio_howl_sprites.goBack(this.play_id, s)
-    }
-  }
-
-  /**
-   * Stop the sound and remove all active reading styling
-   */
-  stop(): void {
-    this.playing = false;
-    this.audio_howl_sprites.stop()
-    this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-    if (this.reading$) {
-      // unsubscribe to Subject
-      this.reading$.unsubscribe()
-    }
-  }
-
-  /**
    * Change theme
    */
   changeTheme(): void {
@@ -310,37 +372,6 @@ export class ReadAlongComponent {
     } else {
       this.theme = 'light'
     }
-  }
-
-  /**
-   * Change playback between .75 and 1.25
-   */
-  changePlayback(v): void {
-    let path = v.composedPath()
-    let absolute_rate = path[0].value / 100
-    this.playback_rate = absolute_rate
-    this.audio_howl_sprites.sound.rate(this.playback_rate)
-  }
-
-  /**
-   * Parse SMIL alignments
-   */
-  private getAlignments(): object {
-    return parseSMIL(this.alignment)
-  }
-
-  /**
-   * Given an audio file path and a parsed alignment object,
-   * build a Sprite object
-   * @param audio string
-   * @param alignment object
-   */
-  private buildSprite(audio, alignment) {
-    return new Sprite({
-      src: [audio],
-      sprite: alignment,
-      rate: this.playback_rate
-    });
   }
 
   /**
@@ -375,6 +406,60 @@ export class ReadAlongComponent {
     this.fullscreen = !this.fullscreen
   }
 
+  /*************
+   * SCROLLING *
+   *************/
+
+  hideGuideAndScroll() {
+    this.scrollTo(this.el.shadowRoot.querySelector('.reading'))
+    this.showScrollGuide = false;
+  }
+
+  inOverflow(element) {
+    let sent_el = this.el.shadowRoot.querySelector('.sentence__container');
+    let sent_rect = sent_el.getBoundingClientRect()
+    let el_rect = element.getBoundingClientRect()
+    // element being read is below/ahead of the words being viewed
+    let inOverflowBelow = el_rect.top + el_rect.height > sent_rect.top + sent_rect.height
+    // element being read is above/behind of the words being viewed
+    let inOverflowAbove = el_rect.top + el_rect.height < 0
+
+    if (inOverflowBelow) {
+      return 'below'
+    }
+    if (inOverflowAbove) {
+      return 'above'
+    }
+    // if not in overflow, return false
+    return false
+  }
+
+  scrollByHeight(el) {
+    let sent_container = this.el.shadowRoot.querySelector('.sentence__container');
+    let anchor = el.getBoundingClientRect()
+    sent_container.scrollBy({
+      top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
+      left: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  scrollTo(el) {
+    el.scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
+
+  /*************
+   * LIFECYCLE *
+   *************/
+
+  componentDidUpdate() {
+    if (this.svg_overlay) {
+      this.changeFill()
+    }
+  }
+
   /**
    * Lifecycle hook: Before component loads, build the Sprite and parse the files necessary
    */
@@ -394,13 +479,18 @@ export class ReadAlongComponent {
     this.processed_text = this.renderText()
   }
 
-  componentDidUpdate() {
-    if (this.svg_overlay) {
-      this.changeFill()
+  /**********
+   * RENDER *
+   **********/
+
+  renderGuide() {
+    if (this.showScrollGuide === 'above') {
+      return <button class={'scroll-guide__container ui-button theme--' + this.theme} onClick={() => this.hideGuideAndScroll()}><span class={'scroll-guide__text theme--' + this.theme}>Scroll Back</span></button>
+    }
+    if (this.showScrollGuide === 'below') {
+      return <button class={'scroll-guide__container ui-button theme--' + this.theme} onClick={() => this.hideGuideAndScroll()}><span class={'scroll-guide__text theme--' + this.theme}>Scroll Forward</span></button>
     }
   }
-
-  // RENDER FUNCTIONS
 
   /**
    * Render overlay
@@ -441,6 +531,7 @@ export class ReadAlongComponent {
           <slot name="read-along-subheader" />
         </h3>
         <div id="sentence" class={'sentence__container animate-transition theme--' + this.theme}>
+          {this.renderGuide()}
           {this.renderText()}
         </div>
 
