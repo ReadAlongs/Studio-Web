@@ -411,8 +411,17 @@ export class ReadAlongComponent {
    *************/
 
   hideGuideAndScroll() {
-    this.scrollTo(this.el.shadowRoot.querySelector('.reading'))
-    this.showScrollGuide = false;
+    let reading_el = this.el.shadowRoot.querySelector('.reading')
+    // observe when
+    let intersectionObserver = new IntersectionObserver((entries) => {
+      let [entry] = entries;
+      if (entry.isIntersecting) {
+        setTimeout(() => this.showScrollGuide = false, 100)
+        intersectionObserver.unobserve(reading_el)
+      }
+    })
+    intersectionObserver.observe(reading_el)
+    this.scrollTo(reading_el)
   }
 
   inOverflow(element) {

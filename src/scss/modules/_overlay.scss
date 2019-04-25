@@ -33,7 +33,6 @@
         fill: 'transparent';
 
         &.theme {
-
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
@@ -50,7 +49,10 @@
     &__container {
         text-align: center;
         z-index: 700;
-        width: 100%;
+        width: 20%;
+        position: fixed;
+        left: 50%;
+        transform: translate(-50%, 0);
         @extend %themed-bg;
         @extend %border--strong;
     }
