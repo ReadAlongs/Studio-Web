@@ -68,7 +68,8 @@ export class ReadAlongComponent {
 
   @State() fullscreen: boolean = false;
 
-  @State() showScrollGuide: (string | boolean) = false;
+  @State() autoScroll: boolean = true;
+  showGuide: boolean = false;
 
   /************
   *  LISTENERS  *
@@ -79,10 +80,11 @@ export class ReadAlongComponent {
     // only show guide if there is an actual highlighted element
     if (this.el.shadowRoot.querySelector('.reading')) {
       if (event['path'][0].classList.contains("sentence__word") || event['path'][0].classList.contains("sentence__container") || event['path'][0].classList.contains("sentence")) {
-        if (!this.showScrollGuide) {
+        if (this.autoScroll) {
           let reading_el = this.el.shadowRoot.querySelector('.reading')
           if (reading_el) {
-            this.showScrollGuide = this.inOverflow(reading_el);
+            this.autoScroll = !this.inOverflow(reading_el);
+            this.showGuide = !this.autoScroll;
           }
         }
       }
@@ -165,9 +167,11 @@ export class ReadAlongComponent {
    */
 
   goBack(s): void {
+    this.autoScroll = false;
     if (this.play_id) {
       this.audio_howl_sprites.goBack(this.play_id, s)
     }
+    setTimeout(() => this.autoScroll = true, 100)
   }
 
   /**
@@ -176,7 +180,9 @@ export class ReadAlongComponent {
    * @param s number
    */
   goTo(ev): void {
+    this.autoScroll = false;
     let seek = ev
+    console.log(seek)
     if (typeof (ev) !== 'number') {
       // get composed path
       let path = ev.composedPath()
@@ -191,13 +197,35 @@ export class ReadAlongComponent {
       // get seek
       seek = (click / width) * this.duration
       let el = this.returnWordClosestTo(seek)
+      console.log(seek)
+      console.log(el)
       this.addHighlightingTo(el)
       this.scrollTo(el)
     } else {
       seek = seek / 1000
     }
     this.audio_howl_sprites.goTo(this.play_id, seek)
+    setTimeout(() => this.autoScroll = true, 100)
   }
+
+  /**
+   * Go to seek from id
+   * 
+   * @param id 
+   */
+  goToSeekFromId(id) {
+    let path = id.composedPath();
+    var tag = path[0].id;
+    let seek = this.processed_alignment[tag][0]
+    this.goTo(seek)
+    return tag
+  }
+
+  pause(): void {
+    this.playing = false;
+    this.audio_howl_sprites.pause()
+  }
+
 
   /**
   * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject 
@@ -205,70 +233,63 @@ export class ReadAlongComponent {
   * @param id string
   * TODO: Refactor this ugliness
   */
-  playPause(id?): void {
-    // if main sprite is playing and play/pause is for main sprite, then pause it
-    if (this.playing && id === 'all') {
-      this.playing = false;
-      this.audio_howl_sprites.pause()
-    } else {
-      // if playing a smaller sprite, seek main sprite to there and play it
-      if (id !== 'all') {
-        let path = id.composedPath();
-        var tag = path[0].id;
-        let seek = this.processed_alignment[tag][0]
-        this.goTo(seek)
+  play() {
+    var tag = 'all'
+    // subscribe to reading subject and update element class
+    this.reading$ = this.audio_howl_sprites._reading$.pipe(
+      distinctUntilChanged()
+    ).subscribe(x => {
+      if (this.playing) {
+        let query = this.tagToQuery(x);
+        let query_el = this.el.shadowRoot.querySelector(query);
         this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-        this.el.shadowRoot.querySelector(this.tagToQuery(tag)).classList.add('reading')
-        if (!this.playing) {
-          var play_id = this.audio_howl_sprites.play(tag)
-        }
-        // if main sprite is selected, but not playing then set up reading$ highlighter sbject
-        // and play the main sprite
-      } else {
-        var tag = id
-        // subscribe to reading subject and update element class
-        this.reading$ = this.audio_howl_sprites._reading$.pipe(
-          distinctUntilChanged()
-        ).subscribe(x => {
-          if (this.playing) {
-            let query = this.tagToQuery(x);
-            let query_el = this.el.shadowRoot.querySelector(query);
-            this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-            query_el.classList.add('reading')
-            if (this.inOverflow(query_el)) {
-              console.log(this.inOverflow(query_el))
-              if (this.showScrollGuide) {
-
-              } else if (!this.showScrollGuide) {
-                this.scrollByHeight(query_el)
-              }
-            }
-          }
-        })
-        this.playing = true;
-        // If already playing once, continue playing
-        if (this.play_id) {
-          this.audio_howl_sprites.play(this.play_id)
-          // else, start a new play
-        } else {
-
-          var play_id = this.audio_howl_sprites.play(tag)
-          this.play_id = play_id
-          if (this.el.shadowRoot.querySelectorAll('.reading').length > 0) {
-            let reading_el_id = this.el.shadowRoot.querySelector(".reading").id
-            this.goTo(this.processed_alignment[reading_el_id][0])
+        query_el.classList.add('reading')
+        if (this.inOverflow(query_el)) {
+          if (this.autoScroll) {
+            this.scrollByHeight(query_el)
           }
         }
-
-        if (this.svg_overlay) {
-          this.animateOverlayFill();
-        } else {
-          this.animateProgress(play_id, tag);
-        }
-
+      }
+    })
+    this.playing = true;
+    // If already playing once, continue playing
+    if (this.play_id) {
+      this.audio_howl_sprites.play(this.play_id)
+      // else, start a new play
+    } else {
+      let sent_el = this.el.shadowRoot.querySelector('.sentence__container')
+      if (sent_el.scrollTop > 0){
+        sent_el.scrollTo(0, 0);
+      }
+      var play_id = this.audio_howl_sprites.play(tag)
+      this.play_id = play_id
+      if (this.el.shadowRoot.querySelectorAll('.reading').length > 0) {
+        let reading_el_id = this.el.shadowRoot.querySelector(".reading").id
+        this.goTo(this.processed_alignment[reading_el_id][0])
       }
     }
+
+    if (this.svg_overlay) {
+      this.animateOverlayFill();
+    } else {
+      this.animateProgress(play_id, tag);
+    }
   }
+
+  /**
+   * Play a sprite or seek to it
+   * 
+   * @param id 
+   */
+  playSprite(id) {
+    var tag = this.goToSeekFromId(id)
+    if (!this.playing) {
+      // this.play();
+      // this.pause();
+      this.audio_howl_sprites.play(tag)
+    }
+  }
+
 
   /**
    * Stop the sound and remove all active reading styling
@@ -278,8 +299,9 @@ export class ReadAlongComponent {
     this.audio_howl_sprites.stop()
     this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
 
-    if (this.showScrollGuide) {
-      this.showScrollGuide = false;
+    if (!this.autoScroll) {
+      this.autoScroll = true;
+      this.showGuide = false;
     }
     if (this.reading$) {
       // unsubscribe to Subject
@@ -412,11 +434,11 @@ export class ReadAlongComponent {
 
   hideGuideAndScroll() {
     let reading_el = this.el.shadowRoot.querySelector('.reading')
-    // observe when
+    // observe when element is scrolled to, then remove the scroll guide and unobserve
     let intersectionObserver = new IntersectionObserver((entries) => {
       let [entry] = entries;
       if (entry.isIntersecting) {
-        setTimeout(() => this.showScrollGuide = false, 100)
+        setTimeout(() => { this.showGuide = false; this.autoScroll = true }, 100)
         intersectionObserver.unobserve(reading_el)
       }
     })
@@ -433,14 +455,18 @@ export class ReadAlongComponent {
     // element being read is above/behind of the words being viewed
     let inOverflowAbove = el_rect.top + el_rect.height < 0
 
-    if (inOverflowBelow) {
-      return 'below'
-    }
-    if (inOverflowAbove) {
-      return 'above'
-    }
+
+    let intersectionObserver = new IntersectionObserver((entries) => {
+      let [entry] = entries;
+      if (entry.isIntersecting) {
+        setTimeout(() => { this.showGuide = false; this.autoScroll = true }, 100)
+        intersectionObserver.unobserve(element)
+      }
+    })
+    intersectionObserver.observe(element)
+
     // if not in overflow, return false
-    return false
+    return (inOverflowAbove || inOverflowBelow)
   }
 
   scrollByHeight(el) {
@@ -493,11 +519,8 @@ export class ReadAlongComponent {
    **********/
 
   renderGuide() {
-    if (this.showScrollGuide === 'above') {
-      return <button class={'scroll-guide__container ui-button theme--' + this.theme} onClick={() => this.hideGuideAndScroll()}><span class={'scroll-guide__text theme--' + this.theme}>Scroll Back</span></button>
-    }
-    if (this.showScrollGuide === 'below') {
-      return <button class={'scroll-guide__container ui-button theme--' + this.theme} onClick={() => this.hideGuideAndScroll()}><span class={'scroll-guide__text theme--' + this.theme}>Scroll Forward</span></button>
+    if (this.showGuide) {
+      return <button class={'scroll-guide__container ripple ui-button theme--' + this.theme} onClick={() => this.hideGuideAndScroll()}><span class={'scroll-guide__text theme--' + this.theme}>Re-align with audio</span></button>
     }
   }
 
@@ -521,7 +544,7 @@ export class ReadAlongComponent {
           if (child.nodeName === '#text') {
             return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
           } else if (child.nodeName === 'w') {
-            return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playPause(ev)}>{child['textContent']}</span>
+            return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playSprite(ev)}>{child['textContent']}</span>
           }
 
         })}
@@ -549,7 +572,7 @@ export class ReadAlongComponent {
         </div>
         <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
           <div class="control-panel__buttons--left">
-            <button onClick={() => this.playPause('all')} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+            <button onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
               <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
             </button>
             <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
