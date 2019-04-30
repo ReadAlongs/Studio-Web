@@ -42,7 +42,7 @@ export class ReadAlongComponent {
    */
   @Prop() img: string;
 
-  /** 
+  /**
    * Overlay
    * This is an SVG overlay to place over the progress bar
    */
@@ -128,7 +128,7 @@ export class ReadAlongComponent {
 
   /**
    * Return HTML element of word closest to second s
-   * 
+   *
    * @param s seconds
    */
   returnWordClosestTo(s) {
@@ -149,7 +149,7 @@ export class ReadAlongComponent {
 
   /**
   * Change playback between .75 and 1.25
-  * 
+  *
   * @param v number
   */
   changePlayback(v): void {
@@ -161,7 +161,7 @@ export class ReadAlongComponent {
 
   /**
    *  Go back s milliseconds
-   * 
+   *
    * @param id string
    * @param s number
    */
@@ -176,7 +176,7 @@ export class ReadAlongComponent {
 
   /**
    * Go to seek
-   * 
+   *
    * @param s number
    */
   goTo(ev): void {
@@ -210,8 +210,8 @@ export class ReadAlongComponent {
 
   /**
    * Go to seek from id
-   * 
-   * @param id 
+   *
+   * @param id
    */
   goToSeekFromId(id) {
     let path = id.composedPath();
@@ -228,7 +228,7 @@ export class ReadAlongComponent {
 
 
   /**
-  * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject 
+  * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject
   * in order to asynchronously apply styles as the sprite is played
   * @param id string
   * TODO: Refactor this ugliness
@@ -278,8 +278,8 @@ export class ReadAlongComponent {
 
   /**
    * Play a sprite or seek to it
-   * 
-   * @param id 
+   *
+   * @param id
    */
   playSprite(id) {
     var tag = this.goToSeekFromId(id)
@@ -315,7 +315,7 @@ export class ReadAlongComponent {
 
   /**
    * Remove highlighting from every other word and add it to el
-   * 
+   *
    * @param el
    */
   addHighlightingTo(el) {
