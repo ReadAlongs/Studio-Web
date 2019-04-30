@@ -82,13 +82,21 @@ export function mergeTextAndVals(nodes: Node[]) {
  * Return sentences from TEI xml file
  * @param {string} - the path to the TEI file
  */
-export function parseTEI(path: string): { sentences: Array<Node>, images: Array<Node> } {
+export function parseTEI(path: string): any {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let sentences = getElementByXpath('.//s', xml_text)
-  let images = getElementByXpath('.//graphic', xml_text)
-  return { "sentences": sentences, "images": images }
+  let pages = getElementByXpath('.//div[@type="page"]', xml_text)
+  let parsed_pages = pages.map((p: Element) => {
+    let id = p.id;
+    let img_xpath = `.//div[@id='${id}']/graphic/@url`
+    let img = getElementByXpath(img_xpath, xml_text)
+    let p_xpath = `.//div[@id='${id}']/p`
+    let paragraphs = getElementByXpath(p_xpath, xml_text)
+    let parsed_page = {id: id, img: img[0].nodeValue, paragraphs: paragraphs}
+    return parsed_page
+  });
+  return parsed_pages
 }
 
 

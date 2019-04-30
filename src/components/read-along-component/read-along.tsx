@@ -2,7 +2,7 @@ import { Component, Element, Listen, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Howl } from 'howler';
-import { parseSMIL, parseTEI, Sprite, zip } from '../../utils/utils'
+import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
 
 @Component({
   tag: 'read-along',
@@ -533,30 +533,72 @@ export class ReadAlongComponent {
     }
   }
 
+  private renderImg(url) {
+    url = `assets/${url}`;
+    return <div class={"image__container page__col__image theme--" + this.theme}>
+      <img class="image" src={url} />
+    </div>
+  }
+
   /**
    * Turn parsed TEI-style text into JSX.Element
    */
   private renderText() {
     let parsed_tei = parseTEI(this.text)
-    let sentences = parsed_tei['sentences']
-    let images = parsed_tei['images']
-    let sent_els = sentences.map((s) =>
-      <div class="sentence" id={s['id']}>
-        {Array.from(s.childNodes).map((child) => {
-          if (child.nodeName === '#text') {
-            return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
-          } else if (child.nodeName === 'w') {
-            return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playSprite(ev)}>{child['textContent']}</span>
-          }
-
-        })}
+    let pg_count = parsed_tei.length
+    let pages = parsed_tei.map((page) =>
+      <div class={'page animate-transition paragraph__container theme--' + this.theme} id={page['id']}>
+        <div class="page__counter">Page {parsed_tei.indexOf(page) + 1} / {pg_count}</div>
+        {this.renderImg(page['img'])}
+        {page['paragraphs'].map((paragraph: any) =>
+          <div class='page__col__text paragraph sentence__container'>
+            {Array.from(paragraph.childNodes).map((sentence: any) =>
+              <div class='sentence'>
+                {Array.from(sentence.childNodes).map((child: any) => {
+                  if (child.nodeName === '#text') {
+                    return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
+                  } else if (child.nodeName === 'w') {
+                    return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playSprite(ev)}>{child['textContent']}</span>
+                  }
+                })}
+              </div>)}
+          </div>)}
       </div>)
-    let img_els = images.map((i: Element) => { let url = i.getAttribute('url'); return <img src={'assets/' + url} /> }
-    )
-    let quick_and_dirty = zip([sent_els, img_els]).reduce(function (a, b) {
-      return a.concat(b);
-    }, [])
-    return quick_and_dirty
+    console.log(pages)
+    return pages
+  }
+
+  private renderControlPanel() {
+    return <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+      <div class="control-panel__buttons--left">
+        <button onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+          <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
+        </button>
+        <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+          <i class="material-icons">replay_5</i>
+        </button>
+        <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+          <i class="material-icons">stop</i>
+        </button>
+      </div>
+
+      <div class="control-panel__buttons--center">
+        <div>
+          <h5 class={"control-panel__buttons__header color--" + this.theme}>Playback speed</h5>
+          <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control" id="myRange" onInput={(v) => this.changePlayback(v)} />
+        </div>
+      </div>
+
+      <div class="control-panel__buttons--right">
+        <button onClick={() => this.changeTheme()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+          <i class="material-icons-outlined">style</i>
+        </button>
+        <button onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+          <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
+        </button>
+      </div>
+
+    </div>
   }
 
 
@@ -569,44 +611,18 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div id="sentence" class={'sentence__container animate-transition theme--' + this.theme}>
+        <div class="page__container">
+          {/* <div class={'animate-transition theme--' + this.theme}> */}
           {this.renderGuide()}
           {this.renderText()}
-        </div>
+          {/* </div> */}
 
+        </div>
         <div onClick={(e) => this.goTo(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.renderOverlay()}
         </div>
-        <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-          <div class="control-panel__buttons--left">
-            <button onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
-            </button>
-            <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons">replay_5</i>
-            </button>
-            <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons">stop</i>
-            </button>
-          </div>
+        {this.renderControlPanel()}
 
-          <div class="control-panel__buttons--center">
-            <div>
-              <h5 class={"control-panel__buttons__header color--" + this.theme}>Playback speed</h5>
-              <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control" id="myRange" onInput={(v) => this.changePlayback(v)} />
-            </div>
-          </div>
-
-          <div class="control-panel__buttons--right">
-            <button onClick={() => this.changeTheme()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons-outlined">style</i>
-            </button>
-            <button onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-              <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
-            </button>
-          </div>
-
-        </div>
       </div >
     )
   }

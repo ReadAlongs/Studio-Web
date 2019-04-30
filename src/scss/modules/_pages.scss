@@ -16,22 +16,53 @@
     position: relative;
 }
 
-.sentence {
-    margin-bottom: em(24);
-    @extend %themed-bg;
+$max-height: 90vh;
 
+.page {
+    overflow: hidden;
+    height: em(350);
     &__container {
-        scroll-behavior: smooth;
-        margin: em(48) auto 0 auto;
-        padding: em(16);
-        border-radius: em(5) em(5) 0 0;
-        position: relative;
+        overflow: auto;
         max-height: em(350);
-        overflow-y: auto;
+        position: relative;
+    }
+    &__counter {
+        margin: em(10) 0 0 em(15);
+    }
+    &__col {
+        &__image {
+            float: left;
+        }
+
+        &__text {
+        }
+
+    }
+
+}
+
+.paragraph {
+    &__container {
         @extend %themed-bg;
         @extend %border--strong--top;
         @extend %border--strong--left;
         @extend %border--strong--right;
+        border-radius: em(5) em(5) 0 0;
+    }
+}
+
+.sentence {
+    margin-bottom: em(24);
+    margin-top: em(24);
+    text-align: center;
+    @extend %themed-bg;
+
+    &__container {
+        scroll-behavior: smooth;
+        padding: em(16);
+        position: relative;
+        max-height: em(350);
+        overflow-y: auto;
 
         &__buttons {
             position: absolute;
@@ -62,8 +93,14 @@
 }
 
 .read-along-container {
-    max-width: 35em;
+    max-width: 55em;
     margin: 0 auto;
+    max-height: $max-height;
+    overflow-Y: hidden;
+    overflow-X: hidden;
+    padding: em(5);
+    position: relative;
+
     &--fullscreen {
         max-width: 80%;
         min-width: 80%;

@@ -1,0 +1,15 @@
+.image {
+    max-height: em(250);
+    &__container {
+        text-align: center;
+        margin: 0 auto;
+        padding: em(16);
+        border-radius: 0 0 0 0;
+        position: relative;
+        max-height: em(250);
+        overflow-y: none;
+        @extend %themed-bg;
+        // @extend %border--strong--left;
+        // @extend %border--strong--right;
+    }
+}
