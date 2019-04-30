@@ -27,7 +27,7 @@
         border-radius: em(5) em(5) 0 0;
         position: relative;
         max-height: em(350);
-        overflow-y: scroll;
+        overflow-y: auto;
         @extend %themed-bg;
         @extend %border--strong--top;
         @extend %border--strong--left;

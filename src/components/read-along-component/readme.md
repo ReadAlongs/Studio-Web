@@ -13,7 +13,7 @@
 | `audio`       | `audio`       | The audio file                                                | `string` | `undefined` |
 | `img`         | `img`         | Image                                                         | `string` | `undefined` |
 | `svg_overlay` | `svg_overlay` | Overlay This is an SVG overlay to place over the progress bar | `string` | `undefined` |
-| `text`        | `text`        | The text as TEI                                               | `string` | `undefined` |
+| `text`        | `text`        | ********** PROPS   * ********** The text as TEI               | `string` | `undefined` |
 | `theme`       | `theme`       | Theme to use: ['light', 'dark'] defaults to 'dark'            | `string` | `'light'`   |
 
 
