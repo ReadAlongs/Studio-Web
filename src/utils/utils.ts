@@ -52,7 +52,7 @@ export function zip(arrays): Array<any[]> {
 }
 
 /**
- * 
+ *
  * @param nodes
  */
 export function mergeTextAndVals(nodes: Node[]) {
@@ -82,13 +82,16 @@ export function mergeTextAndVals(nodes: Node[]) {
  * Return sentences from TEI xml file
  * @param {string} - the path to the TEI file
  */
-export function parseTEI(path: string): Array<Node> {
+export function parseTEI(path: string): { sentences: Array<Node>, images: Array<Node> } {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let sentences = getElementByXpath('/document/s', xml_text)
-  return sentences
+  let sentences = getElementByXpath('.//s', xml_text)
+  let images = getElementByXpath('.//graphic', xml_text)
+  return { "sentences": sentences, "images": images }
 }
+
+
 
 /**
  * Return useful data from SMIL xml file
@@ -131,7 +134,7 @@ export var Sprite = function (options) {
   self._sprite = options.sprite;
   // Create new Subject tracking which element is being read
   self._reading$ = new Subject;
-  // List of all non-"all" sprites 
+  // List of all non-"all" sprites
   self._tinySprite = Object.keys(options.sprite).map((str) => [self._sprite[str][0], str]);
   // remove the 'all' sprite
   self._tinySprite.pop()
@@ -172,7 +175,7 @@ Sprite.prototype = {
   /**
    * Go back s seconds, or if current position - s is less than 0
    * go back to the beginning.
-   * 
+   *
    * @param id: number - the id of the audio to roll back
    * @param s: number - the number of seconds to go back
    */
@@ -204,7 +207,7 @@ Sprite.prototype = {
   /**
  * Go back s seconds, or if current position - s is less than 0
  * go back to the beginning.
- * 
+ *
  * @param id: number - the id of the audio to roll back
  * @param s: number - the number of seconds to go back
  */

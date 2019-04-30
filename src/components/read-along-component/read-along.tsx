@@ -2,7 +2,7 @@ import { Component, Element, Listen, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Howl } from 'howler';
-import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
+import { parseSMIL, parseTEI, Sprite, zip } from '../../utils/utils'
 
 @Component({
   tag: 'read-along',
@@ -42,7 +42,7 @@ export class ReadAlongComponent {
    */
   @Prop() img: string;
 
-  /** 
+  /**
    * Overlay
    * This is an SVG overlay to place over the progress bar
    */
@@ -128,7 +128,7 @@ export class ReadAlongComponent {
 
   /**
    * Return HTML element of word closest to second s
-   * 
+   *
    * @param s seconds
    */
   returnWordClosestTo(s) {
@@ -149,7 +149,7 @@ export class ReadAlongComponent {
 
   /**
   * Change playback between .75 and 1.25
-  * 
+  *
   * @param v number
   */
   changePlayback(v): void {
@@ -161,7 +161,7 @@ export class ReadAlongComponent {
 
   /**
    *  Go back s milliseconds
-   * 
+   *
    * @param id string
    * @param s number
    */
@@ -176,7 +176,7 @@ export class ReadAlongComponent {
 
   /**
    * Go to seek
-   * 
+   *
    * @param s number
    */
   goTo(ev): void {
@@ -210,8 +210,8 @@ export class ReadAlongComponent {
 
   /**
    * Go to seek from id
-   * 
-   * @param id 
+   *
+   * @param id
    */
   goToSeekFromId(id) {
     let path = id.composedPath();
@@ -228,7 +228,7 @@ export class ReadAlongComponent {
 
 
   /**
-  * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject 
+  * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject
   * in order to asynchronously apply styles as the sprite is played
   * @param id string
   * TODO: Refactor this ugliness
@@ -258,7 +258,7 @@ export class ReadAlongComponent {
       // else, start a new play
     } else {
       let sent_el = this.el.shadowRoot.querySelector('.sentence__container')
-      if (sent_el.scrollTop > 0){
+      if (sent_el.scrollTop > 0) {
         sent_el.scrollTo(0, 0);
       }
       var play_id = this.audio_howl_sprites.play(tag)
@@ -278,8 +278,8 @@ export class ReadAlongComponent {
 
   /**
    * Play a sprite or seek to it
-   * 
-   * @param id 
+   *
+   * @param id
    */
   playSprite(id) {
     var tag = this.goToSeekFromId(id)
@@ -315,7 +315,7 @@ export class ReadAlongComponent {
 
   /**
    * Remove highlighting from every other word and add it to el
-   * 
+   *
    * @param el
    */
   addHighlightingTo(el) {
@@ -537,8 +537,10 @@ export class ReadAlongComponent {
    * Turn parsed TEI-style text into JSX.Element
    */
   private renderText() {
-    let parsed = parseTEI(this.text)
-    let sent_els = parsed.map((s) =>
+    let parsed_tei = parseTEI(this.text)
+    let sentences = parsed_tei['sentences']
+    let images = parsed_tei['images']
+    let sent_els = sentences.map((s) =>
       <div class="sentence" id={s['id']}>
         {Array.from(s.childNodes).map((child) => {
           if (child.nodeName === '#text') {
@@ -549,7 +551,12 @@ export class ReadAlongComponent {
 
         })}
       </div>)
-    return sent_els
+    let img_els = images.map((i: Element) => { let url = i.getAttribute('url'); return <img src={'assets/' + url} /> }
+    )
+    let quick_and_dirty = zip([sent_els, img_els]).reduce(function (a, b) {
+      return a.concat(b);
+    }, [])
+    return quick_and_dirty
   }
 
 
