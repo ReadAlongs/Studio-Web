@@ -71,6 +71,10 @@ export class ReadAlongComponent {
   @State() autoScroll: boolean = true;
   showGuide: boolean = false;
 
+  page_info;
+
+  current_page;
+
   /************
   *  LISTENERS  *
   ************/
@@ -200,7 +204,10 @@ export class ReadAlongComponent {
       console.log(seek)
       console.log(el)
       this.addHighlightingTo(el)
-      this.scrollTo(el)
+      // this.scrollTo(el)
+      let pg_id = el.parentElement.parentElement.parentElement.id
+      console.log(pg_id)
+      this.scrollToPage(pg_id)
     } else {
       seek = seek / 1000
     }
@@ -244,6 +251,11 @@ export class ReadAlongComponent {
         let query_el = this.el.shadowRoot.querySelector(query);
         this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
         query_el.classList.add('reading')
+        let current_page = query_el.parentElement.parentElement.parentElement.id
+          if (current_page !== this.current_page) {
+            this.current_page = current_page
+            this.scrollToPage(current_page)
+        }
         if (this.inOverflow(query_el)) {
           if (this.autoScroll) {
             this.scrollByHeight(query_el)
@@ -469,6 +481,38 @@ export class ReadAlongComponent {
     return (inOverflowAbove || inOverflowBelow)
   }
 
+  getPageFromEl(el) {
+    console.log(el)
+  }
+
+  inPage(element) {
+    let sent_el = this.el.shadowRoot.querySelector('.sentence__container');
+    let sent_rect = sent_el.getBoundingClientRect()
+    let el_rect = element.getBoundingClientRect()
+    // element being read is below/ahead of the words being viewed
+    let inOverflowBelow = el_rect.top + el_rect.height > sent_rect.top + sent_rect.height
+    // element being read is above/behind of the words being viewed
+    let inOverflowAbove = el_rect.top + el_rect.height < 0
+
+
+    let intersectionObserver = new IntersectionObserver((entries) => {
+      let [entry] = entries;
+      if (entry.isIntersecting) {
+        setTimeout(() => { this.showGuide = false; this.autoScroll = true }, 100)
+        intersectionObserver.unobserve(element)
+      }
+    })
+    intersectionObserver.observe(element)
+
+    // if not in overflow, return false
+    return (inOverflowAbove || inOverflowBelow)
+  }
+
+  scrollToPage(pg_id) {
+    let next_page = this.el.shadowRoot.querySelector('#' + pg_id)
+    next_page.scrollIntoView({behavior: "smooth"})
+  }
+
   scrollByHeight(el) {
     let sent_container = this.el.shadowRoot.querySelector('.sentence__container');
     let anchor = el.getBoundingClientRect()
@@ -480,6 +524,7 @@ export class ReadAlongComponent {
   }
 
   scrollTo(el) {
+    console.log(el)
     el.scrollIntoView({
       behavior: 'smooth'
     });
@@ -546,9 +591,10 @@ export class ReadAlongComponent {
   private renderText() {
     let parsed_tei = parseTEI(this.text)
     let pg_count = parsed_tei.length
+    this.page_info = parsed_tei
     let pages = parsed_tei.map((page) =>
       <div class={'page animate-transition paragraph__container theme--' + this.theme} id={page['id']}>
-        <div class="page__counter">Page {parsed_tei.indexOf(page) + 1} / {pg_count}</div>
+        <div class={"page__counter color--" + this.theme}>Page {parsed_tei.indexOf(page) + 1} / {pg_count}</div>
         {this.renderImg(page['img'])}
         {page['paragraphs'].map((paragraph: any) =>
           <div class='page__col__text paragraph sentence__container'>
@@ -611,7 +657,7 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div class="page__container">
+        <div class={"page__container theme--" + this.theme}>
           {/* <div class={'animate-transition theme--' + this.theme}> */}
           {this.renderGuide()}
           {this.renderText()}

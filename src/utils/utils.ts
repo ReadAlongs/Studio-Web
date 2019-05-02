@@ -20,7 +20,7 @@ function getXML(path: string): string {
 function getElementByXpath(xpath: string, xml: Document): Node[] {
   let xmlns = xml.lookupNamespaceURI(null);
   if (xmlns === null) {
-    console.log("Your XML file is missing an XML namespace.");
+    // console.log("Your XML file is missing an XML namespace.");
   }
   function nsResolver(prefix) {
     var ns = {

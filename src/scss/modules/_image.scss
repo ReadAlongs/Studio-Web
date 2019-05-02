@@ -1,15 +1,18 @@
 .image {
-    max-height: em(250);
+    @include mq(em(map-get($breakpoints, small)), 'max-width', 'screen') {
+        max-height: 15vh;
+    }
+    max-height: em($page-size - 100);
     &__container {
         text-align: center;
-        margin: 0 auto;
+        margin: 0 em(32);
         padding: em(16);
         border-radius: 0 0 0 0;
         position: relative;
-        max-height: em(250);
-        overflow-y: none;
+        max-height: em($page-size - 100);
         @extend %themed-bg;
-        // @extend %border--strong--left;
-        // @extend %border--strong--right;
+        @include mq(em(map-get($breakpoints, small)), 'max-width', 'screen') {
+            max-height: 15vh;
+        }
     }
 }

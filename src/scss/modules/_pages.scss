@@ -14,28 +14,46 @@
     line-height: 1.5;
     border-radius: em(5);
     position: relative;
+    padding: em(1);
 }
 
 $max-height: 90vh;
 
 .page {
-    overflow: hidden;
-    height: em(350);
+    overflow-y: hidden;
+    overflow-x: auto;
+    flex-grow: 1;
+    min-width: 100%;
+    max-width: 55em;
+    @extend %border--strong--left;
+    @extend %border--strong--right;
+
     &__container {
         overflow: auto;
-        max-height: em(350);
+        max-height: em($page-size);
+        max-width: 100%;
         position: relative;
+        display: -webkit-inline-flex;
+        flex-direction: row;
+        // height: em($page-size);
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        @extend %border--strong--top;
+        @extend %border--strong--left;
+        @extend %border--strong--right;
+        border-radius: em(5) em(5) 0 0;
     }
+
     &__counter {
         margin: em(10) 0 0 em(15);
     }
+
     &__col {
         &__image {
             float: left;
         }
 
-        &__text {
-        }
+        &__text {}
 
     }
 
@@ -44,10 +62,6 @@ $max-height: 90vh;
 .paragraph {
     &__container {
         @extend %themed-bg;
-        @extend %border--strong--top;
-        @extend %border--strong--left;
-        @extend %border--strong--right;
-        border-radius: em(5) em(5) 0 0;
     }
 }
 
@@ -59,10 +73,15 @@ $max-height: 90vh;
 
     &__container {
         scroll-behavior: smooth;
-        padding: em(16);
+        // padding: em(16);
         position: relative;
-        max-height: em(350);
+        @include mq(em(map-get($breakpoints, medium)), 'max-width', 'screen') {
+            max-height: 15vh;
+            margin-top: 0;
+        }
         overflow-y: auto;
+        // border: em(1) solid black;
+        margin: em(50) em(50) em(25) em(50);
 
         &__buttons {
             position: absolute;
@@ -81,6 +100,7 @@ $max-height: 90vh;
         @extend %themed-text;
         @extend %basic-text;
 
+        // font-size: 1.5em;
         &:hover {
             @extend %hover-shared;
             @extend %themed-text--strong;
