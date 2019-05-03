@@ -61,27 +61,35 @@ $max-height: 90vh;
 
 .paragraph {
     &__container {
+        display: grid;
         @extend %themed-bg;
+        grid-template-columns: [one] 50% [two] auto [col-end];
+        grid-template-rows: [one] em(65) [two] auto [row-end];
     }
 }
 
 .sentence {
-    margin-bottom: em(24);
-    margin-top: em(24);
-    text-align: center;
+    margin: 0 em(24);
+    text-align: left;
+    max-width: 100%;
     @extend %themed-bg;
 
     &__container {
+        grid-column-start: 2;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: 2;
         scroll-behavior: smooth;
-        // padding: em(16);
+        max-width: 100%;
         position: relative;
-        @include mq(em(map-get($breakpoints, medium)), 'max-width', 'screen') {
-            max-height: 15vh;
-            margin-top: 0;
-        }
         overflow-y: auto;
-        // border: em(1) solid black;
-        margin: em(50) em(50) em(25) em(50);
+
+        @include mq(em(map-get($breakpoints, small)), 'max-width', 'screen') {
+            max-height: 15vh;
+            margin-top: em(35);
+            grid-row-start: 1;
+            grid-row-end: span 2;
+        }
 
         &__buttons {
             position: absolute;

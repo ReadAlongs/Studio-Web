@@ -4,9 +4,13 @@
     }
     max-height: em($page-size - 100);
     &__container {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: row-end;
         text-align: center;
         margin: 0 em(32);
-        padding: em(16);
+        padding: 0;
         border-radius: 0 0 0 0;
         position: relative;
         max-height: em($page-size - 100);
