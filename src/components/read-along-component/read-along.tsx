@@ -87,7 +87,7 @@ export class ReadAlongComponent {
         if (this.autoScroll) {
           let reading_el = this.el.shadowRoot.querySelector('.reading')
           if (reading_el) {
-            this.autoScroll = !this.inOverflow(reading_el);
+            this.autoScroll = !this.inPageContentOverflow(reading_el);
             this.showGuide = !this.autoScroll;
           }
         }
@@ -256,7 +256,8 @@ export class ReadAlongComponent {
             this.current_page = current_page
             this.scrollToPage(current_page)
         }
-        if (this.inOverflow(query_el)) {
+        console.log(this.inPageContentOverflow(query_el))
+        if (this.inPageContentOverflow(query_el)) {
           if (this.autoScroll) {
             this.scrollByHeight(query_el)
           }
@@ -458,15 +459,15 @@ export class ReadAlongComponent {
     this.scrollTo(reading_el)
   }
 
-  inOverflow(element) {
-    let sent_el = this.el.shadowRoot.querySelector('.sentence__container');
+  inPageContentOverflow(element) {
+    let page_el = this.el.shadowRoot.querySelector('#' + this.current_page)
+    let sent_el = page_el.querySelector('.sentence__container');
     let sent_rect = sent_el.getBoundingClientRect()
     let el_rect = element.getBoundingClientRect()
     // element being read is below/ahead of the words being viewed
     let inOverflowBelow = el_rect.top + el_rect.height > sent_rect.top + sent_rect.height
     // element being read is above/behind of the words being viewed
     let inOverflowAbove = el_rect.top + el_rect.height < 0
-
 
     let intersectionObserver = new IntersectionObserver((entries) => {
       let [entry] = entries;
@@ -514,7 +515,8 @@ export class ReadAlongComponent {
   }
 
   scrollByHeight(el) {
-    let sent_container = this.el.shadowRoot.querySelector('.sentence__container');
+    let page_el = this.el.shadowRoot.querySelector('#' + this.current_page)
+    let sent_container = page_el.querySelector('.sentence__container');
     let anchor = el.getBoundingClientRect()
     sent_container.scrollBy({
       top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
