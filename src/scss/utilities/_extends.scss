@@ -43,7 +43,7 @@
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
-                border: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                border: em(.75) solid map-deep-get($ui-themes, $theme, secondary);
             }
         }
     }
@@ -53,7 +53,7 @@
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
-                    border-left: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                    border-left: em(.75) solid map-deep-get($ui-themes, $theme, secondary);
                 }
             }
         }
@@ -65,7 +65,7 @@
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
-                    border-right: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                    border-right: em(.75) solid map-deep-get($ui-themes, $theme, secondary);
                 }
             }
         }
@@ -77,7 +77,7 @@
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
-                    border-top: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                    border-top: em(.75) solid map-deep-get($ui-themes, $theme, secondary);
                 }
             }
         }
@@ -89,7 +89,7 @@
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
-                    border-bottom: em(.5) solid map-deep-get($ui-themes, $theme, secondary);
+                    border-bottom: em(.75) solid map-deep-get($ui-themes, $theme, secondary);
                 }
             }
         }

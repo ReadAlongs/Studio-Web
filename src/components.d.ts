@@ -22,9 +22,9 @@ export namespace Components {
     */
     'audio': string;
     /**
-    * Image
+    * Language
     */
-    'img': string;
+    'language': string;
     /**
     * Overlay This is an SVG overlay to place over the progress bar
     */
@@ -48,9 +48,9 @@ export namespace Components {
     */
     'audio'?: string;
     /**
-    * Image
+    * Language
     */
-    'img'?: string;
+    'language'?: string;
     /**
     * Overlay This is an SVG overlay to place over the progress bar
     */

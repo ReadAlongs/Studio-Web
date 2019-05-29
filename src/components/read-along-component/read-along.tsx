@@ -38,11 +38,6 @@ export class ReadAlongComponent {
   duration: number;
 
   /**
-   * Image
-   */
-  @Prop() img: string;
-
-  /**
    * Overlay
    * This is an SVG overlay to place over the progress bar
    */
@@ -52,6 +47,11 @@ export class ReadAlongComponent {
   * Theme to use: ['light', 'dark'] defaults to 'dark'
   */
   @Prop({ mutable: true }) theme: string = 'light';
+
+  /**
+   * Language
+   */
+  @Prop() language: string = 'eng';
 
 
   /************
@@ -252,9 +252,9 @@ export class ReadAlongComponent {
         this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
         query_el.classList.add('reading')
         let current_page = query_el.parentElement.parentElement.parentElement.id
-          if (current_page !== this.current_page) {
-            this.current_page = current_page
-            this.scrollToPage(current_page)
+        if (current_page !== this.current_page) {
+          this.current_page = current_page
+          this.scrollToPage(current_page)
         }
         console.log(this.inPageContentOverflow(query_el))
         if (this.inPageContentOverflow(query_el)) {
@@ -511,7 +511,7 @@ export class ReadAlongComponent {
 
   scrollToPage(pg_id) {
     let next_page = this.el.shadowRoot.querySelector('#' + pg_id)
-    next_page.scrollIntoView({behavior: "smooth"})
+    next_page.scrollIntoView({ behavior: "smooth" })
   }
 
   scrollByHeight(el) {
@@ -562,6 +562,20 @@ export class ReadAlongComponent {
   }
 
   /**********
+   *  LANG  *
+   **********/
+
+  returnTranslation(word, lang) {
+    let translations = {
+      "speed": {
+        "eng": "Playback Speed",
+        "fr": "Vitesse de Lecture"
+      }
+    }
+    return translations[word][lang]
+  }
+
+  /**********
    * RENDER *
    **********/
 
@@ -581,10 +595,54 @@ export class ReadAlongComponent {
   }
 
   private renderImg(url) {
-    url = `assets/${url}`;
-    return <div class={"image__container page__col__image theme--" + this.theme}>
-      <img class="image" src={url} />
-    </div>
+    if (url) {
+      url = `assets/${url}`;
+      return <div class={"image__container page__col__image theme--" + this.theme}>
+        <img class="image" src={url} />
+      </div>
+    }
+  }
+
+  private renderPageCount(pg_count, parsed_tei, page) {
+    if (pg_count > 1) {
+      return <div class={"page__counter color--" + this.theme}>Page {parsed_tei.indexOf(page) + 1} / {pg_count}</div>
+    }
+  }
+
+  private renderParagraphs(paragraphs) {
+    return paragraphs.map((paragraph: any) =>
+      <div class='page__col__text paragraph sentence__container'>
+        {Array.from(paragraph.childNodes).map((sentence: any) =>
+          <div class='sentence'>
+            {Array.from(sentence.childNodes).map((child: any) => {
+              if (child.nodeName === '#text') {
+                return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
+              } else if (child.nodeName === 'w') {
+                return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playSprite(ev)}>{child['textContent']}</span>
+              }
+            })}
+          </div>)}
+      </div>)
+  }
+
+  private renderPages() {
+    let pg_count = this.page_info.length
+    if (pg_count > 1) {
+      let pages = this.page_info.map((page) =>
+        <div class={'page page--multi animate-transition paragraph__container theme--' + this.theme} id={page['id']}>
+          {this.renderPageCount(pg_count, this.page_info, page)}
+          {this.renderImg(page['img'])}
+          {this.renderParagraphs(page['paragraphs'])}
+        </div>)
+      return pages
+    } else {
+      let page = this.page_info[0]
+      return <div class={'page page--single animate-transition paragraph__container theme--' + this.theme} id={page['id']}>
+        {this.renderPageCount(pg_count, this.page_info, page)}
+        {this.renderImg(page['img'])}
+        {this.renderParagraphs(page['paragraphs'])}
+      </div>
+    }
   }
 
   /**
@@ -592,28 +650,8 @@ export class ReadAlongComponent {
    */
   private renderText() {
     let parsed_tei = parseTEI(this.text)
-    let pg_count = parsed_tei.length
     this.page_info = parsed_tei
-    let pages = parsed_tei.map((page) =>
-      <div class={'page animate-transition paragraph__container theme--' + this.theme} id={page['id']}>
-        <div class={"page__counter color--" + this.theme}>Page {parsed_tei.indexOf(page) + 1} / {pg_count}</div>
-        {this.renderImg(page['img'])}
-        {page['paragraphs'].map((paragraph: any) =>
-          <div class='page__col__text paragraph sentence__container'>
-            {Array.from(paragraph.childNodes).map((sentence: any) =>
-              <div class='sentence'>
-                {Array.from(sentence.childNodes).map((child: any) => {
-                  if (child.nodeName === '#text') {
-                    return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
-                  } else if (child.nodeName === 'w') {
-                    return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playSprite(ev)}>{child['textContent']}</span>
-                  }
-                })}
-              </div>)}
-          </div>)}
-      </div>)
-    console.log(pages)
-    return pages
+    return this.renderPages()
   }
 
   private renderControlPanel() {
@@ -632,7 +670,7 @@ export class ReadAlongComponent {
 
       <div class="control-panel__buttons--center">
         <div>
-          <h5 class={"control-panel__buttons__header color--" + this.theme}>Playback speed</h5>
+          <h5 class={"control-panel__buttons__header color--" + this.theme}>{this.returnTranslation('speed', this.language)}</h5>
           <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control" id="myRange" onInput={(v) => this.changePlayback(v)} />
         </div>
       </div>

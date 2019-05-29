@@ -24,9 +24,17 @@ $max-height: 90vh;
     overflow-x: auto;
     flex-grow: 1;
     min-width: 100%;
+    width: 100%;
     max-width: 55em;
-    @extend %border--strong--left;
-    @extend %border--strong--right;
+
+    &--multi {
+        @extend %border--strong--left;
+        @extend %border--strong--right;
+    }
+
+    &--single {
+        // specific styles for single-page read-alongs
+    }
 
     &__container {
         overflow: auto;
@@ -63,8 +71,14 @@ $max-height: 90vh;
     &__container {
         display: grid;
         @extend %themed-bg;
-        grid-template-columns: [one] 50% [two] auto [col-end];
-        grid-template-rows: [one] em(65) [two] auto [row-end];
+        // &--img {
+        //     grid-template-columns: [one] 50% [two] auto [col-end];
+        //     grid-template-rows: [one] em(65) [two] auto [row-end];
+        // }
+        // &--full {
+        //     grid-template-columns: [one] 100% [two] auto [col-end];
+        //     grid-template-rows: [one] 100% [two] auto [row-end];
+        // }
     }
 }
 

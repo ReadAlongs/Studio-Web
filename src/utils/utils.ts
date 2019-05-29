@@ -89,11 +89,15 @@ export function parseTEI(path: string): any {
   let pages = getElementByXpath('.//div[@type="page"]', xml_text)
   let parsed_pages = pages.map((p: Element) => {
     let id = p.id;
+    console.log(id)
     let img_xpath = `.//div[@id='${id}']/graphic/@url`
     let img = getElementByXpath(img_xpath, xml_text)
     let p_xpath = `.//div[@id='${id}']/p`
     let paragraphs = getElementByXpath(p_xpath, xml_text)
-    let parsed_page = {id: id, img: img[0].nodeValue, paragraphs: paragraphs}
+    let parsed_page = { id: id, paragraphs: paragraphs }
+    if (img.length > 0) {
+      parsed_page['img'] = img[0].nodeValue;
+    }
     return parsed_page
   });
   return parsed_pages
