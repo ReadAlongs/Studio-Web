@@ -40,6 +40,7 @@ $max-height: 90vh;
         overflow: auto;
         max-height: em($page-size);
         max-width: 100%;
+        width: 100%;
         position: relative;
         display: -webkit-inline-flex;
         flex-direction: row;

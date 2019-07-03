@@ -512,7 +512,7 @@ export class ReadAlongComponent {
       }
     })
     intersectionObserver.observe(element)
-
+    console.log((inOverflowAbove || inOverflowBelow))
     // if not in overflow, return false
     return (inOverflowAbove || inOverflowBelow)
   }
@@ -657,7 +657,7 @@ export class ReadAlongComponent {
 
   private renderParagraphs(paragraphs: Node[]): JSX.Element {
     return paragraphs.map((paragraph: Node) =>
-      <div class='page__col__text paragraph sentence__container'>
+      <div class={'page__col__text paragraph sentence__container theme--' + this.theme}>
         {Array.from(paragraph.childNodes).map((sentence: Node) =>
           <div class='sentence'>
             {Array.from(sentence.childNodes).map((child: Node) => {

@@ -16,6 +16,9 @@
 
 .overlay {
     &__container {
+        // margin-top: -3px;
+        width: 100%;
+        max-width: 100%;
         height: em(50);
         position: relative;
         z-index: 8000;
