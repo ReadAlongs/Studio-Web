@@ -2,7 +2,7 @@ import { Component, Element, Listen, Prop, State } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Howl } from 'howler';
-import { parseSMIL, parseTEI, Sprite } from '../../utils/utils'
+import { Alignment, Page, parseSMIL, parseTEI, Sprite } from '../../utils/utils'
 
 @Component({
   tag: 'read-along',
@@ -21,21 +21,24 @@ export class ReadAlongComponent {
    * The text as TEI
    */
   @Prop() text: string;
-  processed_text: Array<JSX.Element>;
+
+  processed_text: JSX.Element;
 
   /**
    * The alignment as SMIL
    */
   @Prop() alignment: string;
-  processed_alignment: object;
+
+  processed_alignment: Alignment;
 
   /**
    * The audio file
    */
   @Prop() audio: string;
+
   audio_howl_sprites: Howl;
-  reading$: Subject<string>;
-  duration: number;
+  reading$: Subject<string>; // An RxJs Subject for the current item being read.
+  duration: number; // Duration of the audio file
 
   /**
    * Overlay
@@ -80,12 +83,14 @@ export class ReadAlongComponent {
   ************/
 
   @Listen('window:wheel')
-  wheelHandler(event) {
+  wheelHandler(event: MouseEvent): void {
     // only show guide if there is an actual highlighted element
     if (this.el.shadowRoot.querySelector('.reading')) {
-      if (event['path'][0].classList.contains("sentence__word") || event['path'][0].classList.contains("sentence__container") || event['path'][0].classList.contains("sentence")) {
+      if (event['path'][0].classList.contains("sentence__word") ||
+        event['path'][0].classList.contains("sentence__container") ||
+        event['path'][0].classList.contains("sentence")) {
         if (this.autoScroll) {
-          let reading_el = this.el.shadowRoot.querySelector('.reading')
+          let reading_el: HTMLElement = this.el.shadowRoot.querySelector('.reading')
           if (reading_el) {
             this.autoScroll = !this.inPageContentOverflow(reading_el);
             this.showGuide = !this.autoScroll;
@@ -102,10 +107,10 @@ export class ReadAlongComponent {
   /**
   * Given an audio file path and a parsed alignment object,
   * build a Sprite object
-  * @param audio string
-  * @param alignment object
+  * @param audio
+  * @param alignment
   */
-  private buildSprite(audio, alignment) {
+  private buildSprite(audio: string, alignment: Alignment) {
     return new Sprite({
       src: [audio],
       sprite: alignment,
@@ -115,19 +120,12 @@ export class ReadAlongComponent {
 
   /**
    * Add escape characters to query selector param
-   * @param id string
+   * @param id
    */
-  tagToQuery(id): string {
+  tagToQuery(id: string): string {
     id = id.replace(".", "\\.")
     id = id.replace("#", "\\#")
     return "#" + id
-  }
-
-  /**
-   * Parse SMIL alignments
-   */
-  private getAlignments(): object {
-    return parseSMIL(this.alignment)
   }
 
   /**
@@ -135,12 +133,14 @@ export class ReadAlongComponent {
    *
    * @param s seconds
    */
-  returnWordClosestTo(s) {
+  returnWordClosestTo(s: number): HTMLElement {
     let keys = Object.keys(this.processed_alignment)
-    // remove 'all' sprite
+    // remove 'all' sprite as it's not a word.
     keys.pop()
     for (var i = 1; i < keys.length; i++) {
-      if (s * 1000 > this.processed_alignment[keys[i]][0] && this.processed_alignment[keys[i + 1]] && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
+      if (s * 1000 > this.processed_alignment[keys[i]][0]
+        && this.processed_alignment[keys[i + 1]]
+        && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
         return this.el.shadowRoot.querySelector(this.tagToQuery(keys[i]))
       }
     }
@@ -152,13 +152,14 @@ export class ReadAlongComponent {
    *************/
 
   /**
-  * Change playback between .75 and 1.25
+  * Change playback between .75 and 1.25. To change the playback options, 
+  * change the HTML in the function renderControlPanel
   *
-  * @param v number
+  * @param ev
   */
-  changePlayback(v): void {
-    let path = v.composedPath()
-    let absolute_rate = path[0].value / 100
+  changePlayback(ev: Event): void {
+    let inputEl = ev.currentTarget as HTMLInputElement;
+    let absolute_rate: number = parseInt(inputEl.value) / 100
     this.playback_rate = absolute_rate
     this.audio_howl_sprites.sound.rate(this.playback_rate)
   }
@@ -166,11 +167,10 @@ export class ReadAlongComponent {
   /**
    *  Go back s milliseconds
    *
-   * @param id string
-   * @param s number
+   * @param s
    */
 
-  goBack(s): void {
+  goBack(s: number): void {
     this.autoScroll = false;
     if (this.play_id) {
       this.audio_howl_sprites.goBack(this.play_id, s)
@@ -182,35 +182,11 @@ export class ReadAlongComponent {
    * Go to seek
    *
    * @param s number
+   * 
    */
-  goTo(ev): void {
+  goTo(seek: number): void {
     this.autoScroll = false;
-    let seek = ev
-    console.log(seek)
-    if (typeof (ev) !== 'number') {
-      // get composed path
-      let path = ev.composedPath()
-      // query select the progress bar
-      let progress_el = path[2].querySelector('#all')
-      // get offset of clicked element
-      let offset = progress_el.offsetLeft
-      // get width of clicked element
-      let width = progress_el.offsetWidth
-      // get click point
-      let click = ev.pageX - offset
-      // get seek
-      seek = (click / width) * this.duration
-      let el = this.returnWordClosestTo(seek)
-      console.log(seek)
-      console.log(el)
-      this.addHighlightingTo(el)
-      // this.scrollTo(el)
-      let pg_id = el.parentElement.parentElement.parentElement.id
-      console.log(pg_id)
-      this.scrollToPage(pg_id)
-    } else {
-      seek = seek / 1000
-    }
+    seek = seek / 1000
     this.audio_howl_sprites.goTo(this.play_id, seek)
     setTimeout(() => this.autoScroll = true, 100)
   }
@@ -218,16 +194,38 @@ export class ReadAlongComponent {
   /**
    * Go to seek from id
    *
-   * @param id
+   * @param ev
    */
-  goToSeekFromId(id) {
-    let path = id.composedPath();
-    var tag = path[0].id;
+  goToSeekAtEl(ev: MouseEvent): string {
+    let el = ev.currentTarget as HTMLElement
+    var tag = el.id;
     let seek = this.processed_alignment[tag][0]
     this.goTo(seek)
     return tag
   }
 
+  /**
+   * Go to seek from progress bar
+   */
+  goToSeekFromProgress(ev: MouseEvent): void {
+    let el = ev.currentTarget as HTMLElement;
+    let client_rect = el.getBoundingClientRect()
+    // get offset of clicked element
+    let offset = client_rect.left
+    // get width of clicked element
+    let width = client_rect.width
+    // get click point
+    let click = ev.pageX - offset
+    // get seek in milliseconds
+    let seek = ((click / width) * this.duration) * 1000
+    this.goTo(seek)
+  }
+
+
+
+  /**
+   * Pause audio.
+   */
   pause(): void {
     this.playing = false;
     this.audio_howl_sprites.pause()
@@ -248,7 +246,7 @@ export class ReadAlongComponent {
     ).subscribe(x => {
       if (this.playing) {
         let query = this.tagToQuery(x);
-        let query_el = this.el.shadowRoot.querySelector(query);
+        let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
         this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
         query_el.classList.add('reading')
         let current_page = query_el.parentElement.parentElement.parentElement.id
@@ -256,7 +254,6 @@ export class ReadAlongComponent {
           this.current_page = current_page
           this.scrollToPage(current_page)
         }
-        console.log(this.inPageContentOverflow(query_el))
         if (this.inPageContentOverflow(query_el)) {
           if (this.autoScroll) {
             this.scrollByHeight(query_el)
@@ -283,22 +280,20 @@ export class ReadAlongComponent {
     }
 
     if (this.svg_overlay) {
-      this.animateOverlayFill();
+      this.animateProgressWithOverlay();
     } else {
       this.animateProgress(play_id, tag);
     }
   }
 
   /**
-   * Play a sprite or seek to it
+   * Seek to an element with id 'id', then play it
    *
-   * @param id
+   * @param ev
    */
-  playSprite(id) {
-    var tag = this.goToSeekFromId(id)
+  playSprite(ev: MouseEvent): void {
+    var tag = this.goToSeekAtEl(ev)
     if (!this.playing) {
-      // this.play();
-      // this.pause();
       this.audio_howl_sprites.play(tag)
     }
   }
@@ -316,6 +311,7 @@ export class ReadAlongComponent {
       this.autoScroll = true;
       this.showGuide = false;
     }
+
     if (this.reading$) {
       // unsubscribe to Subject
       this.reading$.unsubscribe()
@@ -331,12 +327,15 @@ export class ReadAlongComponent {
    *
    * @param el
    */
-  addHighlightingTo(el) {
+  addHighlightingTo(el: HTMLElement): void {
     this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
     el.classList.add('reading')
   }
 
-  animateOverlayFill() {
+  /**
+   * Animate the progress through the overlay svg
+   */
+  animateProgressWithOverlay(): void {
     // select svg container
     let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
     // use svg container to grab fill and trail
@@ -362,7 +361,13 @@ export class ReadAlongComponent {
     }, this.play_id);
   }
 
-  animateProgress(play_id, tag) {
+  /**
+   * Animate the progress if no svg overlay is provided
+   * 
+   * @param play_id
+   * @param tag
+   */
+  animateProgress(play_id: string, tag: string): void {
     var elm = document.createElement('div');
     elm.className = 'progress theme--' + this.theme;
     elm.id = play_id;
@@ -380,12 +385,17 @@ export class ReadAlongComponent {
     }, this.play_id);
   }
 
-  changeFill() {
+  /**
+   * Change fill colour to match theme
+   */
+  changeFill(): void {
+    // Get theme contrast from the computed color of a word
     let contrast_el = this.el.shadowRoot.querySelector('.sentence__word')
     let contrast = window.getComputedStyle(contrast_el).color
 
     // select svg container
     let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
+
     // use svg container to grab fill and trail
     let fill = wave__container.contentDocument.querySelector('#progress-fill')
     let base = wave__container.contentDocument.querySelector('#progress-base')
@@ -412,9 +422,9 @@ export class ReadAlongComponent {
   /**
    * Make Fullscreen
    */
-  private toggleFullscreen() {
+  private toggleFullscreen(): void {
     if (!this.fullscreen) {
-      var elem: any = this.el.shadowRoot.getElementById('read-along-container')
+      var elem: any = this.el.shadowRoot.getElementById('read-along-container');
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
       } else if (elem.mozRequestFullScreen) { /* Firefox */
@@ -424,7 +434,8 @@ export class ReadAlongComponent {
       } else if (elem.msRequestFullscreen) { /* IE/Edge */
         elem.msRequestFullscreen();
       }
-      this.el.shadowRoot.getElementById('read-along-container').classList.add('read-along-container--fullscreen')
+      this.el.shadowRoot.getElementById('read-along-container')
+        .classList.add('read-along-container--fullscreen');
     } else {
       var document: any = this.el.ownerDocument
       if (document.exitFullscreen) {
@@ -436,7 +447,8 @@ export class ReadAlongComponent {
       } else if (document.msExitFullscreen) { /* IE/Edge */
         document.msExitFullscreen();
       }
-      this.el.shadowRoot.getElementById('read-along-container').classList.remove('read-along-container--fullscreen')
+      this.el.shadowRoot.getElementById('read-along-container')
+        .classList.remove('read-along-container--fullscreen');
     }
     this.fullscreen = !this.fullscreen
   }
@@ -445,8 +457,8 @@ export class ReadAlongComponent {
    * SCROLLING *
    *************/
 
-  hideGuideAndScroll() {
-    let reading_el = this.el.shadowRoot.querySelector('.reading')
+  hideGuideAndScroll(): void {
+    let reading_el: HTMLElement = this.el.shadowRoot.querySelector('.reading')
     // observe when element is scrolled to, then remove the scroll guide and unobserve
     let intersectionObserver = new IntersectionObserver((entries) => {
       let [entry] = entries;
@@ -459,7 +471,7 @@ export class ReadAlongComponent {
     this.scrollTo(reading_el)
   }
 
-  inPageContentOverflow(element) {
+  inPageContentOverflow(element: HTMLElement): boolean {
     let page_el = this.el.shadowRoot.querySelector('#' + this.current_page)
     let sent_el = page_el.querySelector('.sentence__container');
     let sent_rect = sent_el.getBoundingClientRect()
@@ -482,11 +494,7 @@ export class ReadAlongComponent {
     return (inOverflowAbove || inOverflowBelow)
   }
 
-  getPageFromEl(el) {
-    console.log(el)
-  }
-
-  inPage(element) {
+  inPage(element: HTMLElement): boolean {
     let sent_el = this.el.shadowRoot.querySelector('.sentence__container');
     let sent_rect = sent_el.getBoundingClientRect()
     let el_rect = element.getBoundingClientRect()
@@ -509,12 +517,12 @@ export class ReadAlongComponent {
     return (inOverflowAbove || inOverflowBelow)
   }
 
-  scrollToPage(pg_id) {
+  scrollToPage(pg_id: string): void {
     let next_page = this.el.shadowRoot.querySelector('#' + pg_id)
     next_page.scrollIntoView({ behavior: "smooth" })
   }
 
-  scrollByHeight(el) {
+  scrollByHeight(el: HTMLElement): void {
     let page_el = this.el.shadowRoot.querySelector('#' + this.current_page)
     let sent_container = page_el.querySelector('.sentence__container');
     let anchor = el.getBoundingClientRect()
@@ -525,8 +533,7 @@ export class ReadAlongComponent {
     });
   }
 
-  scrollTo(el) {
-    console.log(el)
+  scrollTo(el: HTMLElement): void {
     el.scrollIntoView({
       behavior: 'smooth'
     });
@@ -536,6 +543,13 @@ export class ReadAlongComponent {
    * LIFECYCLE *
    *************/
 
+  /**
+   * When the component updates, change the fill of the progress bar.
+   * This is because the fill colour is determined by a computed CSS
+   * value set by the Web Component's theme. When the Theme changes and
+   * the component updates, we have to update the fill with the new
+   * computed CSS value.
+   */
   componentDidUpdate() {
     if (this.svg_overlay) {
       this.changeFill()
@@ -546,7 +560,7 @@ export class ReadAlongComponent {
    * Lifecycle hook: Before component loads, build the Sprite and parse the files necessary
    */
   componentWillLoad() {
-    this.processed_alignment = this.getAlignments()
+    this.processed_alignment = parseSMIL(this.alignment)
     // load basic Howl
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
@@ -565,11 +579,23 @@ export class ReadAlongComponent {
    *  LANG  *
    **********/
 
-  returnTranslation(word, lang) {
+  /**
+   * Any text used in the Web Component should be at least bilingual in English and French.
+   * To add a new term, add a new key to the translations object. Then add 'eng' and 'fr' keys
+   * and give the translations as values.
+   * 
+   * @param word
+   * @param lang
+   */
+  returnTranslation(word: string, lang: string): string {
     let translations = {
       "speed": {
         "eng": "Playback Speed",
         "fr": "Vitesse de Lecture"
+      },
+      "re-align": {
+        "eng": "Re-align with audio",
+        "fr": "Réaligner avec l'audio"
       }
     }
     return translations[word][lang]
@@ -579,22 +605,35 @@ export class ReadAlongComponent {
    * RENDER *
    **********/
 
-  renderGuide() {
+  /**
+   * Render the guide for getting back to the current element.
+   */
+  renderGuide(): JSX.Element {
     if (this.showGuide) {
-      return <button class={'scroll-guide__container ripple ui-button theme--' + this.theme} onClick={() => this.hideGuideAndScroll()}><span class={'scroll-guide__text theme--' + this.theme}>Re-align with audio</span></button>
+      return <button class={'scroll-guide__container ripple ui-button theme--' + this.theme}
+        onClick={() => this.hideGuideAndScroll()}>
+        <span class={'scroll-guide__text theme--' + this.theme}>
+          {this.returnTranslation('re-align', this.language)}
+        </span>
+      </button>
     }
   }
 
   /**
-   * Render overlay
+   * Render svg overlay
    */
-  private renderOverlay() {
+  private renderOverlay(): JSX.Element {
     if (this.svg_overlay) {
-      return <object onClick={(e) => this.goTo(e)} id='overlay__object' type='image/svg+xml' data={this.svg_overlay}></object>
+      return <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object' type='image/svg+xml' data={this.svg_overlay}></object>
     }
   }
 
-  private renderImg(url) {
+  /**
+   * Render image at path 'url' in assets folder.
+   * 
+   * @param url
+   */
+  private renderImg(url: string): JSX.Element {
     if (url) {
       url = `assets/${url}`;
       return <div class={"image__container page__col__image theme--" + this.theme}>
@@ -603,18 +642,25 @@ export class ReadAlongComponent {
     }
   }
 
-  private renderPageCount(pg_count, parsed_tei, page) {
+  /**
+   * Render the page count
+   * 
+   * @param pg_count
+   * @param parsed_tei
+   * @param page 
+   */
+  private renderPageCount(pg_count: number, parsed_tei: Page[], page: Page) {
     if (pg_count > 1) {
       return <div class={"page__counter color--" + this.theme}>Page {parsed_tei.indexOf(page) + 1} / {pg_count}</div>
     }
   }
 
-  private renderParagraphs(paragraphs) {
-    return paragraphs.map((paragraph: any) =>
+  private renderParagraphs(paragraphs: Node[]): JSX.Element {
+    return paragraphs.map((paragraph: Node) =>
       <div class='page__col__text paragraph sentence__container'>
-        {Array.from(paragraph.childNodes).map((sentence: any) =>
+        {Array.from(paragraph.childNodes).map((sentence: Node) =>
           <div class='sentence'>
-            {Array.from(sentence.childNodes).map((child: any) => {
+            {Array.from(sentence.childNodes).map((child: Node) => {
               if (child.nodeName === '#text') {
                 return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
               } else if (child.nodeName === 'w') {
@@ -625,7 +671,7 @@ export class ReadAlongComponent {
       </div>)
   }
 
-  private renderPages() {
+  private renderPages(): JSX.Element {
     let pg_count = this.page_info.length
     if (pg_count > 1) {
       let pages = this.page_info.map((page) =>
@@ -648,13 +694,16 @@ export class ReadAlongComponent {
   /**
    * Turn parsed TEI-style text into JSX.Element
    */
-  private renderText() {
+  private renderText(): JSX.Element {
     let parsed_tei = parseTEI(this.text)
     this.page_info = parsed_tei
     return this.renderPages()
   }
 
-  private renderControlPanel() {
+  /**
+   * Render controls for ReadAlong
+   */
+  private renderControlPanel(): JSX.Element {
     return <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
       <div class="control-panel__buttons--left">
         <button onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
@@ -687,8 +736,10 @@ export class ReadAlongComponent {
     </div>
   }
 
-
-  render() {
+  /**
+   * Render main component
+   */
+  render(): JSX.Element {
     return (
       <div id='read-along-container' class='read-along-container'>
         <h1 class="slot__header">
@@ -704,7 +755,7 @@ export class ReadAlongComponent {
           {/* </div> */}
 
         </div>
-        <div onClick={(e) => this.goTo(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
+        <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.renderOverlay()}
         </div>
         {this.renderControlPanel()}

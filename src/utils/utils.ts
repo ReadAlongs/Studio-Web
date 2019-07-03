@@ -1,6 +1,17 @@
 import { Howl } from 'howler';
 import { BehaviorSubject, Subject } from 'rxjs';
 
+
+export interface Page {
+  id: string,
+  paragraphs: Node[],
+  img?: string
+}
+
+export interface Alignment {
+  [id: string]: [number, number];
+}
+
 /**
  * Gets XML from path
  * @param {string} path - the path to the xml file
@@ -13,14 +24,14 @@ function getXML(path: string): string {
 }
 
 /**
- * Return list of elements from XPath
+ * Return list of nodess from XPath
  * @param {string} xpath - the xpath to evaluate with
  * @param {Document} xml - the xml to evaluate
  */
-function getElementByXpath(xpath: string, xml: Document): Node[] {
+function getNodeByXpath(xpath: string, xml: Document): Node[] {
   let xmlns = xml.lookupNamespaceURI(null);
   if (xmlns === null) {
-    // console.log("Your XML file is missing an XML namespace.");
+    console.error("Your XML file is missing an XML namespace.");
   }
   function nsResolver(prefix) {
     var ns = {
@@ -36,7 +47,6 @@ function getElementByXpath(xpath: string, xml: Document): Node[] {
     result_container.push(node);
     node = results.iterateNext()
   }
-  // console.log(result_container)
   return result_container
 }
 
@@ -51,49 +61,22 @@ export function zip(arrays): Array<any[]> {
   });
 }
 
-/**
- *
- * @param nodes
- */
-export function mergeTextAndVals(nodes: Node[]) {
-  let merged_words = []
-  let current_text = ""
-  for (let n of nodes) {
-    if (n.nodeName === '#text') {
-      current_text += n.textContent
-      // if at end, add whatever text is left over to the last word
-      if (nodes.indexOf(n) === nodes.length - 1) {
-        merged_words[merged_words.length - 1] += current_text
-      }
-    } else if (n.nodeName === 'w') {
-      current_text += n.textContent
-      merged_words.push(current_text)
-      current_text = ""
-    } else {
-      console.log(n.nodeName + " is not recognized")
-    }
-  }
-  console.log(merged_words)
-  return merged_words
-}
-
 
 /**
  * Return sentences from TEI xml file
  * @param {string} - the path to the TEI file
  */
-export function parseTEI(path: string): any {
+export function parseTEI(path: string): Page[] {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let pages = getElementByXpath('.//div[@type="page"]', xml_text)
+  let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
   let parsed_pages = pages.map((p: Element) => {
     let id = p.id;
-    console.log(id)
     let img_xpath = `.//div[@id='${id}']/graphic/@url`
-    let img = getElementByXpath(img_xpath, xml_text)
+    let img = getNodeByXpath(img_xpath, xml_text)
     let p_xpath = `.//div[@id='${id}']/p`
-    let paragraphs = getElementByXpath(p_xpath, xml_text)
+    let paragraphs = getNodeByXpath(p_xpath, xml_text)
     let parsed_page = { id: id, paragraphs: paragraphs }
     if (img.length > 0) {
       parsed_page['img'] = img[0].nodeValue;
@@ -109,18 +92,17 @@ export function parseTEI(path: string): any {
  * Return useful data from SMIL xml file
  * @param {string} - the path to the SMIL file
  */
-export function parseSMIL(path: string): object {
+export function parseSMIL(path: string): Alignment {
   let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let text = getElementByXpath('/i:smil/i:body/i:par/i:text/@src', xml_text).map(x => {
+  let text = getNodeByXpath('/i:smil/i:body/i:par/i:text/@src', xml_text).map(x => {
     let split = x['value'].split('#');
     return split[split.length - 1]
   }
   )
-  console.log(text)
-  let audio_begin = getElementByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
-  let audio_end = getElementByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
+  let audio_begin = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
+  let audio_end = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
   let audio_duration = []
   for (var i = 0; i < audio_begin.length; i++) {
     let duration = audio_end[i] - audio_begin[i]
@@ -169,7 +151,7 @@ Sprite.prototype = {
    * Play a sprite when clicked and track the progress.
    * @param  {String} key Key in the sprite map object.
    */
-  play: function (key): number {
+  play: function (key: string): number {
     var self = this;
     self._spriteLeft = self._tinySprite
     var sprite = key;
@@ -188,17 +170,17 @@ Sprite.prototype = {
    * Go back s seconds, or if current position - s is less than 0
    * go back to the beginning.
    *
-   * @param id: number - the id of the audio to roll back
-   * @param s: number - the number of seconds to go back
+   * @param id - the id of the audio to roll back
+   * @param s - the number of seconds to go back
    */
-  goBack: function (id, s): number {
+  goBack: function (id : number, s: number): number {
     var self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
     // if current_seek - s is greater than 0, find the closest sprite
     // and highlight it; seek to current_seek -s.
     if (self.sound.seek(id = id) - s > 0) {
-      var id = self.sound.seek(self.sound.seek(id = id) - s, id);
+      var id : number = self.sound.seek(self.sound.seek(id = id) - s, id);
       // move highlight back TODO: refactor out into its own function and combine with version in step()
       var seek = self.sound.seek(id = id)
       for (var j = 0; j < self._spriteLeft.length; j++) {
@@ -210,7 +192,7 @@ Sprite.prototype = {
       }
       // else, return back to beginning
     } else {
-      var id = self.sound.seek(0, id);
+      var id : number = self.sound.seek(0, id);
       self._reading$.next(self._spriteLeft[0][1])
     }
     return id
@@ -220,17 +202,17 @@ Sprite.prototype = {
  * Go back s seconds, or if current position - s is less than 0
  * go back to the beginning.
  *
- * @param id: number - the id of the audio to roll back
- * @param s: number - the number of seconds to go back
+ * @param id - the id of the audio to roll back
+ * @param s - the number of seconds to go back
  */
-  goTo: function (id, s): number {
+  goTo: function (id : number, s : number): number {
     var self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
     // if current_seek - s is greater than 0, find the closest sprite
     // and highlight it; seek to current_seek -s.
 
-    var id = self.sound.seek(s, id);
+    var id : number = self.sound.seek(s, id);
     // move highlight back TODO: refactor out into its own function and combine with version in step()
     var seek = self.sound.seek(id = id)
     for (var j = 0; j < self._spriteLeft.length; j++) {
