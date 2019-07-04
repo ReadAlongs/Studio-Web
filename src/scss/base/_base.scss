@@ -84,15 +84,9 @@ $value in $ui-themes {
         // box-shadow: inset 0 0 em(5) map-get($value, primary);
         background: map-get($value, primary);
 
-        // border-left: em(1) solid map-get($value, text);
-        // border-right: em(1) solid map-get($value, text);
         // @extend %border--strong--left;
         // @extend %border--strong--right;
-        &:horizontal {
-            @extend %border--strong--left;
-            @extend %border--strong--right;
-
-        }
+  
     }
 
     /* Handle */

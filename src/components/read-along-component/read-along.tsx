@@ -185,6 +185,10 @@ export class ReadAlongComponent {
    * 
    */
   goTo(seek: number): void {
+    if (this.play_id === undefined) {
+      this.play();
+      this.pause();
+    }
     this.autoScroll = false;
     seek = seek / 1000
     this.audio_howl_sprites.goTo(this.play_id, seek)
@@ -233,57 +237,23 @@ export class ReadAlongComponent {
 
 
   /**
-  * Play a sprite from the audio, and subscribe to the sprite's 'reading' subject
-  * in order to asynchronously apply styles as the sprite is played
+  * Play the current audio, or start a new play of all
+  * the audio
   * @param id string
-  * TODO: Refactor this ugliness
+  * 
   */
   play() {
-    var tag = 'all'
-    // subscribe to reading subject and update element class
-    this.reading$ = this.audio_howl_sprites._reading$.pipe(
-      distinctUntilChanged()
-    ).subscribe(x => {
-      if (this.playing) {
-        let query = this.tagToQuery(x);
-        let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
-        this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-        query_el.classList.add('reading')
-        let current_page = query_el.parentElement.parentElement.parentElement.id
-        if (current_page !== this.current_page) {
-          this.current_page = current_page
-          this.scrollToPage(current_page)
-        }
-        if (this.inPageContentOverflow(query_el)) {
-          if (this.autoScroll) {
-            this.scrollByHeight(query_el)
-          }
-        }
-      }
-    })
     this.playing = true;
     // If already playing once, continue playing
-    if (this.play_id) {
-      this.audio_howl_sprites.play(this.play_id)
+    if (this.play_id !== undefined) {
+      this.play_id = this.audio_howl_sprites.play(this.play_id)
+    } else {
       // else, start a new play
-    } else {
-      let sent_el = this.el.shadowRoot.querySelector('.sentence__container')
-      if (sent_el.scrollTop > 0) {
-        sent_el.scrollTo(0, 0);
-      }
-      var play_id = this.audio_howl_sprites.play(tag)
-      this.play_id = play_id
-      if (this.el.shadowRoot.querySelectorAll('.reading').length > 0) {
-        let reading_el_id = this.el.shadowRoot.querySelector(".reading").id
-        this.goTo(this.processed_alignment[reading_el_id][0])
-      }
+      this.play_id = this.audio_howl_sprites.play('all')
     }
+    // animate the progress bar
+    this.animateProgress()
 
-    if (this.svg_overlay) {
-      this.animateProgressWithOverlay();
-    } else {
-      this.animateProgress(play_id, tag);
-    }
   }
 
   /**
@@ -312,10 +282,6 @@ export class ReadAlongComponent {
       this.showGuide = false;
     }
 
-    if (this.reading$) {
-      // unsubscribe to Subject
-      this.reading$.unsubscribe()
-    }
   }
 
   /*************
@@ -350,11 +316,9 @@ export class ReadAlongComponent {
     this.audio_howl_sprites.sounds.push(trail)
     // When this sound is finished, remove the progress element.
     this.audio_howl_sprites.sound.once('end', () => {
-      // var index = this.audio_howl_sprites.sounds.indexOf(fill);
       this.audio_howl_sprites.sounds.forEach(x => {
         x.setAttribute("offset", '0%');
       });
-      // this.audio_howl_sprites = [];
       this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
       this.playing = false;
       // }
@@ -367,10 +331,10 @@ export class ReadAlongComponent {
    * @param play_id
    * @param tag
    */
-  animateProgress(play_id: string, tag: string): void {
+  animateProgressDefault(play_id: number, tag: string): void {
     var elm = document.createElement('div');
     elm.className = 'progress theme--' + this.theme;
-    elm.id = play_id;
+    elm.id = play_id.toString();
     elm.dataset.sprite = tag;
     let query = this.tagToQuery(tag);
     this.el.shadowRoot.querySelector(query).appendChild(elm);
@@ -384,6 +348,21 @@ export class ReadAlongComponent {
       // }
     }, this.play_id);
   }
+
+  /**
+   * Animate progress, either by default or with svg overlay.
+   */
+  animateProgress(play_id = this.play_id): void {
+    // Start animating progress
+    if (this.svg_overlay) {
+      // either with svg overlay
+      this.animateProgressWithOverlay();
+    } else {
+      // or default progress bar
+      this.animateProgressDefault(play_id, 'all');
+    }
+  }
+
 
   /**
    * Change fill colour to match theme
@@ -546,7 +525,7 @@ export class ReadAlongComponent {
   /**
    * When the component updates, change the fill of the progress bar.
    * This is because the fill colour is determined by a computed CSS
-   * value set by the Web Component's theme. When the Theme changes and
+   * value set by the Web Component's theme. When the @prop theme changes and
    * the component updates, we have to update the fill with the new
    * computed CSS value.
    */
@@ -557,7 +536,9 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Lifecycle hook: Before component loads, build the Sprite and parse the files necessary
+   * Lifecycle hook: Before component loads, build the Sprite and parse the files necessary.
+   * Then subscribe to the _reading$ Subject in order to update CSS styles when new element 
+   * is being read
    */
   componentWillLoad() {
     this.processed_alignment = parseSMIL(this.alignment)
@@ -571,7 +552,37 @@ export class ReadAlongComponent {
       this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
       this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
+      // Once Sprites are built, subscribe to reading subject and update element class
+      // when new distinct values are emitted
+      this.reading$ = this.audio_howl_sprites._reading$.pipe(
+        distinctUntilChanged()
+      ).subscribe(el_tag => {
+        // Only highlight when playing
+        if (this.playing) {
+          // Turn tag to query
+          let query = this.tagToQuery(el_tag);
+          // select the element with that tag
+          let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
+          // Remove all elements with reading class
+          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+          // Add reading to the selected el
+          query_el.classList.add('reading')
+          // Scroll horizontally (to different page) if needed
+          let current_page = query_el.parentElement.parentElement.parentElement.id
+          if (current_page !== this.current_page) {
+            this.current_page = current_page
+            this.scrollToPage(current_page)
+          }
+          // scroll vertically (through paragraph) if needed
+          if (this.inPageContentOverflow(query_el)) {
+            if (this.autoScroll) {
+              this.scrollByHeight(query_el)
+            }
+          }
+        }
+      })
     })
+
     this.processed_text = this.renderText()
   }
 

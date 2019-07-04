@@ -53,7 +53,7 @@ function getNodeByXpath(xpath: string, xml: Document): Node[] {
 
 /**
  * Return a zipped array of arrays
- * @param {array[]}
+ * @param {array[]} arrays
  */
 export function zip(arrays): Array<any[]> {
   return arrays[0].map(function (_, i) {
