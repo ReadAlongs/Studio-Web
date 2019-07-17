@@ -74,7 +74,7 @@ export class ReadAlongComponent {
   @State() autoScroll: boolean = true;
   showGuide: boolean = false;
 
-  page_info;
+  parsed_text;
 
   current_page;
 
@@ -582,8 +582,8 @@ export class ReadAlongComponent {
         }
       })
     })
-
-    this.processed_text = this.renderText()
+    // Parse the text to be displayed
+    this.parsed_text = parseTEI(this.text)
   }
 
   /**********
@@ -617,135 +617,168 @@ export class ReadAlongComponent {
    **********/
 
   /**
-   * Render the guide for getting back to the current element.
+   * The Guide element
    */
-  renderGuide(): JSX.Element {
-    if (this.showGuide) {
-      return <button class={'scroll-guide__container ripple ui-button theme--' + this.theme}
-        onClick={() => this.hideGuideAndScroll()}>
-        <span class={'scroll-guide__text theme--' + this.theme}>
-          {this.returnTranslation('re-align', this.language)}
-        </span>
-      </button>
-    }
-  }
+  Guide = (): JSX.Element =>
+    <button class={'scroll-guide__container ripple ui-button theme--' + this.theme}
+      onClick={() => this.hideGuideAndScroll()}>
+      <span class={'scroll-guide__text theme--' + this.theme}>
+        {this.returnTranslation('re-align', this.language)}
+      </span>
+    </button>
 
   /**
    * Render svg overlay
    */
-  private renderOverlay(): JSX.Element {
-    if (this.svg_overlay) {
-      return <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object' type='image/svg+xml' data={this.svg_overlay}></object>
-    }
-  }
+  Overlay = (): JSX.Element => <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object' type='image/svg+xml' data={this.svg_overlay}></object>
 
   /**
    * Render image at path 'url' in assets folder.
    * 
    * @param url
    */
-  private renderImg(url: string): JSX.Element {
-    if (url) {
-      url = `assets/${url}`;
-      return <div class={"image__container page__col__image theme--" + this.theme}>
-        <img class="image" src={url} />
-      </div>
-    }
-  }
+  Img = (props: { url: string }): JSX.Element => <div class={"image__container page__col__image theme--" + this.theme}>
+    <img class="image" src={'assets/' + props.url} />
+  </div>
+
 
   /**
-   * Render the page count
+   * Page Counter element
    * 
-   * @param pg_count
-   * @param parsed_tei
-   * @param page 
+   * @param props
+   * 
+   * Shows currentPage / pgCount
    */
-  private renderPageCount(pg_count: number, parsed_tei: Page[], page: Page) {
-    if (pg_count > 1) {
-      return <div class={"page__counter color--" + this.theme}>Page {parsed_tei.indexOf(page) + 1} / {pg_count}</div>
-    }
-  }
-
-  private renderParagraphs(paragraphs: Node[]): JSX.Element {
-    return paragraphs.map((paragraph: Node) =>
-      <div class={'page__col__text paragraph sentence__container theme--' + this.theme}>
-        {Array.from(paragraph.childNodes).map((sentence: Node) =>
-          <div class='sentence'>
-            {Array.from(sentence.childNodes).map((child: Node) => {
-              if (child.nodeName === '#text') {
-                return <span class={'sentence__text theme--' + this.theme} id='text'>{child['textContent']}</span>
-              } else if (child.nodeName === 'w') {
-                return <span class={'sentence__word theme--' + this.theme} id={child['id']} onClick={(ev) => this.playSprite(ev)}>{child['textContent']}</span>
-              }
-            })}
-          </div>)}
-      </div>)
-  }
-
-  private renderPages(): JSX.Element {
-    let pg_count = this.page_info.length
-    if (pg_count > 1) {
-      let pages = this.page_info.map((page) =>
-        <div class={'page page--multi animate-transition paragraph__container theme--' + this.theme} id={page['id']}>
-          {this.renderPageCount(pg_count, this.page_info, page)}
-          {this.renderImg(page['img'])}
-          {this.renderParagraphs(page['paragraphs'])}
-        </div>)
-      return pages
-    } else {
-      let page = this.page_info[0]
-      return <div class={'page page--single animate-transition paragraph__container theme--' + this.theme} id={page['id']}>
-        {this.renderPageCount(pg_count, this.page_info, page)}
-        {this.renderImg(page['img'])}
-        {this.renderParagraphs(page['paragraphs'])}
-      </div>
-    }
-  }
+  PageCount = (props: { pgCount: number, currentPage: number }): JSX.Element =>
+    <div class={"page__counter color--" + this.theme}>Page {props.currentPage} / {props.pgCount}</div>
 
   /**
-   * Turn parsed TEI-style text into JSX.Element
+   * Page element
+   * 
+   * @param props
+   * 
+   * Show 'Page' or vertically scrollable text content.
+   * Text content on 'Page' breaks is separated horizontally.
    */
-  private renderText(): JSX.Element {
-    let parsed_tei = parseTEI(this.text)
-    this.page_info = parsed_tei
-    return this.renderPages()
-  }
+  Page = (props: { pageData: Page }): JSX.Element =>
+    <div class={'page page--multi animate-transition paragraph__container theme--' + this.theme} id={props.pageData['id']}>
+      { /* Display the PageCount only if there's more than 1 page */
+        this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length} currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
+      }
+      { /* Display an Img if it exists on the page */
+        props.pageData.img ? <this.Img url={props.pageData.img} /> : null
+      }
+      { /* Here are the Paragraph children */
+        props.pageData.paragraphs.map((paragraph: Node) =>
+          <this.Paragraph sentences={Array.from(paragraph.childNodes)} />)
+      }
+    </div>
+
+  /**
+   * Paragraph element
+   * 
+   * @param props
+   * 
+   * A paragraph element with one or more sentences
+   */
+  Paragraph = (props: { sentences: Node[] }): JSX.Element =>
+    <div class={'page__col__text paragraph sentence__container theme--' + this.theme}>
+      {
+        /* Here are the Sentence children */
+        props.sentences.map((sentence: Node) =>
+          <this.Sentence words={Array.from(sentence.childNodes)} />)
+      }
+    </div>
+
+  /**
+   * Sentence element
+   * 
+   * @param props
+   * 
+   * A sentence element with one or more words
+   */
+  Sentence = (props: { words: Node[] }): JSX.Element =>
+    <div class='sentence'>
+      {
+        /* Here are the Word and NonWordText children */
+        props.words.map((child: Node) => {
+          if (child.nodeName === '#text') {
+            return <this.NonWordText text={child.textContent} />
+          } else if (child.nodeName === 'w') {
+            return <this.Word text={child.textContent} id={child['id']} />
+          }
+        })
+      }
+    </div>
+
+  /**
+   * A non-Word text element
+   * 
+   * @param props
+   * 
+   * This is an element that is a child to a Sentence element,
+   * but cannot be clicked and is not a word. This is usually
+   * inter-Word punctuation or other text.
+   */
+  NonWordText = (props: { text: string }): JSX.Element =>
+    <span class={'sentence__text theme--' + this.theme} id='text'>{props.text}</span>
+
+  /**
+   * A Word text element
+   * 
+   * @param props
+   * 
+   * This is a clickable, audio-aligned Word element
+   */
+  Word = (props: { id: string, text: string }): JSX.Element =>
+    <span class={'sentence__word theme--' + this.theme} id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
 
   /**
    * Render controls for ReadAlong
    */
-  private renderControlPanel(): JSX.Element {
-    return <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-      <div class="control-panel__buttons--left">
-        <button onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-          <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
-        </button>
-        <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-          <i class="material-icons">replay_5</i>
-        </button>
-        <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-          <i class="material-icons">stop</i>
-        </button>
-      </div>
 
-      <div class="control-panel__buttons--center">
-        <div>
-          <h5 class={"control-panel__buttons__header color--" + this.theme}>{this.returnTranslation('speed', this.language)}</h5>
-          <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control" id="myRange" onInput={(v) => this.changePlayback(v)} />
-        </div>
-      </div>
+  PlayControl = (): JSX.Element => <button onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
+  </button>
 
-      <div class="control-panel__buttons--right">
-        <button onClick={() => this.changeTheme()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-          <i class="material-icons-outlined">style</i>
-        </button>
-        <button onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-          <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
-        </button>
-      </div>
+  ReplayControl = (): JSX.Element => <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons">replay_5</i>
+  </button>
 
+  StopControl = (): JSX.Element => <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons">stop</i>
+  </button>
+
+  PlaybackSpeedControl = (): JSX.Element => <div>
+    <h5 class={"control-panel__buttons__header color--" + this.theme}>{this.returnTranslation('speed', this.language)}</h5>
+    <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control" id="myRange" onInput={(v) => this.changePlayback(v)} />
+  </div>
+
+  StyleControl = (): JSX.Element => <button onClick={() => this.changeTheme()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons-outlined">style</i>
+  </button>
+
+  FullScreenControl = (): JSX.Element => <button onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
+  </button>
+
+  ControlPanel = (): JSX.Element => <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+    <div class="control-panel__buttons--left">
+      <this.PlayControl />
+      <this.ReplayControl />
+      <this.StopControl />
     </div>
-  }
+
+    <div class="control-panel__buttons--center">
+      <this.PlaybackSpeedControl />
+    </div>
+
+    <div class="control-panel__buttons--right">
+      <this.StyleControl />
+      <this.FullScreenControl />
+    </div>
+  </div>
+
 
   /**
    * Render main component
@@ -760,17 +793,16 @@ export class ReadAlongComponent {
           <slot name="read-along-subheader" />
         </h3>
         <div class={"page__container theme--" + this.theme}>
-          {/* <div class={'animate-transition theme--' + this.theme}> */}
-          {this.renderGuide()}
-          {this.renderText()}
-          {/* </div> */}
-
+          {this.showGuide ? <this.Guide /> : null}
+          {this.parsed_text.map((page) =>
+            <this.Page pageData={page} >
+            </this.Page>
+          )}
         </div>
         <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
-          {this.renderOverlay()}
+          {this.svg_overlay ? <this.Overlay /> : null}
         </div>
-        {this.renderControlPanel()}
-
+        <this.ControlPanel />
       </div >
     )
   }
