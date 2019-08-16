@@ -64,42 +64,15 @@ export namespace Components {
     */
     'theme'?: string;
   }
-
-  interface ReadAlongControls {
-    'name': string;
-  }
-  interface ReadAlongControlsAttributes extends StencilHTMLAttributes {
-    'name'?: string;
-  }
-
-  interface ReadAlongProgress {
-    'name': string;
-  }
-  interface ReadAlongProgressAttributes extends StencilHTMLAttributes {
-    'name'?: string;
-  }
-
-  interface ReadAlongText {
-    'name': string;
-  }
-  interface ReadAlongTextAttributes extends StencilHTMLAttributes {
-    'name'?: string;
-  }
 }
 
 declare global {
   interface StencilElementInterfaces {
     'ReadAlong': Components.ReadAlong;
-    'ReadAlongControls': Components.ReadAlongControls;
-    'ReadAlongProgress': Components.ReadAlongProgress;
-    'ReadAlongText': Components.ReadAlongText;
   }
 
   interface StencilIntrinsicElements {
     'read-along': Components.ReadAlongAttributes;
-    'read-along-controls': Components.ReadAlongControlsAttributes;
-    'read-along-progress': Components.ReadAlongProgressAttributes;
-    'read-along-text': Components.ReadAlongTextAttributes;
   }
 
 
@@ -109,36 +82,12 @@ declare global {
     new (): HTMLReadAlongElement;
   };
 
-  interface HTMLReadAlongControlsElement extends Components.ReadAlongControls, HTMLStencilElement {}
-  var HTMLReadAlongControlsElement: {
-    prototype: HTMLReadAlongControlsElement;
-    new (): HTMLReadAlongControlsElement;
-  };
-
-  interface HTMLReadAlongProgressElement extends Components.ReadAlongProgress, HTMLStencilElement {}
-  var HTMLReadAlongProgressElement: {
-    prototype: HTMLReadAlongProgressElement;
-    new (): HTMLReadAlongProgressElement;
-  };
-
-  interface HTMLReadAlongTextElement extends Components.ReadAlongText, HTMLStencilElement {}
-  var HTMLReadAlongTextElement: {
-    prototype: HTMLReadAlongTextElement;
-    new (): HTMLReadAlongTextElement;
-  };
-
   interface HTMLElementTagNameMap {
     'read-along': HTMLReadAlongElement
-    'read-along-controls': HTMLReadAlongControlsElement
-    'read-along-progress': HTMLReadAlongProgressElement
-    'read-along-text': HTMLReadAlongTextElement
   }
 
   interface ElementTagNameMap {
     'read-along': HTMLReadAlongElement;
-    'read-along-controls': HTMLReadAlongControlsElement;
-    'read-along-progress': HTMLReadAlongProgressElement;
-    'read-along-text': HTMLReadAlongTextElement;
   }
 
 
