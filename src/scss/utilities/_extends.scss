@@ -1,6 +1,5 @@
 %themed-bg {
     &.theme {
-
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
@@ -15,12 +14,11 @@
     border-radius: em(5);
     position: relative;
     padding: em(1);
-    font-size: em(map-deep-get($font-sizes, md));
+    font-size: em($default-text-font-size);
 }
 
 %themed-text {
     &.theme {
-
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
