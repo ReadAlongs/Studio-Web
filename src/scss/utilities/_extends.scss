@@ -1,3 +1,23 @@
+%themed-bg {
+    &.theme {
+
+        @each $theme,
+        $value in $ui-themes {
+            &--#{$theme} {
+                background-color: map-deep-get($ui-themes, $theme, primary)
+            }
+        }
+    }
+}
+
+%basic-text {
+    line-height: 1.5;
+    border-radius: em(5);
+    position: relative;
+    padding: em(1);
+    font-size: em(map-deep-get($font-sizes, md));
+}
+
 %themed-text {
     &.theme {
 
