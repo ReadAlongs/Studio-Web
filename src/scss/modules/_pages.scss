@@ -4,7 +4,7 @@ $max-height: 90vh;
     overflow-y: hidden;
     overflow-x: auto;
     flex-grow: 1;
-    min-width: 100%;
+    min-width: 99.6%;
     width: 100%;
     max-width: 55em;
 
@@ -13,19 +13,15 @@ $max-height: 90vh;
         @extend %border--strong--right;
     }
 
-    &--single {
-        // specific styles for single-page read-alongs
-    }
-
     &__container {
         overflow: auto;
-        max-height: em($page-size);
+        max-height: $page-size + 0vh;
+        height: 100%;
         max-width: 100%;
         width: 100%;
         position: relative;
         display: -webkit-inline-flex;
         flex-direction: row;
-        // height: em($page-size);
         flex-wrap: nowrap;
         justify-content: space-between;
         @extend %border--strong--top;
@@ -35,15 +31,27 @@ $max-height: 90vh;
     }
 
     &__counter {
+        grid-area: page-no;
         margin: em(10) 0 0 em(15);
     }
 
     &__col {
         &__image {
+            grid-area: image;
             float: left;
+            max-height: 100%;
+            text-align: center;
+            margin: 5%;
+            padding: 0;
+            border-radius: 0 0 0 0;
+            position: relative;
+            @extend %themed-bg;
+
         }
 
-        &__text {}
+        &__text {
+            grid-area: text;
+        }
 
     }
 
@@ -53,39 +61,28 @@ $max-height: 90vh;
     &__container {
         display: grid;
         @extend %themed-bg;
-        // &--img {
-        //     grid-template-columns: [one] 50% [two] auto [col-end];
-        //     grid-template-rows: [one] em(65) [two] auto [row-end];
-        // }
-        // &--full {
-        //     grid-template-columns: [one] 100% [two] auto [col-end];
-        //     grid-template-rows: [one] 100% [two] auto [row-end];
-        // }
+        grid-template-columns: [col-start] [col-end];
+        grid-template-rows: [row-start] 25% [row-end] 75%;
+        grid-template-areas:
+            "page-no text"
+            "image text";
+        justify-items: stretch;
     }
 }
 
 .sentence {
     margin: 0 em(24);
     text-align: left;
-    max-width: 100%;
+    max-width: 90%;
     @extend %themed-bg;
 
     &__container {
-        grid-column-start: 2;
-        grid-column-end: 2;
-        grid-row-start: 2;
-        grid-row-end: 2;
+        margin: em(60) em(10) em(60) em(10);
         scroll-behavior: smooth;
         max-width: 100%;
         position: relative;
         overflow-y: auto;
-
-        @include mq(em(map-get($breakpoints, small)), 'max-width', 'screen') {
-            max-height: 15vh;
-            margin-top: em(35);
-            grid-row-start: 1;
-            grid-row-end: span 2;
-        }
+        overflow-x: hidden;
 
         &__buttons {
             position: absolute;
@@ -120,6 +117,7 @@ $max-height: 90vh;
     max-width: 55em;
     margin: 0 auto;
     max-height: $max-height;
+    height: $max-height;
     overflow-Y: hidden;
     overflow-X: hidden;
     padding: em(5);
