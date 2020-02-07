@@ -497,8 +497,13 @@ export class ReadAlongComponent {
   }
 
   scrollToPage(pg_id: string): void {
-    let next_page = this.el.shadowRoot.querySelector('#' + pg_id)
-    next_page.scrollIntoView({ behavior: "smooth" })
+    let page_container: any = this.el.shadowRoot.querySelector('.page__container')
+    let next_page: any = this.el.shadowRoot.querySelector('#' + pg_id)
+    page_container.scrollBy({
+      top: 0,
+      left: next_page.offsetLeft - page_container.scrollLeft,
+      behavior: 'smooth'
+    });
   }
 
   scrollByHeight(el: HTMLElement): void {
@@ -513,6 +518,7 @@ export class ReadAlongComponent {
   }
 
   scrollTo(el: HTMLElement): void {
+    console.log('scroll to')
     el.scrollIntoView({
       behavior: 'smooth'
     });
@@ -570,8 +576,10 @@ export class ReadAlongComponent {
           // Scroll horizontally (to different page) if needed
           let current_page = query_el.parentElement.parentElement.parentElement.id
           if (current_page !== this.current_page) {
+            if (this.current_page !== undefined){
+              this.scrollToPage(current_page)
+            }
             this.current_page = current_page
-            this.scrollToPage(current_page)
           }
           // scroll vertically (through paragraph) if needed
           if (this.inPageContentOverflow(query_el)) {
