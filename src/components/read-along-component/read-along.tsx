@@ -1,4 +1,4 @@
-import { Component, Element, Listen, Prop, State } from '@stencil/core';
+import { Component, Element, Listen, Prop, State, h } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Howl } from 'howler';
@@ -22,7 +22,7 @@ export class ReadAlongComponent {
    */
   @Prop() text: string;
 
-  processed_text: JSX.Element;
+  processed_text: Element;
 
   /**
    * The alignment as SMIL
@@ -82,7 +82,7 @@ export class ReadAlongComponent {
   *  LISTENERS  *
   ************/
 
-  @Listen('window:wheel')
+  @Listen('wheel', { target: 'window' })
   wheelHandler(event: MouseEvent): void {
     // only show guide if there is an actual highlighted element
     if (this.el.shadowRoot.querySelector('.reading')) {
@@ -627,7 +627,7 @@ export class ReadAlongComponent {
   /**
    * The Guide element
    */
-  Guide = (): JSX.Element =>
+  Guide = (): Element =>
     <button class={'scroll-guide__container ripple ui-button theme--' + this.theme}
       onClick={() => this.hideGuideAndScroll()}>
       <span class={'scroll-guide__text theme--' + this.theme}>
@@ -638,14 +638,14 @@ export class ReadAlongComponent {
   /**
    * Render svg overlay
    */
-  Overlay = (): JSX.Element => <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object' type='image/svg+xml' data={this.svg_overlay}></object>
+  Overlay = (): Element => <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object' type='image/svg+xml' data={this.svg_overlay}></object>
 
   /**
    * Render image at path 'url' in assets folder.
    * 
    * @param url
    */
-  Img = (props: { url: string }): JSX.Element => <div class={"image__container page__col__image theme--" + this.theme}>
+  Img = (props: { url: string }): Element => <div class={"image__container page__col__image theme--" + this.theme}>
     <img class="image" src={'assets/' + props.url} />
   </div>
 
@@ -657,7 +657,7 @@ export class ReadAlongComponent {
    * 
    * Shows currentPage / pgCount
    */
-  PageCount = (props: { pgCount: number, currentPage: number }): JSX.Element =>
+  PageCount = (props: { pgCount: number, currentPage: number }): Element =>
     <div class={"page__counter color--" + this.theme}>Page {props.currentPage} / {props.pgCount}</div>
 
   /**
@@ -668,7 +668,7 @@ export class ReadAlongComponent {
    * Show 'Page' or vertically scrollable text content.
    * Text content on 'Page' breaks is separated horizontally.
    */
-  Page = (props: { pageData: Page }): JSX.Element =>
+  Page = (props: { pageData: Page }): Element =>
     <div class={'page page--multi animate-transition paragraph__container theme--' + this.theme} id={props.pageData['id']}>
       { /* Display the PageCount only if there's more than 1 page */
         this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length} currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
@@ -689,7 +689,7 @@ export class ReadAlongComponent {
    * 
    * A paragraph element with one or more sentences
    */
-  Paragraph = (props: { sentences: Node[] }): JSX.Element =>
+  Paragraph = (props: { sentences: Node[] }): Element =>
     <div class={'page__col__text paragraph sentence__container theme--' + this.theme}>
       {
         /* Here are the Sentence children */
@@ -705,7 +705,7 @@ export class ReadAlongComponent {
    * 
    * A sentence element with one or more words
    */
-  Sentence = (props: { words: Node[] }): JSX.Element =>
+  Sentence = (props: { words: Node[] }): Element =>
     <div class='sentence'>
       {
         /* Here are the Word and NonWordText children */
@@ -728,7 +728,7 @@ export class ReadAlongComponent {
    * but cannot be clicked and is not a word. This is usually
    * inter-Word punctuation or other text.
    */
-  NonWordText = (props: { text: string }): JSX.Element =>
+  NonWordText = (props: { text: string }): Element =>
     <span class={'sentence__text theme--' + this.theme} id='text'>{props.text}</span>
 
   /**
@@ -738,39 +738,39 @@ export class ReadAlongComponent {
    * 
    * This is a clickable, audio-aligned Word element
    */
-  Word = (props: { id: string, text: string }): JSX.Element =>
+  Word = (props: { id: string, text: string }): Element =>
     <span class={'sentence__word theme--' + this.theme} id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
 
   /**
    * Render controls for ReadAlong
    */
 
-  PlayControl = (): JSX.Element => <button onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  PlayControl = (): Element => <button aria-label="Play" onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
   </button>
 
-  ReplayControl = (): JSX.Element => <button onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  ReplayControl = (): Element => <button aria-label="Rewind" onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
-  StopControl = (): JSX.Element => <button onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  StopControl = (): Element => <button aria-label="Stop" onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
   </button>
 
-  PlaybackSpeedControl = (): JSX.Element => <div>
+  PlaybackSpeedControl = (): Element => <div>
     <h5 class={"control-panel__buttons__header color--" + this.theme}>{this.returnTranslation('speed', this.language)}</h5>
     <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control" id="myRange" onInput={(v) => this.changePlayback(v)} />
   </div>
 
-  StyleControl = (): JSX.Element => <button onClick={() => this.changeTheme()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  StyleControl = (): Element => <button aria-label="Change theme" onClick={() => this.changeTheme()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">style</i>
   </button>
 
-  FullScreenControl = (): JSX.Element => <button onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  FullScreenControl = (): Element => <button aria-label="Full screen mode" onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
-  ControlPanel = (): JSX.Element => <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+  ControlPanel = (): Element => <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
     <div class="control-panel__buttons--left">
       <this.PlayControl />
       <this.ReplayControl />
@@ -791,7 +791,7 @@ export class ReadAlongComponent {
   /**
    * Render main component
    */
-  render(): JSX.Element {
+  render(): Element {
     return (
       <div id='read-along-container' class='read-along-container'>
         <h1 class="slot__header">

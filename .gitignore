@@ -2,6 +2,7 @@ dist/
 www/
 sample_page/
 src/assets
+public
 
 *~
 *.sw[mnpcod]

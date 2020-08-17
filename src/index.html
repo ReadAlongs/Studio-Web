@@ -5,8 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
   <title>Nikikw demo</title>
-  <script src="/build/read-along.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=Lato|Material+Icons|Material+Icons+Outlined" rel="stylesheet">
+
+  <script type="module" src="/build/read-along.esm.js"></script>
+  <script nomodule src="/build/read-along.js"></script>
+
+  <!-- <link href="https://fonts.googleapis.com/css?family=Lato|Material+Icons|Material+Icons+Outlined" rel="stylesheet"> -->
 </head>
 
 <body>
@@ -17,6 +20,9 @@
       by Aidan Pine
     </span>
   </read-along>  -->
+  <read-along text='assets/dna.xml' alignment='assets/dna.smil' audio='assets/dna.m4a'></read-along>
+  <read-along text='assets/output_removed.xml' alignment='assets/output_removed.smil' audio='assets/output_removed.mp3'></read-along>
+  <read-along text='assets/output_muted.xml' alignment='assets/output_muted.smil' audio='assets/output_muted.mp3'></read-along>
   <read-along text='assets/test_ap_img.xml' alignment='assets/test_ap_img.smil' audio='assets/test_ap.wav' theme='light'>
     <span slot='read-along-header'>Simgiigyat, sigidimhaanak̲' g̲anhl k'ubawilksihlxw</span>
     <span slot='read-along-subheader'>
