@@ -152,7 +152,7 @@ export class ReadAlongComponent {
    *************/
 
   /**
-  * Change playback between .75 and 1.25. To change the playback options, 
+  * Change playback between .75 and 1.25. To change the playback options,
   * change the HTML in the function renderControlPanel
   *
   * @param ev
@@ -182,7 +182,7 @@ export class ReadAlongComponent {
    * Go to seek
    *
    * @param s number
-   * 
+   *
    */
   goTo(seek: number): void {
     if (this.play_id === undefined) {
@@ -240,7 +240,7 @@ export class ReadAlongComponent {
   * Play the current audio, or start a new play of all
   * the audio
   * @param id string
-  * 
+  *
   */
   play() {
     this.playing = true;
@@ -327,7 +327,7 @@ export class ReadAlongComponent {
 
   /**
    * Animate the progress if no svg overlay is provided
-   * 
+   *
    * @param play_id
    * @param tag
    */
@@ -399,6 +399,16 @@ export class ReadAlongComponent {
   }
 
   /**
+   * Return the Sentence Container of Word
+   * Currently the 3rd parent up the tree node
+   * @param element
+   * @private
+   */
+  private _getSentenceContainerOfWord(element:HTMLElement) : HTMLElement{
+    return element.parentElement.parentElement.parentElement
+  }
+
+  /**
    * Make Fullscreen
    */
   private toggleFullscreen(): void {
@@ -452,11 +462,11 @@ export class ReadAlongComponent {
 
   inPageContentOverflow(element: HTMLElement): boolean {
     let page_el = this.el.shadowRoot.querySelector('#' + this.current_page)
-    let sent_el = page_el.querySelector('.sentence__container');
-    let sent_rect = sent_el.getBoundingClientRect()
+    let page_rect = page_el.getBoundingClientRect()
     let el_rect = element.getBoundingClientRect()
+
     // element being read is below/ahead of the words being viewed
-    let inOverflowBelow = el_rect.top + el_rect.height > sent_rect.top + sent_rect.height
+    let inOverflowBelow = el_rect.top + el_rect.height > page_rect.top + page_rect.height
     // element being read is above/behind of the words being viewed
     let inOverflowAbove = el_rect.top + el_rect.height < 0
 
@@ -474,7 +484,7 @@ export class ReadAlongComponent {
   }
 
   inPage(element: HTMLElement): boolean {
-    let sent_el = this.el.shadowRoot.querySelector('.sentence__container');
+    let sent_el = this._getSentenceContainerOfWord(element)
     let sent_rect = sent_el.getBoundingClientRect()
     let el_rect = element.getBoundingClientRect()
     // element being read is below/ahead of the words being viewed
@@ -491,30 +501,35 @@ export class ReadAlongComponent {
       }
     })
     intersectionObserver.observe(element)
-    console.log((inOverflowAbove || inOverflowBelow))
+    //console.log((inOverflowAbove || inOverflowBelow))
     // if not in overflow, return false
     return (inOverflowAbove || inOverflowBelow)
   }
 
   scrollToPage(pg_id: string): void {
-    let page_container: any = this.el.shadowRoot.querySelector('.page__container')
+    let page_container: any = this.el.shadowRoot.querySelector('.pages__container')
     let next_page: any = this.el.shadowRoot.querySelector('#' + pg_id)
     page_container.scrollBy({
       top: 0,
       left: next_page.offsetLeft - page_container.scrollLeft,
       behavior: 'smooth'
     });
+    next_page.scrollTo(0,0)//reset to top of the page
   }
 
   scrollByHeight(el: HTMLElement): void {
-    let page_el = this.el.shadowRoot.querySelector('#' + this.current_page)
-    let sent_container = page_el.querySelector('.sentence__container');
-    let anchor = el.getBoundingClientRect()
+
+    let sent_container = this._getSentenceContainerOfWord(el) //get the direct parent sentence container
+
+
+
+    let anchor = el.parentElement.getBoundingClientRect()
     sent_container.scrollBy({
       top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
       left: 0,
       behavior: 'smooth'
-    });
+    })
+
   }
 
   scrollTo(el: HTMLElement): void {
@@ -543,7 +558,7 @@ export class ReadAlongComponent {
 
   /**
    * Lifecycle hook: Before component loads, build the Sprite and parse the files necessary.
-   * Then subscribe to the _reading$ Subject in order to update CSS styles when new element 
+   * Then subscribe to the _reading$ Subject in order to update CSS styles when new element
    * is being read
    */
   componentWillLoad() {
@@ -573,14 +588,22 @@ export class ReadAlongComponent {
           this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
           // Add reading to the selected el
           query_el.classList.add('reading')
+
           // Scroll horizontally (to different page) if needed
-          let current_page = query_el.parentElement.parentElement.parentElement.id
+          let current_page = this._getSentenceContainerOfWord(query_el).parentElement.id
+
           if (current_page !== this.current_page) {
             if (this.current_page !== undefined){
               this.scrollToPage(current_page)
             }
             this.current_page = current_page
           }
+
+          //if the user has scrolled away from the from the current page bring them page
+          if(query_el.getBoundingClientRect().left<0 || this.el.shadowRoot.querySelector("#"+current_page).getBoundingClientRect().left!==0){
+            this.scrollToPage(current_page)
+          }
+
           // scroll vertically (through paragraph) if needed
           if (this.inPageContentOverflow(query_el)) {
             if (this.autoScroll) {
@@ -602,7 +625,7 @@ export class ReadAlongComponent {
    * Any text used in the Web Component should be at least bilingual in English and French.
    * To add a new term, add a new key to the translations object. Then add 'eng' and 'fr' keys
    * and give the translations as values.
-   * 
+   *
    * @param word
    * @param lang
    */
@@ -642,7 +665,7 @@ export class ReadAlongComponent {
 
   /**
    * Render image at path 'url' in assets folder.
-   * 
+   *
    * @param url
    */
   Img = (props: { url: string }): JSX.Element => <div class={"image__container page__col__image theme--" + this.theme}>
@@ -652,9 +675,9 @@ export class ReadAlongComponent {
 
   /**
    * Page Counter element
-   * 
+   *
    * @param props
-   * 
+   *
    * Shows currentPage / pgCount
    */
   PageCount = (props: { pgCount: number, currentPage: number }): JSX.Element =>
@@ -662,47 +685,49 @@ export class ReadAlongComponent {
 
   /**
    * Page element
-   * 
+   *
    * @param props
-   * 
+   *
    * Show 'Page' or vertically scrollable text content.
    * Text content on 'Page' breaks is separated horizontally.
    */
   Page = (props: { pageData: Page }): JSX.Element =>
-    <div class={'page page--multi animate-transition paragraph__container theme--' + this.theme} id={props.pageData['id']}>
+    <div class={'page page__container page--multi animate-transition  theme--' + this.theme} id={props.pageData['id']}>
       { /* Display the PageCount only if there's more than 1 page */
         this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length} currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
       }
       { /* Display an Img if it exists on the page */
         props.pageData.img ? <this.Img url={props.pageData.img} /> : null
       }
-      { /* Here are the Paragraph children */
-        props.pageData.paragraphs.map((paragraph: Node) =>
-          <this.Paragraph sentences={Array.from(paragraph.childNodes)} />)
-      }
+      <div class={"page__col__text paragraph__container theme--" + this.theme}>
+        { /* Here are the Paragraph children */
+          props.pageData.paragraphs.map((paragraph: Node) =>
+            <this.Paragraph sentences={Array.from(paragraph.childNodes)} />)
+        }
+      </div>
     </div>
 
   /**
    * Paragraph element
-   * 
+   *
    * @param props
-   * 
+   *
    * A paragraph element with one or more sentences
    */
   Paragraph = (props: { sentences: Node[] }): JSX.Element =>
-    <div class={'page__col__text paragraph sentence__container theme--' + this.theme}>
+    <div class={'paragraph sentence__container theme--' + this.theme}>
       {
         /* Here are the Sentence children */
         props.sentences.map((sentence: Node) =>
-          <this.Sentence words={Array.from(sentence.childNodes)} />)
+          (sentence.childNodes.length > 0) && <this.Sentence words={Array.from(sentence.childNodes)} />)
       }
     </div>
 
   /**
    * Sentence element
-   * 
+   *
    * @param props
-   * 
+   *
    * A sentence element with one or more words
    */
   Sentence = (props: { words: Node[] }): JSX.Element =>
@@ -721,9 +746,9 @@ export class ReadAlongComponent {
 
   /**
    * A non-Word text element
-   * 
+   *
    * @param props
-   * 
+   *
    * This is an element that is a child to a Sentence element,
    * but cannot be clicked and is not a word. This is usually
    * inter-Word punctuation or other text.
@@ -733,9 +758,9 @@ export class ReadAlongComponent {
 
   /**
    * A Word text element
-   * 
+   *
    * @param props
-   * 
+   *
    * This is a clickable, audio-aligned Word element
    */
   Word = (props: { id: string, text: string }): JSX.Element =>
@@ -800,7 +825,7 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div class={"page__container theme--" + this.theme}>
+        <div class={"pages__container theme--" + this.theme}>
           {this.showGuide ? <this.Guide /> : null}
           {this.parsed_text.map((page) =>
             <this.Page pageData={page} >
