@@ -1,5 +1,22 @@
 $max-height: 90vh;
-
+.pages {
+  &__container {
+    overflow: auto;
+    max-height: $page-size + 0vh;
+    height: 100%;
+    max-width: 100%;
+    width: 100%;
+    position: relative;
+    display: -webkit-inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    @extend %border--strong--top;
+    @extend %border--strong--left;
+    @extend %border--strong--right;
+    border-radius: em(5) em(5) 0 0;
+  }
+}
 .page {
     overflow-y: hidden;
     overflow-x: auto;
@@ -8,31 +25,29 @@ $max-height: 90vh;
     width: 100%;
     max-width: 55em;
 
+
     &--multi {
         @extend %border--strong--left;
         @extend %border--strong--right;
     }
 
     &__container {
-        overflow: auto;
-        max-height: $page-size + 0vh;
-        height: 100%;
-        max-width: 100%;
-        width: 100%;
-        position: relative;
-        display: -webkit-inline-flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        @extend %border--strong--top;
-        @extend %border--strong--left;
-        @extend %border--strong--right;
-        border-radius: em(5) em(5) 0 0;
+      display: grid;
+      @extend %themed-bg;
+      grid-template-columns: [col-start] [col-end];
+      grid-template-rows: [row-start] 5% [row-end] 95%;
+      grid-template-areas:
+        "image page-no"
+        "image text";
+      justify-items: stretch;
     }
 
     &__counter {
         grid-area: page-no;
         margin: em(10) 0 0 em(15);
+      text-align: right;
+      padding-right: em(15);
+      max-height: 5rem;
     }
 
     &__col {
@@ -58,15 +73,10 @@ $max-height: 90vh;
 }
 
 .paragraph {
+
     &__container {
-        display: grid;
-        @extend %themed-bg;
-        grid-template-columns: [col-start] [col-end];
-        grid-template-rows: [row-start] 25% [row-end] 75%;
-        grid-template-areas:
-            "page-no text"
-            "image text";
-        justify-items: stretch;
+      overflow-y: auto ;
+      padding-bottom: em(12);
     }
 }
 
