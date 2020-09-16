@@ -669,7 +669,7 @@ export class ReadAlongComponent {
    * @param url
    */
   Img = (props: { url: string }): Element => <div class={"image__container page__col__image theme--" + this.theme}>
-    <img class="image" src={'assets/' + props.url} />
+    <img class="image" src={ props.url} />
   </div>
 
 
