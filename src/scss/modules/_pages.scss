@@ -34,7 +34,7 @@ $max-height: 98vh;
     &__container {
       display: grid;
       @extend %themed-bg;
-      grid-template-columns: [col-start] [col-end];
+      grid-template-columns: 40% auto;
       grid-template-rows: [row-start] 5% [row-end] 95%;
       grid-template-areas:
         "image page-no"

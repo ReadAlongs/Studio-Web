@@ -22,9 +22,9 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 
 You can either modify the `/src/index.html` or after running `npm start` you can copy out the `www/build` folder and add the following script import in your own `index.html` page: 
 
-```html
-<script type="module" src='https://unpkg.com/@roedoejet/readalong@latest/dist/read-along/read-along.esm.js'></script>
-<script nomodule src='https://unpkg.com/@roedoejet/readalong@latest/dist/read-along/read-along.js'></script>
+```html 
+    <script crossorigin="anonymous"   type="module" src='https://unpkg.com/@atlasling/readalong@1.1.0/dist/read-along/read-along.esm.js'></script>
+    <script crossorigin="anonymous"   nomodule src='https://unpkg.com/@atlasling/readalong@1.0/dist/read-along/read-along.js'></script>
 ```
 
 Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>` elements with arguments for where to find your text, alignments and audio file. These files can be generated using _________ service located here: ____________.
