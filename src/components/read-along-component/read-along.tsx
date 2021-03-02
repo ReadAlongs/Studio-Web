@@ -796,7 +796,7 @@ export class ReadAlongComponent {
   </button>
 
   FullScreenControl = (): Element => <button aria-label="Full screen mode" onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-    <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
+    <i class="material-icons"  aria-label="Full screen mode">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
   ControlPanel = (): Element => <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
@@ -840,7 +840,7 @@ export class ReadAlongComponent {
           {this.svg_overlay ? <this.Overlay /> : null}
         </div>
         <this.ControlPanel />
-        {this.css_url.match(".css")!=null && <link href={this.css_url} rel="stylesheet"></link>}
+        {this.css_url && this.css_url.match(".css")!=null && <link href={this.css_url} rel="stylesheet"></link>}
       </div >
 
     )
