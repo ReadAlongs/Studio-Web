@@ -16,6 +16,10 @@ export namespace Components {
          */
         "audio": string;
         /**
+          * Stylesheet
+         */
+        "css_url"?: string;
+        /**
           * Language
          */
         "language": string;
@@ -54,6 +58,10 @@ declare namespace LocalJSX {
           * The audio file
          */
         "audio"?: string;
+        /**
+          * Stylesheet
+         */
+        "css_url"?: string;
         /**
           * Language
          */

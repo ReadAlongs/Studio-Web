@@ -16,6 +16,7 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 | `audio`     | `audio`     | The audio file        | `string` | `undefined` |
 | `text`      | `text`      | The text as TEI       | `string` | `undefined` |
 | `theme`     | `theme`     | The colour theme      | `string` | `light`     |
+| `css_url`   | `css_url`   | An optional external style sheet to override styling | string | undefined |
 
 
 ## Test with your site
@@ -30,7 +31,7 @@ You can either modify the `/src/index.html` or after running `npm start` you can
 Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>` elements with arguments for where to find your text, alignments and audio file. These files can be generated using _________ service located here: ____________.
 
 ```html
-<read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav"></read-along>
+<read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav" css_url="assets/custom.css"></read-along>
 ```
 
 ## Theming
@@ -74,6 +75,19 @@ Slots allow you to add custom html into specific "slots" within the web componen
 | `read-along-subheader`  | Subheader (ie authors)| `span`              |
 
 
-
+## CSS customization 
+You can override the default style of the component. This option is best used anyone does not want to clone this project and modify only the UI.
+Use the web inspector of your browser to find the classes you wish to override
+```css
+/* change the font size and color of the text */
+.sentence__word.theme--light {
+  color:#64003c;
+  font-size:1.8rem;
+}
+/* change the background color of the text being read */
+.sentence__word.theme--light.reading {
+  background-color: #64003c;
+}
+```
 
 

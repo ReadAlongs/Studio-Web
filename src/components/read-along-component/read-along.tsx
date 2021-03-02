@@ -56,6 +56,10 @@ export class ReadAlongComponent {
    */
   @Prop() language: string = 'eng';
 
+  /**
+   * Stylesheet
+   */
+  @Prop() css_url?: string;
 
   /************
    *  STATES  *
@@ -836,7 +840,9 @@ export class ReadAlongComponent {
           {this.svg_overlay ? <this.Overlay /> : null}
         </div>
         <this.ControlPanel />
+        {this.css_url.match(".css")!=null && <link href={this.css_url} rel="stylesheet"></link>}
       </div >
+
     )
   }
 }
