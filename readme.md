@@ -16,7 +16,7 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 | `audio`     | `audio`     | The audio file        | `string` | `undefined` |
 | `text`      | `text`      | The text as TEI       | `string` | `undefined` |
 | `theme`     | `theme`     | The colour theme      | `string` | `light`     |
-| `css_url`   | `css_url`   | An optional external style sheet to override styling | string | undefined |
+| `css_url`   | `css_url`   | An optional external style sheet to override styling | `string` | `undefined` |
 
 
 ## Test with your site
