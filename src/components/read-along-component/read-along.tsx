@@ -56,6 +56,10 @@ export class ReadAlongComponent {
    */
   @Prop() language: string = 'eng';
 
+  /**
+   * Stylesheet
+   */
+  @Prop() css_url?: string;
 
   /************
    *  STATES  *
@@ -296,6 +300,7 @@ export class ReadAlongComponent {
   addHighlightingTo(el: HTMLElement): void {
     this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
     el.classList.add('reading')
+
   }
 
   /**
@@ -459,7 +464,29 @@ export class ReadAlongComponent {
     intersectionObserver.observe(reading_el)
     this.scrollTo(reading_el)
   }
+//for when you visually align content
+  inParagraphContentOverflow(element: HTMLElement): boolean {
+    let para_el = this._getSentenceContainerOfWord(element);
+    let para_rect = para_el.getBoundingClientRect()
+    let el_rect = element.getBoundingClientRect()
 
+    // element being read is left of the words being viewed
+    let inOverflowLeft = el_rect.right  < para_rect.left;
+    // element being read is right of the words being viewed
+    let inOverflowRight = el_rect.right  > para_rect.right;
+
+    let intersectionObserver = new IntersectionObserver((entries) => {
+      let [entry] = entries;
+      if (entry.isIntersecting) {
+        setTimeout(() => { this.showGuide = false; this.autoScroll = true }, 100)
+        intersectionObserver.unobserve(element)
+      }
+    })
+    intersectionObserver.observe(element)
+//console.log("inParagraphContentOverflow",inOverflowLeft,inOverflowRight,para_rect,el_rect,para_el)
+    // if not in overflow, return false
+    return (inOverflowLeft || inOverflowRight)
+  }
   inPageContentOverflow(element: HTMLElement): boolean {
     let page_el = this.el.shadowRoot.querySelector('#' + this.current_page)
     let page_rect = page_el.getBoundingClientRect()
@@ -531,9 +558,24 @@ export class ReadAlongComponent {
     })
 
   }
+//scrolling within the visually aligned paragraph
+  scrollByWidth(el: HTMLElement): void {
+
+    let sent_container = this._getSentenceContainerOfWord(el) //get the direct parent sentence container
+
+
+
+    let anchor = el.getBoundingClientRect()
+    sent_container.scrollTo({
+      left: anchor.left- 10, // negative value acceptable
+      top: 0,
+      behavior: 'smooth'
+    })
+    //console.log("scrollByWidth",anchor,sent_container.getBoundingClientRect())
+  }
 
   scrollTo(el: HTMLElement): void {
-    console.log('scroll to')
+    //console.log('scroll to')
     el.scrollIntoView({
       behavior: 'smooth'
     });
@@ -609,7 +651,13 @@ export class ReadAlongComponent {
             if (this.autoScroll) {
               this.scrollByHeight(query_el)
             }
+          }// scroll horizontal (through paragraph) if needed
+          if (this.inParagraphContentOverflow(query_el)) {
+            if (this.autoScroll) {
+              this.scrollByWidth(query_el)
+            }
           }
+
         }
       })
     })
@@ -699,10 +747,12 @@ export class ReadAlongComponent {
       { /* Display an Img if it exists on the page */
         props.pageData.img ? <this.Img url={props.pageData.img} /> : null
       }
-      <div class={"page__col__text paragraph__container theme--" + this.theme}>
+      <div class={"page__col__text paragraph__container theme--" + this.theme+" "+(props.pageData.attributes["class"]?props.pageData.attributes["class"].value:"")}>
         { /* Here are the Paragraph children */
-          props.pageData.paragraphs.map((paragraph: Node) =>
-            <this.Paragraph sentences={Array.from(paragraph.childNodes)} />)
+          props.pageData.paragraphs.map((paragraph: Element) =>{
+
+            return <this.Paragraph sentences={Array.from(paragraph.childNodes)} attributes={paragraph.attributes} />}
+          )
         }
       </div>
     </div>
@@ -714,12 +764,12 @@ export class ReadAlongComponent {
    *
    * A paragraph element with one or more sentences
    */
-  Paragraph = (props: { sentences: Node[] }): Element =>
-    <div class={'paragraph sentence__container theme--' + this.theme}>
+  Paragraph = (props: { sentences: Node[] , attributes:NamedNodeMap }): Element =>
+    <div class={'paragraph sentence__container theme--' + this.theme+" "+(props.attributes["class"]?props.attributes["class"].value:"")}>
       {
         /* Here are the Sentence children */
-        props.sentences.map((sentence: Node) =>
-          (sentence.childNodes.length > 0) && <this.Sentence words={Array.from(sentence.childNodes)} />)
+        props.sentences.map((sentence: Element) =>
+          (sentence.childNodes.length > 0) && <this.Sentence words={Array.from(sentence.childNodes)} attributes={sentence.attributes} />)
       }
     </div>
 
@@ -730,19 +780,25 @@ export class ReadAlongComponent {
    *
    * A sentence element with one or more words
    */
-  Sentence = (props: { words: Node[] }): Element =>
-    <div class='sentence'>
+  Sentence = (props: { words: Node[], attributes:NamedNodeMap }): Element => {
+
+    return <div class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
       {
+
         /* Here are the Word and NonWordText children */
-        props.words.map((child: Node) => {
+          props.words.map((child: Element,c) => {
           if (child.nodeName === '#text') {
-            return <this.NonWordText text={child.textContent} />
-          } else if (child.nodeName === 'w') {
-            return <this.Word text={child.textContent} id={child['id']} />
-          }
+          return <this.NonWordText text={child.textContent} id={(props.attributes["id"]?props.attributes["id"].value:"P")+'text'+c}/>
+        } else if (child.nodeName === 'w') {
+          return <this.Word text={child.textContent} id={child['id']}  attributes={child.attributes}/>
+        }else if(child ){
+
+          return <span class={'sentence__text theme--' + this.theme+(' '+child.className)} id={child.id?child.id:'text_'+c} >{child.textContent}</span>
+        }
         })
       }
     </div>
+  }
 
   /**
    * A non-Word text element
@@ -753,8 +809,8 @@ export class ReadAlongComponent {
    * but cannot be clicked and is not a word. This is usually
    * inter-Word punctuation or other text.
    */
-  NonWordText = (props: { text: string }): Element =>
-    <span class={'sentence__text theme--' + this.theme} id='text'>{props.text}</span>
+  NonWordText = (props: { text: string, id:string }): Element =>
+    <span class={'sentence__text theme--' + this.theme} id={props.id} >{props.text}</span>
 
   /**
    * A Word text element
@@ -763,8 +819,8 @@ export class ReadAlongComponent {
    *
    * This is a clickable, audio-aligned Word element
    */
-  Word = (props: { id: string, text: string }): Element =>
-    <span class={'sentence__word theme--' + this.theme} id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
+  Word = (props: { id: string, text: string , attributes:NamedNodeMap }): Element =>
+    <span class={'sentence__word theme--' + this.theme+" "+(props&&props.attributes["class"]?props.attributes["class"].value:"")} id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
 
   /**
    * Render controls for ReadAlong
@@ -792,7 +848,7 @@ export class ReadAlongComponent {
   </button>
 
   FullScreenControl = (): Element => <button aria-label="Full screen mode" onClick={() => this.toggleFullscreen()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-    <i class="material-icons">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
+    <i class="material-icons"  aria-label="Full screen mode">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
   ControlPanel = (): Element => <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
@@ -836,7 +892,9 @@ export class ReadAlongComponent {
           {this.svg_overlay ? <this.Overlay /> : null}
         </div>
         <this.ControlPanel />
+        {this.css_url && this.css_url.match(".css")!=null && <link href={this.css_url} rel="stylesheet"></link>}
       </div >
+
     )
   }
 }

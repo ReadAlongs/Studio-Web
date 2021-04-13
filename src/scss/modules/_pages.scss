@@ -126,7 +126,28 @@ $max-height: 98vh;
             @extend %themed-text--stronger;
         }
     }
+   &__translation &__text,&__translation &__word {
+
+      color: #777;
+     font-style: italic;
+     font-size: 95%;
+   }
+  .paragraph.visually_aligned .sentence  &__text,
+  .paragraph.visually_aligned .sentence  &__word {
+    display: table-cell;
+
+  }
+  .paragraph.visually_aligned .sentence  &__text:empty{
+    display:none;
+  }
 }
+.paragraph.visually_aligned{
+  display: table;
+}
+.paragraph.visually_aligned .sentence {
+  display: table-row;
+}
+
 
 .read-along-container {
     max-width: 75em;

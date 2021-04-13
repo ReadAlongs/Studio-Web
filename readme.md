@@ -16,6 +16,7 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 | `audio`     | `audio`     | The audio file        | `string` | `undefined` |
 | `text`      | `text`      | The text as TEI       | `string` | `undefined` |
 | `theme`     | `theme`     | The colour theme      | `string` | `light`     |
+| `css_url`   | `css_url`   | An optional external style sheet to override styling | `string` | `undefined` |
 
 
 ## Test with your site
@@ -30,7 +31,7 @@ You can either modify the `/src/index.html` or after running `npm start` you can
 Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>` elements with arguments for where to find your text, alignments and audio file. These files can be generated using _________ service located here: ____________.
 
 ```html
-<read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav"></read-along>
+<read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav" css_url="assets/custom.css"></read-along>
 ```
 
 ## Theming
@@ -74,6 +75,61 @@ Slots allow you to add custom html into specific "slots" within the web componen
 | `read-along-subheader`  | Subheader (ie authors)| `span`              |
 
 
+## CSS customization 
+You can override the default style of the component. This option is best used anyone does not want to clone this project and modify only the UI.
+Use the web inspector of your browser to find the classes you wish to override
+```css
+/* change the font size and color of the text */
+.sentence__word.theme--light {
+  color:#64003c;
+  font-size:1.8rem;
+}
+/* change the background color of the text being read */
+.sentence__word.theme--light.reading {
+  background-color: #64003c;
+}
+```
+Here is a list of classes you want to override:
+ * .sentence__word.theme--light
+ * .sentence__word.theme--light.reading
+ * .sentence__text.theme--light
+ * .sentence__translation
+ * .sentence
+ * .paragraph
+ * .page__container.theme--light (to set page background)
+## XML customizations
+You can add classes to the xml tags in the text XML file. 
+When coupled with the custom css, it will produce most of the visual effect you want in your read along.
+e.g. ``` <s class="sentence__translation ">```
 
+### Built-in translation class
+The default css class provided for translations should be added to the XML ```<s>``` tag. It styled as 
+```
+     color: #777;
+     font-style: italic;
+     font-size: 95%;
+```
+Here is a sample 
+```xml
+<p id="t0b0d1p0">
+  <s id="t0b0d1p0s0"><w id="t0b0d1p0s0w0">...</w> <w id="t0b0d1p0s0w1">...</w> <w id="t0b0d1p0s0w2">...</w></s>
+  <s  id="t0b0d1p0s1" class="sentence__translation">This is a translation</s>
+</p>
+```
+
+## Visual alignment
+You can force the visual alignment of sentences within a paragraph by adding ``` class="visually_aligned"``` to the ```<p>``` tag of xml.
+Here is a sample 
+```xml
+<p id="t0b0d1p0" class="visually_aligned">
+  <s id="t0b0d1p0s0"><w id="t0b0d1p0s0w0">...</w> <w id="t0b0d1p0s0w1">...</w> <w id="t0b0d1p0s0w2">...</w></s>
+  <s  id="t0b0d1p0s1" class="sentence__translation ">This is a translation</s>
+</p>
+```
+**MIND THE GAP**:
+When you visually align a paragraph please triple check the spacing and punctuation between elements 
+because the visual alignment is white-space sensitive
+
+**SIDE EFFECT**: This feature disables auto-wrapping of the words in the paragraph
 
 
