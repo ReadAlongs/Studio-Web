@@ -505,7 +505,7 @@ export class ReadAlongComponent {
       }
     })
     intersectionObserver.observe(element)
-
+    //console.log("inPageContentOverflow",element,inOverflowAbove,inOverflowBelow)
     // if not in overflow, return false
     return (inOverflowAbove || inOverflowBelow)
   }
@@ -645,15 +645,17 @@ export class ReadAlongComponent {
           if(query_el.getBoundingClientRect().left<0 || this.el.shadowRoot.querySelector("#"+current_page).getBoundingClientRect().left!==0){
             this.scrollToPage(current_page)
           }
-
+          //console.log("-- inPageContentOverflow")
           // scroll vertically (through paragraph) if needed
           if (this.inPageContentOverflow(query_el)) {
             if (this.autoScroll) {
+              query_el.scrollIntoView(false);
               this.scrollByHeight(query_el)
             }
           }// scroll horizontal (through paragraph) if needed
           if (this.inParagraphContentOverflow(query_el)) {
             if (this.autoScroll) {
+              query_el.scrollIntoView(false);
               this.scrollByWidth(query_el)
             }
           }
