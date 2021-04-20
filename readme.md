@@ -74,6 +74,16 @@ Slots allow you to add custom html into specific "slots" within the web componen
 | `read-along-header`     | The read along header | `span`              |
 | `read-along-subheader`  | Subheader (ie authors)| `span`              |
 
+## Page layout
+By default, the pages are two column layout with image on the left and text on the left.
+You force any page to one column layout by setting the class of the page to ```one-column-layout-page``` 
+```xml
+<div type="page" class="one-column-layout-page">
+...
+</div>
+```
+### Hide page number
+You hide the page number for any page by specifying the class ```hide-page-counter``` 
 
 ## CSS customization 
 You can override the default style of the component. This option is best used anyone does not want to clone this project and modify only the UI.

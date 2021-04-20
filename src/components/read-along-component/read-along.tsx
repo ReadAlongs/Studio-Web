@@ -740,14 +740,14 @@ export class ReadAlongComponent {
    * Text content on 'Page' breaks is separated horizontally.
    */
   Page = (props: { pageData: Page }): Element =>
-    <div class={'page page__container page--multi animate-transition  theme--' + this.theme} id={props.pageData['id']}>
+    <div class={'page page__container page--multi animate-transition  theme--' + this.theme+" "+(props.pageData.attributes["class"]?props.pageData.attributes["class"].value:"")} id={props.pageData['id']}>
       { /* Display the PageCount only if there's more than 1 page */
         this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length} currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
       }
       { /* Display an Img if it exists on the page */
         props.pageData.img ? <this.Img url={props.pageData.img} /> : null
       }
-      <div class={"page__col__text paragraph__container theme--" + this.theme+" "+(props.pageData.attributes["class"]?props.pageData.attributes["class"].value:"")}>
+      <div class={"page__col__text paragraph__container theme--" + this.theme}>
         { /* Here are the Paragraph children */
           props.pageData.paragraphs.map((paragraph: Element) =>{
 
