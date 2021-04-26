@@ -81,6 +81,9 @@ export class ReadAlongComponent {
   parsed_text;
 
   current_page;
+  hasTextTranslations: boolean = false;
+
+
 
   /************
   *  LISTENERS  *
@@ -285,6 +288,14 @@ export class ReadAlongComponent {
       this.autoScroll = true;
       this.showGuide = false;
     }
+
+  }
+
+  /**
+   * toggle the visibility of translation text
+   */
+  toggleTextTranslation():void{
+    this.el.shadowRoot.querySelectorAll('.translation').forEach( translation => translation.classList.toggle('invisible'))
 
   }
 
@@ -783,7 +794,9 @@ export class ReadAlongComponent {
    * A sentence element with one or more words
    */
   Sentence = (props: { words: Node[], attributes:NamedNodeMap }): Element => {
-
+    if(!this.hasTextTranslations && props.attributes["class"]){
+      this.hasTextTranslations=props.attributes["class"].value.match("translation")!=null;
+    }
     return <div class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
       {
 
@@ -853,6 +866,10 @@ export class ReadAlongComponent {
     <i class="material-icons"  aria-label="Full screen mode">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
+  TextTranslationDisplayControl = ():Element => <button aria-label="Toggle Translation" onClick={()=> this.toggleTextTranslation()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons-outlined">subtitles</i>
+  </button>
+
   ControlPanel = (): Element => <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
     <div class="control-panel__buttons--left">
       <this.PlayControl />
@@ -865,6 +882,7 @@ export class ReadAlongComponent {
     </div>
 
     <div class="control-panel__buttons--right">
+      {this.hasTextTranslations && <this.TextTranslationDisplayControl/>}
       <this.StyleControl />
       <this.FullScreenControl />
     </div>
