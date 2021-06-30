@@ -16,7 +16,7 @@ export namespace Components {
          */
         "audio": string;
         /**
-          * Stylesheet
+          * Optional custom Stylesheet to override defaults
          */
         "css_url"?: string;
         /**
@@ -35,6 +35,10 @@ export namespace Components {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme": string;
+        /**
+          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
+         */
+        "useAssetFolder": boolean;
     }
 }
 declare global {
@@ -59,7 +63,7 @@ declare namespace LocalJSX {
          */
         "audio"?: string;
         /**
-          * Stylesheet
+          * Optional custom Stylesheet to override defaults
          */
         "css_url"?: string;
         /**
@@ -78,6 +82,10 @@ declare namespace LocalJSX {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme"?: string;
+        /**
+          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
+         */
+        "useAssetFolder"?: boolean;
     }
     interface IntrinsicElements {
         "read-along": ReadAlong;

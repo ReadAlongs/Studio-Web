@@ -2,7 +2,7 @@ import { Component, Element, Listen, Prop, State, h } from '@stencil/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Howl } from 'howler';
-import { Alignment, Page, parseSMIL, parseTEI, Sprite } from '../../utils/utils'
+import {Alignment, Page, parseSMIL, parseTEI, Sprite} from '../../utils/utils'
 
 @Component({
   tag: 'read-along',
@@ -20,21 +20,21 @@ export class ReadAlongComponent {
   /**
    * The text as TEI
    */
-  @Prop() text: string;
+  @Prop({ mutable: true }) text: string;
 
   processed_text: Element;
 
   /**
    * The alignment as SMIL
    */
-  @Prop() alignment: string;
+  @Prop({ mutable: true }) alignment: string;
 
   processed_alignment: Alignment;
 
   /**
    * The audio file
    */
-  @Prop() audio: string;
+  @Prop({ mutable: true }) audio: string;
 
   audio_howl_sprites: Howl;
   reading$: Subject<string>; // An RxJs Subject for the current item being read.
@@ -57,9 +57,16 @@ export class ReadAlongComponent {
   @Prop() language: string = 'eng';
 
   /**
-   * Stylesheet
+   * Optional custom Stylesheet to override defaults
    */
   @Prop() css_url?: string;
+
+  /**
+   * Toggle the use of assets folder for resolving urls. Defaults to on
+   * to maintain backwards compatibility
+   */
+
+  @Prop() useAssetFolder:boolean = true
 
   /************
    *  STATES  *
@@ -76,12 +83,14 @@ export class ReadAlongComponent {
   @State() fullscreen: boolean = false;
 
   @State() autoScroll: boolean = true;
+  @State() isLoaded:boolean = false;
   showGuide: boolean = false;
 
   parsed_text;
 
   current_page;
   hasTextTranslations: boolean = false;
+
 
 
 
@@ -110,7 +119,16 @@ export class ReadAlongComponent {
   /***********
    *  UTILS  *
    ***********/
-
+  /**
+   * Transforms a given path to either use the default assets folder or rely on the absolute path given
+   * @param path
+   * @return string
+   */
+   private urlTransform(path:string):string{
+    let url =path;
+    if(this.useAssetFolder && !url.startsWith("http") && !url.startsWith("assets"))url = "assets/"+url;
+    return url;
+  }
   /**
   * Given an audio file path and a parsed alignment object,
   * build a Sprite object
@@ -610,16 +628,31 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Lifecycle hook: Before component loads, build the Sprite and parse the files necessary.
+   * Lifecycle hook: after component loads, build the Sprite and parse the files necessary.
    * Then subscribe to the _reading$ Subject in order to update CSS styles when new element
    * is being read
+   * This is to prevent the UI hanging when processing large audio and text
    */
-  componentWillLoad() {
+  componentDidLoad() {
+    this.audio=this.urlTransform(this.audio);
+    this.alignment=this.urlTransform(this.alignment);
+    this.text=this.urlTransform(this.text);
+
     this.processed_alignment = parseSMIL(this.alignment)
     // load basic Howl
+
+
+
+
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
-      preload: true
+      preload: true,
+
+      onloaderror: function(error) {
+           console.log(error)
+        alert(this.audio+ " not loaded")
+        },
+
     })
     // Once loaded, get duration and build Sprite
     this.audio_howl_sprites.once('load', () => {
@@ -673,9 +706,12 @@ export class ReadAlongComponent {
 
         }
       })
+        this.isLoaded = true;
     })
     // Parse the text to be displayed
     this.parsed_text = parseTEI(this.text)
+
+
   }
 
   /**********
@@ -729,9 +765,13 @@ export class ReadAlongComponent {
    *
    * @param url
    */
-  Img = (props: { url: string }): Element => <div class={"image__container page__col__image theme--" + this.theme}>
-    <img class="image" src={ props.url} />
-  </div>
+  Img = (props: { url: string }): Element => {
+
+
+    return (<div class={"image__container page__col__image theme--" + this.theme}>
+      <img class="image" src={ this.urlTransform(props.url)} />
+    </div>)
+  }
 
 
   /**
@@ -797,18 +837,30 @@ export class ReadAlongComponent {
     if(!this.hasTextTranslations && props.attributes["class"]){
       this.hasTextTranslations=props.attributes["class"].value.match("translation")!=null;
     }
-    return <div class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
+    let nodeProps = {
+
+    };
+    if(props.attributes && props.attributes['lang']){
+
+      nodeProps['lang']= props.attributes['lang'].value
+    }
+
+      return <div {...nodeProps} class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
       {
 
         /* Here are the Word and NonWordText children */
           props.words.map((child: Element,c) => {
+
           if (child.nodeName === '#text') {
-          return <this.NonWordText text={child.textContent} id={(props.attributes["id"]?props.attributes["id"].value:"P")+'text'+c}/>
+          return <this.NonWordText text={child.textContent}  attributes={child.attributes} id={(props.attributes["id"]?props.attributes["id"].value:"P")+'text'+c}/>
         } else if (child.nodeName === 'w') {
           return <this.Word text={child.textContent} id={child['id']}  attributes={child.attributes}/>
         }else if(child ){
+            let cnodeProps = {
 
-          return <span class={'sentence__text theme--' + this.theme+(' '+child.className)} id={child.id?child.id:'text_'+c} >{child.textContent}</span>
+            };
+            if(child.attributes['lang'])cnodeProps['lang']= props.attributes['lang'].value
+          return <span {...cnodeProps} class={'sentence__text theme--' + this.theme+(' '+child.className)} id={child.id?child.id:'text_'+c} >{child.textContent}</span>
         }
         })
       }
@@ -824,8 +876,15 @@ export class ReadAlongComponent {
    * but cannot be clicked and is not a word. This is usually
    * inter-Word punctuation or other text.
    */
-  NonWordText = (props: { text: string, id:string }): Element =>
-    <span class={'sentence__text theme--' + this.theme} id={props.id} >{props.text}</span>
+  NonWordText = (props: { text: string, id:string, attributes:NamedNodeMap }): Element =>{
+    let nodeProps = {
+
+    };
+    if(props.attributes && props.attributes['lang'])nodeProps['lang']= props.attributes['lang'].value
+
+    return <span {...nodeProps} class={'sentence__text theme--' + this.theme} id={props.id} >{props.text}</span>
+  }
+
 
   /**
    * A Word text element
@@ -834,22 +893,29 @@ export class ReadAlongComponent {
    *
    * This is a clickable, audio-aligned Word element
    */
-  Word = (props: { id: string, text: string , attributes:NamedNodeMap }): Element =>
-    <span class={'sentence__word theme--' + this.theme+" "+(props&&props.attributes["class"]?props.attributes["class"].value:"")} id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
+  Word = (props: { id: string, text: string , attributes:NamedNodeMap }): Element => {
+    let nodeProps = {
 
+    };
+    if(props.attributes && props.attributes['lang'])nodeProps['lang']= props.attributes['lang'].value
+
+    return <span {...nodeProps}
+      class={'sentence__word theme--' + this.theme + " " + (props && props.attributes["class"] ? props.attributes["class"].value : "")}
+      id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
+  }
   /**
    * Render controls for ReadAlong
    */
 
-  PlayControl = (): Element => <button aria-label="Play" onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  PlayControl = (): Element => <button disabled={!this.isLoaded} aria-label="Play" onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
   </button>
 
-  ReplayControl = (): Element => <button aria-label="Rewind" onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  ReplayControl = (): Element => <button disabled={!this.isLoaded} aria-label="Rewind" onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
-  StopControl = (): Element => <button aria-label="Stop" onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  StopControl = (): Element => <button disabled={!this.isLoaded} aria-label="Stop" onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
   </button>
 
@@ -903,10 +969,11 @@ export class ReadAlongComponent {
         </h3>
         <div class={"pages__container theme--" + this.theme}>
           {this.showGuide ? <this.Guide /> : null}
-          {this.parsed_text.map((page) =>
+          {this.isLoaded && this.parsed_text.map((page) =>
             <this.Page pageData={page} >
             </this.Page>
           )}
+          {this.isLoaded ==false && <div class="loader"></div> }
         </div>
         <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.svg_overlay ? <this.Overlay /> : null}

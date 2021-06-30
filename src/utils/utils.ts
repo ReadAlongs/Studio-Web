@@ -18,8 +18,13 @@ export interface Alignment {
  * @param {string} path - the path to the xml file
  */
 function getXML(path: string): string {
+
   let xmlhttp = new XMLHttpRequest();
   xmlhttp.open("GET", path, false);//TODO rewrite as async
+  xmlhttp.addEventListener("error", function (error) {
+    console.log(error);
+    alert(path+ "not loaded")
+  })
   xmlhttp.send();
   return xmlhttp.responseText;
 }
@@ -266,3 +271,5 @@ Sprite.prototype = {
     requestAnimationFrame(self.step.bind(self));
   }
 };
+
+

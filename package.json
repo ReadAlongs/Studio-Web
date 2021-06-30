@@ -1,9 +1,9 @@
 {
   "name": "@atlasling/readalong",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "description": "ReadAlong Web Component",
   "main": "dist/index.js",
-  "module": "dist/index.js",
+  "module": "dist/index.mjs",
   "es2015": "dist/esm/index.mjs",
   "es2017": "dist/esm/index.mjs",
   "types": "dist/types/components.d.ts",
@@ -19,7 +19,8 @@
     "prepublish": "npm run build",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "generate": "stencil generate"
+    "generate": "stencil generate",
+    "publish": "npm publish"
   },
   "dependencies": {
     "howler": "^2.2.0",

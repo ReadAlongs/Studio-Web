@@ -34,7 +34,7 @@ $max-height: 98vh;
     &__container {
       display: grid;
       @extend %themed-bg;
-      grid-template-columns: 40% auto;
+      grid-template-columns: [col-start] [col-end];
       grid-template-rows: [row-start] 5% [row-end] 95%;
       grid-template-areas:
         "image page-no"
@@ -65,7 +65,7 @@ $max-height: 98vh;
           img {
             height: 100%;
             max-width: 95%;
-            object-fit: cover;
+            object-fit: contain;
           }
         }
 
@@ -76,6 +76,10 @@ $max-height: 98vh;
     }
 
 }
+
+.page.two-column-layout-page {
+  grid-template-columns: 40% auto;
+}
 .page.one-column-layout-page {
   display: grid;
 
@@ -85,6 +89,9 @@ $max-height: 98vh;
         "page-no"
         "text";
   justify-items: stretch;
+}
+.page.one-column-layout-page .page__col__image {
+   grid-area: text;
 }
 .hide-page-counter  .page__counter{
   display: none;

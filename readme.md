@@ -10,14 +10,22 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 
 ## Properties
 
-| Property    | Attribute   | Description           | Type     | Default     |
-| ----------- | ----------- | --------------------- | -------- | ----------- |
-| `alignment` | `alignment` | The alignment as SMIL | `string` | `undefined` |
-| `audio`     | `audio`     | The audio file        | `string` | `undefined` |
-| `text`      | `text`      | The text as TEI       | `string` | `undefined` |
-| `theme`     | `theme`     | The colour theme      | `string` | `light`     |
-| `css_url`   | `css_url`   | An optional external style sheet to override styling | `string` | `undefined` |
 
+| Property         | Attribute          | Description                                                                                            | Type      | Default     |
+| ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------ | --------- | ----------- |
+| `alignment`      | `alignment`        | The alignment as SMIL                                                                                  | `string`  | `undefined` |
+| `audio`          | `audio`            | The audio file                                                                                         | `string`  | `undefined` |
+| `css_url`        | `css_url`          | Optional custom Stylesheet to override defaults                                                        | `string`  | `undefined` |
+| `language`       | `language`         | Language                                                                                               | `string`  | `'eng'`     |
+| `svg_overlay`    | `svg_overlay`      | Overlay This is an SVG overlay to place over the progress bar                                          | `string`  | `undefined` |
+| `text`           | `text`             | The text as TEI                                                                                        | `string`  | `undefined` |
+| `theme`          | `theme`            | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`  | `'light'`   |
+| `useAssetFolder` | `use-asset-folder` | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean` | `true`      |
+
+
+#### IMAGES
+* you can put images in "asests/" and provide relative link
+* otherwise provide a full path
 
 ## Test with your site
 
@@ -82,10 +90,17 @@ You force any page to one column layout by setting the class of the page to ```o
 ...
 </div>
 ```
+The default layout is auto adjust without restrictions.
+To force a 40-60 split between the image and text use the ```two-column-layout-page``` for the page.
+
 ### Hide page number
 You hide the page number for any page by specifying the class ```hide-page-counter``` 
 
-## CSS customization 
+## Assets folder
+By defaults all assets (img,text,audio) will be resolved to ```.\assets\``` relative to the index.html file. 
+You can override this behaviour by using this attribute on the component ```use-assets-folder="false"```.
+The web component will not longer resolve url to the **assets** folder when this attribute is present
+## CSS customization
 You can override the default style of the component. This option is best used anyone does not want to clone this project and modify only the UI.
 Use the web inspector of your browser to find the classes you wish to override
 ```css
@@ -107,10 +122,13 @@ Here is a list of classes you want to override:
  * .sentence
  * .paragraph
  * .page__container.theme--light (to set page background)
+
+
 ## XML customizations
 You can add classes to the xml tags in the text XML file. 
 When coupled with the custom css, it will produce most of the visual effect you want in your read along.
 e.g. ``` <s class="sentence__translation ">```
+
 
 ### Built-in translation class
 The default css class provided for translations should be added to the XML ```<s>``` tag. It styled as 
@@ -136,6 +154,7 @@ Here is a sample
   <s  id="t0b0d1p0s1" class="sentence__translation ">This is a translation</s>
 </p>
 ```
+
 **MIND THE GAP**:
 When you visually align a paragraph please triple check the spacing and punctuation between elements 
 because the visual alignment is white-space sensitive
