@@ -16,6 +16,7 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 | `alignment`      | `alignment`        | The alignment as SMIL                                                                                  | `string`  | `undefined` |
 | `audio`          | `audio`            | The audio file                                                                                         | `string`  | `undefined` |
 | `css_url`        | `css_url`          | Optional custom Stylesheet to override defaults                                                        | `string`  | `undefined` |
+| `isVerticalPages` | `is-vertical-pages` | Toggles the page scrolling from horizontal to vertical. Defaults to off                                | `boolean` | `false`     |
 | `language`       | `language`         | Language                                                                                               | `string`  | `'eng'`     |
 | `svg_overlay`    | `svg_overlay`      | Overlay This is an SVG overlay to place over the progress bar                                          | `string`  | `undefined` |
 | `text`           | `text`             | The text as TEI                                                                                        | `string`  | `undefined` |
@@ -24,8 +25,10 @@ For now, just clone the repo, make sure you have node 6+, and run `npm install` 
 
 
 #### IMAGES
-* you can put images in "asests/" and provide relative link
-* otherwise provide a full path
+You have three options:
+* put images in "asests/" and provide relative link
+* provide a full path
+* put it in a custom relative folder and make sure to add `use-asset-folder="false"` attribute to the read-long component 
 
 ## Test with your site
 
