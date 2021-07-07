@@ -23,9 +23,9 @@ function getXML(path: string): string {
   xmlhttp.open("GET", path, false);//TODO rewrite as async
   xmlhttp.addEventListener("error", function (error) {
     console.log(error);
-    alert(path+ "not loaded")
   })
   xmlhttp.send();
+
   return xmlhttp.responseText;
 }
 

@@ -15,6 +15,7 @@ $max-height: 98vh;
     @extend %border--strong--left;
     @extend %border--strong--right;
     border-radius: em(5) em(5) 0 0;
+
   }
 }
 .page {
@@ -96,7 +97,12 @@ $max-height: 98vh;
 .hide-page-counter  .page__counter{
   display: none;
 }
-
+.pages__container.vertical {
+  flex-direction: column !important;
+}
+.pages__container.vertical > .page {
+  min-height:100%;
+}
 .paragraph {
 
     &__container {
@@ -168,7 +174,6 @@ $max-height: 98vh;
 .paragraph.visually_aligned .sentence {
   display: table-row;
 }
-
 
 .read-along-container {
     max-width: 75em;

@@ -50,3 +50,33 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.alert {
+  position: relative;
+  padding: 1rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+
+  transition-delay: 2s;
+  transition: visibility 5s height 5s;
+
+}
+.alert.status-1 {
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border-color: #badbcc;
+}
+.alert.status-2 {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.alert.fade {
+  visibility: collapse;
+  height: 0 !important;
+  overflow: hidden!important;
+  line-height: 0!important;
+  padding: 0!important; margin: 0!important; border: 0!important;
+}

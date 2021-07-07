@@ -3,12 +3,15 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Howl } from 'howler';
 import {Alignment, Page, parseSMIL, parseTEI, Sprite} from '../../utils/utils'
-
+const LOADING =0;
+const LOADED =1;
+const ERROR_LOADING =2;
 @Component({
   tag: 'read-along',
   styleUrl: '../../scss/styles.scss',
   shadow: true
 })
+
 export class ReadAlongComponent {
   @Element() el: HTMLElement;
 
@@ -66,7 +69,14 @@ export class ReadAlongComponent {
    * to maintain backwards compatibility
    */
 
-  @Prop() useAssetFolder:boolean = true
+  @Prop() useAssetFolder:boolean = true;
+
+  /**
+   * Toggles the page scrolling from horizontal to vertical. Defaults to off
+   *
+   */
+
+  @Prop() isVerticalPages:boolean = false;
 
   /************
    *  STATES  *
@@ -90,6 +100,11 @@ export class ReadAlongComponent {
 
   current_page;
   hasTextTranslations: boolean = false;
+  assetsStatus={
+    'AUDIO':LOADING,
+    'XML':LOADING,
+    'SMIL':LOADING
+  };
 
 
 
@@ -566,8 +581,8 @@ export class ReadAlongComponent {
     let page_container: any = this.el.shadowRoot.querySelector('.pages__container')
     let next_page: any = this.el.shadowRoot.querySelector('#' + pg_id)
     page_container.scrollBy({
-      top: 0,
-      left: next_page.offsetLeft - page_container.scrollLeft,
+      top: this.isVerticalPages?(next_page.offsetTop - page_container.scrollTop):0,
+      left: this.isVerticalPages?0:(next_page.offsetLeft - page_container.scrollLeft),
       behavior: 'smooth'
     });
     next_page.scrollTo(0,0)//reset to top of the page
@@ -610,6 +625,22 @@ export class ReadAlongComponent {
     });
   }
 
+  /****
+   * AUDIO HANDLING
+   *
+   */
+  audioFailedToLoad(){
+
+    this.isLoaded= true;
+    this.assetsStatus.AUDIO = ERROR_LOADING;
+
+  }
+  audioLoaded(){
+
+    this.isLoaded= true;
+    this.assetsStatus.AUDIO = LOADED;
+
+  }
   /*************
    * LIFECYCLE *
    *************/
@@ -639,6 +670,8 @@ export class ReadAlongComponent {
     this.text=this.urlTransform(this.text);
 
     this.processed_alignment = parseSMIL(this.alignment)
+    this.assetsStatus.SMIL= Object.keys(this.processed_alignment).length?LOADED:ERROR_LOADING
+
     // load basic Howl
 
 
@@ -647,16 +680,14 @@ export class ReadAlongComponent {
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
       preload: true,
-
-      onloaderror: function(error) {
-           console.log(error)
-        alert(this.audio+ " not loaded")
-        },
+      onloaderror : this.audioFailedToLoad.bind(this),
+      onload:this.audioLoaded.bind(this)
 
     })
     // Once loaded, get duration and build Sprite
     this.audio_howl_sprites.once('load', () => {
-      this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
+
+        this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
       this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
       // Once Sprites are built, subscribe to reading subject and update element class
@@ -707,9 +738,12 @@ export class ReadAlongComponent {
         }
       })
         this.isLoaded = true;
+        this.assetsStatus.AUDIO=LOADED;
     })
     // Parse the text to be displayed
     this.parsed_text = parseTEI(this.text)
+
+    this.assetsStatus.XML= this.parsed_text.length?LOADED:ERROR_LOADING
 
 
   }
@@ -735,6 +769,22 @@ export class ReadAlongComponent {
       "re-align": {
         "eng": "Re-align with audio",
         "fr": "Réaligner avec l'audio"
+      },
+      "audio-error":{
+        "eng":"Error: The audio file could not be loaded",
+        "fr":"Erreur: le fichier audio n'a pas pu être chargé"
+      },
+      "xml-error":{
+        "eng":"Error: The XML file could not be loaded",
+        "fr":"Erreur: le fichier xml n'a pas pu être chargé"
+      },
+      "smil-error":{
+        "eng":"Error: The SMIL file could not be loaded",
+        "fr":"Erreur: le fichier smil n'a pas pu être chargé"
+      },
+      "loading":{
+        "eng":"Loading...",
+        "fr":"Chargement en cours"
       }
     }
     return translations[word][lang]
@@ -967,18 +1017,32 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        <div class={"pages__container theme--" + this.theme}>
+        {
+          this.assetsStatus.AUDIO && <p class={"alert status-"+this.assetsStatus.AUDIO+(this.assetsStatus.AUDIO==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.AUDIO==ERROR_LOADING?'error':(this.assetsStatus.AUDIO>0?'done':'pending_actions')}</span>   {this.assetsStatus.AUDIO==ERROR_LOADING?this.returnTranslation('audio-error',this.language):(this.assetsStatus.SMIL>0?'AUDIO':this.returnTranslation('loading',this.language))}</p>
+        }
+
+        {
+          this.assetsStatus.XML && <p class={"alert status-"+this.assetsStatus.XML+(this.assetsStatus.XML==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.XML==ERROR_LOADING?'error':(this.assetsStatus.XML>0?'done':'pending_actions')}</span>   {this.assetsStatus.XML==ERROR_LOADING?this.returnTranslation('xml-error',this.language):(this.assetsStatus.SMIL>0?'XML':this.returnTranslation('loading',this.language))}</p>
+        }
+
+        {
+          this.assetsStatus.SMIL && <p class={"alert status-"+this.assetsStatus.SMIL+(this.assetsStatus.SMIL==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.SMIL==ERROR_LOADING?'error':(this.assetsStatus.SMIL>0?'done':'pending_actions')}</span>   {this.assetsStatus.SMIL==ERROR_LOADING?this.returnTranslation('smil-error',this.language):(this.assetsStatus.SMIL>0?'SMIL':this.returnTranslation('loading',this.language))}</p>
+        }
+        <div class={"pages__container theme--" + this.theme+(this.isVerticalPages?" vertical":"")}>
+
           {this.showGuide ? <this.Guide /> : null}
-          {this.isLoaded && this.parsed_text.map((page) =>
+          {this.assetsStatus.XML==LOADED && this.parsed_text.map((page) =>
             <this.Page pageData={page} >
             </this.Page>
           )}
           {this.isLoaded ==false && <div class="loader"></div> }
+
         </div>
-        <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
+        { this.assetsStatus.SMIL == LOADED && <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.svg_overlay ? <this.Overlay /> : null}
-        </div>
-        <this.ControlPanel />
+        </div>}
+        {this.assetsStatus.AUDIO==LOADED && <this.ControlPanel />}
+
         {this.css_url && this.css_url.match(".css")!=null && <link href={this.css_url} rel="stylesheet"></link>}
       </div >
 

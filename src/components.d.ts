@@ -20,6 +20,10 @@ export namespace Components {
          */
         "css_url"?: string;
         /**
+          * Toggles the page scrolling from horizontal to vertical. Defaults to off
+         */
+        "isVerticalPages": boolean;
+        /**
           * Language
          */
         "language": string;
@@ -66,6 +70,10 @@ declare namespace LocalJSX {
           * Optional custom Stylesheet to override defaults
          */
         "css_url"?: string;
+        /**
+          * Toggles the page scrolling from horizontal to vertical. Defaults to off
+         */
+        "isVerticalPages"?: boolean;
         /**
           * Language
          */
