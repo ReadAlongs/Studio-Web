@@ -16,6 +16,7 @@
     "scripts": {
         "build": "stencil build --docs",
         "start": "stencil build --dev --watch --serve",
+        "test-server": "sirv --dev --port 5000 test-data/",
         "prepublish": "npm run build",
         "test": "stencil test --spec --e2e",
         "test.watch": "stencil test --spec --e2e --watchAll",
@@ -28,7 +29,9 @@
     "devDependencies": {
         "@stencil/core": "^1.17.3",
         "@stencil/sass": "^1.3.2",
-        "cypress": "^7.7.0"
+        "cypress": "^7.7.0",
+        "sirv-cli": "^1.0.12",
+        "wait-on": "^6.0.0"
     },
     "license": "MIT"
 }
