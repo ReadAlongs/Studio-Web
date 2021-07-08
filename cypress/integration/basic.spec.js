@@ -1,4 +1,4 @@
-context.only('The Readalong Component', () => {
+context('The Readalong Component', () => {
   /**
    * Wait for the audio and the SMIL to load.
    */
