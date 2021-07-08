@@ -15,12 +15,13 @@
     ],
     "scripts": {
         "build": "stencil build --docs",
+        "cy:run": "cypress run",
         "start": "stencil build --dev --watch --serve",
-        "test-server": "sirv --dev --port 5000 test-data/",
         "prepublish": "npm run build",
-        "test": "stencil test --spec --e2e",
-        "test.watch": "stencil test --spec --e2e --watchAll",
-        "generate": "stencil generate"
+        "test": "npm run test-server & npm run wait-for-test-server && npm run cy:run",
+        "test-server": "sirv --dev --port 5000 test-data/",
+        "generate": "stencil generate",
+        "wait-for-test-server": "wait-on tcp:localhost:5000"
     },
     "dependencies": {
         "howler": "^2.2.0",
