@@ -11,9 +11,9 @@ context("The Readalong Component", () => {
   });
 
   it("should load successfully", () => {
-    theReadalong().should("be.visible");
+    cy.readalongElement().should("be.visible");
 
-    withinTheReadalong().within(() => {
+    cy.readalong().within(() => {
       cy.contains("Page");
     });
   });
@@ -21,7 +21,7 @@ context("The Readalong Component", () => {
   it("should play the entire ReadAlong", () => {
     cy.wait(EXPECTED_LOADING_TIME);
 
-    withinTheReadalong().within(() => {
+    cy.readalong().within(() => {
       cy.get("[data-cy=play-button]").click();
       cy.wait(FOR_ERIC_TO_TALK_A_BIT);
       cy.get("[data-cy=stop-button]").click();
@@ -31,22 +31,6 @@ context("The Readalong Component", () => {
   it("should play a single word", () => {
     cy.wait(EXPECTED_LOADING_TIME);
 
-    withinTheReadalong().contains("technologies").click();
+    cy.readalong().contains("technologies").click();
   });
-
-  ///////////////////////////////// Utilities //////////////////////////////////
-
-  function theReadalong() {
-    return cy.get("read-along").first();
-  }
-
-  function withinTheReadalong() {
-    /**
-     * To do any asserts of content WITHIN the <read-along> component, you
-     * need to use .shadow() to dive into the shadow DOM.
-     *
-     * https://docs.cypress.io/api/commands/shadow
-     */
-    return theReadalong().shadow();
-  }
 });
