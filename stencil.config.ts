@@ -19,12 +19,15 @@ export const config: Config = {
 
 function devServerOverrides() {
   if (Boolean(process.env.RUNNING_INTEGRATION_TESTS)) {
+    // See https://stenciljs.com/docs/dev-server
     return {
       // Cypress will open its own browser
       openBrowser: false,
       // Have the tests explicitly reload functionality rather than using
       // hot-module replacement.
       reloadStrategy: null,
+      // Handy to have this log in the test output.
+      logRequests: true,
     };
   }
 

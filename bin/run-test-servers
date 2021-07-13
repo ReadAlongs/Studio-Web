@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Runs the TWO web servers required for integration testing.
+#
+#  - stencil build server (hosts built web component code)
+#  - static server: (hosts test-data)
+#
+# (This is silly).
+
+RUNNING_INTEGRATION_TESTS=true npm start &
+STENCIL_PID="$!"
+npm run test-server %
+TEST_SERVER_PID="$!"
+
+shut-down-servers() {
+    kill "${STENCIL_PID}" "${TEST_SERVER_PID}"
+}
+
+# Shut down services on Ctrl+C or regular exit
+trap shut-down-servers EXIT

@@ -18,10 +18,10 @@
         "cy:run": "cypress run",
         "start": "stencil build --dev --watch --serve",
         "prepublish": "npm run build",
-        "test": "npm start & npm run test-server & npm run wait-for-test-server && npm run cy:run",
+        "test": "bash ./bin/run-test-servers & npm run wait-for-test-server && npm run cy:run",
         "test-server": "sirv --dev --port 5000 test-data/",
         "generate": "stencil generate",
-        "wait-for-test-server": "wait-on tcp:localhost:5000"
+        "wait-for-test-server": "wait-on http://localhost:3333/build/read-along.esm.js"
     },
     "dependencies": {
         "howler": "^2.2.0",
