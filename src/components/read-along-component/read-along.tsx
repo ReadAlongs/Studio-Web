@@ -685,7 +685,13 @@ export class ReadAlongComponent {
    * Shows currentPage / pgCount
    */
   PageCount = (props: { pgCount: number, currentPage: number }): Element =>
-    <div class={"page__counter color--" + this.theme}>Page {props.currentPage} / {props.pgCount}</div>
+    <div class={"page__counter color--" + this.theme}>
+      Page
+        {' '}
+      <span data-cy="page-count__current">{props.currentPage}</span>
+        {' / '}
+      <span data-cy="page-count__total">{props.pgCount}</span>
+    </div>
 
   /**
    * Page element
@@ -836,7 +842,7 @@ export class ReadAlongComponent {
             </this.Page>
           )}
         </div>
-        <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
+        <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' data-cy="progress-bar" class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.svg_overlay ? <this.Overlay /> : null}
         </div>
         <this.ControlPanel />
