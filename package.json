@@ -18,8 +18,9 @@
         "cy:run": "cypress run",
         "start": "stencil build --dev --watch --serve",
         "prepublish": "npm run build",
-        "test": "bash ./bin/run-test-servers & npm run wait-for-test-server && npm run cy:run",
-        "test-server": "sirv --dev --port 5000 test-data/",
+        "test": "npm run test-servers & npm run wait-for-test-server && npm run cy:run",
+        "test-servers": "bash ./bin/run-test-servers",
+        "serve-test-data": "sirv --dev --port 5000 test-data/",
         "generate": "stencil generate",
         "wait-for-test-server": "wait-on http://localhost:3333/build/read-along.esm.js"
     },

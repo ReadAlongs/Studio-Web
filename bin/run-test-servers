@@ -9,7 +9,7 @@
 
 RUNNING_INTEGRATION_TESTS=true npm start &
 STENCIL_PID="$!"
-npm run test-server %
+npm run serve-test-data %
 TEST_SERVER_PID="$!"
 
 shut-down-servers() {
