@@ -685,7 +685,13 @@ export class ReadAlongComponent {
    * Shows currentPage / pgCount
    */
   PageCount = (props: { pgCount: number, currentPage: number }): Element =>
-    <div class={"page__counter color--" + this.theme}>Page {props.currentPage} / {props.pgCount}</div>
+    <div class={"page__counter color--" + this.theme}>
+      Page
+        {' '}
+      <span data-cy="page-count__current">{props.currentPage}</span>
+        {' / '}
+      <span data-cy="page-count__total">{props.pgCount}</span>
+    </div>
 
   /**
    * Page element
@@ -774,15 +780,15 @@ export class ReadAlongComponent {
    * Render controls for ReadAlong
    */
 
-  PlayControl = (): Element => <button aria-label="Play" onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  PlayControl = (): Element => <button data-cy="play-button" aria-label="Play" onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
   </button>
 
-  ReplayControl = (): Element => <button aria-label="Rewind" onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  ReplayControl = (): Element => <button data-cy="replay-button" aria-label="Rewind" onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
-  StopControl = (): Element => <button aria-label="Stop" onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  StopControl = (): Element => <button data-cy="stop-button" aria-label="Stop" onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
   </button>
 
@@ -836,7 +842,7 @@ export class ReadAlongComponent {
             </this.Page>
           )}
         </div>
-        <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
+        <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' data-cy="progress-bar" class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.svg_overlay ? <this.Overlay /> : null}
         </div>
         <this.ControlPanel />

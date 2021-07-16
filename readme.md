@@ -91,3 +91,22 @@ Use the web inspector of your browser to find the classes you wish to override
 ```
 
 
+## For developers of the component
+
+We use Cypress (instead of Jest+Puppeteer) to do integration/end-to-end
+testing.
+
+### How to run the tests
+
+First, start the test servers (yes, plural!), by using this command:
+
+    npm run test-servers
+
+Then you can run test **interactively** using the following command:
+
+    npx cypress open
+
+Or run all tests automatically using this command:
+
+    npx cypress run
+

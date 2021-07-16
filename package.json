@@ -15,11 +15,14 @@
     ],
     "scripts": {
         "build": "stencil build --docs",
+        "cy:run": "cypress run",
         "start": "stencil build --dev --watch --serve",
         "prepublish": "npm run build",
-        "test": "stencil test --spec --e2e",
-        "test.watch": "stencil test --spec --e2e --watchAll",
-        "generate": "stencil generate"
+        "test": "npm run test-servers & npm run wait-for-test-server && npm run cy:run",
+        "test-servers": "bash ./bin/run-test-servers",
+        "serve-test-data": "sirv --dev --port 5000 test-data/",
+        "generate": "stencil generate",
+        "wait-for-test-server": "wait-on http://localhost:3333/build/read-along.esm.js"
     },
     "dependencies": {
         "howler": "^2.2.0",
@@ -27,7 +30,14 @@
     },
     "devDependencies": {
         "@stencil/core": "^1.17.3",
-        "@stencil/sass": "^1.3.2"
+        "@stencil/sass": "^1.3.2",
+        "@types/jest": "^26.0.24",
+        "@types/puppeteer": "^5.4.4",
+        "cypress": "^7.7.0",
+        "jest-cli": "^27.0.6",
+        "puppeteer": "^6.0.0",
+        "sirv-cli": "^1.0.12",
+        "wait-on": "^6.0.0"
     },
     "license": "MIT"
 }
