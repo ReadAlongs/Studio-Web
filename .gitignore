@@ -26,3 +26,6 @@ $RECYCLE.BIN/
 Thumbs.db
 UserInterfaceState.xcuserstate
 .env
+
+cypress/videos/
+cypress/screenshots/

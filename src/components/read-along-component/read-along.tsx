@@ -11,7 +11,6 @@ const ERROR_LOADING =2;
   styleUrl: '../../scss/styles.scss',
   shadow: true
 })
-
 export class ReadAlongComponent {
   @Element() el: HTMLElement;
 
@@ -344,7 +343,6 @@ export class ReadAlongComponent {
   addHighlightingTo(el: HTMLElement): void {
     this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
     el.classList.add('reading')
-
   }
 
   /**
@@ -549,7 +547,7 @@ export class ReadAlongComponent {
       }
     })
     intersectionObserver.observe(element)
-    //console.log("inPageContentOverflow",element,inOverflowAbove,inOverflowBelow)
+
     // if not in overflow, return false
     return (inOverflowAbove || inOverflowBelow)
   }
@@ -662,7 +660,6 @@ export class ReadAlongComponent {
    * Lifecycle hook: after component loads, build the Sprite and parse the files necessary.
    * Then subscribe to the _reading$ Subject in order to update CSS styles when new element
    * is being read
-   * This is to prevent the UI hanging when processing large audio and text
    */
   componentDidLoad() {
     this.audio=this.urlTransform(this.audio);
@@ -673,10 +670,6 @@ export class ReadAlongComponent {
     this.assetsStatus.SMIL= Object.keys(this.processed_alignment).length?LOADED:ERROR_LOADING
 
     // load basic Howl
-
-
-
-
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
       preload: true,
@@ -720,7 +713,7 @@ export class ReadAlongComponent {
           if(query_el.getBoundingClientRect().left<0 || this.el.shadowRoot.querySelector("#"+current_page).getBoundingClientRect().left!==0){
             this.scrollToPage(current_page)
           }
-          //console.log("-- inPageContentOverflow")
+
           // scroll vertically (through paragraph) if needed
           if (this.inPageContentOverflow(query_el)) {
             if (this.autoScroll) {
@@ -734,7 +727,6 @@ export class ReadAlongComponent {
               this.scrollByWidth(query_el)
             }
           }
-
         }
       })
         this.isLoaded = true;
@@ -832,7 +824,13 @@ export class ReadAlongComponent {
    * Shows currentPage / pgCount
    */
   PageCount = (props: { pgCount: number, currentPage: number }): Element =>
-    <div class={"page__counter color--" + this.theme}>Page {props.currentPage} / {props.pgCount}</div>
+    <div class={"page__counter color--" + this.theme}>
+      Page
+        {' '}
+      <span data-cy="page-count__current">{props.currentPage}</span>
+        {' / '}
+      <span data-cy="page-count__total">{props.pgCount}</span>
+    </div>
 
   /**
    * Page element
@@ -897,7 +895,6 @@ export class ReadAlongComponent {
 
       return <div {...nodeProps} class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
       {
-
         /* Here are the Word and NonWordText children */
           props.words.map((child: Element,c) => {
 
@@ -957,15 +954,15 @@ export class ReadAlongComponent {
    * Render controls for ReadAlong
    */
 
-  PlayControl = (): Element => <button disabled={!this.isLoaded} aria-label="Play" onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  PlayControl = (): Element => <button data-cy="play-button"  disabled={!this.isLoaded} aria-label="Play" onClick={() => { this.playing ? this.pause() : this.play() }} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
   </button>
 
-  ReplayControl = (): Element => <button disabled={!this.isLoaded} aria-label="Rewind" onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  ReplayControl = (): Element => <button data-cy="replay-button"  disabled={!this.isLoaded} aria-label="Rewind" onClick={() => this.goBack(5)} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
-  StopControl = (): Element => <button disabled={!this.isLoaded} aria-label="Stop" onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  StopControl = (): Element => <button data-cy="stop-button"  disabled={!this.isLoaded} aria-label="Stop" onClick={() => this.stop()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
   </button>
 
@@ -1038,7 +1035,7 @@ export class ReadAlongComponent {
           {this.isLoaded ==false && <div class="loader"></div> }
 
         </div>
-        { this.assetsStatus.SMIL == LOADED && <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
+        { this.assetsStatus.SMIL == LOADED && <div onClick={(e) => this.goToSeekFromProgress(e)} id='all'  data-cy="progress-bar" class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
           {this.svg_overlay ? <this.Overlay /> : null}
         </div>}
         {this.assetsStatus.AUDIO==LOADED && <this.ControlPanel />}

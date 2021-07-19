@@ -165,3 +165,22 @@ because the visual alignment is white-space sensitive
 **SIDE EFFECT**: This feature disables auto-wrapping of the words in the paragraph
 
 
+## For developers of the component
+
+We use Cypress (instead of Jest+Puppeteer) to do integration/end-to-end
+testing.
+
+### How to run the tests
+
+First, start the test servers (yes, plural!), by using this command:
+
+    npm run test-servers
+
+Then you can run test **interactively** using the following command:
+
+    npx cypress open
+
+Or run all tests automatically using this command:
+
+    npx cypress run
+
