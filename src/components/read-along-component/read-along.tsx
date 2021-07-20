@@ -328,6 +328,7 @@ export class ReadAlongComponent {
    */
   toggleTextTranslation():void{
     this.el.shadowRoot.querySelectorAll('.translation').forEach( translation => translation.classList.toggle('invisible'))
+    this.el.shadowRoot.querySelectorAll('.sentence__translation').forEach( translation => translation.classList.toggle('invisible'))
 
   }
 
@@ -766,20 +767,22 @@ export class ReadAlongComponent {
         "eng":"Error: The audio file could not be loaded",
         "fr":"Erreur: le fichier audio n'a pas pu être chargé"
       },
-      "xml-error":{
-        "eng":"Error: The XML file could not be loaded",
-        "fr":"Erreur: le fichier xml n'a pas pu être chargé"
+      "text-error":{
+        "eng":"Error: The text file could not be loaded",
+        "fr":"Erreur: le fichier texte n'a pas pu être chargé"
       },
-      "smil-error":{
-        "eng":"Error: The SMIL file could not be loaded",
-        "fr":"Erreur: le fichier smil n'a pas pu être chargé"
+      "alignment-error":{
+        "eng":"Error: The alignment file could not be loaded",
+        "fr":"Erreur: le fichier alignement n'a pas pu être chargé"
       },
       "loading":{
         "eng":"Loading...",
         "fr":"Chargement en cours"
       }
     }
+    if(translations[word])
     return translations[word][lang]
+    return  word;
   }
 
   /**********
@@ -888,6 +891,10 @@ export class ReadAlongComponent {
     let nodeProps = {
 
     };
+    if(props.attributes && props.attributes['xml:lang']){
+
+      nodeProps['lang']= props.attributes['xml:lang'].value
+    }
     if(props.attributes && props.attributes['lang']){
 
       nodeProps['lang']= props.attributes['lang'].value
@@ -906,6 +913,7 @@ export class ReadAlongComponent {
             let cnodeProps = {
 
             };
+            if(child.attributes['xml:lang'])cnodeProps['lang']= props.attributes['xml:lang'].value
             if(child.attributes['lang'])cnodeProps['lang']= props.attributes['lang'].value
           return <span {...cnodeProps} class={'sentence__text theme--' + this.theme+(' '+child.className)} id={child.id?child.id:'text_'+c} >{child.textContent}</span>
         }
@@ -927,6 +935,7 @@ export class ReadAlongComponent {
     let nodeProps = {
 
     };
+    if(props.attributes && props.attributes['xml:lang'])nodeProps['lang']= props.attributes['xml:lang'].value
     if(props.attributes && props.attributes['lang'])nodeProps['lang']= props.attributes['lang'].value
 
     return <span {...nodeProps} class={'sentence__text theme--' + this.theme} id={props.id} >{props.text}</span>
@@ -944,6 +953,7 @@ export class ReadAlongComponent {
     let nodeProps = {
 
     };
+    if(props.attributes && props.attributes['xml:lang'])nodeProps['lang']= props.attributes['xml:lang'].value
     if(props.attributes && props.attributes['lang'])nodeProps['lang']= props.attributes['lang'].value
 
     return <span {...nodeProps}
@@ -979,11 +989,11 @@ export class ReadAlongComponent {
     <i class="material-icons"  aria-label="Full screen mode">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
-  TextTranslationDisplayControl = ():Element => <button aria-label="Toggle Translation" onClick={()=> this.toggleTextTranslation()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  TextTranslationDisplayControl = ():Element => <button data-cy="translation-toggle" aria-label="Toggle Translation" onClick={()=> this.toggleTextTranslation()} class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">subtitles</i>
   </button>
 
-  ControlPanel = (): Element => <div class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+  ControlPanel = (): Element => <div data-cy="control-panel" class={"control-panel theme--" + this.theme + " background--" + this.theme}>
     <div class="control-panel__buttons--left">
       <this.PlayControl />
       <this.ReplayControl />
@@ -1015,17 +1025,21 @@ export class ReadAlongComponent {
           <slot name="read-along-subheader" />
         </h3>
         {
-          this.assetsStatus.AUDIO && <p class={"alert status-"+this.assetsStatus.AUDIO+(this.assetsStatus.AUDIO==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.AUDIO==ERROR_LOADING?'error':(this.assetsStatus.AUDIO>0?'done':'pending_actions')}</span>   {this.assetsStatus.AUDIO==ERROR_LOADING?this.returnTranslation('audio-error',this.language):(this.assetsStatus.SMIL>0?'AUDIO':this.returnTranslation('loading',this.language))}</p>
+          this.assetsStatus.AUDIO &&
+          <p data-cy="audio-error" class={"alert status-"+this.assetsStatus.AUDIO+(this.assetsStatus.AUDIO==LOADED?' fade':'')}>
+            <span class="material-icons-outlined"> {this.assetsStatus.AUDIO==ERROR_LOADING?'error':(this.assetsStatus.AUDIO>0?'done':'pending_actions')}</span>
+            <span>{this.assetsStatus.AUDIO==ERROR_LOADING?this.returnTranslation('audio-error',this.language):(this.assetsStatus.SMIL>0?'AUDIO':this.returnTranslation('loading',this.language))}</span>
+          </p>
         }
 
         {
-          this.assetsStatus.XML && <p class={"alert status-"+this.assetsStatus.XML+(this.assetsStatus.XML==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.XML==ERROR_LOADING?'error':(this.assetsStatus.XML>0?'done':'pending_actions')}</span>   {this.assetsStatus.XML==ERROR_LOADING?this.returnTranslation('xml-error',this.language):(this.assetsStatus.SMIL>0?'XML':this.returnTranslation('loading',this.language))}</p>
+          this.assetsStatus.XML && <p data-cy="text-error" class={"alert status-"+this.assetsStatus.XML+(this.assetsStatus.XML==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.XML==ERROR_LOADING?'error':(this.assetsStatus.XML>0?'done':'pending_actions')}</span>  <span>{this.assetsStatus.XML==ERROR_LOADING?this.returnTranslation('text-error',this.language):(this.assetsStatus.SMIL>0?'XML':this.returnTranslation('loading',this.language))}</span></p>
         }
 
         {
-          this.assetsStatus.SMIL && <p class={"alert status-"+this.assetsStatus.SMIL+(this.assetsStatus.SMIL==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.SMIL==ERROR_LOADING?'error':(this.assetsStatus.SMIL>0?'done':'pending_actions')}</span>   {this.assetsStatus.SMIL==ERROR_LOADING?this.returnTranslation('smil-error',this.language):(this.assetsStatus.SMIL>0?'SMIL':this.returnTranslation('loading',this.language))}</p>
+          this.assetsStatus.SMIL && <p data-cy="alignment-error" class={"alert status-"+this.assetsStatus.SMIL+(this.assetsStatus.SMIL==LOADED?' fade':'')}> <span class="material-icons-outlined"> {this.assetsStatus.SMIL==ERROR_LOADING?'error':(this.assetsStatus.SMIL>0?'done':'pending_actions')}</span>   <span>{this.assetsStatus.SMIL==ERROR_LOADING?this.returnTranslation('alignment-error',this.language):(this.assetsStatus.SMIL>0?'SMIL':this.returnTranslation('loading',this.language))}</span></p>
         }
-        <div class={"pages__container theme--" + this.theme+(this.isVerticalPages?" vertical":"")}>
+        <div data-cy="text-container" class={"pages__container theme--" + this.theme+(this.isVerticalPages?" vertical":"")}>
 
           {this.showGuide ? <this.Guide /> : null}
           {this.assetsStatus.XML==LOADED && this.parsed_text.map((page) =>
