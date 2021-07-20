@@ -177,11 +177,14 @@ First, start the test servers (yes, plural!), by using this command:
     npm run test-servers
 
 
-If you are on a Windows machine, the command above will not work. 
-You have to manually run each command, therefore you need three command prompts.
+If you are on a Windows machine, the command above will not work if you do not have bash setup. 
+
 Run each of the following in a separate command prompt:
-`npm run start`
-`npm run serve-test-data`
+```
+  npm run start
+  npm run serve-test-data
+  
+```
 
 Then you can run test **interactively** using the following command:
 
