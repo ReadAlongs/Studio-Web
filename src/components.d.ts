@@ -18,19 +18,19 @@ export namespace Components {
         /**
           * Optional custom Stylesheet to override defaults
          */
-        "css_url"?: string;
-        /**
-          * Toggles the page scrolling from horizontal to vertical. Defaults to off
-         */
-        "isVerticalPages": boolean;
+        "cssUrl"?: string;
         /**
           * Language
          */
         "language": string;
         /**
+          * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
+         */
+        "pageScrolling": string;
+        /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
-        "svg_overlay": string;
+        "svgOverlay": string;
         /**
           * The text as TEI
          */
@@ -42,7 +42,7 @@ export namespace Components {
         /**
           * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
          */
-        "useAssetFolder": boolean;
+        "useAssetsFolder": boolean;
     }
 }
 declare global {
@@ -69,19 +69,19 @@ declare namespace LocalJSX {
         /**
           * Optional custom Stylesheet to override defaults
          */
-        "css_url"?: string;
-        /**
-          * Toggles the page scrolling from horizontal to vertical. Defaults to off
-         */
-        "isVerticalPages"?: boolean;
+        "cssUrl"?: string;
         /**
           * Language
          */
         "language"?: string;
         /**
+          * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
+         */
+        "pageScrolling"?: string;
+        /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
-        "svg_overlay"?: string;
+        "svgOverlay"?: string;
         /**
           * The text as TEI
          */
@@ -93,7 +93,7 @@ declare namespace LocalJSX {
         /**
           * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
          */
-        "useAssetFolder"?: boolean;
+        "useAssetsFolder"?: boolean;
     }
     interface IntrinsicElements {
         "read-along": ReadAlong;

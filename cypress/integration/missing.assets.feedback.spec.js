@@ -21,7 +21,7 @@ context("The Readalong Component", () => {
       cy.get("[data-cy=text-error]").should(($el)=>{
         expect($el.hasClass("fade")).equal(false,"error message box visible")
         //TODO: check that message is visible
-        //expect($el.text()).contains("The text file could not be loaded","error message visible")
+        expect($el.text()).contains("The text file could not be loaded","error message visible")
       }).should("be.visible")
       cy.get("[data-cy=alignment-error]").should('have.class','fade').should("not.be.visible")
       cy.get("[data-cy=progress-bar]").should("have.length",1).should("be.visible")
@@ -39,7 +39,7 @@ context("The Readalong Component", () => {
       cy.get("[data-cy=audio-error]").should(($el)=>{
         expect($el.hasClass("fade")).equal(false)
         //TODO: check that message is visible
-        //expect($el.text()).contains("Error: The audio file could not be loaded")
+        expect($el.text()).contains("Error: The audio file could not be loaded")
       }).should("be.visible")
       cy.get("[data-cy=control-panel]").should("have.length",0)
       cy.get("[data-cy=text-error]").should('have.class','fade').should("not.be.visible")
@@ -62,7 +62,7 @@ context("The Readalong Component", () => {
       cy.get("[data-cy=alignment-error]").should(($el)=>{
         expect($el.hasClass("fade")).equal(false)
         //TODO: check that message is visible
-        //expect($el.text()).contains("Error: The alignment file could not be loaded")
+        expect($el.text()).contains("Error: The alignment file could not be loaded")
       }).should("be.visible")
       cy.get("[data-cy=progress-bar]").should("have.length",0)
 

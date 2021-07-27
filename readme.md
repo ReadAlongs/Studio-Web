@@ -6,75 +6,87 @@ This is a web component for embedding read-along, audio/text aligned content in 
 
 ## Installation
 
-For now, just clone the repo, make sure you have node 6+, and run `npm install` from the project root. Then you can run `npm start` and a minimal website containing only the webcomponent will be served at `localhost:3333`. Any changes you make to `/src` will be automatically shown in the browser.
+For now, just clone the repo, make sure you have node 6+, and run `npm install` from the project root. Then you can
+run `npm start` and a minimal website containing only the webcomponent will be served at `localhost:3333`. Any changes
+you make to `/src` will be automatically shown in the browser.
 
 ## Properties
 
-
-| Property         | Attribute          | Description                                                                                            | Type      | Default     |
-| ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------ | --------- | ----------- |
-| `alignment`      | `alignment`        | The alignment as SMIL                                                                                  | `string`  | `undefined` |
-| `audio`          | `audio`            | The audio file                                                                                         | `string`  | `undefined` |
-| `css_url`        | `css_url`          | Optional custom Stylesheet to override defaults                                                        | `string`  | `undefined` |
-| `isVerticalPages` | `is-vertical-pages` | Toggles the page scrolling from horizontal to vertical. Defaults to off                                | `boolean` | `false`     |
-| `language`       | `language`         | Language                                                                                               | `string`  | `'eng'`     |
-| `svg_overlay`    | `svg_overlay`      | Overlay This is an SVG overlay to place over the progress bar                                          | `string`  | `undefined` |
-| `text`           | `text`             | The text as TEI                                                                                        | `string`  | `undefined` |
-| `theme`          | `theme`            | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`  | `'light'`   |
-| `useAssetFolder` | `use-asset-folder` | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean` | `true`      |
-
+| Property          | Attribute           | Description                                                                                            | Type      | Default        |
+| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------ | --------- | -------------- |
+| `alignment`       | `alignment`         | The alignment as SMIL                                                                                  | `string`  | `undefined`    |
+| `audio`           | `audio`             | The audio file                                                                                         | `string`  | `undefined`    |
+| `cssUrl`          | `css-url`           | Optional custom Stylesheet to override defaults                                                        | `string`  | `undefined`    |
+| `language`        | `language`          | Language                                                                                               | `string`  | `'eng'`        |
+| `pageScrolling`   | `page-scrolling`    | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                         | `string`  | `"horizontal"` |
+| `svgOverlay`      | `svg-overlay`       | Overlay This is an SVG overlay to place over the progress bar                                          | `string`  | `undefined`    |
+| `text`            | `text`              | The text as TEI                                                                                        | `string`  | `undefined`    |
+| `theme`           | `theme`             | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`  | `'light'`      |
+| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean` | `true`         |
 
 #### IMAGES
+
 You have three options:
+
 * put images in "asests/" and provide relative link
 * provide a full path
-* put it in a custom relative folder and make sure to add `use-asset-folder="false"` attribute to the read-long component 
+* put it in a custom relative folder and make sure to add `use-asset-folder="false"` attribute to the read-long
+  component
 
 ## Test with your site
 
-You can either modify the `/src/index.html` or after running `npm start` you can copy out the `www/build` folder and add the following script import in your own `index.html` page: 
+You can either modify the `/src/index.html` or after running `npm start` you can copy out the `www/build` folder and add
+the following script import in your own `index.html` page:
 
 ```html 
     <script crossorigin="anonymous"   type="module" src='https://unpkg.com/@roedoejet/readalong@latest/dist/read-along/read-along.esm.js'></script>
-    <script crossorigin="anonymous"   nomodule src='https://unpkg.com/@roedoejet/readalong@latest/dist/read-along/read-along.js'></script>
 ```
 
-Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>` elements with arguments for where to find your text, alignments and audio file. These files can be generated using _________ service located here: ____________.
+Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>`
+elements with arguments for where to find your text, alignments and audio file. These files can be generated
+using _________ service located here: ____________.
 
 ```html
-<read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav" css_url="assets/custom.css"></read-along>
+
+<read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav"
+            css_url="assets/custom.css"></read-along>
 ```
 
 ## Theming
 
-There are two themes out-of-the-box: `light` and `dark`. You set them as a property on the `<read-along></read-along>` web component. If you want to add your own theme, it's as easy as adding your colour palette to the `$ui-themes` variable in `src/components/read-along-component/scss/utilities/_colors.scss`. Note you will have to rebuild the web component from source to do this, or submit your theme as a pull-request!
+There are two themes out-of-the-box: `light` and `dark`. You set them as a property on the `<read-along></read-along>`
+web component. If you want to add your own theme, it's as easy as adding your colour palette to the `$ui-themes`
+variable in `src/components/read-along-component/scss/utilities/_colors.scss`. Note you will have to rebuild the web
+component from source to do this, or submit your theme as a pull-request!
 
 ```scss
 $ui-themes: (
-    light: (
-        primary:             $white,
-        secondary:           darken($white, 50%),
-        accent:              darken($white, 60%),
-        text:                $black,
-        text--secondary:     $white,
-        text--accent:        $white,
-    ),
-    dark: (
-        primary:             lighten($black, 30%),
-        secondary:           darken($white, 35%),
-        accent:              $white,
-        text:                $white,
-        text--secondary:     $white,
-        text--accent:        $black
-    )
+  light: (
+    primary: $white,
+    secondary: darken($white, 50%),
+    accent: darken($white, 60%),
+    text: $black,
+    text--secondary: $white,
+    text--accent: $white,
+  ),
+  dark: (
+    primary: lighten($black, 30%),
+    secondary: darken($white, 35%),
+    accent: $white,
+    text: $white,
+    text--secondary: $white,
+    text--accent: $black
+  )
 );
 ```
 
 ## Slots
 
-Slots allow you to add custom html into specific "slots" within the web component. For example, to add an optional header to the `<read-along></read-along` component, you would write:
+Slots allow you to add custom html into specific "slots" within the web component. For example, to add an optional
+header to the `<read-along></read-along` component, you would write:
 
 ```html
+
 <read-along>
   <span slot="read-along-header">Hello World!</span>
 </read-along>
@@ -86,89 +98,115 @@ Slots allow you to add custom html into specific "slots" within the web componen
 | `read-along-subheader`  | Subheader (ie authors)| `span`              |
 
 ## Page layout
-By default, the pages are two column layout with image on the left and text on the left.
-You force any page to one column layout by setting the class of the page to ```one-column-layout-page``` 
+
+By default, the pages are two column layout with image on the left and text on the left. You force any page to one
+column layout by setting the class of the page to ```one-column-layout-page```
+
 ```xml
+
 <div type="page" class="one-column-layout-page">
-...
+  ...
 </div>
 ```
-The default layout is auto adjust without restrictions.
-To force a 40-60 split between the image and text use the ```two-column-layout-page``` for the page.
+
+The default layout is auto adjust without restrictions. To force a 40-60 split between the image and text use
+the ```two-column-layout-page``` for the page.
 
 ### Hide page number
-You hide the page number for any page by specifying the class ```hide-page-counter``` 
+
+You hide the page number for any page by specifying the class ```hide-page-counter```
 
 ## Assets folder
-By defaults all assets (img,text,audio) will be resolved to ```.\assets\``` relative to the index.html file. 
-You can override this behaviour by using this attribute on the component ```use-assets-folder="false"```.
-The web component will not longer resolve url to the **assets** folder when this attribute is present
+
+By defaults all assets (img,text,audio) will be resolved to ```.\assets\``` relative to the index.html file. You can
+override this behaviour by using this attribute on the component ```use-assets-folder="false"```. The web component will
+not longer resolve url to the **assets** folder when this attribute is present
+
 ## CSS customization
-You can override the default style of the component. This option is best used anyone does not want to clone this project and modify only the UI.
-Use the web inspector of your browser to find the classes you wish to override
+
+You can override the default style of the component. This option is best used anyone does not want to clone this project
+and modify only the UI. Use the web inspector of your browser to find the classes you wish to override
+
 ```css
 /* change the font size and color of the text */
 .sentence__word.theme--light {
-  color:#64003c;
-  font-size:1.8rem;
+  color: #64003c;
+  font-size: 1.8rem;
 }
+
 /* change the background color of the text being read */
 .sentence__word.theme--light.reading {
   background-color: #64003c;
 }
 ```
-Here is a list of classes you want to override:
- * .sentence__word.theme--light
- * .sentence__word.theme--light.reading
- * .sentence__text.theme--light
- * .sentence__translation
- * .sentence
- * .paragraph
- * .page__container.theme--light (to set page background)
 
+Here is a list of classes you want to override:
+
+* .sentence__word.theme--light
+* .sentence__word.theme--light.reading
+* .sentence__text.theme--light
+* .sentence__translation
+* .sentence
+* .paragraph
+* .page__container.theme--light (to set page background)
 
 ## XML customizations
-You can add classes to the xml tags in the text XML file. 
-When coupled with the custom css, it will produce most of the visual effect you want in your read along.
-e.g. ``` <s class="sentence__translation ">```
 
+You can add classes to the xml tags in the text XML file. When coupled with the custom css, it will produce most of the
+visual effect you want in your read along. e.g. ``` <s class="sentence__translation ">```
 
 ### Built-in translation class
-The default css class provided for translations should be added to the XML ```<s>``` tag. It styled as 
-```
-     color: #777;
-     font-style: italic;
-     font-size: 95%;
-```
-Here is a sample 
+
+The default css class provided for translations should be added to the XML ```<s>``` tag. Here is a sample:
+
 ```xml
+
 <p id="t0b0d1p0">
-  <s id="t0b0d1p0s0"><w id="t0b0d1p0s0w0">...</w> <w id="t0b0d1p0s0w1">...</w> <w id="t0b0d1p0s0w2">...</w></s>
-  <s  id="t0b0d1p0s1" class="sentence__translation">This is a translation</s>
+  <s id="t0b0d1p0s0">
+    <w id="t0b0d1p0s0w0">...</w>
+    <w id="t0b0d1p0s0w1">...</w>
+    <w id="t0b0d1p0s0w2">...</w>
+  </s>
+  <s id="t0b0d1p0s1" class="sentence__translation">This is a translation</s>
 </p>
 ```
 
+The default style:
+
+```css
+     .sentence__translation {
+        color: #777;
+        font-style: italic;
+        font-size: 95%;
+      }
+```
+
 ## Visual alignment
-You can force the visual alignment of sentences within a paragraph by adding ``` class="visually_aligned"``` to the ```<p>``` tag of xml.
-Here is a sample 
+
+You can force the visual alignment of sentences within a paragraph by adding ``` class="visually_aligned"``` to
+the ```<p>``` tag of xml. Here is a sample
+
 ```xml
+
 <p id="t0b0d1p0" class="visually_aligned">
-  <s id="t0b0d1p0s0"><w id="t0b0d1p0s0w0">...</w> <w id="t0b0d1p0s0w1">...</w> <w id="t0b0d1p0s0w2">...</w></s>
-  <s  id="t0b0d1p0s1" class="sentence__translation ">This is a translation</s>
+  <s id="t0b0d1p0s0">
+    <w id="t0b0d1p0s0w0">...</w>
+    <w id="t0b0d1p0s0w1">...</w>
+    <w id="t0b0d1p0s0w2">...</w>
+  </s>
+  <s id="t0b0d1p0s1" class="sentence__translation ">This is a translation</s>
 </p>
 ```
 
 **MIND THE GAP**:
-When you visually align a paragraph please triple check the spacing and punctuation between elements 
-because the visual alignment is white-space sensitive
+When you visually align a paragraph please triple check the spacing and punctuation between elements because the visual
+alignment is white-space sensitive
 
 **SIDE EFFECT**: This feature disables auto-wrapping of the words in the paragraph
 
-
 ## For developers of the component
 
-We use Cypress (instead of Jest+Puppeteer) to do integration/end-to-end
-testing.
+We use Cypress (instead of Jest+Puppeteer) to do integration/end-to-end testing.
 
 ### How to run the tests
 
@@ -176,15 +214,13 @@ First, start the test servers (yes, plural!), by using this command:
 
     npm run test-servers
 
-
-If you are on a Windows machine, the command above will not work if you do not have bash setup. 
+If you are on a Windows machine, the command above will not work if you do not have bash setup.
 
 Run each of the following in a separate command prompt:
-```
-  npm run start
-  npm run serve-test-data
-  
-```
+
+    npm run start
+    
+    npm run serve-test-data
 
 Then you can run test **interactively** using the following command:
 
