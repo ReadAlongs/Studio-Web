@@ -30,7 +30,7 @@ You have three options:
 
 * put images in "asests/" and provide relative link
 * provide a full path
-* put it in a custom relative folder and make sure to add `use-asset-folder="false"` attribute to the read-long
+* put it in a custom relative folder and make sure to add `use-assets-folder="false"` attribute to the read-long
   component
 
 ## Test with your site
@@ -49,7 +49,7 @@ using _________ service located here: ____________.
 ```html
 
 <read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav"
-            css_url="assets/custom.css"></read-along>
+            css-url="assets/custom.css" use-assets-folder="true"></read-along>
 ```
 
 ## Theming
