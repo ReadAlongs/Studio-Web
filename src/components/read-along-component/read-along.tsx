@@ -30,7 +30,7 @@ export class ReadAlongComponent {
    */
   @Prop({mutable: true}) text: string;
 
-  processed_text: Element;
+
 
   /**
    * The alignment as SMIL
@@ -188,7 +188,7 @@ export class ReadAlongComponent {
     let keys = Object.keys(this.processed_alignment)
     // remove 'all' sprite as it's not a word.
     keys.pop()
-    for (var i = 1; i < keys.length; i++) {
+    for (let i = 1; i < keys.length; i++) {
       if (s * 1000 > this.processed_alignment[keys[i]][0]
         && this.processed_alignment[keys[i + 1]]
         && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
@@ -209,9 +209,8 @@ export class ReadAlongComponent {
    * @param ev
    */
   changePlayback(ev: Event): void {
-    let inputEl = ev.currentTarget as HTMLInputElement;
-    let absolute_rate: number = parseInt(inputEl.value) / 100
-    this.playback_rate = absolute_rate
+    let inputEl = ev.currentTarget as HTMLInputElement
+    this.playback_rate =  parseInt(inputEl.value) / 100
     this.audio_howl_sprites.sound.rate(this.playback_rate)
   }
 
@@ -253,7 +252,7 @@ export class ReadAlongComponent {
    */
   goToSeekAtEl(ev: MouseEvent): string {
     let el = ev.currentTarget as HTMLElement
-    var tag = el.id;
+    let tag = el.id;
     let seek = this.processed_alignment[tag][0]
     this.goTo(seek)
     return tag
@@ -312,7 +311,7 @@ export class ReadAlongComponent {
    * @param ev
    */
   playSprite(ev: MouseEvent): void {
-    var tag = this.goToSeekAtEl(ev)
+    let tag = this.goToSeekAtEl(ev)
     if (!this.playing) {
       this.audio_howl_sprites.play(tag)
     }
@@ -391,7 +390,7 @@ export class ReadAlongComponent {
    * @param tag
    */
   animateProgressDefault(play_id: number, tag: string): void {
-    var elm = document.createElement('div');
+    let elm = document.createElement('div');
     elm.className = 'progress theme--' + this.theme;
     elm.id = play_id.toString();
     elm.dataset.sprite = tag;
@@ -463,7 +462,7 @@ export class ReadAlongComponent {
    * @param element
    * @private
    */
-  private _getSentenceContainerOfWord(element: HTMLElement): HTMLElement {
+  private static _getSentenceContainerOfWord(element: HTMLElement): HTMLElement {
     return element.parentElement.parentElement.parentElement
   }
 
@@ -472,7 +471,7 @@ export class ReadAlongComponent {
    */
   private toggleFullscreen(): void {
     if (!this.fullscreen) {
-      var elem: any = this.el.shadowRoot.getElementById('read-along-container');
+      let elem: any = this.el.shadowRoot.getElementById('read-along-container');
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
       } else if (elem.mozRequestFullScreen) { /* Firefox */
@@ -485,7 +484,7 @@ export class ReadAlongComponent {
       this.el.shadowRoot.getElementById('read-along-container')
         .classList.add('read-along-container--fullscreen');
     } else {
-      var document: any = this.el.ownerDocument
+      let document: any = this.el.ownerDocument
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) { /* Firefox */
@@ -524,7 +523,7 @@ export class ReadAlongComponent {
 
 //for when you visually align content
   inParagraphContentOverflow(element: HTMLElement): boolean {
-    let para_el = this._getSentenceContainerOfWord(element);
+    let para_el = ReadAlongComponent._getSentenceContainerOfWord(element);
     let para_rect = para_el.getBoundingClientRect()
     let el_rect = element.getBoundingClientRect()
 
@@ -575,7 +574,7 @@ export class ReadAlongComponent {
   }
 
   inPage(element: HTMLElement): boolean {
-    let sent_el = this._getSentenceContainerOfWord(element)
+    let sent_el = ReadAlongComponent._getSentenceContainerOfWord(element)
     let sent_rect = sent_el.getBoundingClientRect()
     let el_rect = element.getBoundingClientRect()
     // element being read is below/ahead of the words being viewed
@@ -613,7 +612,7 @@ export class ReadAlongComponent {
 
   scrollByHeight(el: HTMLElement): void {
 
-    let sent_container = this._getSentenceContainerOfWord(el) //get the direct parent sentence container
+    let sent_container = ReadAlongComponent._getSentenceContainerOfWord(el) //get the direct parent sentence container
 
 
     let anchor = el.parentElement.getBoundingClientRect()
@@ -628,7 +627,7 @@ export class ReadAlongComponent {
 //scrolling within the visually aligned paragraph
   scrollByWidth(el: HTMLElement): void {
 
-    let sent_container = this._getSentenceContainerOfWord(el) //get the direct parent sentence container
+    let sent_container = ReadAlongComponent._getSentenceContainerOfWord(el) //get the direct parent sentence container
 
 
     let anchor = el.getBoundingClientRect()
@@ -745,7 +744,7 @@ export class ReadAlongComponent {
           query_el.classList.add('reading')
 
           // Scroll horizontally (to different page) if needed
-          let current_page = this._getSentenceContainerOfWord(query_el).parentElement.id
+          let current_page = ReadAlongComponent._getSentenceContainerOfWord(query_el).parentElement.id
 
           if (current_page !== this.current_page) {
             if (this.current_page !== undefined) {
@@ -849,7 +848,7 @@ export class ReadAlongComponent {
    * Render svg overlay
    */
   Overlay = (): Element => <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object'
-                                   type='image/svg+xml' data={this.svgOverlay}></object>
+                                   type='image/svg+xml' data={this.svgOverlay}/>
 
   /**
    * Render image at path 'url' in assets folder.
