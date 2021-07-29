@@ -5,7 +5,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export interface Page {
   id: string,
   paragraphs: Node[],
-  img?: string
+  img?: string,
+  attributes?:NamedNodeMap[]
 }
 
 export interface Alignment {
@@ -17,11 +18,17 @@ export interface Alignment {
  * @param {string} path - the path to the xml file
  */
 function getXML(path: string): string {
+
   let xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", path, false);
+  xmlhttp.open("GET", path, false);//TODO rewrite as async
+  xmlhttp.addEventListener("error", function (error) {
+    console.log(error);
+  })
   xmlhttp.send();
+
   return xmlhttp.responseText;
 }
+
 
 /**
  * Return list of nodess from XPath
@@ -67,7 +74,7 @@ export function zip(arrays): Array<any[]> {
  * @param {string} - the path to the TEI file
  */
 export function parseTEI(path: string): Page[] {
-  let xmlDocument = getXML(path)
+  let xmlDocument =  getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
   let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
@@ -81,6 +88,7 @@ export function parseTEI(path: string): Page[] {
     if (img.length > 0) {
       parsed_page['img'] = img[0].nodeValue;
     }
+    if(p.attributes)parsed_page["attributes"]=p.attributes;
     return parsed_page
   });
   return parsed_pages
@@ -263,3 +271,5 @@ Sprite.prototype = {
     requestAnimationFrame(self.step.bind(self));
   }
 };
+
+
