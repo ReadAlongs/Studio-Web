@@ -7,6 +7,10 @@ import {Alignment, Page, parseSMIL, parseTEI, Sprite} from '../../utils/utils'
 const LOADING = 0;
 const LOADED = 1;
 const ERROR_LOADING = 2;
+export type InterfaceLanguage = "eng" | "fra";//iso 639-3 code
+export type Translation = {
+  [lang in InterfaceLanguage]: string;
+};
 
 @Component({
   tag: 'read-along',
@@ -56,9 +60,12 @@ export class ReadAlongComponent {
   @Prop({mutable: true}) theme: string = 'light';
 
   /**
-   * Language
+   * Language  of the interface. In 639-3 code
+   * Options are
+   * - "eng" for English
+   * - "fra" for French
    */
-  @Prop() language: string = 'eng';
+  @Prop({mutable: true}) language: InterfaceLanguage = 'eng';
 
   /**
    * Optional custom Stylesheet to override defaults
@@ -77,7 +84,7 @@ export class ReadAlongComponent {
    *
    */
 
-  @Prop() pageScrolling: string = "horizontal";
+  @Prop() pageScrolling: "horizontal" | "vertical" = "horizontal";
 
   /************
    *  STATES  *
@@ -225,7 +232,7 @@ export class ReadAlongComponent {
   /**
    * Go to seek
    *
-   * @param s number
+   * @param seek number
    *
    */
   goTo(seek: number): void {
@@ -282,7 +289,7 @@ export class ReadAlongComponent {
   /**
    * Play the current audio, or start a new play of all
    * the audio
-   * @param id string
+   *
    *
    */
   play() {
@@ -676,14 +683,33 @@ export class ReadAlongComponent {
   }
 
   /**
+   * Using this Lifecycle hook to handle backwards compatibility of component attribute
+   */
+  componentWillLoad() {
+    // TO maintain backwards compatibility handle assets url
+    this.audio = this.urlTransform(this.audio)
+    this.alignment = this.urlTransform(this.alignment)
+    this.text = this.urlTransform(this.text)
+    this.cssUrl = this.urlTransform(this.cssUrl)
+
+    // TO maintain backwards compatibility language code
+    if (this.language.length < 3) {
+      if (this.language.match("fr") != null) {
+        this.language = "fra"
+      } else {
+        this.language = "eng"
+      }
+    }
+
+  }
+
+  /**
    * Lifecycle hook: after component loads, build the Sprite and parse the files necessary.
    * Then subscribe to the _reading$ Subject in order to update CSS styles when new element
    * is being read
    */
   componentDidLoad() {
-    this.audio = this.urlTransform(this.audio);
-    this.alignment = this.urlTransform(this.alignment);
-    this.text = this.urlTransform(this.text);
+
 
     this.processed_alignment = parseSMIL(this.alignment)
     this.assetsStatus.SMIL = Object.keys(this.processed_alignment).length ? LOADED : ERROR_LOADING
@@ -771,31 +797,32 @@ export class ReadAlongComponent {
    * @param word
    * @param lang
    */
-  returnTranslation(word: string, lang: string): string {
-    let translations = {
+  returnTranslation(word: string, lang?: InterfaceLanguage): string {
+    if (lang === undefined) lang = this.language;
+    let translations: { [message: string]: Translation } = {
       "speed": {
-        "en": "Playback Speed",
-        "fr": "Vitesse de Lecture"
+        "eng": "Playback Speed",
+        "fra": "Vitesse de Lecture"
       },
       "re-align": {
-        "en": "Re-align with audio",
-        "fr": "Réaligner avec l'audio"
+        "eng": "Re-align with audio",
+        "fra": "Réaligner avec l'audio"
       },
       "audio-error": {
-        "en": "Error: The audio file could not be loaded",
-        "fr": "Erreur: le fichier audio n'a pas pu être chargé"
+        "eng": "Error: The audio file could not be loaded",
+        "fra": "Erreur: le fichier audio n'a pas pu être chargé"
       },
       "text-error": {
-        "en": "Error: The text file could not be loaded",
-        "fr": "Erreur: le fichier texte n'a pas pu être chargé"
+        "eng": "Error: The text file could not be loaded",
+        "fra": "Erreur: le fichier texte n'a pas pu être chargé"
       },
       "alignment-error": {
-        "en": "Error: The alignment file could not be loaded",
-        "fr": "Erreur: le fichier alignement n'a pas pu être chargé"
+        "eng": "Error: The alignment file could not be loaded",
+        "fra": "Erreur: le fichier alignement n'a pas pu être chargé"
       },
       "loading": {
-        "en": "Loading...",
-        "fr": "Chargement en cours"
+        "eng": "Loading...",
+        "fra": "Chargement en cours"
       }
     }
     if (translations[word])
@@ -827,13 +854,13 @@ export class ReadAlongComponent {
   /**
    * Render image at path 'url' in assets folder.
    *
-   * @param url
+   * @param props
    */
   Img = (props: { url: string }): Element => {
 
 
     return (<div class={"image__container page__col__image theme--" + this.theme}>
-      <img class="image" src={this.urlTransform(props.url)}/>
+      <img alt={"image"} class="image" src={this.urlTransform(props.url)}/>
     </div>)
   }
 
@@ -1093,7 +1120,7 @@ export class ReadAlongComponent {
             <this.Page pageData={page}>
             </this.Page>
           )}
-          {this.isLoaded == false && <div class="loader"></div>}
+          {this.isLoaded == false && <div class="loader"/>}
 
         </div>
         {this.assetsStatus.SMIL == LOADED &&
@@ -1103,7 +1130,7 @@ export class ReadAlongComponent {
         </div>}
         {this.assetsStatus.AUDIO == LOADED && <this.ControlPanel/>}
 
-        {this.cssUrl && this.cssUrl.match(".css") != null && <link href={this.cssUrl} rel="stylesheet"></link>}
+        {this.cssUrl && this.cssUrl.match(".css") != null && <link href={this.cssUrl} rel="stylesheet"/>}
       </div>
 
     )

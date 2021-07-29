@@ -3,7 +3,7 @@ www/
 sample_page/
 src/assets
 public
-index.html
+src/index.html
 package-lock.json
 *~
 *.sw[mnpcod]

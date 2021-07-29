@@ -12,17 +12,18 @@ you make to `/src` will be automatically shown in the browser.
 
 ## Properties
 
-| Property          | Attribute           | Description                                                                                            | Type      | Default        |
-| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------ | --------- | -------------- |
-| `alignment`       | `alignment`         | The alignment as SMIL                                                                                  | `string`  | `undefined`    |
-| `audio`           | `audio`             | The audio file                                                                                         | `string`  | `undefined`    |
-| `cssUrl`          | `css-url`           | Optional custom Stylesheet to override defaults                                                        | `string`  | `undefined`    |
-| `language`        | `language`          | Language                                                                                               | `string`  | `'eng'`        |
-| `pageScrolling`   | `page-scrolling`    | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                         | `string`  | `"horizontal"` |
-| `svgOverlay`      | `svg-overlay`       | Overlay This is an SVG overlay to place over the progress bar                                          | `string`  | `undefined`    |
-| `text`            | `text`              | The text as TEI                                                                                        | `string`  | `undefined`    |
-| `theme`           | `theme`             | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`  | `'light'`      |
-| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean` | `true`         |
+| Property          | Attribute           | Description                                                                                            | Type                         | Default        |
+| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------- | -------------- |
+| `alignment`       | `alignment`         | The alignment as SMIL                                                                                  | `string`                     | `undefined`    |
+| `audio`           | `audio`             | The audio file                                                                                         | `string`                     | `undefined`    |
+| `cssUrl`          | `css-url`           | Optional custom Stylesheet to override defaults                                                        | `string`                     | `undefined`    |
+| `language`        | `language`          | Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French           | `"eng" \| "fra"`             | `'eng'`        |
+| `pageScrolling`   | `page-scrolling`    | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                         | `"horizontal" \| "vertical"` | `"horizontal"` |
+| `svgOverlay`      | `svg-overlay`       | Overlay This is an SVG overlay to place over the progress bar                                          | `string`                     | `undefined`    |
+| `text`            | `text`              | The text as TEI                                                                                        | `string`                     | `undefined`    |
+| `theme`           | `theme`             | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`                     | `'light'`      |
+| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean`                    | `true`         |
+
 
 #### IMAGES
 
@@ -110,8 +111,14 @@ column layout by setting the class of the page to ```one-column-layout-page```
 ```
 
 The default layout is auto adjust without restrictions. To force a 40-60 split between the image and text use
-the ```two-column-layout-page``` for the page.
+the ```two-column-layout-page``` class for the page.
 
+```xml
+
+<div type="page" class="two-column-layout-page">
+  ...
+</div>
+```
 ### Hide page number
 
 You hide the page number for any page by specifying the class ```hide-page-counter```
