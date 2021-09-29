@@ -22,7 +22,7 @@ you make to `/src` will be automatically shown in the browser.
 | `svgOverlay`      | `svg-overlay`       | Overlay This is an SVG overlay to place over the progress bar                                          | `string`                     | `undefined`    |
 | `text`            | `text`              | The text as TEI                                                                                        | `string`                     | `undefined`    |
 | `theme`           | `theme`             | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`                     | `'light'`      |
-| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean`                    | `true`         |
+| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving image urls. Defaults to on for backwards compatibility   | `boolean`              | `true`         |
 
 
 #### IMAGES
@@ -121,18 +121,18 @@ the ```two-column-layout-page``` class for the page.
 ```
 ### Hide page number
 
-You hide the page number for any page by specifying the class ```hide-page-counter```
+You can hide the page number for any page by specifying the class ```hide-page-counter```.
 
 ## Assets folder
 
-By defaults all assets (img,text,audio) will be resolved to ```.\assets\``` relative to the index.html file. You can
+By defaults the image assets will be resolved to ```.\assets\``` relative to the index.html file. You can
 override this behaviour by using this attribute on the component ```use-assets-folder="false"```. The web component will
-not longer resolve url to the **assets** folder when this attribute is present
+not longer resolve url to the **assets** folder when this attribute is present.
 
 ## CSS customization
 
 You can override the default style of the component. This option is best used anyone does not want to clone this project
-and modify only the UI. Use the web inspector of your browser to find the classes you wish to override
+and modify only the UI. Use the web inspector of your browser to find the classes you wish to override.
 
 ```css
 /* change the font size and color of the text */
