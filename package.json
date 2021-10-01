@@ -1,6 +1,6 @@
 {
     "name": "@roedoejet/readalong",
-    "version": "0.1.2",
+    "version": "0.1.1",
     "description": "ReadAlong Web Component",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
