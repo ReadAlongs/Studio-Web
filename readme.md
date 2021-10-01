@@ -22,14 +22,14 @@ you make to `/src` will be automatically shown in the browser.
 | `svgOverlay`      | `svg-overlay`       | Overlay This is an SVG overlay to place over the progress bar                                          | `string`                     | `undefined`    |
 | `text`            | `text`              | The text as TEI                                                                                        | `string`                     | `undefined`    |
 | `theme`           | `theme`             | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`                     | `'light'`      |
-| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving image urls. Defaults to on for backwards compatibility   | `boolean`              | `true`         |
+| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving image urls. Defaults to 'true' for backwards compatibility   | `boolean`              | `true`         |
 
 
 #### IMAGES
 
 You have three options:
 
-* put images in "asests/" and provide relative link
+* put images in "assets/" and provide relative link
 * provide a full path
 * put it in a custom relative folder and make sure to add `use-assets-folder="false"` attribute to the read-long
   component
