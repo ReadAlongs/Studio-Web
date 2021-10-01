@@ -25,18 +25,18 @@
         "wait-for-test-server": "wait-on http://localhost:3333/build/read-along.esm.js"
     },
     "dependencies": {
-        "howler": "^2.2.0",
-        "rxjs": "^6.6.2"
+        "howler": "^2.2.3",
+        "rxjs": "^6.6.7"
     },
     "devDependencies": {
-        "@stencil/core": "^1.17.3",
-        "@stencil/sass": "^1.3.2",
+        "@stencil/core": "^1.17.4",
+        "@stencil/sass": "^1.4.1",
         "@types/jest": "^26.0.24",
         "@types/puppeteer": "^5.4.4",
         "cypress": "^7.7.0",
-        "jest-cli": "^27.0.6",
+        "jest-cli": "^27.2.4",
         "puppeteer": "^6.0.0",
-        "sirv-cli": "^1.0.12",
+        "sirv-cli": "^1.0.14",
         "wait-on": "^6.0.0"
     },
     "license": "MIT"
