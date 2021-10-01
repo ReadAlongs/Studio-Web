@@ -40,7 +40,8 @@ You can either modify the `/src/index.html` or after running `npm start` you can
 the following script import in your own `index.html` page:
 
 ```html 
-    <script crossorigin="anonymous"   type="module" src='https://unpkg.com/@roedoejet/readalong@latest/dist/read-along/read-along.esm.js'></script>
+  <script type="module" src="https://unpkg.com/@roedoejet/readalong/dist/read-along/read-along.esm.js"></script>
+  <script nomodule src="https://unpkg.com/@roedoejet/readalong/dist/read-along/read-along.js"></script>
 ```
 
 Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>`
