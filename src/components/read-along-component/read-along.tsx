@@ -685,11 +685,14 @@ export class ReadAlongComponent {
    * Using this Lifecycle hook to handle backwards compatibility of component attribute
    */
   componentWillLoad() {
+    // The backward compatible behaviour used to be audio, alignment and text files outside assets
+    // and only image files inside assets.
+    // See version 0.1.0, where it only looks in assets/ for images, nothing else.
     // TO maintain backwards compatibility handle assets url
-    this.audio = this.urlTransform(this.audio)
-    this.alignment = this.urlTransform(this.alignment)
-    this.text = this.urlTransform(this.text)
-    this.cssUrl = this.urlTransform(this.cssUrl)
+    //this.audio = this.urlTransform(this.audio)
+    //this.alignment = this.urlTransform(this.alignment)
+    //this.text = this.urlTransform(this.text)
+    //this.cssUrl = this.urlTransform(this.cssUrl)
 
     // TO maintain backwards compatibility language code
     if (this.language.length < 3) {
