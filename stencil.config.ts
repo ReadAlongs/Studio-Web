@@ -10,6 +10,10 @@ export const config: Config = {
       type: "www",
       serviceWorker: null, // disable service workers
     },
+    {
+      type: 'dist-custom-elements-bundle',
+      externalRuntime: false,
+    },
   ],
   plugins: [sass()],
   devServer: {
