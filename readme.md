@@ -56,7 +56,7 @@ using _________ service located here: ____________.
 
 ## Loading as a single file
 
-By default, Stencil (the tool used to build this web component) uses lazy loading. Some use cases for this web component might involve running the component as a single file, without access to the internet. A single-file script of this web component is therefore made available at https://unpkg.com/@roedoejet/readalong/dist/bundle.js although we recommend using the default imports using the unpkg content delivery network (cdn) described above.
+By default, Stencil (the tool used to build this web component) uses lazy loading. However, some use cases for this web component might involve running the component as a single file, without access to the internet. A single-file script of this web component is therefore made available at https://unpkg.com/@roedoejet/readalong/dist/bundle.js although we recommend using the default imports using the unpkg content delivery network (cdn) described above.
 
 ## Theming
 
