@@ -18,7 +18,7 @@
         "bundle": "webpack --config webpack.config.js",
         "cy:run": "cypress run",
         "start": "stencil build --dev --watch --serve",
-        "prepublish": "npm run build && webpack --config webpack.config.js",
+        "prepublish": "npm run build && webpack --config webpack.config.js && node b64Fonts.js",
         "test": "npm run test-servers & npm run wait-for-test-server && npm run cy:run",
         "test-servers": "bash ./bin/run-test-servers",
         "serve-test-data": "sirv --dev --port 5000 test-data/",
@@ -41,7 +41,8 @@
         "sirv-cli": "^1.0.14",
         "wait-on": "^6.0.0",
         "webpack": "^5.56.0",
-        "webpack-cli": "^4.8.0"
+        "webpack-cli": "^4.8.0",
+        "woff2base64": "^2.0.0"
     },
     "license": "MIT"
 }
