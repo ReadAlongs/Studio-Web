@@ -10,6 +10,7 @@ module.exports = {
         path: path.resolve('./dist'),
         publicPath: ''
     },
+    mode: "production",
     module: {
         rules: [{
             test: /\.css$/i,
