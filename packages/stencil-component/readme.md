@@ -4,6 +4,12 @@
 
 This is a web component for embedding read-along, audio/text aligned content in your website or hybrid app.
 
+## Basic use
+
+The simplest way to use the web component is to generate a read along using [ReadAlongs Studio](https://github.com/ReadAlongs/Studio). Its `align` command will output a folder containing the read-along XML file, the other assets, and a minimal HTML index page, which you can view with `python -m http.server`, for example.
+
+The rest of this readme is intended for users who want to customize their readalongs or contribute to the development of this web component.
+
 ## Installation
 
 For now, just clone the repo, make sure you have node 6+, and run `npm install` from the project root. Then you can
@@ -34,6 +40,9 @@ You have three options:
 * put it in a custom relative folder and make sure to add `use-assets-folder="false"` attribute to the read-long
   component
 
+Note that images are normally inserted in a read-along by specifying them in the `config.json` file provided to `readalongs align`, which will then attempt to generate and populate the assets folder automatically.
+See the [readalongs CLI user guide](https://readalong-studio.readthedocs.io/en/latest/cli-guide.html#adding-titles-images-and-do-not-align-segments-via-the-config-json-file) for details.
+
 ## Test with your site
 
 You can either modify the `/src/index.html` or after running `npm start` you can copy out the `www/build` folder and add
@@ -49,7 +58,6 @@ elements with arguments for where to find your text, alignments and audio file. 
 using _________ service located here: ____________.
 
 ```html
-
 <read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav"
             css-url="assets/custom.css" use-assets-folder="true"></read-along>
 ```
@@ -242,3 +250,7 @@ Or run all tests automatically using this command:
 
     npx cypress run
 
+### Interactively testing your local copy
+
+If you want to use your local copy of the Web Component instead of the version published at unpkg, change the two `script` lines in your HTML and set the module URL to your localhost.
+See for example the unit testing file [test-data/ej-fra/index.html](test-data/ej-fra/index.html), which assumes this Stencil component is being served on port 3333, the default when running locally.
