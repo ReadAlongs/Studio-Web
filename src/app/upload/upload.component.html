@@ -1,0 +1,62 @@
+<section>
+    <div class="container export__desc">
+        <h2 class="subtitle">
+            Upload data to start creating your ReadAlong</h2>
+        <p>In order to make a ReadAlong, we need 3 different things. We need some <b>text</b>, some corresponding
+            <b>audio</b>, and a way of turning the writing system of your language (AKA <a href='https://en.wikipedia.org/wiki/Orthography'>Orthography</a>) into the <a href='https://en.wikipedia.org/wiki/International_Phonetic_Alphabet'>International Phonetic Alphabet
+                (IPA)</a>. If you're not a linguist, don't worry! This sounds scarier than it is, and, once you make the map between your language's writing system and the IPA once, you don't have to do it again!
+        </p>
+    </div>
+    <div class="container">
+        <div class="row g-2">
+            <div class="col-6 p-3 border bg-light">
+                <h1 class="title">Text</h1>
+                <h2 class="subtitle">Upload the text</h2>
+                <div class="mb-3">
+                    <label for="updateText" class="form-label">Upload text files (.txt), Microsoft Word
+                            (.docx), or XML files (.xml)</label>
+                    <input (change)="onFileSelected('text', $event)" class="form-control" name="text" type="file" id="updateText" accept=".docx,.txt,.xml">
+                </div>
+            </div>
+            <div class="col-6 p-3 border bg-light">
+                <h1 class="title">Audio</h1>
+                <h2 class="subtitle">Upload the audio</h2>
+                <div class="mb-3">
+                    <label for="updateAudio" class="form-label">You must upload your audio either as an mp3 or wav
+                            file.</label>
+                    <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav">
+                </div>
+            </div>
+            <div class="col-12 p-3 border bg-light">
+                <h1 class="title">Mapping</h1>
+                <h2 class="subtitle">
+                    The map between your language's writing system, and the International Phonetic Alphabet.</h2>
+                <p>The reason ReadAlong Studio works is because it leverages technologies that have been created for English. Usually, need a certain amount of data is needed in order to do the alignment that ReadAlong Studio does. But, instead of that,
+                    your ReadAlong is first converted to a very approximate English pronounciation. Then, ReadAlong Studio can do the alignment based on that, and conveasdfasdfrt it back into your language once it's done. If your language isn't supported
+                    in the list below, have a look at <a href="https://blog.mothertongues.org/g2p-background/">this blog post series</a> to understand how you might get support for your langauge!
+                </p>
+
+                <div class="mb-3">
+                    <label for="langSelect" class="form-label">You can use the dropdown below to select a
+                            pre-configured mapping for your language.</label>
+                    <br />
+                    <div class="row">
+                        <div class="col-5">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Select Language</mat-label>
+                                <mat-select [formControl]="langControl" required>
+                                    <mat-option *ngFor="let lang of langs$ | async" [value]="lang">
+                                        {{lang}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-2">
+            <button class="mt-4" mat-raised-button type="submit" (click)="nextStep()">Go to the next step!</button>
+        </div>
+    </div>
+</section>

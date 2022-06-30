@@ -1,0 +1,16 @@
+<mat-horizontal-stepper linear #stepper>
+
+    <mat-step [stepControl]="upload.uploadFormGroup" label="Step 1">
+        <app-upload #upload></app-upload>
+    </mat-step>
+
+    <!-- <mat-step label="Step 2">
+        <app-config></app-config>
+    </mat-step> -->
+
+    <mat-step label="Step 2">
+        <app-demo></app-demo>
+    </mat-step>
+
+</mat-horizontal-stepper>
+<router-outlet></router-outlet>
