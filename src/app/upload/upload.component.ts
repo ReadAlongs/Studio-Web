@@ -3,7 +3,8 @@ import { G2pService } from '../g2p.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { RasService } from '../ras.service';
-import { Observable, switchAll } from 'rxjs';
+import { FileService } from '../file.service';
+import { catchError, Subject, switchAll, take } from 'rxjs';
 import { map } from 'rxjs';
 
 @Component({
@@ -13,46 +14,46 @@ import { map } from 'rxjs';
 })
 export class UploadComponent implements OnInit {
   langs$ = this.g2pService.getLangs$()
-
+  $loading = new Subject<boolean>();
   langControl = new FormControl<string | null>(null, Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | null>(null, Validators.required);
+  @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({ 'lang': this.langControl, 'text': this.textControl, 'audio': this.audioControl })
-  constructor(private _formBuilder: FormBuilder, private g2pService: G2pService, private toastr: ToastrService, private rasService: RasService) { }
+  constructor(private _formBuilder: FormBuilder, private g2pService: G2pService, private toastr: ToastrService, private rasService: RasService, private fileService: FileService) { }
 
   ngOnInit(): void {
   }
 
-  readFile$ = (blob: any) => Observable.create((obs: any) => {
-    if (!(blob instanceof Blob)) {
-      obs.error(new Error('`blob` must be an instance of File or Blob.'));
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onerror = err => obs.error(err);
-    reader.onabort = err => obs.error(err);
-    reader.onload = () => obs.next(reader.result);
-    reader.onloadend = () => obs.complete();
-
-    return reader.readAsText(blob);
-  });
 
   nextStep() {
     if (this.uploadFormGroup.valid) {
-      // if (this.textControl.value?.name.endsWith('xml')) {
-
-      // } else {
-      //     fetch(this.textControl.value?.text)        
-      // }
-      console.log(this.langControl.value)
-      this.readFile$(this.textControl.value).pipe(
-        map((xml: any) => this.rasService.getReadalong$({ "text_languages": [this.langControl.value, 'und'], "encoding": "utf8", "xml": xml })),
-        switchAll()
-      ).subscribe((x: any) => console.log(x))
-      // this.rasService.getReadalong$({ "text_languages": [this.langControl.value], "encoding": "utf8", "xml": "" })
-      // this.toastr.success('This should go to the next step!', 'Success!');
+      // Loading
+      this.$loading.next(true)
+      // Determine text type
+      let text_type = 'text'
+      if (this.textControl.value.name.endsWith('xml')) {
+        text_type = 'xml'
+      }
+      let body: any = {
+        "text_languages": [this.langControl.value, 'und'], "encoding": "utf8"
+      }
+      // Read file
+      this.fileService.readFile$(this.textControl.value).pipe(
+        // Only take first response
+        take(1),
+        // Query RAS service
+        map((xml: any) => { body[text_type] = xml; return this.rasService.getReadalong$(body) }),
+        // Switch to RAS observable
+        switchAll(),
+        // Catch Errors
+        catchError((err) => {
+          this.toastr.error("Please try again, or contact us if the problem persists.", 'Hmm, something went wrong...');
+          this.$loading.next(false);
+          throw 'error in source. Details: ' + err;
+        }),
+        // Emit change with response to parent
+      ).subscribe((x: any) => { this.$loading.next(false); this.stepChange.emit(['align', x]) })
     } else {
       this.toastr.error('Please upload a text and audio file and select the language.', 'Form not complete!');
     }

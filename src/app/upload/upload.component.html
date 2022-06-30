@@ -57,6 +57,7 @@
         </div>
         <div class="row g-2">
             <button class="mt-4" mat-raised-button type="submit" (click)="nextStep()">Go to the next step!</button>
+            <mat-progress-bar *ngIf="$loading | async" mode="indeterminate"></mat-progress-bar>
         </div>
     </div>
 </section>

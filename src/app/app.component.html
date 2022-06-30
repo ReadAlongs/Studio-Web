@@ -1,7 +1,7 @@
 <mat-horizontal-stepper linear #stepper>
 
     <mat-step [stepControl]="upload.uploadFormGroup" label="Step 1">
-        <app-upload #upload></app-upload>
+        <app-upload #upload (stepChange)="stepChange($event)"></app-upload>
     </mat-step>
 
     <!-- <mat-step label="Step 2">

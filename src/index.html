@@ -17,5 +17,20 @@
 </body>
 <script type="module" src='https://unpkg.com/@roedoejet/readalong@latest/dist/read-along/read-along.esm.js'></script>
 <script nomodule src='https://unpkg.com/@roedoejet/readalong@latest/dist/read-along/read-along.js'></script>
+<!-- <script>
+    (async() => {
+        const ssjs = {
+            modelBase: "/assets/models/",
+            defaultModel: "en-us",
+        }
+        await require('soundswallower')(ssjs)
+        let decoder = new ssjs.Decoder({
+            loglevel: "INFO",
+            backtrace: true
+        });
+        await decoder.initialize();
+        console.log(decoder)
+    })();
+</script> -->
 
 </html>
