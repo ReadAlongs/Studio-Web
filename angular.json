@@ -31,7 +31,9 @@
                             "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
                             "src/styles.sass"
                         ],
-                        "scripts": []
+                        "scripts": [
+                            "./src/assets/soundswallower.js"
+                        ]
                     },
                     "configurations": {
                         "production": {
