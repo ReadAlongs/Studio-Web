@@ -4,8 +4,11 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ToastrService } from 'ngx-toastr';
 import { RasService } from '../ras.service';
 import { FileService } from '../file.service';
-import { catchError, Subject, switchAll, take } from 'rxjs';
-import { map } from 'rxjs';
+import { Subject, from, forkJoin, zip } from 'rxjs';
+
+import { take, map, filter, switchAll, catchError, switchMap, last } from 'rxjs/operators'
+import { AudioService } from '../audio.service';
+import { SoundswallowerService } from '../soundswallower.service';
 
 @Component({
   selector: 'app-upload',
@@ -18,13 +21,22 @@ export class UploadComponent implements OnInit {
   langControl = new FormControl<string | null>(null, Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | null>(null, Validators.required);
+  // buffer audio as soon as uploaded
+  audioBuffer$ = new Subject<AudioBuffer>();
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({ 'lang': this.langControl, 'text': this.textControl, 'audio': this.audioControl })
-  constructor(private _formBuilder: FormBuilder, private g2pService: G2pService, private toastr: ToastrService, private rasService: RasService, private fileService: FileService) { }
+  rawText = ""
+  processedXML = ""
+  engDemoText = "the three little kittens they lost their mittens and they began to cry oh mother dear we sadly fear hat we have lost our mittens what lost your mittens you naughty kittens then you shall have no pie meow meow meow then you shall have no pie"
+  constructor(private _formBuilder: FormBuilder, private g2pService: G2pService, private toastr: ToastrService, private rasService: RasService, private fileService: FileService, private audioService: AudioService, private ssjsService: SoundswallowerService) { }
 
   ngOnInit(): void {
+    this.ssjsService.initialize$().then((_) => { this.ssjsService.alignerReady$.next(true) }, (err) => console.log(err))
+    // this.audioControl.valueChanges.pipe(
+    //   filter(Boolean),
+    //   switchMap((x: File) => from(this.audioService.loadAudioBufferFromFile$(x)))
+    // ).subscribe((x) => this.audioBuffer$.next(x))
   }
-
 
   nextStep() {
     if (this.uploadFormGroup.valid) {
@@ -38,22 +50,22 @@ export class UploadComponent implements OnInit {
       let body: any = {
         "text_languages": [this.langControl.value, 'und'], "encoding": "utf8"
       }
+      // Combine audio and text observables
       // Read file
-      this.fileService.readFile$(this.textControl.value).pipe(
-        // Only take first response
-        take(1),
-        // Query RAS service
-        map((xml: any) => { body[text_type] = xml; return this.rasService.getReadalong$(body) }),
-        // Switch to RAS observable
-        switchAll(),
-        // Catch Errors
-        catchError((err) => {
-          this.toastr.error("Please try again, or contact us if the problem persists.", 'Hmm, something went wrong...');
-          this.$loading.next(false);
-          throw 'error in source. Details: ' + err;
-        }),
-        // Emit change with response to parent
-      ).subscribe((x: any) => { this.$loading.next(false); this.stepChange.emit(['align', x]) })
+      console.log(this.audioControl.value)
+      let currentAudio: any = this.audioControl.value
+      forkJoin([
+        this.audioService.loadAudioBufferFromFile$(currentAudio),
+        this.fileService.readFile$(this.textControl.value).pipe(
+          // Only take first response
+          take(1),
+          // Query RAS service
+          switchMap((xml: any) => { console.log("query api"); body[text_type] = xml; return this.rasService.getReadalong$(body) }),
+          // Create Grammar
+          switchMap((ras: any) => { console.log("create grammar"); this.rawText = ras['text']; this.processedXML = ras['xml']; return from(this.ssjsService.createGrammar$(ras['jsgf'], ras['dict'])) }),
+
+          // Emit change with response to parent
+        )]).subscribe((response: any) => { let hypseg = this.ssjsService.align$(response[0], this.rawText); this.$loading.next(false); this.stepChange.emit(['aligned', this.audioControl.value, this.processedXML, hypseg]) })
     } else {
       this.toastr.error('Please upload a text and audio file and select the language.', 'Form not complete!');
     }

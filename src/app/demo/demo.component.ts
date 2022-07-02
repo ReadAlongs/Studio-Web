@@ -6,7 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./demo.component.sass']
 })
 export class DemoComponent implements OnInit {
-
+  text: ""
+  audio: ""
+  smil: ""
   constructor() { }
 
   ngOnInit(): void {

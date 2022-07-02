@@ -45,6 +45,7 @@
                             <mat-form-field appearance="fill">
                                 <mat-label>Select Language</mat-label>
                                 <mat-select [formControl]="langControl" required>
+                                    <mat-option value="eng">English - eng</mat-option>
                                     <mat-option *ngFor="let lang of langs$ | async" [value]="lang.in_lang">
                                         {{lang.language_name}} - {{lang.in_lang}}
                                     </mat-option>
