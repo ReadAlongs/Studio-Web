@@ -5,7 +5,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { SoundswallowerService } from './soundswallower.service';
 import { B64Service } from './b64.service';
 import { FileService } from './file.service';
-import { forkJoin, from } from 'rxjs';
+import { forkJoin, from, of, Subject } from 'rxjs';
 import { map } from 'rxjs/operators'
 
 
@@ -17,28 +17,32 @@ import { map } from 'rxjs/operators'
 export class AppComponent {
   firstFormGroup: any;
   title = 'readalong-studio';
+  alignment = new Subject<string>()
+  text = new Subject<string>()
+  audio = new Subject<string>()
+  b64Inputs$ = new Subject<string[]>();
   @ViewChild('upload', { static: false }) upload?: UploadComponent;
   @ViewChild("stepper") private stepper: MatStepper;
   constructor(private b64Service: B64Service, private fileService: FileService) {
 
   }
   ngOnInit(): void {
+    this.b64Inputs$.subscribe((x) => console.log(x))
   }
 
   formChanged(formGroup: FormGroup) {
     this.firstFormGroup = formGroup
   }
+
   stepChange(event: any[]) {
     if (event[0] === 'aligned') {
-      console.log(event)
       forkJoin([
         this.fileService.readFileAsData$(event[1]),
+        of(`data:application/xml;base64,${this.b64Service.xmlStringToB64(event[2])}`),
         from(event[3]).pipe(map(
           (smil) => this.b64Service.alignmentToSmil(smil, "test", "test")
         ))
-      ]).subscribe((x) => console.log(x))
-      console.log(`data:application/xml;base64,${this.b64Service.utf8_to_b64(event[2])}`)
-      // console.log(`data:application/xml;base64,${Buffer.from(event[2], 'base64')}`)
+      ]).subscribe((x: any) => this.b64Inputs$.next(x))
       this.stepper.next()
     }
   }

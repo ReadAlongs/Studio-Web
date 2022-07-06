@@ -9,7 +9,7 @@
     </mat-step> -->
 
     <mat-step label="Step 2">
-        <app-demo></app-demo>
+        <app-demo *ngIf="b64Inputs$ | async as b64Inputs" [b64Inputs]="b64Inputs"></app-demo>
     </mat-step>
 
 </mat-horizontal-stepper>

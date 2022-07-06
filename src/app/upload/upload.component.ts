@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { G2pService } from '../g2p.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { RasService } from '../ras.service';
@@ -16,7 +15,9 @@ import { SoundswallowerService } from '../soundswallower.service';
   styleUrls: ['./upload.component.sass']
 })
 export class UploadComponent implements OnInit {
-  langs$ = this.g2pService.getLangs$()
+  langs$ = this.rasService.getLangs$().pipe(
+    map((langs: object) => Object.entries(langs).map((x: Array<Array<string>>) => { return { lang_id: x[0], lang_name: x[1] } }))
+  )
   $loading = new Subject<boolean>();
   langControl = new FormControl<string | null>(null, Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
@@ -28,7 +29,7 @@ export class UploadComponent implements OnInit {
   rawText = ""
   processedXML = ""
   engDemoText = "the three little kittens they lost their mittens and they began to cry oh mother dear we sadly fear hat we have lost our mittens what lost your mittens you naughty kittens then you shall have no pie meow meow meow then you shall have no pie"
-  constructor(private _formBuilder: FormBuilder, private g2pService: G2pService, private toastr: ToastrService, private rasService: RasService, private fileService: FileService, private audioService: AudioService, private ssjsService: SoundswallowerService) { }
+  constructor(private _formBuilder: FormBuilder, private toastr: ToastrService, private rasService: RasService, private fileService: FileService, private audioService: AudioService, private ssjsService: SoundswallowerService) { }
 
   ngOnInit(): void {
     this.ssjsService.initialize$().then((_) => { this.ssjsService.alignerReady$.next(true) }, (err) => console.log(err))
@@ -60,7 +61,7 @@ export class UploadComponent implements OnInit {
           // Only take first response
           take(1),
           // Query RAS service
-          switchMap((xml: any) => { console.log("query api"); body[text_type] = xml; return this.rasService.getReadalong$(body) }),
+          switchMap((xml: any) => { console.log("query api"); body[text_type] = xml; return this.rasService.assembleReadalong$(body) }),
           // Create Grammar
           switchMap((ras: any) => { console.log("create grammar"); this.rawText = ras['text']; this.processedXML = ras['xml']; return from(this.ssjsService.createGrammar$(ras['jsgf'], ras['dict'])) }),
 

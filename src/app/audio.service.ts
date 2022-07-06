@@ -10,7 +10,6 @@ export class AudioService {
   loadAudioBufferFromFile$(file: File) {
     const AudioContext = window.AudioContext
     var audioCtx = new AudioContext();
-    console.log(file)
     var audioFile = file.arrayBuffer().then((buffer: any) => { return audioCtx.decodeAudioData(buffer) })
     return from(audioFile)
   }

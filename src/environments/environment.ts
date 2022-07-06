@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiBaseURL: "//localhost:8000/api/v1"
+  apiBaseURL: "https://readalong-studio.herokuapp.com/api/v1"
 };
 
 /*

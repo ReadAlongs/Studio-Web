@@ -1,5 +1,9 @@
+import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+import { MaterialModule } from '../material.module';
 import { UploadComponent } from './upload.component';
 
 describe('UploadComponent', () => {
@@ -8,9 +12,10 @@ describe('UploadComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UploadComponent ]
+      imports: [ReactiveFormsModule, BrowserAnimationsModule, ToastrModule.forRoot(), HttpClientModule, MaterialModule],
+      declarations: [UploadComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;
