@@ -16,7 +16,7 @@ import { SoundswallowerService } from '../soundswallower.service';
 })
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
-    map((langs: object) => Object.entries(langs).map((x: Array<Array<string>>) => { return { lang_id: x[0], lang_name: x[1] } }))
+    map((langs: object) => Object.entries(langs).map((x: Array<Array<string>>) => { return { id: x[0], name: x[1] } }))
   )
   $loading = new Subject<boolean>();
   langControl = new FormControl<string | null>(null, Validators.required);
@@ -33,10 +33,6 @@ export class UploadComponent implements OnInit {
 
   ngOnInit(): void {
     this.ssjsService.initialize$().then((_) => { this.ssjsService.alignerReady$.next(true) }, (err) => console.log(err))
-    // this.audioControl.valueChanges.pipe(
-    //   filter(Boolean),
-    //   switchMap((x: File) => from(this.audioService.loadAudioBufferFromFile$(x)))
-    // ).subscribe((x) => this.audioBuffer$.next(x))
   }
 
   nextStep() {
@@ -63,10 +59,10 @@ export class UploadComponent implements OnInit {
           // Query RAS service
           switchMap((xml: any) => { console.log("query api"); body[text_type] = xml; return this.rasService.assembleReadalong$(body) }),
           // Create Grammar
-          switchMap((ras: any) => { console.log("create grammar"); this.rawText = ras['text']; this.processedXML = ras['xml']; return from(this.ssjsService.createGrammar$(ras['jsgf'], ras['dict'])) }),
+          switchMap((ras: any) => { console.log("create grammar"); this.rawText = ras['text_ids']; this.processedXML = ras['processed_xml']; return from(this.ssjsService.createGrammar$(ras['jsgf'], ras['lexicon'])) }),
 
           // Emit change with response to parent
-        )]).subscribe((response: any) => { let hypseg = this.ssjsService.align$(response[0], this.rawText); this.$loading.next(false); this.stepChange.emit(['aligned', this.audioControl.value, this.processedXML, hypseg]) })
+        )]).subscribe((response: any) => { console.log(response[0]); let hypseg = this.ssjsService.align$(response[0], this.rawText); this.$loading.next(false); this.stepChange.emit(['aligned', this.audioControl.value, this.processedXML, hypseg]) })
     } else {
       this.toastr.error('Please upload a text and audio file and select the language.', 'Form not complete!');
     }
