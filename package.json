@@ -1,12 +1,12 @@
 {
     "name": "readalong-studio",
-    "homepage": "https://github.com/ReadAlongs/Studio-Web",
+    "homepage": "https://readalong-studio.mothertongues.org",
     "version": "0.0.0",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
         "build": "ng build --configuration development",
-        "build:prod": "ng build --configuration production --base-href /Studio-Web/",
+        "build:prod": "ng build --configuration production",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
         "prepare": "husky install"
