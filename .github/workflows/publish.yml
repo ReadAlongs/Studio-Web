@@ -1,0 +1,30 @@
+name: Deploy
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: Install
+        run: |
+          npm install
+      - name: Test
+        run: |
+          npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+      - name: Build
+        run: |
+          npm run-script build:prod
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.2.3
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: build # The folder the action should deploy.
