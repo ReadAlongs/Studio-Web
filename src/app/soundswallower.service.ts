@@ -1,8 +1,8 @@
 import { BehaviorSubject, from } from "rxjs";
-import { take } from "rxjs/operators";
-import * as soundswallower from "soundswallower";
 
 import { Injectable } from "@angular/core";
+
+declare var soundswallower: any;
 
 @Injectable({
   providedIn: "root",

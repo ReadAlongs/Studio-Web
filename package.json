@@ -5,8 +5,8 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "ng build",
-        "build:prod": "ng build --prod",
+        "build": "ng build --configuration development",
+        "build:prod": "ng build --configuration production",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
         "prepare": "husky install"
@@ -30,7 +30,6 @@
         "@angular/router": "^14.0.0",
         "ngx-toastr": "^15.0.0",
         "rxjs": "~7.5.0",
-        "soundswallower": "^0.3.0",
         "tslib": "^2.3.0",
         "zone.js": "~0.11.4"
     },
