@@ -6,7 +6,7 @@
         "ng": "ng",
         "start": "ng serve",
         "build": "ng build --configuration development",
-        "build:prod": "ng build --configuration production",
+        "build:prod": "ng build --configuration production --base-href /Studio-Web/",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
         "prepare": "husky install"
