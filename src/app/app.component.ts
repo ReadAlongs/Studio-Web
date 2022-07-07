@@ -1,3 +1,4 @@
+import { ToastrService } from "ngx-toastr";
 import { forkJoin, from, of, Subject } from "rxjs";
 import { map } from "rxjs/operators";
 
@@ -25,10 +26,16 @@ export class AppComponent {
   @ViewChild("stepper") private stepper: MatStepper;
   constructor(
     private b64Service: B64Service,
-    private fileService: FileService
+    private fileService: FileService,
+    private toastr: ToastrService
   ) {}
   ngOnInit(): void {
     this.b64Inputs$.subscribe((x) => console.log(x));
+    this.toastr.warning(
+      "This app has not been officially released and should not be expected to work properly yet.",
+      "Warning",
+      { timeOut: 10000 }
+    );
   }
 
   formChanged(formGroup: FormGroup) {
