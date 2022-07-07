@@ -1,17 +1,19 @@
-import { Injectable } from '@angular/core';
-import { from } from 'rxjs';
+import { from } from "rxjs";
+
+import { Injectable } from "@angular/core";
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AudioService {
-
-  constructor() { }
+  constructor() {}
 
   loadAudioBufferFromFile$(file: File) {
-    const AudioContext = window.AudioContext
+    const AudioContext = window.AudioContext;
     var audioCtx = new AudioContext();
-    var audioFile = file.arrayBuffer().then((buffer: any) => { return audioCtx.decodeAudioData(buffer) })
-    return from(audioFile)
+    var audioFile = file.arrayBuffer().then((buffer: any) => {
+      return audioCtx.decodeAudioData(buffer);
+    });
+    return from(audioFile);
   }
-
 }
