@@ -1,12 +1,21 @@
+import { HttpClient, HttpEventType } from "@angular/common/http";
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 
 import { B64Service } from "./b64.service";
 
 describe("B64Service", () => {
   let service: B64Service;
-
+  let httpClientSpy: jasmine.SpyObj<HttpClient>;
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(B64Service);
   });
 

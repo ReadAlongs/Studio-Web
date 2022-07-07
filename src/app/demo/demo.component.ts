@@ -13,7 +13,6 @@ export class DemoComponent implements OnInit {
 
   download() {
     var element = document.createElement("a");
-    // TODO: Offline compatibility
     let blob = new Blob(
       [
         `<!DOCTYPE html>
@@ -22,10 +21,8 @@ export class DemoComponent implements OnInit {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
       <title>Test ReadAlong</title>
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-      <script type="module" src="https://unpkg.com/@roedoejet/readalong/dist/read-along/read-along.esm.js"></script>
-      <script nomodule src="https://unpkg.com/@roedoejet/readalong/dist/read-along/read-along.js"></script>
+      <link rel="stylesheet" href="${this.b64Inputs[3][1]}">
+      <script src="${this.b64Inputs[3][0]}"></script>
     </head>
     <body>
         <read-along text="${this.b64Inputs[1]}" alignment="${this.b64Inputs[2]}" audio="${this.b64Inputs[0]}" use-assets-folder="false">

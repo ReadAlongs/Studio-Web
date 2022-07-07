@@ -1,4 +1,10 @@
+import { forkJoin, Observable } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
+
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+
+import { FileService } from "./file.service";
 
 @Injectable({
   providedIn: "root",
@@ -14,7 +20,24 @@ export class B64Service {
       {{/words}}
   </body>
 </smil>`;
-  constructor() {}
+  JS_BUNDLE_URL = "https://unpkg.com/@roedoejet/readalong/dist/bundle.js";
+  FONTS_BUNDLE_URL =
+    "https://unpkg.com/@roedoejet/readalong/dist/fonts.b64.css";
+  constructor(private http: HttpClient, private fileService: FileService) {}
+  getBundle$(): Observable<any[]> {
+    return forkJoin([
+      this.http
+        .get(this.JS_BUNDLE_URL, { responseType: "blob" })
+        .pipe(
+          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob))
+        ),
+      this.http
+        .get(this.FONTS_BUNDLE_URL, { responseType: "blob" })
+        .pipe(
+          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob))
+        ),
+    ]);
+  }
   utf8_to_b64(str: string) {
     // See https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     return window.btoa(
@@ -39,7 +62,6 @@ export class B64Service {
     return this.utf8_to_b64(new XMLSerializer().serializeToString(xml_doc));
   }
   alignmentToSmil(alignment: any, text_path: string, audio_path: string) {
-    // console.log(alignment)
     let topLine =
       '<smil xmlns="http://www.w3.org/ns/SMIL" version="3.0"><body>';
     let bottomLine = "</body></smil>";
@@ -52,17 +74,8 @@ export class B64Service {
     <audio src="${audio_path}" clipBegin="${x["start"]}" clipEnd="${x["end"]}"/>
     </par>`
       );
-    let parser = new DOMParser();
-    let xml_doc = parser.parseFromString(
-      topLine + middle.join("") + bottomLine,
-      "application/xml"
-    );
     return `data:application/xml;base64,${this.xmlStringToB64(
       topLine + middle + bottomLine
     )}`;
-    // let results = {"words": alignment, text_path, audio_path}
-    // let rendered = Mustache.render(this.smilTemplate, results)
-    // console.log(rendered)
-    // return `data:application/xml;base64,${this.utf8_to_b64(rendered)}`
   }
 }

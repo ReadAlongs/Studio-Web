@@ -48,6 +48,7 @@ export class AppComponent {
         from(event[3]).pipe(
           map((smil) => this.b64Service.alignmentToSmil(smil, "test", "test"))
         ),
+        this.b64Service.getBundle$(),
       ]).subscribe((x: any) => this.b64Inputs$.next(x));
       this.stepper.next();
     }
