@@ -37,6 +37,7 @@ export class UploadComponent implements OnInit {
   });
   rawText = "";
   processedXML = "";
+  sampleRate = 44100;
   engDemoText =
     "the three little kittens they lost their mittens and they began to cry oh mother dear we sadly fear hat we have lost our mittens what lost your mittens you naughty kittens then you shall have no pie meow meow meow then you shall have no pie";
   constructor(
@@ -49,7 +50,7 @@ export class UploadComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.ssjsService.initialize$().then(
+    this.ssjsService.initialize$({}).then(
       (_) => {
         this.ssjsService.alignerReady$.next(true);
       },
@@ -72,8 +73,8 @@ export class UploadComponent implements OnInit {
       };
       // Combine audio and text observables
       // Read file
-      console.log(this.audioControl.value);
       let currentAudio: any = this.audioControl.value;
+      this.sampleRate = currentAudio.sampleRate;
       forkJoin([
         this.audioService.loadAudioBufferFromFile$(currentAudio),
         this.fileService.readFile$(this.textControl.value).pipe(
@@ -98,7 +99,6 @@ export class UploadComponent implements OnInit {
           // Emit change with response to parent
         ),
       ]).subscribe((response: any) => {
-        console.log(response[0]);
         let hypseg = this.ssjsService.align$(response[0], this.rawText);
         this.$loading.next(false);
         this.stepChange.emit([

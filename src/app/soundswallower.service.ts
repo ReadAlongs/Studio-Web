@@ -11,8 +11,20 @@ export class SoundswallowerService {
   alignerReady$ = new BehaviorSubject<boolean>(false);
   constructor() {}
 
-  async initialize$(model = "assets/model/en-us") {
-    return await soundswallower.initialize(model);
+  async initialize$({
+    hmm = "assets/model/en-us",
+    samprate = 44100,
+    beam = 1e-100,
+    wbeam = 1e-100,
+    pbeam = 1e-100,
+  }) {
+    return await soundswallower.initialize({
+      hmm,
+      samprate,
+      beam,
+      wbeam,
+      pbeam,
+    });
   }
 
   async createGrammar$(jsgf: string, dict: object) {
