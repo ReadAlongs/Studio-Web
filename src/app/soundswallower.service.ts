@@ -1,4 +1,4 @@
-/* -*- js-indent-level: 2 -*- */
+/* -*- mode: javascript; js-indent-level: 2 -*- */
 import { BehaviorSubject, from } from "rxjs";
 
 import { Injectable } from "@angular/core";
@@ -78,7 +78,7 @@ export class SoundswallowerService {
     await this.decoder.process(audio.getChannelData(0), false, true);
     await this.decoder.stop();
     const e = this.decoder.get_hypseg();
-    console.log("Hypseg is: " + e);
+    console.log(e);
     return e;
   }
 }
