@@ -1,5 +1,3 @@
-const webpack = require("webpack");
-
 module.exports = {
   // Eliminate emscripten's node junk when using webpack
   resolve: {
