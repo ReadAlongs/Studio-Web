@@ -21,6 +21,7 @@ export class SoundswallowerService {
   decoder: Decoder;
   async initialize$({
     hmm = "model/en-us",
+    loglevel = "INFO",
     samprate = 44100,
     beam = 1e-100,
     wbeam = 1e-100,
@@ -29,6 +30,7 @@ export class SoundswallowerService {
     if (soundswallower === null)
       soundswallower = await soundswallower_factory();
     this.decoder = new soundswallower.Decoder({
+      loglevel,
       hmm,
       samprate,
       beam,
@@ -43,7 +45,7 @@ export class SoundswallowerService {
     let idx = 0;
     for (const word in dict) {
       const pron = dict[word];
-      console.log(`adding dictionary entry for ${word} equal to ${pron}`);
+      console.log(`adding word ${word} with phones ${pron}`);
       await this.decoder.add_word(word, pron, idx === n - 1);
       ++idx;
     }
@@ -69,10 +71,11 @@ export class SoundswallowerService {
     if (this.decoder.config.get("samprate") != audio.sampleRate) {
       this.decoder.config.set("samprate", audio.sampleRate);
       await this.decoder.reinitialize_audio();
+      console.log(
+        "Updated decoder sampling rate to " +
+          this.decoder.config.get("samprate")
+      );
     }
-    console.log(
-      "Decoder sampling rate is " + this.decoder.config.get("samprate")
-    );
     console.log("Audio sampling rate is " + audio.sampleRate);
     await this.decoder.start();
     await this.decoder.process(audio.getChannelData(0), false, true);
