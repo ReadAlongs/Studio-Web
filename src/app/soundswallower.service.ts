@@ -5,10 +5,6 @@ import { Injectable } from "@angular/core";
 
 import soundswallower_factory from "soundswallower";
 import { Decoder, SoundSwallowerModule } from "soundswallower";
-/* FUCK YOU ANGULAR IT'S NOT A FUCKING NAMESPACE!!! (TS2709)
-   This works JUST FINE with tsc, WHY?!?!?!?!? */
-type SoundSwallowerModule = typeof SoundSwallowerModule;
-type Decoder = typeof Decoder;
 var soundswallower: SoundSwallowerModule = null;
 
 @Injectable({
