@@ -5,7 +5,7 @@ import { Injectable } from "@angular/core";
 
 import soundswallower_factory from "soundswallower";
 import { Decoder, SoundSwallowerModule } from "soundswallower";
-var soundswallower: SoundSwallowerModule = null;
+var soundswallower: SoundSwallowerModule;
 
 @Injectable({
   providedIn: "root",
@@ -23,7 +23,7 @@ export class SoundswallowerService {
     wbeam = 1e-100,
     pbeam = 1e-100,
   }) {
-    if (soundswallower === null)
+    if (soundswallower === undefined)
       soundswallower = await soundswallower_factory();
     this.decoder = new soundswallower.Decoder({
       loglevel,
