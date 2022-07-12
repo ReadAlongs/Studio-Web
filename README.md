@@ -1,27 +1,80 @@
-# ReadalongStudio
+# ReadAlong-Studio Web
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.4.
+[![Build Status](https://github.com/readalongs/Studio-Web/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Studio-Web/actions)
+[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Studio-Web)](https://github.com/ReadAlongs/Studio-Web/blob/master/LICENSE)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/ReadAlongs/Studio-Web)
 
-## Development server
+> Web application for audiobook alignment for Indigenous languages!
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.4. This web application is a web interface for end-to-end audio/text aligner. It is meant to be used together with the API from [ReadAlong-Studio](https://github.com/readalongs/Studio) to assemble the text required for alignment.
+
+## Table of Contents
+
+- [ReadAlong-Studio Web](#readalong-studio-web)
+  - [Table of Contents](#table-of-contents)
+  - [Background](#background)
+    - [Data Sovereignty](#data-sovereignty)
+    - [Northeastern University](#northeastern-university-collaboration)
+  - [Install](#installing)
+  - [Usage](#usage)
+    - [Development](#development)
+    - [Production](#production)
+  - [Maintainers](#maintainers)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+See also: [ReadAlong-Studio documentation](https://readalong-studio.readthedocs.io/en/latest/index.html).
+
+## Background
+
+This web application is intended to be a graphical version of the [ReadAlong Studio command line interface](https://github.com/ReadAlongs/Studio) for creating interactive "read-alongs". 
+
+### Data Sovereignty
+
+We have built the tool with Indigenous data sovereignty in mind ([see here for more info](https://www.youtube.com/watch?v=fodGN4kaEcI)). As such, we are using the JavaScript version of [soundswallower](https://github.com/ReadAlongs/SoundSwallower) which runs on the users' computer without uploading audio to a server. Text data will be sent (encrypted) to the ReadAlongs API but is not stored or saved to disk on the server and is only used for creating the ReadAlong.
+
+### Northeastern University collaboration
+
+The design of the interface and CSS styling was developed by two group of students in Michael Running Wolf's Spring 2022 Foundations of Software Engineering course. We are very grateful for both groups' hard work and contributions. Group 1 developed the design that was eventually chosen for this project.
+
+Group 1: 
+  - Siqi Chen
+  - Kwok Keung Chung
+  - Koon Kit Kong
+  - He Yang
+
+Group 2:
+  - Yuzhe Shen
+  - Rui Wang
+  - Zirui Wang
+  - Xuehan Yi
+  - Zhenjie Zhou
+
+## Installing
+
+You must have Node installed (v16 preferred), then run `npm install` from the repo root.
+
+## Usage
+
+### Development
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
+### Production
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `npm run-script build:prod` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Build
+## Maintainers
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+[@roedoejet](https://github.com/roedoejet).
 
-## Running unit tests
+## Contributing
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Feel free to dive in! [Open an issue](https://github.com/ReadAlongs/Studio-Web/issues/new) or submit PRs.
 
-## Running end-to-end tests
+This repo follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
-## Further help
+## License
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+[MIT](LICENSE) © 2022 National Research Council Canada
