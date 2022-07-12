@@ -1,10 +1,12 @@
 /* -*- mode: javascript; js-indent-level: 2 -*- */
 import { BehaviorSubject, from } from "rxjs";
+import soundswallower_factory, {
+  Decoder,
+  SoundSwallowerModule,
+} from "soundswallower";
 
 import { Injectable } from "@angular/core";
 
-import soundswallower_factory from "soundswallower";
-import { Decoder, SoundSwallowerModule } from "soundswallower";
 var soundswallower: SoundSwallowerModule;
 
 @Injectable({

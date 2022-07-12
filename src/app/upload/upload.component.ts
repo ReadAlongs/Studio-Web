@@ -38,8 +38,6 @@ export class UploadComponent implements OnInit {
   rawText = "";
   processedXML = "";
   sampleRate = 44100;
-  engDemoText =
-    "the three little kittens they lost their mittens and they began to cry oh mother dear we sadly fear hat we have lost our mittens what lost your mittens you naughty kittens then you shall have no pie meow meow meow then you shall have no pie";
   constructor(
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
