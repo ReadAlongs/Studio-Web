@@ -22,6 +22,7 @@
                     <input (change)="onFileSelected('text', $event)" class="form-control" name="text" type="file" id="updateText" accept=".docx,.txt,.xml">
                 </div>
                 <div *ngIf="inputMethod.text === 'edit'" class="mb-3">
+                    <h2 class="subtitle">Write your text here</h2>
                     <quill-editor (onContentChanged)="updateText($event)"></quill-editor>
                 </div>
             </div>
