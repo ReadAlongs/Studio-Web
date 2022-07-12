@@ -4,6 +4,7 @@ import { map } from "rxjs/operators";
 
 import { Component, ViewChild } from "@angular/core";
 import { FormGroup } from "@angular/forms";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatStepper } from "@angular/material/stepper";
 
 import { B64Service } from "./b64.service";
@@ -27,7 +28,8 @@ export class AppComponent {
   constructor(
     private b64Service: B64Service,
     private fileService: FileService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public dialog: MatDialog
   ) {}
   ngOnInit(): void {
     this.b64Inputs$.subscribe((x) => console.log(x));
@@ -36,6 +38,12 @@ export class AppComponent {
       "Warning",
       { timeOut: 10000 }
     );
+  }
+
+  openPrivacyDialog(): void {
+    this.dialog.open(PrivacyDialog, {
+      width: "250px",
+    });
   }
 
   formChanged(formGroup: FormGroup) {
@@ -59,4 +67,12 @@ export class AppComponent {
       this.stepper.next();
     }
   }
+}
+
+@Component({
+  selector: "privacy-dialog",
+  templateUrl: "privacy-dialog.html",
+})
+export class PrivacyDialog {
+  constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
 }

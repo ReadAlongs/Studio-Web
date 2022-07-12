@@ -38,6 +38,7 @@ export class UploadComponent implements OnInit {
   rawText = "";
   processedXML = "";
   sampleRate = 44100;
+  maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   constructor(
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
@@ -116,15 +117,23 @@ export class UploadComponent implements OnInit {
 
   onFileSelected(type: any, event: any) {
     const file: File = event.target.files[0];
-    if (file.size > 10000000) {
+    if (file.size > this.maxAudioSize) {
       this.toastr.error("File too large", "Sorry!");
     } else {
       if (type === "audio") {
         this.audioControl.setValue(file);
-        this.toastr.success("File " + file.name + " uploaded", "Great!");
+        this.toastr.success(
+          "File " +
+            file.name +
+            " processed, but not uploaded. Your audio will stay on your computer.",
+          "Great!"
+        );
       } else if (type === "text") {
         this.textControl.setValue(file);
-        this.toastr.success("File " + file.name + " uploaded", "Great!");
+        this.toastr.success(
+          "File " + file.name + " uploaded through an encrypted connection",
+          "Great!"
+        );
       }
     }
   }

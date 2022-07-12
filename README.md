@@ -21,13 +21,14 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
   - [Maintainers](#maintainers)
   - [Contributing](#contributing)
   - [Acknowledgements](#acknowledgements)
+  - [How to Cite](#cite)
   - [License](#license)
 
 See also: [ReadAlong-Studio documentation](https://readalong-studio.readthedocs.io/en/latest/index.html).
 
 ## Background
 
-This web application is intended to be a graphical version of the [ReadAlong Studio command line interface](https://github.com/ReadAlongs/Studio) for creating interactive "read-alongs". 
+This web application is intended to be a graphical version of the [ReadAlong Studio command line interface](https://github.com/ReadAlongs/Studio) for creating interactive "read-alongs".
 
 ### Data Sovereignty
 
@@ -64,6 +65,22 @@ This work would not have been possible without the many collaborators who shared
 ### Northeastern University collaboration
 
 The design of the interface and CSS styling was developed by two group of students in Michael Running Wolf's Spring 2022 Foundations of Software Engineering course. We are very grateful for both groups' hard work and contributions. Group 1 developed the design that was eventually chosen for this project, as such we are grateful for the code contributions to this repository from Siqi Chen, Kwok Keung Chung, Koon Kit Kong, and He Yang.
+
+## Cite
+
+If you use this tool, please cite it:
+
+Littell, P., Joanis, E., Pine, A., Tessier, M., Huggins-Daines, D., & Torkornoo, D. (2022). ReadAlong Studio: Practical Zero-Shot Text-Speech Alignment for Indigenous Language Audiobooks. Proceedings of SIGUL2022 @LREC2022, 23–32.
+
+```
+@inproceedings{littellreadalong,
+  title={ReadAlong Studio: Practical Zero-Shot Text-Speech Alignment for Indigenous Language Audiobooks},
+  author={Littell, Patrick and Joanis, Eric and Pine, Aidan and Tessier, Marc and Huggins-Daines, David and Torkornoo, Delasie},
+  year= {2022},
+  booktitle = {{Proceedings of SIGUL2022 @LREC2022}},
+  pages = {23-32}
+}
+```
 
 ## License
 
