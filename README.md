@@ -14,13 +14,13 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
   - [Table of Contents](#table-of-contents)
   - [Background](#background)
     - [Data Sovereignty](#data-sovereignty)
-    - [Northeastern University](#northeastern-university-collaboration)
   - [Install](#installing)
   - [Usage](#usage)
     - [Development](#development)
     - [Production](#production)
   - [Maintainers](#maintainers)
   - [Contributing](#contributing)
+  - [Acknowledgements](#acknowledgements)
   - [License](#license)
 
 See also: [ReadAlong-Studio documentation](https://readalong-studio.readthedocs.io/en/latest/index.html).
@@ -32,23 +32,6 @@ This web application is intended to be a graphical version of the [ReadAlong Stu
 ### Data Sovereignty
 
 We have built the tool with Indigenous data sovereignty in mind ([see here for more info](https://www.youtube.com/watch?v=fodGN4kaEcI)). As such, we are using the JavaScript version of [soundswallower](https://github.com/ReadAlongs/SoundSwallower) which runs on the users' computer without uploading audio to a server. Text data will be sent (encrypted) to the ReadAlongs API but is not stored or saved to disk on the server and is only used for creating the ReadAlong.
-
-### Northeastern University collaboration
-
-The design of the interface and CSS styling was developed by two group of students in Michael Running Wolf's Spring 2022 Foundations of Software Engineering course. We are very grateful for both groups' hard work and contributions. Group 1 developed the design that was eventually chosen for this project.
-
-Group 1: 
-  - Siqi Chen
-  - Kwok Keung Chung
-  - Koon Kit Kong
-  - He Yang
-
-Group 2:
-  - Yuzhe Shen
-  - Rui Wang
-  - Zirui Wang
-  - Xuehan Yi
-  - Zhenjie Zhou
 
 ## Installing
 
@@ -74,6 +57,13 @@ Feel free to dive in! [Open an issue](https://github.com/ReadAlongs/Studio-Web/i
 
 This repo follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
+## Acknowledgements
+
+This work would not have been possible without the many collaborators who shared their expertise and recordings, including but not limited to the Yukon Native Language Centre, the Kitigan Zibi Cultural Centre, W̱SÁNEĆ School Board, the Pirurvik Centre, Conseil de la Nation Atikamekw, Onwkawenna Kentyohkwa, Owennatekha Brian Maracle, Timothy Montler, Marie-Odile Junker, Hilaria Cruz, Nathan Thanyehténhas Brinklow, Francis Tyers, Fineen Davis, Eddie Antonio Santos, Mica Arseneau, Vasilisa Andriyanets, Christopher Cox, Bradley Ellert, Robbie Jimmerson, Shankhalika Srikanth, Sabrina Yu, Caroline Running Wolf, Michael Running Wolf, Fangyuan (Toby) Huang, Zachery Hindley, Darrel Schreiner, Luyi Xiao, Siqi Chen, Kwok Keung Chung, Koon Kit Kong, He Yang, Yuzhe Shen, Rui Wang, Zirui Wang, Xuehan Yi, and Zhenjie Zhou.
+
+### Northeastern University collaboration
+
+The design of the interface and CSS styling was developed by two group of students in Michael Running Wolf's Spring 2022 Foundations of Software Engineering course. We are very grateful for both groups' hard work and contributions. Group 1 developed the design that was eventually chosen for this project, as such we are grateful for the code contributions to this repository from Siqi Chen, Kwok Keung Chung, Koon Kit Kong, and He Yang.
 
 ## License
 
