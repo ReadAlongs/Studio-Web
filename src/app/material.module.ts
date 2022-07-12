@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
@@ -18,6 +19,7 @@ import { MatStepperModule } from "@angular/material/stepper";
     MatSelectModule,
     MatIconModule,
     MatProgressBarModule,
+    MatButtonToggleModule,
   ],
   exports: [
     MatStepperModule,
@@ -28,6 +30,7 @@ import { MatStepperModule } from "@angular/material/stepper";
     MatSelectModule,
     MatIconModule,
     MatProgressBarModule,
+    MatButtonToggleModule,
   ],
 })
 export class MaterialModule {}

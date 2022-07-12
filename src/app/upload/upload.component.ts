@@ -7,6 +7,7 @@ import { FormBuilder, FormControl, Validators } from "@angular/forms";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
+import { MicrophoneService, OutputFormat } from "../microphone.service";
 import { RasService } from "../ras.service";
 import { SoundswallowerService } from "../soundswallower.service";
 
@@ -29,6 +30,9 @@ export class UploadComponent implements OnInit {
   audioControl = new FormControl<File | null>(null, Validators.required);
   // buffer audio as soon as uploaded
   audioBuffer$ = new Subject<AudioBuffer>();
+  recordedAudio: any = false;
+  recording = false;
+  playing = false;
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl,
@@ -39,14 +43,27 @@ export class UploadComponent implements OnInit {
   processedXML = "";
   sampleRate = 44100;
   maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
+  inputMethod = {
+    audio: "upload",
+    text: "upload",
+  };
+  richTextInput: any;
   constructor(
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
     private rasService: RasService,
     private fileService: FileService,
     private audioService: AudioService,
-    private ssjsService: SoundswallowerService
-  ) {}
+    private ssjsService: SoundswallowerService,
+    private microphoneService: MicrophoneService
+  ) {
+    this.microphoneService.recorderError.subscribe((recorderErrorCase) => {
+      this.toastr.error(
+        recorderErrorCase.toString(),
+        "Whoops, something went wrong!"
+      );
+    });
+  }
 
   ngOnInit(): void {
     this.ssjsService.initialize$({}).then(
@@ -57,13 +74,66 @@ export class UploadComponent implements OnInit {
     );
   }
 
+  startRecording() {
+    this.recording = true;
+    this.microphoneService.startRecording();
+  }
+
+  playRecording() {
+    let player = new window.Audio();
+    player.src = URL.createObjectURL(this.recordedAudio);
+    player.onended = () => {
+      this.playing = false;
+    };
+    player.load();
+    this.playing = true;
+    player.play();
+  }
+
+  stopRecording() {
+    this.recording = false;
+    this.microphoneService
+      .stopRecording(OutputFormat.WEBM_BLOB)
+      .then((output: any) => {
+        this.recordedAudio = output;
+        this.toastr.success("Audio was successfully recorded", "Yay!");
+        this.audioControl.setValue(output);
+        // do post output steps
+      })
+      .catch((errorCase) => {
+        this.toastr.error(
+          "Please try again, or upload a file.",
+          "Audio not recorded!"
+        );
+        console.log(errorCase);
+        // Handle Error
+      });
+  }
+
+  toggleAudioInput(event: any) {
+    this.inputMethod.audio = event.value;
+  }
+
+  toggleTextInput(event: any) {
+    this.inputMethod.text = event.value;
+  }
+
   nextStep() {
+    if (this.inputMethod.text === "edit") {
+      let inputText = new Blob([this.richTextInput.text], {
+        type: "text/plain",
+      });
+      this.textControl.setValue(inputText);
+    }
     if (this.uploadFormGroup.valid) {
       // Loading
       this.$loading.next(true);
       // Determine text type
       let text_type = "text";
-      if (this.textControl.value.name.endsWith("xml")) {
+      if (
+        this.inputMethod.text === "upload" &&
+        this.textControl.value.name.endsWith("xml")
+      ) {
         text_type = "xml";
       }
       let body: any = {
@@ -113,6 +183,10 @@ export class UploadComponent implements OnInit {
         "Form not complete!"
       );
     }
+  }
+
+  updateText(event: any) {
+    this.richTextInput = event;
   }
 
   onFileSelected(type: any, event: any) {

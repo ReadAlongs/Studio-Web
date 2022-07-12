@@ -1,3 +1,4 @@
+import { QuillModule } from "ngx-quill";
 import { ToastrModule } from "ngx-toastr";
 
 import { HttpClientModule } from "@angular/common/http";
@@ -18,6 +19,7 @@ describe("UploadComponent", () => {
         ReactiveFormsModule,
         BrowserAnimationsModule,
         ToastrModule.forRoot(),
+        QuillModule.forRoot(),
         HttpClientModule,
         MaterialModule,
       ],

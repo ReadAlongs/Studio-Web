@@ -10,20 +10,50 @@
     <div class="container">
         <div class="row g-2">
             <div class="col-6 p-3 border bg-light">
-                <h1 class="title">Text</h1>
-                <h2 class="subtitle">Upload the text</h2>
-                <div class="mb-3">
+                <h1 class="title navbar navbar-light bg-light">Text
+                    <mat-button-toggle-group appearance="legacy" (change)="toggleTextInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.text">
+                        <mat-button-toggle value="edit">Write</mat-button-toggle>
+                        <mat-button-toggle value="upload">Upload</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </h1>
+                <div *ngIf="inputMethod.text === 'upload'" class="mb-3">
+                    <h2 class="subtitle">Upload the text</h2>
                     <label for="updateText" class="form-label">Upload text files (.txt) or XML files (.xml)</label>
                     <input (change)="onFileSelected('text', $event)" class="form-control" name="text" type="file" id="updateText" accept=".docx,.txt,.xml">
                 </div>
+                <div *ngIf="inputMethod.text === 'edit'" class="mb-3">
+                    <quill-editor (onContentChanged)="updateText($event)"></quill-editor>
+                </div>
             </div>
             <div class="col-6 p-3 border bg-light">
-                <h1 class="title">Audio</h1>
-                <h2 class="subtitle">Upload the audio</h2>
-                <div class="mb-3">
+                <h1 class="title navbar navbar-light bg-light">Audio
+                    <mat-button-toggle-group appearance="legacy" (change)="toggleAudioInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.audio">
+                        <mat-button-toggle value="mic">Record</mat-button-toggle>
+                        <mat-button-toggle value="upload">Upload</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </h1>
+
+
+                <div *ngIf="inputMethod.audio === 'upload'" class="mb-3">
+                    <h2 class="subtitle">Upload the audio</h2>
                     <label for="updateAudio" class="form-label">You must upload your audio either as an mp3 or wav
                             file.</label>
                     <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav">
+                </div>
+                <div *ngIf="inputMethod.audio === 'mic'" class="mb-3">
+                    <h2 class="subtitle">Record your voice here</h2>
+                    <button mat-icon-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
+                        <mat-icon>mic</mat-icon>
+                        Record
+                      </button>
+                    <button style="margin-left: 40px" [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="primary" aria-label="Play button">
+                        <mat-icon>play_circle</mat-icon>
+                        Play
+                      </button>
+                    <button style="margin-left: 40px" (click)="stopRecording()" *ngIf="recording" mat-icon-button color="primary" aria-label="Stop button">
+                        <mat-icon>stop_circle</mat-icon>
+                        Stop
+                      </button>
                 </div>
             </div>
             <div class="col-12 p-3 border bg-light">
