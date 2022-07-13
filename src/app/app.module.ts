@@ -21,6 +21,7 @@ import { UploadComponent } from "./upload/upload.component";
     DemoComponent,
     UploadComponent,
     PrivacyDialog,
+    // ShepherdComponent
   ],
   imports: [
     BrowserModule,

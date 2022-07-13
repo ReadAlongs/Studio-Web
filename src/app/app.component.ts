@@ -1,3 +1,4 @@
+import { ShepherdService } from "angular-shepherd";
 import { ToastrService } from "ngx-toastr";
 import { forkJoin, from, of, Subject } from "rxjs";
 import { map } from "rxjs/operators";
@@ -9,6 +10,16 @@ import { MatStepper } from "@angular/material/stepper";
 
 import { B64Service } from "./b64.service";
 import { FileService } from "./file.service";
+import {
+  audio_file_step,
+  audio_record_step,
+  data_step,
+  final_step,
+  intro_step,
+  language_step,
+  text_file_step,
+  text_write_step,
+} from "./shepherd.steps";
 import { UploadComponent } from "./upload/upload.component";
 
 @Component({
@@ -29,7 +40,8 @@ export class AppComponent {
     private b64Service: B64Service,
     private fileService: FileService,
     private toastr: ToastrService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public shepherdService: ShepherdService
   ) {}
   ngOnInit(): void {
     this.b64Inputs$.subscribe((x) => console.log(x));
@@ -38,6 +50,52 @@ export class AppComponent {
       "Warning",
       { timeOut: 10000 }
     );
+  }
+
+  ngAfterViewInit() {
+    this.shepherdService.defaultStepOptions = {
+      classes: "",
+      scrollTo: true,
+      cancelIcon: {
+        enabled: true,
+      },
+    };
+    text_write_step["when"] = {
+      show: () => {
+        if (this.upload) {
+          this.upload.inputMethod.text = "edit";
+        }
+      },
+      hide: () => {
+        if (this.upload) {
+          this.upload.inputMethod.text = "upload";
+        }
+      },
+    };
+    audio_record_step["when"] = {
+      show: () => {
+        if (this.upload) {
+          this.upload.inputMethod.audio = "mic";
+        }
+      },
+      hide: () => {
+        if (this.upload) {
+          this.upload.inputMethod.audio = "upload";
+        }
+      },
+    };
+    this.shepherdService.modal = true;
+    this.shepherdService.confirmCancel = false;
+    this.shepherdService.addSteps([
+      intro_step,
+      data_step,
+      text_file_step,
+      text_write_step,
+      audio_file_step,
+      audio_record_step,
+      language_step,
+      final_step,
+    ]);
   }
 
   openPrivacyDialog(): void {

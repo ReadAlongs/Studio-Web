@@ -1,6 +1,18 @@
 <mat-horizontal-stepper linear #stepper>
 
     <mat-step [stepControl]="upload.uploadFormGroup" label="Step 1">
+        <section>
+            <div class="container mb-2">
+                <h1 id="welcome-header">Welcome to ReadAlong Studio</h1>
+                <p>This is a tool to help you make your own interactive 'readalong' that highlights words as they are spoken. Have a look at <a href="https://www.eastcree.org/cree/en/lessons/read-along/northern-dialect/when-the-beaver-had-a-round-tail/">this example in East Cree</a>                    to get a better idea of what these are.</p>
+                <p>To get started making your own, read our <a style="color: #07c; cursor: pointer;" (click)="openPrivacyDialog()">privacy and data sovereignty policy</a>, then take a tour by clicking on the tour button below, and follow the steps below.</p>
+                <div class="row">
+                    <div class="col-3"></div>
+                    <button class="mb-4 col-6 center text-center" mat-raised-button color="primary" (click)="shepherdService.start()">Take the tour!</button>
+                    <div class="col-3"></div>
+                </div>
+            </div>
+        </section>
         <app-upload #upload (stepChange)="stepChange($event)"></app-upload>
     </mat-step>
 
@@ -14,4 +26,3 @@
 
 </mat-horizontal-stepper>
 <router-outlet></router-outlet>
-<a (click)="openPrivacyDialog()" id="privacy">Privacy Policy</a>

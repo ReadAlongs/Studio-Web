@@ -1,6 +1,6 @@
 <section>
     <div class="container export__desc">
-        <h2 class="subtitle">
+        <h2 class="subtitle" id="upload-header">
             Upload data to start creating your ReadAlong</h2>
         <p>In order to make a ReadAlong, we need 3 different things. We need some <b>text</b>, some corresponding
             <b>audio</b>, and a way of turning the writing system of your language (AKA <a href='https://en.wikipedia.org/wiki/Orthography'>Orthography</a>) into the <a href='https://en.wikipedia.org/wiki/International_Phonetic_Alphabet'>International Phonetic Alphabet
@@ -9,11 +9,11 @@
     </div>
     <div class="container">
         <div class="row g-2">
-            <div class="col-6 p-3 border bg-light">
+            <div id="text-section" class="col-6 p-3 border bg-light">
                 <h1 class="title navbar navbar-light bg-light">Text
                     <mat-button-toggle-group appearance="legacy" (change)="toggleTextInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.text">
                         <mat-button-toggle value="edit">Write</mat-button-toggle>
-                        <mat-button-toggle value="upload">Upload</mat-button-toggle>
+                        <mat-button-toggle value="upload">File</mat-button-toggle>
                     </mat-button-toggle-group>
                 </h1>
                 <div *ngIf="inputMethod.text === 'upload'" class="mb-3">
@@ -26,11 +26,11 @@
                     <quill-editor (onContentChanged)="updateText($event)"></quill-editor>
                 </div>
             </div>
-            <div class="col-6 p-3 border bg-light">
+            <div id="audio-section" class="col-6 p-3 border bg-light">
                 <h1 class="title navbar navbar-light bg-light">Audio
                     <mat-button-toggle-group appearance="legacy" (change)="toggleAudioInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.audio">
                         <mat-button-toggle value="mic">Record</mat-button-toggle>
-                        <mat-button-toggle value="upload">Upload</mat-button-toggle>
+                        <mat-button-toggle value="upload">File</mat-button-toggle>
                     </mat-button-toggle-group>
                 </h1>
 
@@ -57,13 +57,9 @@
                       </button>
                 </div>
             </div>
-            <div class="col-12 p-3 border bg-light">
-                <h1 class="title">Mapping</h1>
-                <h2 class="subtitle">
-                    The map between your language's writing system, and the International Phonetic Alphabet.</h2>
-                <p>The reason ReadAlong Studio works is because it leverages technologies that have been created for English. Usually, need a certain amount of data is needed in order to do the alignment that ReadAlong Studio does. But, instead of that,
-                    your ReadAlong is first converted to a very approximate English pronounciation. Then, ReadAlong Studio can do the alignment based on that, and convert it back into your language once it's done. If your language isn't supported in the
-                    list below, have a look at <a href="https://blog.mothertongues.org/g2p-background/">this blog post series</a> to understand how you might get support for your langauge!
+            <div id="language-section" class="col-12 p-3 border bg-light">
+                <h1 class="title">Select your Language</h1>
+                <p>If your language isn't supported in the list below, have a look at <a href="https://blog.mothertongues.org/g2p-background/">this blog post series</a> to understand how you might get support for your langauge!
                 </p>
 
                 <div class="mb-3">
@@ -87,7 +83,7 @@
             </div>
         </div>
         <div class="row g-2">
-            <button class="mt-4" mat-raised-button type="submit" (click)="nextStep()">Go to the next step!</button>
+            <button id="next-step" class="mt-4" mat-raised-button type="submit" (click)="nextStep()">Go to the next step!</button>
             <mat-progress-bar *ngIf="$loading | async" mode="indeterminate"></mat-progress-bar>
         </div>
     </div>

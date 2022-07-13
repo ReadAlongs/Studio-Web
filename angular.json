@@ -24,7 +24,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "sass",
             "assets": [
-              "src/favicon.ico",
+              "src/assets",
               {
                 "glob": "soundswallower.wasm",
                 "input": "./node_modules/soundswallower",
