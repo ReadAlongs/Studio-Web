@@ -20,9 +20,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          install-command: npm ci && npx lerna bootstrap
-          start: npx lerna run test-servers
-          wait-on: npx lerna run wait-for-test-server
+          package: packages/stencil-component
+          start: npm run test-servers
+          wait-on: npm run wait-for-test-server
       - run: npx lerna version patch
       - run: npx lerna run prepublish
       - run: npx lerna publish
