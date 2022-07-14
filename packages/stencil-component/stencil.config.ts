@@ -1,5 +1,6 @@
-import { Config } from "@stencil/core";
-import { sass } from "@stencil/sass";
+import { angularOutputTarget } from '@stencil/angular-output-target';
+import { Config } from '@stencil/core';
+import { sass } from '@stencil/sass';
 
 export const config: Config = {
   namespace: "read-along",
@@ -17,6 +18,11 @@ export const config: Config = {
       type: 'dist-custom-elements-bundle',
       externalRuntime: false,
     },
+    angularOutputTarget({
+      componentCorePackage: '@roedoejet/readalong',
+      directivesProxyFile: '../angular-workspace/projects/readalong/src/lib/stencil-generated/components.ts',
+      directivesArrayFile: '../angular-workspace/projects/readalong/src/lib/stencil-generated/index.ts',
+    }),
   ],
   plugins: [sass()],
   devServer: {
