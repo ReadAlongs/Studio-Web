@@ -11,5 +11,5 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: npm run test-servers
-          wait-on: npm run wait-for-test-server
+          start: npx lerna run test-servers
+          wait-on: npx lerna run wait-for-test-server
