@@ -4,7 +4,6 @@ sample_page/
 src/assets
 public
 src/index.html
-package-lock.json
 *~
 *.sw[mnpcod]
 *.log
