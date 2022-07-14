@@ -15,6 +15,5 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           project: ./packages/stencil-component
-          working-directory: ./packages/stencil-component
           start: npm run test-servers
           wait-on: npm run wait-for-test-server
