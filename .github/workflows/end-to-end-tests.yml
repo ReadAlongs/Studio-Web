@@ -14,6 +14,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          install-command: npx lerna bootstrap
+          install-command: npm ci && npx lerna bootstrap
           start: npx lerna run test-servers
           wait-on: npx lerna run wait-for-test-server
