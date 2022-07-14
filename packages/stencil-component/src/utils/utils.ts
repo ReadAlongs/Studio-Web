@@ -1,16 +1,27 @@
 import { Howl } from 'howler';
 import { BehaviorSubject, Subject } from 'rxjs';
 
-
 export interface Page {
   id: string,
   paragraphs: Node[],
   img?: string,
-  attributes?:NamedNodeMap[]
+  attributes?: NamedNodeMap[]
 }
 
 export interface Alignment {
   [id: string]: [number, number];
+}
+
+export interface SpriteInterface {
+  sounds: Howl[],
+  _reading$: Subject<boolean>,
+  _percentPlayed: BehaviorSubject<string>,
+  sound: Howl,
+  play: (key: number | string) => number,
+  pause: () => number,
+  goBack: (id: number, s: number) => number,
+  goTo: (id: number, s: number) => number,
+  stop: () => number,
 }
 
 /**
@@ -74,7 +85,7 @@ export function zip(arrays): Array<any[]> {
  * @param {string} - the path to the TEI file
  */
 export function parseTEI(path: string): Page[] {
-  let xmlDocument =  getXML(path)
+  let xmlDocument = getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
   let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
@@ -88,7 +99,7 @@ export function parseTEI(path: string): Page[] {
     if (img.length > 0) {
       parsed_page['img'] = img[0].nodeValue;
     }
-    if(p.attributes)parsed_page["attributes"]=p.attributes;
+    if (p.attributes) parsed_page["attributes"] = p.attributes;
     return parsed_page
   });
   return parsed_pages
@@ -157,9 +168,10 @@ export var Sprite = function (options) {
 Sprite.prototype = {
   /**
    * Play a sprite when clicked and track the progress.
-   * @param  {String} key Key in the sprite map object.
+   * @param  {number} key Key in the sprite map object.
    */
-  play: function (key: string): number {
+  play: function (key: number | string): number {
+    key = key.toString();
     var self = this;
     self._spriteLeft = self._tinySprite
     var sprite = key;
@@ -181,14 +193,14 @@ Sprite.prototype = {
    * @param id - the id of the audio to roll back
    * @param s - the number of seconds to go back
    */
-  goBack: function (id : number, s: number): number {
+  goBack: function (id: number, s: number): number {
     var self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
     // if current_seek - s is greater than 0, find the closest sprite
     // and highlight it; seek to current_seek -s.
     if (self.sound.seek(id = id) - s > 0) {
-      var id : number = self.sound.seek(self.sound.seek(id = id) - s, id);
+      var id: number = self.sound.seek(self.sound.seek(id = id) - s, id);
       // move highlight back TODO: refactor out into its own function and combine with version in step()
       var seek = self.sound.seek(id = id)
       for (var j = 0; j < self._spriteLeft.length; j++) {
@@ -200,7 +212,7 @@ Sprite.prototype = {
       }
       // else, return back to beginning
     } else {
-      var id : number = self.sound.seek(0, id);
+      var id: number = self.sound.seek(0, id);
       self._reading$.next(self._spriteLeft[0][1])
     }
     return id
@@ -213,14 +225,14 @@ Sprite.prototype = {
  * @param id - the id of the audio to roll back
  * @param s - the number of seconds to go back
  */
-  goTo: function (id : number, s : number): number {
+  goTo: function (id: number, s: number): number {
     var self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
     // if current_seek - s is greater than 0, find the closest sprite
     // and highlight it; seek to current_seek -s.
 
-    var id : number = self.sound.seek(s, id);
+    var id: number = self.sound.seek(s, id);
     // move highlight back TODO: refactor out into its own function and combine with version in step()
     var seek = self.sound.seek(id = id)
     for (var j = 0; j < self._spriteLeft.length; j++) {
