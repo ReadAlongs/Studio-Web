@@ -3,7 +3,6 @@ www/
 sample_page/
 src/assets
 public
-src/index.html
 *~
 *.sw[mnpcod]
 *.log
