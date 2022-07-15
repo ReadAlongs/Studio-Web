@@ -1,5 +1,5 @@
 import { Howl } from "howler";
-import { Observable } from "rxjs";
+import { Subject } from "rxjs";
 import { distinctUntilChanged } from "rxjs/operators";
 
 import {
@@ -17,8 +17,7 @@ import {
   Page,
   parseSMIL,
   parseTEI,
-  Sprite,
-  SpriteInterface
+  Sprite
 } from "../../utils/utils";
 
 const LOADING = 0;
@@ -61,8 +60,8 @@ export class ReadAlongComponent {
    */
   @Prop({ mutable: true }) audio: string;
 
-  audio_howl_sprites: SpriteInterface;
-  reading$: Observable<string | boolean>; // An RxJs Subject for the current item being read.
+  audio_howl_sprites: any;
+  reading$: Subject<string>; // An RxJs Subject for the current item being read.
   duration: number; // Duration of the audio file
 
   /**
@@ -178,7 +177,7 @@ export class ReadAlongComponent {
    * @param audio
    * @param alignment
    */
-  private buildSprite(audio: string, alignment: Alignment): SpriteInterface {
+  private buildSprite(audio: string, alignment: Alignment) {
     return new Sprite({
       src: [audio],
       sprite: alignment,
@@ -190,8 +189,7 @@ export class ReadAlongComponent {
    * Add escape characters to query selector param
    * @param id
    */
-  tagToQuery(id: string | number): string {
-    id = id.toString();
+  tagToQuery(id: string): string {
     id = id.replace(".", "\\.")
     id = id.replace("#", "\\#")
     return "#" + id
@@ -381,7 +379,7 @@ export class ReadAlongComponent {
     // select svg container
     let wave__container: any = this.el.shadowRoot.querySelector('#overlay__object')
     // use svg container to grab fill and trail
-    let fill = wave__container.contentDocument.querySelector('#progress-fill')
+    let fill: HTMLElement = wave__container.contentDocument.querySelector('#progress-fill')
     let trail = wave__container.contentDocument.querySelector('#progress-trail')
     let base = wave__container.contentDocument.querySelector('#progress-base')
     fill.classList.add('stop-color--' + this.theme)
@@ -392,7 +390,7 @@ export class ReadAlongComponent {
     this.audio_howl_sprites.sounds.push(trail)
     // When this sound is finished, remove the progress element.
     this.audio_howl_sprites.sound.once('end', () => {
-      this.audio_howl_sprites.sounds.forEach((x: any) => {
+      this.audio_howl_sprites.sounds.forEach(x => {
         x.setAttribute("offset", '0%');
       });
       this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
@@ -408,7 +406,7 @@ export class ReadAlongComponent {
    * @param tag
    */
   animateProgressDefault(play_id: number, tag: string): void {
-    let elm: any = document.createElement('div');
+    let elm = document.createElement('div');
     elm.className = 'progress theme--' + this.theme;
     elm.id = play_id.toString();
     elm.dataset.sprite = tag;
@@ -736,7 +734,7 @@ export class ReadAlongComponent {
     this.assetsStatus.SMIL = Object.keys(this.processed_alignment).length ? LOADED : ERROR_LOADING
 
     // load basic Howl
-    let basic_howl = new Howl({
+    this.audio_howl_sprites = new Howl({
       src: [this.audio],
       preload: true,
       onloaderror: this.audioFailedToLoad.bind(this),
@@ -744,21 +742,19 @@ export class ReadAlongComponent {
 
     })
     // Once loaded, get duration and build Sprite
-    basic_howl.once('load', () => {
-      this.duration = basic_howl.duration();
-      this.processed_alignment['all'] = [0, this.duration * 1000];
+    this.audio_howl_sprites.once('load', () => {
+
+      this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
+      this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
       // Once Sprites are built, subscribe to reading subject and update element class
       // when new distinct values are emitted
       this.reading$ = this.audio_howl_sprites._reading$.pipe(
         distinctUntilChanged()
-      )
-
-      this.reading$.subscribe(el_tag => {
+      ).subscribe(el_tag => {
         // Only highlight when playing
         if (this.playing) {
           // Turn tag to query
-          el_tag = el_tag.toString()
           let query = this.tagToQuery(el_tag);
           // select the element with that tag
           let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
