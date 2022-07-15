@@ -26,7 +26,7 @@ jobs:
       - run: cd ./packages/stencil-component && npm version patch
       - run: cd ./packages/angular-workspace && npm version patch
       - run: npx lerna run prepublish
-      - run: npx lerna publish
+      - run: npx lerna publish from-package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Determine tag
