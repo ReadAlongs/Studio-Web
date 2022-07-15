@@ -23,7 +23,8 @@ jobs:
           working-directory: ./packages/stencil-component
           start: npm run test-servers
           wait-on: npm run wait-for-test-server
-      - run: npx lerna version patch
+      - run: cd ./packages/stencil-component && npm version patch
+      - run: cd ./packages/angular-workspace && npm version patch
       - run: npx lerna run prepublish
       - run: npx lerna publish
         env:
