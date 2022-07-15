@@ -1,6 +1,6 @@
-import { angularOutputTarget } from '@stencil/angular-output-target';
-import { Config } from '@stencil/core';
-import { sass } from '@stencil/sass';
+import { angularOutputTarget } from "@stencil/angular-output-target";
+import { Config } from "@stencil/core";
+import { sass } from "@stencil/sass";
 
 export const config: Config = {
   namespace: "read-along",
@@ -15,8 +15,7 @@ export const config: Config = {
       ]
     },
     {
-      type: 'dist-custom-elements-bundle',
-      externalRuntime: false,
+      type: 'dist-custom-elements-bundle'
     },
     angularOutputTarget({
       componentCorePackage: '@roedoejet/readalong',

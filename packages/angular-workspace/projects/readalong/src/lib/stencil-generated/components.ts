@@ -12,7 +12,8 @@ export declare interface ReadAlong extends Components.ReadAlong {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['alignment', 'audio', 'cssUrl', 'language', 'pageScrolling', 'svgOverlay', 'text', 'theme', 'useAssetsFolder']
+  inputs: ['alignment', 'audio', 'cssUrl', 'language', 'pageScrolling', 'svgOverlay', 'text', 'theme', 'useAssetsFolder'],
+  methods: ['changeTheme']
 })
 @Component({
   selector: 'read-along',

@@ -1,10 +1,25 @@
-import { Howl } from 'howler';
-import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { Howl } from "howler";
+import { Observable } from "rxjs";
+import { distinctUntilChanged } from "rxjs/operators";
 
-import { Component, Element, h, Listen, Prop, State } from '@stencil/core';
+import {
+  Component,
+  Element,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State
+} from "@stencil/core";
 
-import { Alignment, Page, parseSMIL, parseTEI, Sprite, SpriteInterface } from '../../utils/utils';
+import {
+  Alignment,
+  Page,
+  parseSMIL,
+  parseTEI,
+  Sprite,
+  SpriteInterface
+} from "../../utils/utils";
 
 const LOADING = 0;
 const LOADED = 1;
@@ -451,7 +466,8 @@ export class ReadAlongComponent {
   /**
    * Change theme
    */
-  changeTheme(): void {
+  @Method()
+  async changeTheme(): Promise<void> {
     if (this.theme === 'light') {
       this.theme = 'dark'
     } else {

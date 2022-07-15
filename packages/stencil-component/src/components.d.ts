@@ -17,6 +17,10 @@ export namespace Components {
          */
         "audio": string;
         /**
+          * Change theme
+         */
+        "changeTheme": () => Promise<void>;
+        /**
           * Optional custom Stylesheet to override defaults
          */
         "cssUrl"?: string;

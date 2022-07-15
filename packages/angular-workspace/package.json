@@ -1,5 +1,5 @@
 {
-    "name": "@roedoejet/readalong-ng",
+    "name": "@roedoejet/ngx-readalong",
     "version": "0.0.0",
     "scripts": {
         "ng": "ng",
@@ -8,7 +8,7 @@
         "watch": "ng build --watch --configuration development",
         "test": "ng test"
     },
-    "private": true,
+    "private": false,
     "dependencies": {
         "@angular/animations": "^14.0.0",
         "@angular/common": "^14.0.0",

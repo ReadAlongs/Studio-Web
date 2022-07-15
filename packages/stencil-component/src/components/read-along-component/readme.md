@@ -20,6 +20,19 @@
 | `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean`                    | `true`         |
 
 
+## Methods
+
+### `changeTheme() => Promise<void>`
+
+Change theme
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
