@@ -26,10 +26,8 @@
             }
         }
     }
-
     &--strong {
         &.theme {
-
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
@@ -38,10 +36,8 @@
             }
         }
     }
-
     &--stronger {
         &.theme {
-
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
@@ -49,15 +45,22 @@
                 }
             }
         }
-
     }
 }
 
-
+%border--dotted {
+    &.theme {
+        @each $theme,
+        $value in $ui-themes {
+            &--#{$theme} {
+                border: em(.75) dotted map-deep-get($ui-themes, $theme, secondary);
+            }
+        }
+    }
+}
 
 %border--strong {
     &.theme {
-
         @each $theme,
         $value in $ui-themes {
             &--#{$theme} {
@@ -65,7 +68,6 @@
             }
         }
     }
-
     &--left {
         &.theme {
             @each $theme,
@@ -76,10 +78,8 @@
             }
         }
     }
-
     &--right {
         &.theme {
-
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
@@ -88,10 +88,8 @@
             }
         }
     }
-
     &--top {
         &.theme {
-
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {
@@ -100,10 +98,8 @@
             }
         }
     }
-
     &--bottom {
         &.theme {
-
             @each $theme,
             $value in $ui-themes {
                 &--#{$theme} {

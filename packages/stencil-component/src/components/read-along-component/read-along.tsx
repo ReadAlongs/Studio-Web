@@ -23,6 +23,7 @@ import {
 const LOADING = 0;
 const LOADED = 1;
 const ERROR_LOADING = 2;
+export type ReadAlongMode = "VIEW" | "EDIT";
 export type InterfaceLanguage = "eng" | "fra";//iso 639-3 code
 export type Translation = {
   [lang in InterfaceLanguage]: string;
@@ -102,6 +103,11 @@ export class ReadAlongComponent {
 
   @Prop() pageScrolling: "horizontal" | "vertical" = "horizontal";
 
+  /**
+   * Choose mode of ReadAlong - either view (default) or edit
+   */
+  @Prop() mode: ReadAlongMode = "VIEW";
+
   /************
    *  STATES  *
    ************/
@@ -121,9 +127,10 @@ export class ReadAlongComponent {
   showGuide: boolean = false;
 
   parsed_text;
-
+  dropAreas;
   current_page;
   hasTextTranslations: boolean = false;
+  @State() images: string[];
   assetsStatus = {
     'AUDIO': LOADING,
     'XML': LOADING,
@@ -162,7 +169,7 @@ export class ReadAlongComponent {
    * @return string
    */
   private urlTransform(path: string): string {
-    if (this.useAssetsFolder && looksLikeRelativePath(path))
+    if (this.useAssetsFolder && looksLikeRelativePath(path) && !path.startsWith('blob'))
       return "assets/" + path;
     return path;
 
@@ -720,6 +727,11 @@ export class ReadAlongComponent {
       }
     }
 
+    // Parse the text to be displayed
+    this.parsed_text = parseTEI(this.text)
+    this.images = this.parsed_text.map((page) => page.img ? page.img : null)
+    this.assetsStatus.XML = this.parsed_text.length ? LOADED : ERROR_LOADING
+
   }
 
   /**
@@ -728,7 +740,6 @@ export class ReadAlongComponent {
    * is being read
    */
   componentDidLoad() {
-
 
     this.processed_alignment = parseSMIL(this.alignment)
     this.assetsStatus.SMIL = Object.keys(this.processed_alignment).length ? LOADED : ERROR_LOADING
@@ -796,11 +807,6 @@ export class ReadAlongComponent {
       this.isLoaded = true;
       this.assetsStatus.AUDIO = LOADED;
     })
-    // Parse the text to be displayed
-    this.parsed_text = parseTEI(this.text)
-
-    this.assetsStatus.XML = this.parsed_text.length ? LOADED : ERROR_LOADING
-
 
   }
 
@@ -850,6 +856,18 @@ export class ReadAlongComponent {
   }
 
   /**********
+   *  EDIT  *
+   **********/
+
+  async handleFiles(event: any, props) {
+    // const reader = new FileReader()
+    let imageURL = URL.createObjectURL(event)
+    let pageIndex = this.parsed_text.indexOf(props.pageData)
+    props.pageData.img = imageURL
+    this.images = this.images.slice(0, pageIndex).concat([imageURL]).concat(this.images.slice(pageIndex + 1))
+  }
+
+  /**********
    * RENDER *
    **********/
 
@@ -876,10 +894,21 @@ export class ReadAlongComponent {
    * @param props
    */
   Img = (props: { url: string }): Element => {
-
-
     return (<div class={"image__container page__col__image theme--" + this.theme}>
       <img alt={"image"} class="image" src={this.urlTransform(props.url)} />
+    </div>)
+  }
+
+  ImgPlaceHolder = (props: { pageData: Page }): Element => {
+    return (<div class={"image__container page__col__image theme--" + this.theme}>
+      <div class='drop-area'>
+        <form class="my-form">
+          <p class={"theme--" + this.theme}>Upload an image for this page with the file dialog below</p>
+          <input type="file" id="fileElem" accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props)} />
+          <label class="button" htmlFor="fileElem">Select some files</label>
+        </form>
+      </div>
+
     </div>)
   }
 
@@ -918,6 +947,9 @@ export class ReadAlongComponent {
       }
       { /* Display an Img if it exists on the page */
         props.pageData.img ? <this.Img url={props.pageData.img} /> : null
+      }
+      {
+        this.mode === "EDIT" && !props.pageData.img ? <this.ImgPlaceHolder pageData={props.pageData} /> : null
       }
       <div class={"page__col__text paragraph__container theme--" + this.theme}>
         { /* Here are the Paragraph children */
