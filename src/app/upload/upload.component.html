@@ -2,89 +2,142 @@
     <div class="container export__desc">
         <h2 class="subtitle" id="upload-header">
             Upload data to start creating your ReadAlong</h2>
-        <p>In order to make a ReadAlong, we need 3 different things. We need some <b>text</b>, some corresponding
-            <b>audio</b>, and a way of turning the writing system of your language (AKA <a href='https://en.wikipedia.org/wiki/Orthography'>Orthography</a>) into the <a href='https://en.wikipedia.org/wiki/International_Phonetic_Alphabet'>International Phonetic Alphabet
-                (IPA)</a>. If you're not a linguist, don't worry! This sounds scarier than it is, and, once you make the map between your language's writing system and the IPA once, you don't have to do it again!
+        <p>In order to make a ReadAlong, we need 3 different things. We need to know <b>which language</b> your readalong is in, and we also need some <b>text</b>, and corresponding
+            <b>audio</b>.
         </p>
     </div>
     <div class="container">
         <div class="row g-2">
             <div id="text-section" class="col-6 p-3 border bg-light">
-                <h1 class="title navbar navbar-light bg-light">Text
-                    <mat-button-toggle-group appearance="legacy" (change)="toggleTextInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.text">
-                        <mat-button-toggle value="edit">Write</mat-button-toggle>
-                        <mat-button-toggle value="upload">File</mat-button-toggle>
-                    </mat-button-toggle-group>
-                </h1>
-                <div *ngIf="inputMethod.text === 'upload'" class="mb-3">
-                    <h2 class="subtitle">Upload the text</h2>
-                    <label for="updateText" class="form-label">Upload text files (.txt) or XML files (.xml)</label>
-                    <input (change)="onFileSelected('text', $event)" class="form-control" name="text" type="file" id="updateText" accept=".docx,.txt,.xml">
-                </div>
-                <div *ngIf="inputMethod.text === 'edit'" class="mb-3">
-                    <h2 class="subtitle">Write your text here</h2>
-                    <textarea (input)="handleTextInput($event)" id="textInput" class="border rounded h-100" matInput placeholder="Ex. Hello my name is..."></textarea>
-                </div>
-            </div>
-            <div id="audio-section" class="col-6 p-3 border bg-light">
-                <h1 class="title navbar navbar-light bg-light">Audio
-                    <mat-button-toggle-group appearance="legacy" (change)="toggleAudioInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.audio">
-                        <mat-button-toggle value="mic">Record</mat-button-toggle>
-                        <mat-button-toggle value="upload">File</mat-button-toggle>
-                    </mat-button-toggle-group>
-                </h1>
-
-
-                <div *ngIf="inputMethod.audio === 'upload'" class="mb-3">
-                    <h2 class="subtitle">Upload the audio</h2>
-                    <label for="updateAudio" class="form-label">You must upload your audio either as an mp3 or wav
-                            file.</label>
-                    <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav">
-                </div>
-                <div *ngIf="inputMethod.audio === 'mic'" class="mb-3">
-                    <h2 class="subtitle">Record your voice here</h2>
-                    <button mat-icon-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
-                        <mat-icon>mic</mat-icon>
-                        Record
-                      </button>
-                    <button style="margin-left: 40px" [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="primary" aria-label="Play button">
-                        <mat-icon>play_circle</mat-icon>
-                        Play
-                      </button>
-                    <button style="margin-left: 40px" (click)="stopRecording()" *ngIf="recording" mat-icon-button color="primary" aria-label="Stop button">
-                        <mat-icon>stop_circle</mat-icon>
-                        Stop
-                      </button>
-                </div>
-            </div>
-            <div id="language-section" class="col-12 p-3 border bg-light">
-                <h1 class="title">Select your Language</h1>
-                <p>If your language isn't supported in the list below, have a look at <a href="https://blog.mothertongues.org/g2p-background/">this blog post series</a> to understand how you might get support for your langauge!
-                </p>
-
-                <div class="mb-3">
-                    <label for="langSelect" class="form-label">You can use the dropdown below to select a
-                            pre-configured mapping for your language.</label>
-                    <br />
+                <div class="container">
                     <div class="row">
-                        <div class="col-5">
-                            <mat-form-field appearance="fill">
-                                <mat-label>Select Language</mat-label>
-                                <mat-select [formControl]="langControl" required>
-                                    <mat-option value="eng">English - eng</mat-option>
-                                    <mat-option *ngFor="let lang of langs$ | async" [value]="lang['id']">
-                                        {{lang['name']}} - ({{lang['id']}})
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                        <div class="col-8">
+                            <h1 class="title">Text</h1>
+                        </div>
+                        <div class="col-4 justify-content-end" style="text-align: right">
+                            <mat-button-toggle-group appearance="legacy" (change)="toggleTextInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.text">
+                                <mat-button-toggle value="edit">Write</mat-button-toggle>
+                                <mat-button-toggle value="upload">File</mat-button-toggle>
+                            </mat-button-toggle-group>
+                            <!-- <button (click)="textInputElement.click()" mat-icon-button aria-label="Text upload button">
+                        <mat-icon>file_upload</mat-icon>
+                    </button> -->
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div *ngIf="inputMethod.text === 'upload'" class="mt-4 mb-3">
+                            <div class="container">
+                                <label for="updateText" class="form-label">Upload plain text files (.txt) or ReadAlong Studio temporary files (.ras)</label>
+                                <input #textInputElement (change)="onFileSelected('text', $event)" class="form-control" name="text" type="file" id="updateText" accept=".txt,.xml,.ras">
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="inputMethod.text === 'edit'">
+                        <div class="row">
+                            <div class="col-10">
+                                <h2 class="subtitle">Write or paste your text here</h2>
+                            </div>
+                            <div class="col-2">
+                                <button mat-icon-button [disabled]="!textInput" (click)="downloadText()" aria-label="Text download button">
+                    <mat-icon>save</mat-icon> Save
+                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <textarea (input)="handleTextInput($event)" id="textInput" class="border rounded h-100" matInput placeholder="Ex. Hello my name is..."></textarea>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row g-2">
-            <button id="next-step" class="mt-4" mat-raised-button type="submit" (click)="nextStep()">Go to the next step!</button>
-            <mat-progress-bar *ngIf="$loading | async" mode="indeterminate"></mat-progress-bar>
+            <div id="audio-section" class="col-6 p-3 border bg-light">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-8">
+                            <h1 class="title">Audio
+                            </h1>
+                        </div>
+                        <div class="col-4">
+                            <mat-button-toggle-group appearance="legacy" (change)="toggleAudioInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.audio">
+                                <mat-button-toggle value="mic">Record</mat-button-toggle>
+                                <mat-button-toggle value="upload">File</mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </div>
+                    </div>
+
+                    <div *ngIf="inputMethod.audio === 'upload'" class="row mb-3">
+                        <h2 class="subtitle">Upload the audio</h2>
+                        <label for="updateAudio" class="form-label">You must upload your audio either as an mp3 or wav
+                            file.</label>
+                        <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav">
+                    </div>
+                    <div *ngIf="inputMethod.audio === 'mic'" class="mb-3">
+                        <div class="row">
+                            <h2 class="subtitle">Record your voice here</h2>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-3">
+                                <button mat-icon-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
+                        <mat-icon>mic</mat-icon>
+                        <span *ngIf="recordedAudio">Re-Record</span><span *ngIf="!recordedAudio">Record</span>
+                      </button>
+                            </div>
+                            <div class="col-3">
+                                <button [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="primary" aria-label="Play button">
+                        <mat-icon>play_circle</mat-icon>
+                        Play
+                      </button>
+                                <button (click)="stopRecording()" *ngIf="recording" mat-icon-button color="primary" aria-label="Stop button">
+                        <mat-icon>stop_circle</mat-icon>
+                        Stop
+                      </button>
+                            </div>
+                            <div class="col-3">
+                                <button color="primary" (click)="downloadRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="primary" aria-label="Audio download button">
+                        <mat-icon>file_download</mat-icon>
+                        Download
+                      </button>
+                            </div>
+                            <div class="col-3">
+                                <button (click)="deleteRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="warn" aria-label="Delete button">
+                        <mat-icon>delete</mat-icon>
+                        Delete
+                      </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="language-section" class="col-12 p-3 border bg-light">
+                    <h1 class="title">Select your Language</h1>
+                    <p>If your language isn't supported in the list below, you can try and run it with the "Undetermined" option below. If that's not working very well, have a look at <a href="https://blog.mothertongues.org/g2p-background/">this blog post series</a>                        to understand how you might get support for your language, or <a href="">contact us</a> for more info!
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="langSelect" class="form-label">You can use the dropdown below to select a
+                            pre-configured mapping for your language.</label>
+                        <br />
+                        <div class="row">
+                            <div class="col-5">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Select Language</mat-label>
+                                    <mat-select [formControl]="langControl" required>
+                                        <mat-option value="und">Undetermined - (und)</mat-option>
+                                        <mat-option *ngFor="let lang of langs$ | async" [value]="lang['id']">
+                                            {{lang['name']}} - ({{lang['id']}})
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <button id="next-step" class="mt-4" mat-raised-button type="submit" (click)="nextStep()">Go to the next step!</button>
+                    <mat-progress-bar *ngIf="$loading | async" mode="indeterminate"></mat-progress-bar>
+                </div>
+            </div>
         </div>
     </div>
 </section>

@@ -25,7 +25,7 @@ export class UploadComponent implements OnInit {
     )
   );
   $loading = new Subject<boolean>();
-  langControl = new FormControl<string | null>(null, Validators.required);
+  langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | null>(null, Validators.required);
   // buffer audio as soon as uploaded
@@ -44,7 +44,7 @@ export class UploadComponent implements OnInit {
   sampleRate = 44100;
   maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   inputMethod = {
-    audio: "upload",
+    audio: "mic",
     text: "edit",
   };
   textInput: any;
@@ -74,6 +74,38 @@ export class UploadComponent implements OnInit {
     );
   }
 
+  downloadRecording() {
+    if (this.recordedAudio) {
+      let blob = new Blob([this.recordedAudio], {
+        type: "audio/webm",
+      });
+      var url = window.URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "ras-audio-" + Date.now() + ".webm";
+      a.click();
+      a.remove();
+    } else {
+      this.toastr.error("No audio to download", "Sorry!");
+    }
+  }
+
+  downloadText() {
+    if (this.textInput) {
+      let textBlob = new Blob([this.textInput], {
+        type: "text/plain",
+      });
+      var url = window.URL.createObjectURL(textBlob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "ras-text-" + Date.now() + ".txt";
+      a.click();
+      a.remove();
+    } else {
+      this.toastr.error("No text to download", "Sorry!");
+    }
+  }
+
   handleTextInput(event: any) {
     this.textInput = event.target.value;
   }
@@ -83,15 +115,32 @@ export class UploadComponent implements OnInit {
     this.microphoneService.startRecording();
   }
 
+  pauseRecording() {
+    this.recording = false;
+    this.microphoneService.pause();
+  }
+
+  resumeRecording() {
+    this.recording = true;
+    this.microphoneService.resume();
+  }
+
   playRecording() {
-    let player = new window.Audio();
-    player.src = URL.createObjectURL(this.recordedAudio);
-    player.onended = () => {
-      this.playing = false;
-    };
-    player.load();
-    this.playing = true;
-    player.play();
+    if (!this.playing) {
+      let player = new window.Audio();
+      player.src = URL.createObjectURL(this.recordedAudio);
+      player.onended = () => {
+        this.playing = false;
+      };
+      player.load();
+      this.playing = true;
+      player.play();
+    }
+  }
+
+  deleteRecording() {
+    this.recordedAudio = false;
+    this.audioControl.setValue(null);
   }
 
   stopRecording() {
@@ -124,7 +173,7 @@ export class UploadComponent implements OnInit {
 
   nextStep() {
     if (this.inputMethod.text === "edit") {
-      let inputText = new Blob([this.textInput.text], {
+      let inputText = new Blob([this.textInput], {
         type: "text/plain",
       });
       this.textControl.setValue(inputText);
