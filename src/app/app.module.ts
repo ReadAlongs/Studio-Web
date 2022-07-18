@@ -1,4 +1,3 @@
-import { QuillConfigModule, QuillModule } from "ngx-quill";
 import { ToastrModule } from "ngx-toastr";
 
 import { HttpClientModule } from "@angular/common/http";
@@ -28,31 +27,6 @@ import { UploadComponent } from "./upload/upload.component";
     AppRoutingModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    QuillModule.forRoot(),
-    QuillConfigModule.forRoot({
-      modules: {
-        toolbar: [
-          [], // toggled buttons
-          [],
-
-          [], // custom button values
-          [],
-          [], // superscript/subscript
-          [], // outdent/indent
-          [], // text direction
-
-          [], // custom dropdown
-          [],
-          ["image"], // add's image support
-          [], // dropdown with defaults from theme
-          [],
-          [],
-
-          [], // remove formatting button
-        ],
-      },
-      sanitize: true,
-    }),
     ReactiveFormsModule,
     HttpClientModule,
     MaterialModule,

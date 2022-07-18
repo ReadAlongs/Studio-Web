@@ -23,7 +23,7 @@
                 </div>
                 <div *ngIf="inputMethod.text === 'edit'" class="mb-3">
                     <h2 class="subtitle">Write your text here</h2>
-                    <quill-editor (onContentChanged)="updateText($event)"></quill-editor>
+                    <textarea (input)="handleTextInput($event)" id="textInput" class="border rounded h-100" matInput placeholder="Ex. Hello my name is..."></textarea>
                 </div>
             </div>
             <div id="audio-section" class="col-6 p-3 border bg-light">

@@ -45,9 +45,9 @@ export class UploadComponent implements OnInit {
   maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   inputMethod = {
     audio: "upload",
-    text: "upload",
+    text: "edit",
   };
-  richTextInput: any;
+  textInput: any;
   constructor(
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
@@ -72,6 +72,10 @@ export class UploadComponent implements OnInit {
       },
       (err) => console.log(err)
     );
+  }
+
+  handleTextInput(event: any) {
+    this.textInput = event.target.value;
   }
 
   startRecording() {
@@ -120,7 +124,7 @@ export class UploadComponent implements OnInit {
 
   nextStep() {
     if (this.inputMethod.text === "edit") {
-      let inputText = new Blob([this.richTextInput.text], {
+      let inputText = new Blob([this.textInput.text], {
         type: "text/plain",
       });
       this.textControl.setValue(inputText);
@@ -183,10 +187,6 @@ export class UploadComponent implements OnInit {
         "Form not complete!"
       );
     }
-  }
-
-  updateText(event: any) {
-    this.richTextInput = event;
   }
 
   onFileSelected(type: any, event: any) {
