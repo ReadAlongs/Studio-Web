@@ -71,7 +71,7 @@
                     <h2 class="subtitle">Upload the audio</h2>
                     <label for="updateAudio" class="form-label">You must upload your audio either as an mp3 or wav
                             file.</label>
-                    <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav">
+                    <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav,.webm">
                 </div>
                 <div *ngIf="inputMethod.audio === 'mic'" class="mb-3">
                     <div class="row">
