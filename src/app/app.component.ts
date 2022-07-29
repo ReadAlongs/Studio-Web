@@ -60,27 +60,27 @@ export class AppComponent {
         enabled: true,
       },
     };
-    text_write_step["when"] = {
+    text_file_step["when"] = {
       show: () => {
-        if (this.upload) {
-          this.upload.inputMethod.text = "edit";
-        }
-      },
-      hide: () => {
         if (this.upload) {
           this.upload.inputMethod.text = "upload";
         }
       },
+      hide: () => {
+        if (this.upload) {
+          this.upload.inputMethod.text = "edit";
+        }
+      },
     };
-    audio_record_step["when"] = {
+    audio_file_step["when"] = {
       show: () => {
         if (this.upload) {
-          this.upload.inputMethod.audio = "mic";
+          this.upload.inputMethod.audio = "upload";
         }
       },
       hide: () => {
         if (this.upload) {
-          this.upload.inputMethod.audio = "upload";
+          this.upload.inputMethod.audio = "mic";
         }
       },
     };
@@ -89,10 +89,10 @@ export class AppComponent {
     this.shepherdService.addSteps([
       intro_step,
       data_step,
-      text_file_step,
       text_write_step,
-      audio_file_step,
+      text_file_step,
       audio_record_step,
+      audio_file_step,
       language_step,
       final_step,
     ]);

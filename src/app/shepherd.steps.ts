@@ -40,7 +40,7 @@ export const data_step: any = {
 
 export const text_write_step: any = {
   title: "Write your text\n",
-  text: `You can also write your text directly into ReadAlong Studio, by selecting the "write" option.`,
+  text: `You can write your text directly into ReadAlong Studio, by selecting the "write" option.`,
   attachTo: {
     element: "#text-section",
     on: "bottom",
@@ -62,7 +62,7 @@ export const text_write_step: any = {
 
 export const text_file_step: any = {
   title: "Upload your text\n",
-  text: `You can upload your text either as a plain text file (.txt) or as an TEI/XML file (.xml).`,
+  text: `You can also upload your text either as a plain text file (.txt) or in the RAS format (.ras).`,
   attachTo: {
     element: "#text-section",
     on: "bottom",
@@ -84,7 +84,7 @@ export const text_file_step: any = {
 
 export const audio_record_step: any = {
   title: "Record your own audio\n",
-  text: `You can also record your own audio for preprocessing using your browser's microphone.`,
+  text: `You can record your own audio for preprocessing using your browser's microphone.`,
   attachTo: {
     element: "#audio-section",
     on: "bottom",
@@ -106,7 +106,7 @@ export const audio_record_step: any = {
 
 export const audio_file_step: any = {
   title: "Use an audio file\n",
-  text: `You can select either a .wav or .mp3 file for your ReadAlong.`,
+  text: `You can also select either a .wav or .mp3 file for your ReadAlong.`,
   attachTo: {
     element: "#audio-section",
     on: "bottom",
