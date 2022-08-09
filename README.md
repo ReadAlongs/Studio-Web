@@ -20,29 +20,29 @@ repository.
 
 First, make sure Lerna is installed:
 
-    `npm install`
+    npm install
 
 Then,
 
-    `npx lerna bootstrap`
+    npx lerna bootstrap
 
 ### Building
 
 The TypeScript code must be compiled:
 
-    `npx lerna run build`
+    npx lerna run build
 
 ### Testing
 
-    `npx lerna run test`
+    npx lerna run test
 
 ### Updating dependencies
 
-   `npx lerna bootstrap`
+    npx lerna bootstrap
 
 ### Adding new dependencies
 
-    `npx lerna add <package> path/to/subpackage`
+    npx lerna add <package> path/to/subpackage
 
 License
 -------
