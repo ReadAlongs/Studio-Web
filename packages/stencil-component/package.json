@@ -3,7 +3,7 @@
     "version": "0.1.5",
     "description": "ReadAlong Web Component",
     "main": "dist/index.cjs.js",
-    "module": "dist/custom-elements/index.js",
+    "module": "dist/index.js",
     "es2015": "dist/esm/index.mjs",
     "es2017": "dist/esm/index.mjs",
     "types": "dist/types/components.d.ts",
@@ -31,7 +31,7 @@
     },
     "devDependencies": {
         "@stencil/angular-output-target": "^0.4.0",
-        "@stencil/core": "^2.17.1",
+        "@stencil/core": "^2.17.3",
         "@stencil/sass": "^1.5.2",
         "@stencil/webpack": "0.0.6",
         "@types/jest": "^26.0.24",

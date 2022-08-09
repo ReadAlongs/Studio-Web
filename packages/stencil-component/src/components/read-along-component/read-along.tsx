@@ -1,24 +1,10 @@
-import { Howl } from "howler";
-import { Subject } from "rxjs";
-import { distinctUntilChanged } from "rxjs/operators";
+import { Howl } from 'howler';
+import { Subject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
-import {
-  Component,
-  Element,
-  h,
-  Listen,
-  Method,
-  Prop,
-  State
-} from "@stencil/core";
+import { Component, Element, h, Listen, Method, Prop, State } from '@stencil/core';
 
-import {
-  Alignment,
-  Page,
-  parseSMIL,
-  parseTEI,
-  Sprite
-} from "../../utils/utils";
+import { Alignment, Page, parseSMIL, parseTEI, Sprite } from '../../utils/utils';
 
 const LOADING = 0;
 const LOADED = 1;
@@ -45,21 +31,21 @@ export class ReadAlongComponent {
   /**
    * The text as TEI
    */
-  @Prop({ mutable: true }) text: string;
+  @Prop({ mutable: true, reflect: true }) text: string;
 
 
 
   /**
    * The alignment as SMIL
    */
-  @Prop({ mutable: true }) alignment: string;
+  @Prop({ mutable: true, reflect: true }) alignment: string;
 
   processed_alignment: Alignment;
 
   /**
    * The audio file
    */
-  @Prop({ mutable: true }) audio: string;
+  @Prop({ mutable: true, reflect: true }) audio: string;
 
   audio_howl_sprites: any;
   reading$: Subject<string>; // An RxJs Subject for the current item being read.
@@ -74,7 +60,7 @@ export class ReadAlongComponent {
   /**
    * Theme to use: ['light', 'dark'] defaults to 'dark'
    */
-  @Prop({ mutable: true }) theme: string = 'light';
+  @Prop({ mutable: true, reflect: true }) theme: string = 'light';
 
   /**
    * Language  of the interface. In 639-3 code
@@ -82,7 +68,7 @@ export class ReadAlongComponent {
    * - "eng" for English
    * - "fra" for French
    */
-  @Prop({ mutable: true }) language: InterfaceLanguage = 'eng';
+  @Prop({ mutable: true, reflect: true }) language: InterfaceLanguage = 'eng';
 
   /**
    * Optional custom Stylesheet to override defaults

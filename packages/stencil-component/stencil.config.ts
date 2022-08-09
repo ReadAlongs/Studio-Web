@@ -1,11 +1,20 @@
-import { angularOutputTarget } from "@stencil/angular-output-target";
-import { Config } from "@stencil/core";
-import { sass } from "@stencil/sass";
+import { angularOutputTarget, ValueAccessorConfig } from '@stencil/angular-output-target';
+import { Config } from '@stencil/core';
+import { sass } from '@stencil/sass';
+
+const angularValueAccessorBindings: ValueAccessorConfig[] = [];
 
 export const config: Config = {
   namespace: "read-along",
   outputTargets: [
-    { type: "dist" },
+    {
+      type: 'dist',
+      esmLoaderPath: '../loader',
+    },
+    {
+      type: 'dist-custom-elements',
+      generateTypeDeclarations: true,
+    },
     { type: "docs-readme" },
     {
       type: "www",
@@ -14,13 +23,10 @@ export const config: Config = {
         { src: 'scss/fonts', dest: 'build/assets/fonts' }
       ]
     },
-    {
-      type: 'dist-custom-elements-bundle'
-    },
     angularOutputTarget({
-      componentCorePackage: '@roedoejet/readalong',
-      directivesProxyFile: '../angular-workspace/projects/readalong/src/lib/stencil-generated/components.ts',
-      directivesArrayFile: '../angular-workspace/projects/readalong/src/lib/stencil-generated/index.ts',
+      componentCorePackage: '@readalong/dist/components',
+      directivesProxyFile: '../angular-workspace/projects/readalong/src/lib/stencil-generated/proxies.ts',
+      valueAccessorConfigs: angularValueAccessorBindings,
     }),
   ],
   plugins: [sass()],
