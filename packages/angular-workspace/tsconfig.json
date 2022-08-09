@@ -17,8 +17,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "paths": {
-      "readalong": [
-        "dist/readalong"
+      "@readalong/*": [
+        "../stencil-component/*"
       ]
     },
     "target": "es2020",
@@ -26,7 +26,7 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
