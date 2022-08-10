@@ -16,6 +16,8 @@
         </div>
         <div class="row" *ngIf="b64Inputs">
             <read-along text="{{b64Inputs[1]}}" alignment="{{b64Inputs[2] }}" audio="{{b64Inputs[0]}}" class="hydrated">
+                <span #title (blur)="slots.title=title.innerText" contentEditable="true" slot="read-along-header">{{ slots.title }}</span>
+                <span #subtitle (blur)="slots.subtitle=subtitle.innerText" contentEditable="true" slot="read-along-subheader">{{ slots.subtitle }}</span>
             </read-along>
         </div>
         <div class="row">

@@ -7,11 +7,14 @@ import { Component, Input, OnInit } from "@angular/core";
 })
 export class DemoComponent implements OnInit {
   @Input() b64Inputs: string[];
+
+  slots: any = { title: "Title", subtitle: "Subtitle" };
   constructor() {}
 
   ngOnInit(): void {}
 
   download() {
+    console.log(this.slots);
     var element = document.createElement("a");
     let blob = new Blob(
       [
@@ -26,6 +29,8 @@ export class DemoComponent implements OnInit {
     </head>
     <body>
         <read-along text="${this.b64Inputs[1]}" alignment="${this.b64Inputs[2]}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
+        <span slot="read-along-header">${this.slots.title}</span>
+        <span slot="read-along-subheader">${this.slots.subtitle}</span>
         </read-along>
     </body>
     </html>`,
