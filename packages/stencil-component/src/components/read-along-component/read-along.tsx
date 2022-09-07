@@ -1049,6 +1049,7 @@ export class ReadAlongComponent {
    */
 
   PlayControl = (): Element => <button data-cy="play-button" disabled={!this.isLoaded} aria-label="Play"
+    title="Play audio recording"
     onClick={() => {
       this.playing ? this.pause() : this.play()
     }}
@@ -1057,12 +1058,14 @@ export class ReadAlongComponent {
   </button>
 
   ReplayControl = (): Element => <button data-cy="replay-button" disabled={!this.isLoaded} aria-label="Rewind"
+    title="Replay audio recording"
     onClick={() => this.goBack(5)}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
   StopControl = (): Element => <button data-cy="stop-button" disabled={!this.isLoaded} aria-label="Stop"
+    title="Stop audio recording"
     onClick={() => this.stop()}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
@@ -1076,16 +1079,19 @@ export class ReadAlongComponent {
   </div>
 
   StyleControl = (): Element => <button aria-label="Change theme" onClick={() => this.changeTheme()}
+    title="Change theme"
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">style</i>
   </button>
 
   FullScreenControl = (): Element => <button aria-label="Full screen mode" onClick={() => this.toggleFullscreen()}
+    title="Full screen mode"
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons" aria-label="Full screen mode">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
   TextTranslationDisplayControl = (): Element => <button data-cy="translation-toggle" aria-label="Toggle Translation"
+    title="Toggle translation"
     onClick={() => this.toggleTextTranslation()}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">subtitles</i>
