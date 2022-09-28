@@ -42,7 +42,9 @@ You must have Node installed (v16 preferred), then run `npm install` from the re
 
 ### Development
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `npm start` or `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+
+The ReadAlongs/Studio web API must also be running locally on port 8000 for the app to work in dev mode: clone http://github.com/ReadAlongs/Studio.git, cd into `Studio/readalongs` and launch the web API with `PRODUCTION= uvicorn readalongs.web_api:web_api_app --reload` (see `Studio/readalongs/web_api.py` for details).
 
 ### Production
 
