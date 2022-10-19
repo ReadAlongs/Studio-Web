@@ -11,6 +11,7 @@
               </button>
             </div>
         </div>
+        <span #pageTitle (blur)="setTitle(pageTitle.innerText)" contentEditable="true" slot="read-along-page-title">{{ this.getTitle() }}</span>
         <div class="row" *ngIf="b64Inputs">
             <read-along text="{{b64Inputs[1]}}" alignment="{{b64Inputs[2] }}" audio="{{b64Inputs[0]}}" class="hydrated">
                 <span #title (blur)="slots.title=title.innerText" contentEditable="true" slot="read-along-header">{{ slots.title }}</span>
