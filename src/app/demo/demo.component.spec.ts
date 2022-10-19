@@ -23,4 +23,16 @@ describe("DemoComponent", () => {
   it("should create", () => {
     expect(component).toBeTruthy();
   });
+
+  it(`should have as title 'Title'`, () => {
+    expect(component.slots.title).toEqual("Title");
+  });
+
+  it(`should have as subtitle 'SubTitle'`, () => {
+    expect(component.slots.subtitle).toEqual("Subtitle");
+  });
+
+  it(`should have as page title 'ReadAlong Studio'`, () => {
+    expect(component.getTitle()).toEqual("ReadAlong Studio");
+  });
 });
