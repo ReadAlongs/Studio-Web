@@ -2,7 +2,7 @@ import { ToastrModule } from "ngx-toastr";
 
 import { HttpClientModule } from "@angular/common/http";
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatToolbarModule } from "@angular/material/toolbar";
@@ -34,6 +34,7 @@ import { TextFormatDialogComponent } from "./text-format-dialog/text-format-dial
     HttpClientModule,
     MaterialModule,
     MatToolbarModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
