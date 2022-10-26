@@ -20,9 +20,10 @@ export class B64Service {
       {{/words}}
   </body>
 </smil>`;
-  JS_BUNDLE_URL = "https://unpkg.com/@roedoejet/readalong/dist/bundle.js";
+  JS_BUNDLE_URL =
+    "https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/bundle.js";
   FONTS_BUNDLE_URL =
-    "https://unpkg.com/@roedoejet/readalong/dist/fonts.b64.css";
+    "https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/fonts.b64.css";
   constructor(private http: HttpClient, private fileService: FileService) {}
   getBundle$(): Observable<any[]> {
     return forkJoin([
