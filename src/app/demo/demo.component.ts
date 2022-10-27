@@ -15,7 +15,7 @@ export class DemoComponent implements OnInit {
     pageTitle: "ReadAlong Studio",
   };
 
-  constructor(private titleService: Title) {
+  constructor(public titleService: Title) {
     titleService.setTitle(this.slots.pageTitle);
   }
 
