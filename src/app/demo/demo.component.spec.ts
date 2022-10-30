@@ -38,285 +38,126 @@ describe("DemoComponent", () => {
   it(`should have as page title 'ReadAlong Studio'`, () => {
     expect(component.slots.pageTitle).toEqual("ReadAlong Studio");
   });
-});
-
-// ================test page title=================
-// === test editable test page before edited ===
-describe("DemoComponent-pagetitle-simplevalue", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
 
   it("test editable page title when it is simple value", () => {
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = "new";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
 
     expect(formData.nativeElement.value).toBe("new");
-});
-});
-
-// === test editable test page after edited empty value ===
-describe("DemoComponent-pagetitle-editempty", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it("test empty editable page title", () => {
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = "";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
 
     expect(formData.nativeElement.value).toBe("");
   });
-});
-
-// === test editable test page after twice edited ====
-describe("DemoComponent-pagetitle-edittwice", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
 
   it("test empty editable page title", () => {
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = "111";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     formData.nativeElement.value = "222";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     expect(formData.nativeElement.value).toBe("222");
-  });
-});
-
-describe("DemoComponent-pagetitle-editrandom-special-characters", () => {
-
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let car: string = '!"§$%&/()=?\u{20ac}';
-  let res: string = car.substring(Math.floor(car.length * Math.random()), 1);
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it("test editable page title including special characters", () => {
+    let car: string = '!"§$%&/()=?\u{20ac}';
+    let res: string = car.substring(Math.floor(car.length * Math.random()), 1);
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = "new";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     expect(formData.nativeElement.value).toBe("new");
-  });
-});
-
-// === test editable test page after third edited ====
-describe("DemoComponent-pagetitle-editthreetimes", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it("test editable page title after third edit ", () => {
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = "new editable Page";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     formData.nativeElement.value = "new editable Page 2";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     formData.nativeElement.value = "new editable Page 3";
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     expect(formData.nativeElement.value).toBe("new editable Page 3");
-  });
-});
-
-// === test editable test page after a random number times of edited ====
-describe("DemoComponent-pagetitle-editrandom", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let num: number = Math.ceil(Math.random() * 10);
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it("test editable page title after random times of edit ", () => {
+    let num: number = Math.ceil(Math.random() * 10);
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = num;
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     expect(formData.nativeElement.value).toBe(num);
-  });
-});
-
-// === test editable test page after a title including some space in the front ====
-describe("DemoComponent-pagetitle-editrandom-space-inthefront", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let num: number = Math.ceil(Math.random() * 10);
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    // component.titleService.setTitle(Array(num).fill("\xa0").join("") + "new editable Page");
-    fixture.detectChanges();
   });
 
   it("test editable page title after random times of space in the front", () => {
+    let num: number = Math.ceil(Math.random() * 10);
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
-    formData.nativeElement.value = Array(num).fill("\xa0").join("") + "new editable Page";
-    formData.nativeElement.dispatchEvent(new Event('input'));
-    expect(formData.nativeElement.value).toBe(Array(num).fill("\xa0").join("") + "new editable Page");
-  });
-});
-
-// === test editable test page after a title including some space in the end ====
-describe("DemoComponent-pagetitle-editrandom-space-intheend", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let num: number = Math.ceil(Math.random() * 10);
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
+    formData.nativeElement.value =
+      Array(num).fill("\xa0").join("") + "new editable Page";
+    formData.nativeElement.dispatchEvent(new Event("input"));
+    expect(formData.nativeElement.value).toBe(
+      Array(num).fill("\xa0").join("") + "new editable Page"
+    );
   });
 
   it("test editable page title after random times of space in the end", () => {
+    let num: number = Math.ceil(Math.random() * 10);
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
-    formData.nativeElement.value = "new editable Page" + Array(num).fill("\xa0").join("");
-    formData.nativeElement.dispatchEvent(new Event('input'));
-    expect(formData.nativeElement.value).toBe("new editable Page" + "\xa0".repeat(num));
-  });
-});
-
-// === test editable test page including some special characters ====
-describe("DemoComponent-pagetitle-editrandom-special-characters", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let car: string = '!"§$%&/()=?\u{20ac}';
-  let res: string = car.substring(Math.floor(car.length * Math.random()), 1);
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    component.titleService.setTitle("new editable Page" + res);
-    fixture.detectChanges();
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
+    formData.nativeElement.value =
+      "new editable Page" + Array(num).fill("\xa0").join("");
+    formData.nativeElement.dispatchEvent(new Event("input"));
+    expect(formData.nativeElement.value).toBe(
+      "new editable Page" + "\xa0".repeat(num)
+    );
   });
 
   it("test editable page title including special characters", () => {
+    let car: string = '!"§$%&/()=?\u{20ac}';
+    let res: string = car.substring(Math.floor(car.length * Math.random()), 1);
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = "new editable Page" + res;
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     expect(formData.nativeElement.value).toBe("new editable Page" + res);
-  });
-});
-
-// === test editable test page including some special characters ====
-describe("DemoComponent-pagetitle-editrandom-special-characters", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let car: string = '!"§$%&/()=?\u{20ac}';
-  let res: string = car.substring(Math.floor(car.length * Math.random()), 1);
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it("test editable page title including special characters", () => {
+    let car: string = '!"§$%&/()=?\u{20ac}';
+    let res: string = car.substring(Math.floor(car.length * Math.random()), 1);
     const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
     formData.nativeElement.value = "new editable Page" + res;
-    formData.nativeElement.dispatchEvent(new Event('input'));
+    formData.nativeElement.dispatchEvent(new Event("input"));
     expect(formData.nativeElement.value).toBe("new editable Page" + res);
+  });
+
+  it("test editable page title too short", () => {
+    let tmp: string = randomRange(1, 3);
+    const { debugElement } = fixture;
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
+    formData.nativeElement.value = tmp;
+    formData.nativeElement.dispatchEvent(new Event("input"));
+    expect(formData.nativeElement.value).toBe(tmp);
+  });
+
+  it("test editable page title too long", () => {
+    let tmp: string = randomRange(100, 500);
+    const { debugElement } = fixture;
+    const formData = fixture.debugElement.query(By.css("#newpagetitle"));
+    formData.nativeElement.value = tmp;
+    formData.nativeElement.dispatchEvent(new Event("input"));
+    expect(formData.nativeElement.value).toBe(tmp);
   });
 });
 
@@ -394,57 +235,3 @@ function randomRange(min: number, max: number) {
   }
   return returnStr;
 }
-
-// === test editable page when the title is too short ====
-describe("DemoComponent-pagetitle-tooshort", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let tmp: string = randomRange(1, 3);
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it("test editable page title too short", () => {
-    const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
-    formData.nativeElement.value = tmp;
-    formData.nativeElement.dispatchEvent(new Event('input'));
-    expect(formData.nativeElement.value).toBe(tmp);
-  });
-});
-
-// === test editable page when the title is too long ====
-describe("DemoComponent-pagetitle-toolong", () => {
-  let component: DemoComponent;
-  let fixture: ComponentFixture<DemoComponent>;
-  let tmp: string = randomRange(100, 500);
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MaterialModule],
-      declarations: [DemoComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DemoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it("test editable page title too long", () => {
-    const { debugElement } = fixture;
-    const formData = fixture.debugElement.query(By.css('#newpagetitle'));
-    formData.nativeElement.value = tmp;
-    formData.nativeElement.dispatchEvent(new Event('input'));
-    expect(formData.nativeElement.value).toBe(tmp);
-  });
-});
