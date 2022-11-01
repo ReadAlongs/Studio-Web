@@ -28,28 +28,22 @@
         
         <div class="row" *ngIf="b64Inputs">
             <read-along text="{{b64Inputs[1]}}" alignment="{{b64Inputs[2] }}" audio="{{b64Inputs[0]}}" class="hydrated">
-                <div id="divid1">
-                  <input
+                <input
                     #title
                     [(ngModel)]="slots.title"
                     [ngStyle]="{'width.ch': slots.title.length, 'min-width.ch': 20}"
                     style="border:none"
                     placeholder="Enter your title here"
                     slot="read-along-header"
-                  /> 
-                </div>
-                <div id="divid2">
-                    <input
+                /> 
+                <input
                     #subtitle
                     [(ngModel)]="slots.subtitle"
                     [ngStyle]="{'width.ch': slots.subtitle.length, 'min-width.ch': 20}"
                     style="border:none"
                     placeholder="Enter your subtitle here"
                     slot="read-along-subheader"
-                  />
-
-                </div>
-                
+                />
             </read-along>
         </div>
         <div class="row">
