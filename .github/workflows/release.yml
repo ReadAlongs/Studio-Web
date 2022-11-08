@@ -13,18 +13,20 @@ jobs:
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v2
         with:
-          node-version: "12.x"
+          node-version: "16.x"
           registry-url: "https://registry.npmjs.org"
           scope: "@roedoejet"
       - run: npm install
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
+          working-directory: ./packages/stencil-component
           start: npm run test-servers
           wait-on: npm run wait-for-test-server
-      - run: npm version patch
-      - run: npm run-script prepublish
-      - run: npm publish
+      - run: cd ./packages/stencil-component && npm version patch
+      - run: cd ./packages/angular-workspace && npm version patch
+      - run: npx lerna run prepublish
+      - run: npx lerna publish from-package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Determine tag
@@ -47,7 +49,7 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
       - name: Commit bumped version and merge with master
         run: |
-          git add package.json
+          git add package.json packages/*/package.json
           git commit -m "chore: commit version"
           git fetch --unshallow
           git push origin release

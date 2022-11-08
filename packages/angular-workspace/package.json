@@ -1,0 +1,42 @@
+{
+    "name": "@roedoejet/ngx-readalong",
+    "main": "dist/readalong/index.d.ts",
+    "version": "0.0.6",
+    "scripts": {
+        "ng": "ng",
+        "start": "ng serve",
+        "build": "ng build",
+        "watch": "ng build --watch --configuration development",
+        "test": "ng test"
+    },
+    "private": false,
+    "dependencies": {
+        "@angular/animations": "^14.0.0",
+        "@angular/common": "^14.0.0",
+        "@angular/compiler": "^14.0.0",
+        "@angular/core": "^14.0.0",
+        "@angular/forms": "^14.0.0",
+        "@angular/platform-browser": "^14.0.0",
+        "@angular/platform-browser-dynamic": "^14.0.0",
+        "@angular/router": "^14.0.0",
+        "@roedoejet/readalong": "*",
+        "rxjs": "~7.5.0",
+        "tslib": "^2.3.0",
+        "zone.js": "~0.11.4"
+    },
+    "devDependencies": {
+        "@angular-devkit/build-angular": "^14.0.6",
+        "@angular/cli": "~14.0.6",
+        "@angular/compiler-cli": "^14.0.0",
+        "@types/jasmine": "~4.0.0",
+        "jasmine-core": "~4.1.0",
+        "karma": "~6.3.0",
+        "karma-chrome-launcher": "~3.1.0",
+        "karma-coverage": "~2.2.0",
+        "karma-jasmine": "~5.0.0",
+        "karma-jasmine-html-reporter": "~1.7.0",
+        "ng-packagr": "^14.0.0",
+        "typescript": "~4.7.2"
+    },
+    "gitHead": "0a6670c1d1b0aac11d5fab2d18f233585a6b867e"
+}
