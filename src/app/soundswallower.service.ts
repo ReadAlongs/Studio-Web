@@ -35,6 +35,7 @@ export class SoundswallowerService {
       wbeam,
       pbeam,
     });
+    this.decoder.unset_config("dict");
     return await this.decoder.initialize();
   }
 
