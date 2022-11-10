@@ -1,5 +1,7 @@
 // Functions
 
+@use "sass:math";
+
 // Unit Conversion
 
 // strip-unit($num)
@@ -32,7 +34,7 @@
       $context: strip-units($context);
     }
     @if $target == 0 { @return 0 }
-    @return $target / $context + 0em;
+    @return math.div($target, $context) + 0em;
   }
   // rem()
   //
@@ -52,7 +54,7 @@
       $context: strip-units($context);
     }
     @if $target == 0 { @return 0 }
-    @return $target / $context + 0rem;
+    @return math.div($target, $context) + 0rem;
   }
   
   // px()
