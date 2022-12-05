@@ -49,7 +49,6 @@ describe("RasService", () => {
       .assembleReadalong$({
         text: "hej verden",
         text_languages: ["dan", "und"],
-        encoding: "utf-8",
         debug: true,
       })
       .subscribe((data) => {
