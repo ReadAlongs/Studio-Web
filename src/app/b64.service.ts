@@ -66,8 +66,9 @@ export class B64Service {
     let topLine =
       '<smil xmlns="http://www.w3.org/ns/SMIL" version="3.0"><body>';
     let bottomLine = "</body></smil>";
+    let noiseWords = new Set(["<sil>", "(NULL)"]);
     let middle = alignment
-      .filter((x: any) => x["word"] !== "<sil>")
+      .filter((x: any) => !noiseWords.has(x["word"]))
       .map(
         (x: any) =>
           `<par id="par-${x["word"]}">
