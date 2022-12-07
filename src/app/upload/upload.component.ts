@@ -235,7 +235,13 @@ export class UploadComponent implements OnInit {
       this.toastr.error("File too large", "Sorry!");
     } else {
       if (type === "audio") {
-        this.audioControl.setValue(file);
+        if (file.type == "video/webm") {
+          // No, it is audio, because we say so.
+          const audioFile = new File([file], file.name, { type: "audio/webm" });
+          this.audioControl.setValue(audioFile);
+        } else {
+          this.audioControl.setValue(file);
+        }
         this.recordedAudio = true;
         this.toastr.success(
           "File " +
