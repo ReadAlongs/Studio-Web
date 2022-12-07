@@ -1,4 +1,4 @@
-// typescript-indent-level: 2
+// -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
 import { forkJoin, from, Subject, zip } from "rxjs";
 import { map, switchMap, take } from "rxjs/operators";
@@ -8,7 +8,7 @@ import { FormBuilder, FormControl, Validators } from "@angular/forms";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
-import { MicrophoneService, OutputFormat } from "../microphone.service";
+import { MicrophoneService } from "../microphone.service";
 import { RasService } from "../ras.service";
 import { SoundswallowerService } from "../soundswallower.service";
 
@@ -28,10 +28,7 @@ export class UploadComponent implements OnInit {
   $loading = new Subject<boolean>();
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
-  audioControl = new FormControl<File | null>(null, Validators.required);
-  // buffer audio as soon as uploaded
-  audioBuffer$ = new Subject<AudioBuffer>();
-  recordedAudio: any = false;
+  audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   recording = false;
   playing = false;
   @Output() stepChange = new EventEmitter<any[]>();
@@ -41,7 +38,6 @@ export class UploadComponent implements OnInit {
     audio: this.audioControl,
   });
   processedXML = "";
-  sampleRate = 44100;
   maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   inputMethod = {
     audio: "mic",
@@ -75,8 +71,8 @@ export class UploadComponent implements OnInit {
   }
 
   downloadRecording() {
-    if (this.recordedAudio) {
-      let blob = new Blob([this.recordedAudio], {
+    if (this.audioControl.value !== null) {
+      let blob = new Blob([this.audioControl.value], {
         type: "audio/webm",
       });
       var url = window.URL.createObjectURL(blob);
@@ -126,9 +122,9 @@ export class UploadComponent implements OnInit {
   }
 
   playRecording() {
-    if (!this.playing) {
+    if (!this.playing && this.audioControl.value !== null) {
       let player = new window.Audio();
-      player.src = URL.createObjectURL(this.recordedAudio);
+      player.src = URL.createObjectURL(this.audioControl.value);
       player.onended = () => {
         this.playing = false;
       };
@@ -139,18 +135,16 @@ export class UploadComponent implements OnInit {
   }
 
   deleteRecording() {
-    this.recordedAudio = false;
     this.audioControl.setValue(null);
   }
 
   stopRecording() {
     this.recording = false;
     this.microphoneService
-      .stopRecording(OutputFormat.WEBM_BLOB)
-      .then((output: any) => {
-        this.recordedAudio = output;
+      .stopRecording()
+      .then((output) => {
         this.toastr.success("Audio was successfully recorded", "Yay!");
-        this.audioControl.setValue(output);
+        this.audioControl.setValue(output as Blob);
         // do post output steps
       })
       .catch((errorCase) => {
@@ -196,9 +190,14 @@ export class UploadComponent implements OnInit {
       // Combine audio and text observables
       // Read file
       let currentAudio: any = this.audioControl.value;
-      this.sampleRate = currentAudio.sampleRate;
+      let sampleRate = this.ssjsService.decoder.get_config(
+        "samprate"
+      ) as number;
       forkJoin({
-        audio: this.audioService.loadAudioBufferFromFile$(currentAudio),
+        audio: this.audioService.loadAudioBufferFromFile$(
+          currentAudio,
+          sampleRate
+        ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
           // Only take first response
           take(1),
@@ -239,7 +238,13 @@ export class UploadComponent implements OnInit {
       this.toastr.error("File too large", "Sorry!");
     } else {
       if (type === "audio") {
-        this.audioControl.setValue(file);
+        if (file.type == "video/webm") {
+          // No, it is audio, because we say so.
+          const audioFile = new File([file], file.name, { type: "audio/webm" });
+          this.audioControl.setValue(audioFile);
+        } else {
+          this.audioControl.setValue(file);
+        }
         this.toastr.success(
           "File " +
             file.name +

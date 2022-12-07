@@ -69,7 +69,7 @@
 
                 <div *ngIf="inputMethod.audio === 'upload'" class="row mb-3">
                     <h2 class="subtitle">Upload the audio</h2>
-                    <label for="updateAudio" class="form-label">You must upload your audio either as an mp3 or wav
+                    <label for="updateAudio" class="form-label">You must upload your audio as mp3, wav, or webm
                             file.</label>
                     <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav,.webm">
                 </div>
@@ -78,35 +78,36 @@
                         <h2 class="subtitle">Record your voice here</h2>
                     </div>
                     <div class="row text-center">
-                        <div class="col-3">
-                            <button class="audioControl" mat-icon-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
+                      <button class="audioControl" mat-icon-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
                         <mat-icon>mic</mat-icon>
-                        <span *ngIf="recordedAudio">Re-Record</span><span *ngIf="!recordedAudio">Record</span>
+                        <span *ngIf="audioControl.value !== null">Re-Record</span>
+                        <span *ngIf="audioControl.value === null">Record</span>
                       </button>
-                        </div>
-                        <div class="col-3">
-                            <button class="audioControl" [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="primary" aria-label="Play button">
-                        <mat-icon>play_circle</mat-icon>
-                        Play
-                      </button>
-                            <button class="audioControl" (click)="stopRecording()" *ngIf="recording" mat-icon-button color="primary" aria-label="Stop button">
+                      <button class="audioControl" (click)="stopRecording()" *ngIf="recording" mat-icon-button color="primary" aria-label="Stop button">
                         <mat-icon>stop_circle</mat-icon>
                         Stop
                       </button>
-                        </div>
-                        <div class="col-3">
-                            <button class="audioControl" color="primary" (click)="downloadRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="primary" aria-label="Audio download button">
-                        <mat-icon>file_download</mat-icon>
-                        Download
-                      </button>
-                        </div>
-                        <div class="col-3">
-                            <button class="audioControl" (click)="deleteRecording()" *ngIf="!recording && recordedAudio" mat-icon-button color="warn" aria-label="Delete button">
-                        <mat-icon>delete</mat-icon>
-                        Delete
-                      </button>
-                        </div>
                     </div>
+                </div>
+                <div class="row">
+                  <div class="col-4">
+                    <button class="audioControl" [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && audioControl.value !== null" mat-icon-button color="primary" aria-label="Play button">
+                      <mat-icon>play_circle</mat-icon>
+                      Play
+                    </button>
+                  </div>
+                  <div class="col-4">
+                    <button class="audioControl" color="primary" (click)="downloadRecording()" *ngIf="!recording && audioControl.value !== null" mat-icon-button color="primary" aria-label="Audio download button">
+                      <mat-icon>file_download</mat-icon>
+                      Download
+                    </button>
+                  </div>
+                  <div class="col-4">
+                    <button class="audioControl" (click)="deleteRecording()" *ngIf="!recording && audioControl.value !== null" mat-icon-button color="warn" aria-label="Delete button">
+                      <mat-icon>delete</mat-icon>
+                      Delete
+                    </button>
+                  </div>
                 </div>
                 <!-- </div> -->
             </div>
