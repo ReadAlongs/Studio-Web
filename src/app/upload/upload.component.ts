@@ -1,4 +1,4 @@
-// typescript-indent-level: 2
+// -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
 import { forkJoin, from, Subject, zip } from "rxjs";
 import { map, switchMap, take } from "rxjs/operators";
@@ -8,7 +8,7 @@ import { FormBuilder, FormControl, Validators } from "@angular/forms";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
-import { MicrophoneService, OutputFormat } from "../microphone.service";
+import { MicrophoneService } from "../microphone.service";
 import { RasService } from "../ras.service";
 import { SoundswallowerService } from "../soundswallower.service";
 
@@ -28,7 +28,7 @@ export class UploadComponent implements OnInit {
   $loading = new Subject<boolean>();
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
-  audioControl = new FormControl<File | null>(null, Validators.required);
+  audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   recording = false;
   playing = false;
   @Output() stepChange = new EventEmitter<any[]>();
@@ -141,10 +141,10 @@ export class UploadComponent implements OnInit {
   stopRecording() {
     this.recording = false;
     this.microphoneService
-      .stopRecording(OutputFormat.WEBM_BLOB)
-      .then((output: any) => {
+      .stopRecording()
+      .then((output) => {
         this.toastr.success("Audio was successfully recorded", "Yay!");
-        this.audioControl.setValue(output);
+        this.audioControl.setValue(output as Blob);
         // do post output steps
       })
       .catch((errorCase) => {

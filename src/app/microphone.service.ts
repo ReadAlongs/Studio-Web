@@ -1,11 +1,12 @@
+// -*- typescript-indent-level: 2 -*-
 import { EventEmitter, Injectable } from "@angular/core";
 
 @Injectable({
   providedIn: "root",
 })
 export class MicrophoneService {
-  private chunks: Array<any> = [];
-  protected recorderEnded = new EventEmitter();
+  private chunks: Array<Blob> = [];
+  protected recorderEnded = new EventEmitter<Blob>();
   public recorderError = new EventEmitter<ErrorCase>();
   // tslint:disable-next-line
   public recorderState = new EventEmitter<RecorderState>();
@@ -13,7 +14,7 @@ export class MicrophoneService {
 
   constructor() {}
 
-  private recorder: any;
+  private recorder: MediaRecorder | null;
 
   private static guc() {
     return navigator.mediaDevices.getUserMedia({ audio: true });
@@ -48,7 +49,10 @@ export class MicrophoneService {
   }
 
   pause() {
-    if (this._recorderState === RecorderState.RECORDING) {
+    if (
+      this.recorder !== null &&
+      this._recorderState === RecorderState.RECORDING
+    ) {
       this.recorder.pause();
       this._recorderState = RecorderState.PAUSED;
       this.recorderState.emit(this._recorderState);
@@ -56,14 +60,17 @@ export class MicrophoneService {
   }
 
   resume() {
-    if (this._recorderState === RecorderState.PAUSED) {
+    if (
+      this.recorder !== null &&
+      this._recorderState === RecorderState.PAUSED
+    ) {
       this._recorderState = RecorderState.RECORDING;
       this.recorderState.emit(this._recorderState);
       this.recorder.resume();
     }
   }
 
-  stopRecording(outputFormat: OutputFormat) {
+  stopRecording() {
     this._recorderState = RecorderState.STOPPING;
     this.recorderState.emit(this._recorderState);
     return new Promise((resolve, reject) => {
@@ -71,20 +78,14 @@ export class MicrophoneService {
         (blob) => {
           this._recorderState = RecorderState.STOPPED;
           this.recorderState.emit(this._recorderState);
-          if (outputFormat === OutputFormat.WEBM_BLOB) {
-            resolve(blob);
-          }
-          if (outputFormat === OutputFormat.WEBM_BLOB_URL) {
-            const audioURL = URL.createObjectURL(blob);
-            resolve(audioURL);
-          }
+          resolve(blob);
         },
         (_) => {
           this.recorderError.emit(ErrorCase.RECORDER_TIMEOUT);
           reject(ErrorCase.RECORDER_TIMEOUT);
         }
       );
-      this.recorder.stop();
+      if (this.recorder !== null) this.recorder.stop();
     }).catch(() => {
       this.recorderError.emit(ErrorCase.USER_CONSENT_FAILED);
     });
@@ -95,29 +96,27 @@ export class MicrophoneService {
   }
 
   private addListeners() {
-    this.recorder.ondataavailable = this.appendToChunks;
-    this.recorder.onstop = this.recordingStopped;
+    if (this.recorder !== null) {
+      this.recorder.ondataavailable = this.appendToChunks;
+      this.recorder.onstop = this.recordingStopped;
+    }
   }
 
-  private appendToChunks = (event: any) => {
+  private appendToChunks(event: BlobEvent) {
     this.chunks.push(event.data);
-  };
-  private recordingStopped = (event: any) => {
+  }
+
+  private recordingStopped(event: Event) {
     const blob = new Blob(this.chunks, { type: "audio/webm" });
     this.chunks = [];
     this.recorderEnded.emit(blob);
     this.clear();
-  };
+  }
 
   private clear() {
     this.recorder = null;
     this.chunks = [];
   }
-}
-
-export enum OutputFormat {
-  WEBM_BLOB_URL,
-  WEBM_BLOB,
 }
 
 export enum ErrorCase {
