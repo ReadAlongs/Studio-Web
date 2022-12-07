@@ -240,6 +240,7 @@ export class UploadComponent implements OnInit {
     } else {
       if (type === "audio") {
         this.audioControl.setValue(file);
+        this.recordedAudio = true;
         this.toastr.success(
           "File " +
             file.name +
