@@ -97,20 +97,16 @@ export class MicrophoneService {
 
   private addListeners() {
     if (this.recorder !== null) {
-      this.recorder.ondataavailable = this.appendToChunks;
-      this.recorder.onstop = this.recordingStopped;
+      this.recorder.ondataavailable = (event: BlobEvent) => {
+        this.chunks.push(event.data);
+      };
+      this.recorder.onstop = (event: Event) => {
+        const blob = new Blob(this.chunks, { type: "audio/webm" });
+        this.chunks = [];
+        this.recorderEnded.emit(blob);
+        this.clear();
+      };
     }
-  }
-
-  private appendToChunks(event: BlobEvent) {
-    this.chunks.push(event.data);
-  }
-
-  private recordingStopped(event: Event) {
-    const blob = new Blob(this.chunks, { type: "audio/webm" });
-    this.chunks = [];
-    this.recorderEnded.emit(blob);
-    this.clear();
   }
 
   private clear() {
