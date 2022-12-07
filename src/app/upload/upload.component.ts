@@ -1,3 +1,4 @@
+// typescript-indent-level: 2
 import { ToastrService } from "ngx-toastr";
 import { forkJoin, from, Subject, zip } from "rxjs";
 import { map, switchMap, take } from "rxjs/operators";
@@ -39,7 +40,6 @@ export class UploadComponent implements OnInit {
     text: this.textControl,
     audio: this.audioControl,
   });
-  rawText = "";
   processedXML = "";
   sampleRate = 44100;
   maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
@@ -197,9 +197,9 @@ export class UploadComponent implements OnInit {
       // Read file
       let currentAudio: any = this.audioControl.value;
       this.sampleRate = currentAudio.sampleRate;
-      forkJoin([
-        this.audioService.loadAudioBufferFromFile$(currentAudio),
-        this.fileService.readFile$(this.textControl.value).pipe(
+      forkJoin({
+        audio: this.audioService.loadAudioBufferFromFile$(currentAudio),
+        ras: this.fileService.readFile$(this.textControl.value).pipe(
           // Only take first response
           take(1),
           // Query RAS service
@@ -207,21 +207,16 @@ export class UploadComponent implements OnInit {
             console.log("query api");
             body[text_type] = xml;
             return this.rasService.assembleReadalong$(body);
-          }),
-          // Create Grammar
-          switchMap((ras: any) => {
-            console.log("create grammar");
-            this.rawText = ras["text_ids"];
-            this.processedXML = ras["processed_xml"];
-            return from(
-              this.ssjsService.createGrammar$(ras["jsgf"], ras["lexicon"])
-            );
           })
-
-          // Emit change with response to parent
         ),
-      ]).subscribe((response: any) => {
-        let hypseg = this.ssjsService.align$(response[0], this.rawText);
+      }).subscribe((response: any) => {
+        let { audio, ras } = response;
+        let hypseg = this.ssjsService.align$(
+          audio,
+          ras["text_ids"],
+          ras["lexicon"]
+        );
+        this.processedXML = ras["processed_xml"];
         this.$loading.next(false);
         this.stepChange.emit([
           "aligned",

@@ -56,26 +56,20 @@ export class SoundswallowerService {
     console.log("finished creating grammar");
   }
 
-  async createGrammar$(jsgf: string, dict: any) {
-    /* Reinitialize decoder for new dictionary and grammar */
-    await this.decoder.initialize();
-    await this.addDict(dict);
-    console.log("Added words to dictionary");
-    await this.createGrammarFromJSGF(jsgf);
-    console.log("Added grammar");
-    console.log("Grammar ready.");
-  }
-
-  async align$(audio: any, text: string) {
+  async align$(audio: any, text: string, dict: any) {
     if (this.decoder.get_config("samprate") != audio.sampleRate) {
       this.decoder.set_config("samprate", audio.sampleRate);
-      await this.decoder.reinitialize_audio();
       console.log(
         "Updated decoder sampling rate to " +
           this.decoder.get_config("samprate")
       );
     }
     console.log("Audio sampling rate is " + audio.sampleRate);
+    await this.decoder.initialize();
+    await this.addDict(dict);
+    console.log("Added words to dictionary");
+    await this.decoder.set_align_text(text);
+    console.log("Added word sequence for alignment");
     await this.decoder.start();
     /* FIXME: Decompose this to allow progress bar, non-blocking of
      * long files (requires API for separate CMN) */
