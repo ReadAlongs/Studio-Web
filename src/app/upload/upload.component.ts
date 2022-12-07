@@ -29,7 +29,6 @@ export class UploadComponent implements OnInit {
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | null>(null, Validators.required);
-  audioRecorded = false;
   recording = false;
   playing = false;
   @Output() stepChange = new EventEmitter<any[]>();
@@ -72,7 +71,7 @@ export class UploadComponent implements OnInit {
   }
 
   downloadRecording() {
-    if (this.audioRecorded && this.audioControl.value !== null) {
+    if (this.audioControl.value !== null) {
       let blob = new Blob([this.audioControl.value], {
         type: "audio/webm",
       });
@@ -136,7 +135,6 @@ export class UploadComponent implements OnInit {
   }
 
   deleteRecording() {
-    this.audioRecorded = false;
     this.audioControl.setValue(null);
   }
 
@@ -145,7 +143,6 @@ export class UploadComponent implements OnInit {
     this.microphoneService
       .stopRecording(OutputFormat.WEBM_BLOB)
       .then((output: any) => {
-        this.audioRecorded = true;
         this.toastr.success("Audio was successfully recorded", "Yay!");
         this.audioControl.setValue(output);
         // do post output steps
@@ -248,7 +245,6 @@ export class UploadComponent implements OnInit {
         } else {
           this.audioControl.setValue(file);
         }
-        this.audioRecorded = true;
         this.toastr.success(
           "File " +
             file.name +
