@@ -193,8 +193,14 @@ export class UploadComponent implements OnInit {
       // Combine audio and text observables
       // Read file
       let currentAudio: any = this.audioControl.value;
+      let sampleRate = this.ssjsService.decoder.get_config(
+        "samprate"
+      ) as number;
       forkJoin({
-        audio: this.audioService.loadAudioBufferFromFile$(currentAudio),
+        audio: this.audioService.loadAudioBufferFromFile$(
+          currentAudio,
+          sampleRate
+        ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
           // Only take first response
           take(1),

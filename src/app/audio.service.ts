@@ -9,8 +9,8 @@ import { AudioContext } from "standardized-audio-context";
 export class AudioService {
   constructor() {}
 
-  loadAudioBufferFromFile$(file: File) {
-    var audioCtx = new AudioContext({ sampleRate: 16000 });
+  loadAudioBufferFromFile$(file: File, sampleRate: number) {
+    var audioCtx = new AudioContext({ sampleRate });
     var audioFile = file.arrayBuffer().then((buffer: any) => {
       return audioCtx.decodeAudioData(buffer);
     });
