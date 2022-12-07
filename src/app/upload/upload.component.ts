@@ -29,8 +29,6 @@ export class UploadComponent implements OnInit {
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | null>(null, Validators.required);
-  // buffer audio as soon as uploaded
-  audioBuffer$ = new Subject<AudioBuffer>();
   recordedAudio: boolean = false;
   recording = false;
   playing = false;
