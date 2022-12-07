@@ -41,7 +41,6 @@ export class UploadComponent implements OnInit {
     audio: this.audioControl,
   });
   processedXML = "";
-  sampleRate = 16000;
   maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   inputMethod = {
     audio: "mic",
@@ -196,7 +195,6 @@ export class UploadComponent implements OnInit {
       // Combine audio and text observables
       // Read file
       let currentAudio: any = this.audioControl.value;
-      this.sampleRate = currentAudio.sampleRate;
       forkJoin({
         audio: this.audioService.loadAudioBufferFromFile$(currentAudio),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
