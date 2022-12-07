@@ -20,7 +20,7 @@ export class SoundswallowerService {
   async initialize$({
     hmm = "model/en-us",
     loglevel = "INFO",
-    samprate = 44100,
+    samprate = 16000,
     beam = 1e-100,
     wbeam = 1e-100,
     pbeam = 1e-100,

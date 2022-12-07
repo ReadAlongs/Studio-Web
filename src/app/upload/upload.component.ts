@@ -41,7 +41,7 @@ export class UploadComponent implements OnInit {
     audio: this.audioControl,
   });
   processedXML = "";
-  sampleRate = 44100;
+  sampleRate = 16000;
   maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   inputMethod = {
     audio: "mic",
