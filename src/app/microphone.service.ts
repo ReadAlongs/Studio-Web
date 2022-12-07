@@ -1,7 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
 
-declare var MediaRecorder: any;
-
 @Injectable({
   providedIn: "root",
 })

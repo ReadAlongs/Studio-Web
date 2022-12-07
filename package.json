@@ -45,6 +45,7 @@
         "@angular/compiler-cli": "^14.0.0",
         "@commitlint/cli": "^17.0.3",
         "@commitlint/config-conventional": "^17.0.3",
+        "@types/dom-mediacapture-record": "^1.0.14",
         "@types/jasmine": "~4.0.0",
         "husky": "^8.0.1",
         "jasmine-core": "~4.1.0",
