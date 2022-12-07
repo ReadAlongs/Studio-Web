@@ -69,7 +69,7 @@
 
                 <div *ngIf="inputMethod.audio === 'upload'" class="row mb-3">
                     <h2 class="subtitle">Upload the audio</h2>
-                    <label for="updateAudio" class="form-label">You must upload your as mp3, wav, or webm
+                    <label for="updateAudio" class="form-label">You must upload your audio as mp3, wav, or webm
                             file.</label>
                     <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav,.webm">
                 </div>
