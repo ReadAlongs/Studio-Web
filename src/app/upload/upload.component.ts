@@ -31,7 +31,7 @@ export class UploadComponent implements OnInit {
   audioControl = new FormControl<File | null>(null, Validators.required);
   // buffer audio as soon as uploaded
   audioBuffer$ = new Subject<AudioBuffer>();
-  recordedAudio: any = false;
+  recordedAudio: boolean = false;
   recording = false;
   playing = false;
   @Output() stepChange = new EventEmitter<any[]>();
@@ -75,8 +75,8 @@ export class UploadComponent implements OnInit {
   }
 
   downloadRecording() {
-    if (this.recordedAudio) {
-      let blob = new Blob([this.recordedAudio], {
+    if (this.recordedAudio && this.audioControl.value !== null) {
+      let blob = new Blob([this.audioControl.value], {
         type: "audio/webm",
       });
       var url = window.URL.createObjectURL(blob);
@@ -126,9 +126,9 @@ export class UploadComponent implements OnInit {
   }
 
   playRecording() {
-    if (!this.playing) {
+    if (!this.playing && this.audioControl.value !== null) {
       let player = new window.Audio();
-      player.src = URL.createObjectURL(this.recordedAudio);
+      player.src = URL.createObjectURL(this.audioControl.value);
       player.onended = () => {
         this.playing = false;
       };
@@ -148,7 +148,7 @@ export class UploadComponent implements OnInit {
     this.microphoneService
       .stopRecording(OutputFormat.WEBM_BLOB)
       .then((output: any) => {
-        this.recordedAudio = output;
+        this.recordedAudio = true;
         this.toastr.success("Audio was successfully recorded", "Yay!");
         this.audioControl.setValue(output);
         // do post output steps
