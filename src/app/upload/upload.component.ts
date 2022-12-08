@@ -20,9 +20,11 @@ import { SoundswallowerService } from "../soundswallower.service";
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
     map((langs: object) =>
-      Object.entries(langs).map((x: Array<Array<string>>) => {
-        return { id: x[0], name: x[1] };
-      })
+      Object.entries(langs).map(
+        ([lang_code, lang_name]: Array<Array<string>>) => {
+          return { id: lang_code, name: lang_name };
+        }
+      )
     )
   );
   $loading = new Subject<boolean>();
