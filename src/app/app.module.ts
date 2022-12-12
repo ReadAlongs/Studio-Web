@@ -5,6 +5,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MatToolbarModule } from "@angular/material/toolbar";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent, PrivacyDialog } from "./app.component";
@@ -12,6 +13,7 @@ import { ConfigComponent } from "./config/config.component";
 import { DemoComponent } from "./demo/demo.component";
 import { MaterialModule } from "./material.module";
 import { UploadComponent } from "./upload/upload.component";
+import { TextFormatDialogComponent } from "./text-format-dialog/text-format-dialog.component";
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import { UploadComponent } from "./upload/upload.component";
     DemoComponent,
     UploadComponent,
     PrivacyDialog,
+    TextFormatDialogComponent,
     // ShepherdComponent
   ],
   imports: [
@@ -30,6 +33,7 @@ import { UploadComponent } from "./upload/upload.component";
     ReactiveFormsModule,
     HttpClientModule,
     MaterialModule,
+    MatToolbarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

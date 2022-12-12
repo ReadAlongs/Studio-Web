@@ -8,7 +8,7 @@
     </div>
     <div class="container">
         <div class="row g-2 mb-3">
-            <div id="text-section" class="col-12 col-sm-6 p-3 border bg-light">
+            <div id="text-section" class="col-12 col-md-6 p-3 border bg-light">
                 <!-- <div class="container"> -->
                 <div class="d-flex flex-row justify-content-between">
                     <div class="p-0">
@@ -34,11 +34,13 @@
                 <div *ngIf="inputMethod.text === 'edit'">
                     <div class="d-flex flex-row justify-content-between p-0">
                         <span class="p-0"><h2 class="subtitle">Write or paste your text here</h2></span>
-                        <span class="p-0">
+                        <span class="p-0 align-right" align="right">
+                            <button mat-button (click)="displayFormatHelp()" aria-label="Text format help button" style="padding: 0">
+                                <mat-icon>help_outline</mat-icon> Format
+                            </button>
                             <button mat-button [disabled]="!textInput" (click)="downloadText()"
-                                    aria-label="Text download button" style="padding: 0 0 0 10px">
-                                 <mat-icon>save</mat-icon>
-                                 Save
+                                    aria-label="Text download button" style="padding: 0">
+                                <mat-icon>save</mat-icon> Save
                             </button>
                         </span>
                     </div>
@@ -50,7 +52,7 @@
                 </div>
                 <!-- </div> -->
             </div>
-            <div id="audio-section" class="col-12 col-sm-6 p-3 border bg-light">
+            <div id="audio-section" class="col-12 col-md-6 p-3 border bg-light">
                 <!-- <div class="container"> -->
                 <div class="d-flex flex-row justify-content-between p-0">
                     <div class="p-0">
