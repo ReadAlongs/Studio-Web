@@ -42,7 +42,6 @@ export class UploadComponent implements OnInit {
     audio: this.audioControl,
   });
   processedXML = "";
-  maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   inputMethod = {
     audio: "mic",
     text: "edit",
@@ -276,34 +275,30 @@ export class UploadComponent implements OnInit {
 
   onFileSelected(type: any, event: any) {
     const file: File = event.target.files[0];
-    if (file.size > this.maxAudioSize) {
-      this.toastr.error($localize`File too large`, $localize`Sorry!`);
-    } else {
-      if (type === "audio") {
-        if (file.type == "video/webm") {
-          // No, it is audio, because we say so.
-          const audioFile = new File([file], file.name, { type: "audio/webm" });
-          this.audioControl.setValue(audioFile);
-        } else {
-          this.audioControl.setValue(file);
-        }
-        this.toastr.success(
-          $localize`File ` +
-            file.name +
-            $localize` processed, but not uploaded. Your audio will stay on your computer.`,
-          $localize`Great!`,
-          { timeOut: 10000 }
-        );
-      } else if (type === "text") {
-        this.textControl.setValue(file);
-        this.toastr.success(
-          $localize`File ` +
-            file.name +
-            $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
-          $localize`Great!`,
-          { timeOut: 10000 }
-        );
+    if (type === "audio") {
+      if (file.type == "video/webm") {
+        // No, it is audio, because we say so.
+        const audioFile = new File([file], file.name, { type: "audio/webm" });
+        this.audioControl.setValue(audioFile);
+      } else {
+        this.audioControl.setValue(file);
       }
+      this.toastr.success(
+        $localize`File ` +
+          file.name +
+          $localize` processed, but not uploaded. Your audio will stay on your computer.`,
+        $localize`Great!`,
+        { timeOut: 10000 }
+      );
+    } else if (type === "text") {
+      this.textControl.setValue(file);
+      this.toastr.success(
+        $localize`File ` +
+          file.name +
+          $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
+        $localize`Great!`,
+        { timeOut: 10000 }
+      );
     }
   }
 }
