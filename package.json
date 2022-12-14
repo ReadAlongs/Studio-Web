@@ -43,6 +43,7 @@
         "@angular-devkit/build-angular": "^14.2.0",
         "@angular/cli": "^14.2.0",
         "@angular/compiler-cli": "^14.2.0",
+        "@angular/localize": "^14.2.12",
         "@commitlint/cli": "^17.0.3",
         "@commitlint/config-conventional": "^17.0.3",
         "@types/dom-mediacapture-record": "^1.0.14",
