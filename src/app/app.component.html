@@ -1,6 +1,6 @@
 <mat-horizontal-stepper linear #stepper>
 
-    <mat-step [stepControl]="upload.uploadFormGroup" label="Step 1">
+    <mat-step [stepControl]="upload.uploadFormGroup" i18n-label="Step 1" label="Step 1">
         <section>
             <div class="container mb-2">
                 <h1 i18n="Welcome message for app" id="welcome-header">Welcome to ReadAlong Studio</h1>
@@ -20,7 +20,7 @@
         <app-config></app-config>
     </mat-step> -->
 
-    <mat-step label="Step 2">
+    <mat-step i18n-label="Step 2" label="Step 2">
         <app-demo *ngIf="b64Inputs$ | async as b64Inputs" [b64Inputs]="b64Inputs"></app-demo>
     </mat-step>
 

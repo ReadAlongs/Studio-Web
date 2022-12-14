@@ -1,10 +1,12 @@
 {
   "locale": "fr",
   "translations": {
+    "8428348909593474745": "Étape 1",
     "6731392928829867425": "Bienvenue à ReadAlong Studio",
     "1487050472909116368": "Cet outil est conçu pour vous aider à créer une page interactive ReadAlong sur laquelle les mots sont sélectionnés lorsqu'il sont lus à voix haut.  Jetez un coup d'œil sur {$START_LINK}cet exemple en cri de la Baie-James{$CLOSE_LINK} pour mieux comprendre le concept.",
     "5372719220105519682": "Afin de commencer à en faire un vous-même, veuillez lire notre {$START_LINK}politique de vie privée et de souveraineté des données{$CLOSE_LINK}, faites une visite guidée en cliquant sur le bouton « Montrez-moi! » puis suivez les étapes ci-dessous.",
     "3411756347155931546": "Montrez-moi!",
+    "3943314737845757694": "Étape 2",
     "6144475229353813355": "Cette appli n'a pas été publiée officiellement et vous ne devez pas vous attendre à ce qu'elle fonctionne correctement.",
     "6759205696902713848": "Attention",
     "8439955599488894226": "Politique de vie privée",
@@ -36,7 +38,7 @@
     "5640066935051864025": "Pour séparer les pages, insérez une séquence de deux lignes vides.",
     "4832056586737439470": "Par exemple:",
     "4347618941609876366": "Voici une phrase.\nVoici une deuxième phrase.\n\nVoici un deuxième paragraphe.\nDeuxième phrase du deuxième paragraphe.\n\n\nLa page 2 commence par ce texte.\n\nDeuxième paragraphe de la deuxième page.\n\n\nLa page 3 contient cette phrase.\nEt celle-ci aussi, dans le même paragraphe.\n",
-    "7021513241873845804": "Téléverser desdonnées pour commencer votre ReadAlong",
+    "7021513241873845804": "Téléverser des données pour commencer votre ReadAlong",
     "2201040913045344114": "Pour créer un ReadAlong, nous avons besoin de trois informations. D'abord {$START_BOLD_TEXT}en quelle langue{$CLOSE_BOLD_TEXT} sera votre ReadAlong, puis {$START_BOLD_TEXT}son texte{$CLOSE_BOLD_TEXT} puis finalement {$START_BOLD_TEXT}son audio{$CLOSE_BOLD_TEXT}. ",
     "6162693758764653365": "Texte",
     "2603482535677312633": "Rédiger",

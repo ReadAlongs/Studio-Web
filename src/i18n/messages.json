@@ -1,10 +1,12 @@
 {
   "locale": "en",
   "translations": {
+    "8428348909593474745": "Step 1",
     "6731392928829867425": "Welcome to ReadAlong Studio",
     "1487050472909116368": "This is a tool to help you make your own interactive 'readalong' that highlights words as they are spoken. Have a look at {$START_LINK}this example in East Cree{$CLOSE_LINK} to get a better idea of what these are.",
     "5372719220105519682": "To get started making your own, read our {$START_LINK}privacy and data sovereignty policy{$CLOSE_LINK}, then take a tour by clicking on the tour button below, and follow the steps below.",
     "3411756347155931546": "Take the tour!",
+    "3943314737845757694": "Step 2",
     "6144475229353813355": "This app has not been officially released and should not be expected to work properly yet.",
     "6759205696902713848": "Warning",
     "8439955599488894226": "Privacy Policy",
