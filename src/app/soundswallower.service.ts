@@ -1,4 +1,4 @@
-/* -*- mode: javascript; js-indent-level: 2 -*- */
+/* -*- typescript-indent-level: 2 -*- */
 import { Observable } from "rxjs";
 import soundswallower_factory, {
   Decoder,
@@ -39,6 +39,7 @@ export class SoundswallowerService {
   }
 
   async addDict(dict: any) {
+    /* FIXME: Because JavaScript is awful, we can't have a word named "length"!  */
     const n = dict.length;
     let idx = 0;
     for (const word in dict) {
@@ -48,11 +49,6 @@ export class SoundswallowerService {
       ++idx;
     }
     console.log("finished adding words");
-  }
-
-  async createGrammarFromJSGF(jsgf: string) {
-    await this.decoder.set_jsgf(jsgf);
-    console.log("finished creating grammar");
   }
 
   async align$(audio: AudioBuffer, text: string, dict: any) {

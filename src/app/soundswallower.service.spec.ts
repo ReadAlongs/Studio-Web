@@ -606,24 +606,22 @@ describe("SoundswallowerService", () => {
 
     const response = await fetch(b64audio);
     const audio_file = (await response.blob()) as File;
-    const audio = await audioService
+    const audio = (await audioService
       .loadAudioBufferFromFile$(audio_file, 8000)
-      .toPromise();
+      .toPromise()) as AudioBuffer; /* We *know* it's defined! */
     expect(audio).toBeDefined();
-    if (audio !== undefined) {
-      const hypseg = await service.align$(audio, "go forward ten meters", {
-        go: "G OW",
-        forward: "F AO R W ER D",
-        ten: "T EH N",
-        meters: "M IY T ER Z",
-      });
-      expect(hypseg).toEqual([
-        { word: "<sil>", start: 0, end: 0.37 },
-        { word: "go", start: 0.38, end: 0.54 },
-        { word: "forward", start: 0.55, end: 1.06 },
-        { word: "ten", start: 1.07, end: 1.37 },
-        { word: "meters", start: 1.38, end: 2.03 },
-      ]);
-    }
+    const hypseg = await service.align$(audio, "go forward ten meters", {
+      go: "G OW",
+      forward: "F AO R W ER D",
+      ten: "T EH N",
+      meters: "M IY T ER Z",
+    });
+    expect(hypseg).toEqual([
+      { word: "<sil>", start: 0, end: 0.37 },
+      { word: "go", start: 0.38, end: 0.54 },
+      { word: "forward", start: 0.55, end: 1.06 },
+      { word: "ten", start: 1.07, end: 1.37 },
+      { word: "meters", start: 1.38, end: 2.03 },
+    ]);
   });
 });
