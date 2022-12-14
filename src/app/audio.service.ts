@@ -1,7 +1,7 @@
-import { from, sample } from "rxjs";
+import { from, Observable, sample } from "rxjs";
 
 import { Injectable } from "@angular/core";
-import { AudioContext } from "standardized-audio-context";
+import { AudioContext, AudioBuffer } from "standardized-audio-context";
 
 @Injectable({
   providedIn: "root",
@@ -9,7 +9,10 @@ import { AudioContext } from "standardized-audio-context";
 export class AudioService {
   constructor() {}
 
-  loadAudioBufferFromFile$(file: File, sampleRate: number) {
+  loadAudioBufferFromFile$(
+    file: File,
+    sampleRate: number
+  ): Observable<AudioBuffer> {
     var audioCtx = new AudioContext({ sampleRate });
     var audioFile = file.arrayBuffer().then((buffer: any) => {
       return audioCtx.decodeAudioData(buffer);

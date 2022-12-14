@@ -55,7 +55,7 @@ export class SoundswallowerService {
     console.log("finished creating grammar");
   }
 
-  async align$(audio: any, text: string, dict: any) {
+  async align$(audio: AudioBuffer, text: string, dict: any) {
     if (this.decoder.get_config("samprate") != audio.sampleRate) {
       this.decoder.set_config("samprate", audio.sampleRate);
       console.log(
