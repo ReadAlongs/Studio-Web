@@ -66,13 +66,12 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.ssjsService.initialize$({}).then(
-      (_) => {
-        this.ssjsService.alignerReady$.next(true);
-      },
-      (err) => console.log(err)
-    );
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.ssjsService.initialize({});
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   downloadRecording() {

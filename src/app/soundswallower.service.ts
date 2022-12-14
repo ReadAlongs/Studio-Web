@@ -1,5 +1,5 @@
 /* -*- mode: javascript; js-indent-level: 2 -*- */
-import { BehaviorSubject, from } from "rxjs";
+import { Observable } from "rxjs";
 import soundswallower_factory, {
   Decoder,
   SoundSwallowerModule,
@@ -13,11 +13,10 @@ var soundswallower: SoundSwallowerModule;
   providedIn: "root",
 })
 export class SoundswallowerService {
-  alignerReady$ = new BehaviorSubject<boolean>(false);
   constructor() {}
 
   decoder: Decoder;
-  async initialize$({
+  async initialize({
     hmm = "model/en-us",
     loglevel = "INFO",
     samprate = 8000,
@@ -36,7 +35,7 @@ export class SoundswallowerService {
       pbeam,
     });
     this.decoder.unset_config("dict");
-    return await this.decoder.initialize();
+    this.decoder.initialize();
   }
 
   async addDict(dict: any) {
