@@ -6,12 +6,13 @@
         "ng": "ng",
         "start": "ng serve",
         "start-fr": "ng serve --configuration=fr",
-        "build": "ng build --configuration development",
-        "build:prod": "ng build --configuration production",
-        "watch": "ng build --watch --configuration development",
+        "build": "ng build --configuration development --localize",
+        "build:prod": "ng build --configuration production --localize",
+        "watch": "ng build --watch --configuration development --localize",
         "test": "ng test",
         "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "extract-i18n": "ng extract-i18n --format json --output-path src/i18n"
     },
     "private": true,
     "commitlint": {
