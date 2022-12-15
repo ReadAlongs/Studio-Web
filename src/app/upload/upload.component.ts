@@ -5,12 +5,14 @@ import { map, switchMap, take } from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import { MatDialog } from "@angular/material/dialog";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
 import { RasService } from "../ras.service";
 import { SoundswallowerService } from "../soundswallower.service";
+import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
 @Component({
   selector: "app-upload",
@@ -53,7 +55,8 @@ export class UploadComponent implements OnInit {
     private fileService: FileService,
     private audioService: AudioService,
     private ssjsService: SoundswallowerService,
-    private microphoneService: MicrophoneService
+    private microphoneService: MicrophoneService,
+    private dialog: MatDialog
   ) {
     this.microphoneService.recorderError.subscribe((recorderErrorCase) => {
       this.toastr.error(
@@ -102,6 +105,10 @@ export class UploadComponent implements OnInit {
     } else {
       this.toastr.error("No text to download", "Sorry!");
     }
+  }
+
+  displayFormatHelp(): void {
+    this.dialog.open(TextFormatDialogComponent);
   }
 
   handleTextInput(event: any) {

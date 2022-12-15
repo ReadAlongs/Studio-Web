@@ -8,21 +8,17 @@
     </div>
     <div class="container">
         <div class="row g-2 mb-3">
-            <div id="text-section" class="col-6 p-3 border bg-light">
+            <div id="text-section" class="col-12 col-md-6 p-3 border bg-light">
                 <!-- <div class="container"> -->
-                <div class="row">
-                    <div class="col-12 col-sm-5">
+                <div class="d-flex flex-row justify-content-between">
+                    <div class="p-0">
                         <h1 class="title">Text</h1>
                     </div>
-                    <div class="col-12 col-sm-7 justify-content-end" style="text-align: right">
+                    <div class="p-0">
                         <mat-button-toggle-group appearance="legacy" (change)="toggleTextInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.text">
                             <mat-button-toggle value="edit">Write</mat-button-toggle>
                             <mat-button-toggle value="upload">File</mat-button-toggle>
                         </mat-button-toggle-group>
-                        <!-- <button (click)="textInputElement.click()" mat-icon-button aria-label="Text upload button">
-                        <mat-icon>file_upload</mat-icon>
-                    </button> -->
-
                     </div>
                 </div>
                 <div *ngIf="inputMethod.text === 'upload'">
@@ -36,17 +32,17 @@
                     </div>
                 </div>
                 <div *ngIf="inputMethod.text === 'edit'">
-                    <div class="row">
-                        <div class="col-12 col-sm-6 col-md-8 col-lg-9">
-                            <h2 class="subtitle">Write or paste your text here</h2>
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3" style="text-align: right">
-                            <div class="container mt-0 mb-0 mr-0 ml-0">
-                            <button mat-icon-button [disabled]="!textInput" (click)="downloadText()"
+                    <div class="d-flex flex-row justify-content-between p-0">
+                        <span class="p-0"><h2 class="subtitle">Write or paste your text here</h2></span>
+                        <span class="p-0 align-right" align="right">
+                            <button mat-button (click)="displayFormatHelp()" aria-label="Text format help button" style="padding: 0">
+                                <mat-icon>help_outline</mat-icon> Format
+                            </button>
+                            <button mat-button [disabled]="!textInput" (click)="downloadText()"
                                     aria-label="Text download button" style="padding: 0">
                                 <mat-icon>save</mat-icon> Save
-                            </button></div>
-                        </div>
+                            </button>
+                        </span>
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -56,14 +52,13 @@
                 </div>
                 <!-- </div> -->
             </div>
-            <div id="audio-section" class="col-6 p-3 border bg-light">
+            <div id="audio-section" class="col-12 col-md-6 p-3 border bg-light">
                 <!-- <div class="container"> -->
-                <div class="row">
-                    <div class="col-12 col-sm-5">
-                        <h1 class="title">Audio
-                        </h1>
+                <div class="d-flex flex-row justify-content-between p-0">
+                    <div class="p-0">
+                        <h1 class="title">Audio</h1>
                     </div>
-                    <div class="col-12 col-sm-7 justify-content-end" style="text-align: right">
+                    <div class="p-0">
                         <mat-button-toggle-group appearance="legacy" (change)="toggleAudioInput($event)" name="inputMethod" aria-label="Input Method" [value]="inputMethod.audio">
                             <mat-button-toggle value="mic">Record</mat-button-toggle>
                             <mat-button-toggle value="upload">File</mat-button-toggle>
