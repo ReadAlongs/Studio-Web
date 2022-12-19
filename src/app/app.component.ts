@@ -2,6 +2,7 @@ import { ShepherdService } from "angular-shepherd";
 import { ToastrService } from "ngx-toastr";
 import { forkJoin, from, of, Subject } from "rxjs";
 import { map } from "rxjs/operators";
+import { Segment } from "soundswallower";
 
 import { Component, ViewChild } from "@angular/core";
 import { FormGroup } from "@angular/forms";
@@ -118,7 +119,9 @@ export class AppComponent {
           )}`
         ),
         from(event[3]).pipe(
-          map((smil) => this.b64Service.alignmentToSmil(smil, "test", "test"))
+          map((hypseg) =>
+            this.b64Service.alignmentToSmil(hypseg as Segment, "test", "test")
+          )
         ),
         this.b64Service.getBundle$(),
       ]).subscribe((x: any) => this.b64Inputs$.next(x));

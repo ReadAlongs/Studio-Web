@@ -616,12 +616,13 @@ describe("SoundswallowerService", () => {
       ten: "T EH N",
       meters: "M IY T ER Z",
     });
-    expect(hypseg).toEqual([
-      { word: "<sil>", start: 0, end: 0.37 },
-      { word: "go", start: 0.38, end: 0.54 },
-      { word: "forward", start: 0.55, end: 1.06 },
-      { word: "ten", start: 1.07, end: 1.37 },
-      { word: "meters", start: 1.38, end: 2.03 },
+    expect(hypseg.t).toEqual("go forward ten meters");
+    expect(hypseg.w).toEqual([
+      { t: "<sil>", b: 0, d: 0.38, p: 0.945 },
+      { t: "go", b: 0.38, d: 0.17, p: 0.983 },
+      { t: "forward", b: 0.55, d: 0.52, p: 0.958 },
+      { t: "ten", b: 1.07, d: 0.31, p: 0.965 },
+      { t: "meters", b: 1.38, d: 0.66, p: 0.922 },
     ]);
   });
 });

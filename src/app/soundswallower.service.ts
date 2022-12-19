@@ -2,6 +2,7 @@
 import { Observable } from "rxjs";
 import soundswallower_factory, {
   Decoder,
+  DictEntry,
   SoundSwallowerModule,
 } from "soundswallower";
 
@@ -38,19 +39,6 @@ export class SoundswallowerService {
     this.decoder.initialize();
   }
 
-  async addDict(dict: any) {
-    /* FIXME: Because JavaScript is awful, we can't have a word named "length"!  */
-    const n = dict.length;
-    let idx = 0;
-    for (const word in dict) {
-      const pron = dict[word];
-      console.log(`adding word ${word} with phones ${pron}`);
-      await this.decoder.add_word(word, pron, idx === n - 1);
-      ++idx;
-    }
-    console.log("finished adding words");
-  }
-
   async align$(audio: AudioBuffer, text: string, dict: any) {
     if (this.decoder.get_config("samprate") != audio.sampleRate) {
       this.decoder.set_config("samprate", audio.sampleRate);
@@ -61,16 +49,16 @@ export class SoundswallowerService {
     }
     console.log("Audio sampling rate is " + audio.sampleRate);
     await this.decoder.initialize();
-    await this.addDict(dict);
+    const words: Array<DictEntry> = [];
+    for (const name in dict) words.push([name, dict[name]]);
+    this.decoder.add_words(...words);
     console.log("Added words to dictionary");
-    await this.decoder.set_align_text(text);
+    this.decoder.set_align_text(text);
     console.log("Added word sequence for alignment");
-    await this.decoder.start();
-    /* FIXME: Decompose this to allow progress bar, non-blocking of
-     * long files (requires API for separate CMN) */
-    await this.decoder.process(audio.getChannelData(0), false, true);
-    await this.decoder.stop();
-    const e = this.decoder.get_hypseg();
+    this.decoder.start();
+    this.decoder.process_audio(audio.getChannelData(0), false, true);
+    this.decoder.stop();
+    const e = this.decoder.get_alignment();
     console.log(e);
     return e;
   }

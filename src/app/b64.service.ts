@@ -5,6 +5,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
 import { FileService } from "./file.service";
+import { Segment } from "soundswallower";
 
 @Injectable({
   providedIn: "root",
@@ -62,18 +63,19 @@ export class B64Service {
     let xml_doc = parser.parseFromString(xml, "application/xml");
     return this.utf8_to_b64(new XMLSerializer().serializeToString(xml_doc));
   }
-  alignmentToSmil(alignment: any, text_path: string, audio_path: string) {
+  alignmentToSmil(alignment: Segment, text_path: string, audio_path: string) {
     let topLine =
       '<smil xmlns="http://www.w3.org/ns/SMIL" version="3.0"><body>';
     let bottomLine = "</body></smil>";
     let noiseWords = new Set(["<sil>", "(NULL)"]);
-    let middle = alignment
-      .filter((x: any) => !noiseWords.has(x["word"]))
+    if (alignment.w === undefined) throw "Missing segmentation in alignment";
+    let middle = alignment.w
+      .filter((x: Segment) => !noiseWords.has(x.t))
       .map(
-        (x: any) =>
-          `<par id="par-${x["word"]}">
-     <text src="${text_path}#${x["word"]}"/>
-    <audio src="${audio_path}" clipBegin="${x["start"]}" clipEnd="${x["end"]}"/>
+        (x: Segment) =>
+          `<par id="par-${x.t}">
+     <text src="${text_path}#${x.t}"/>
+    <audio src="${audio_path}" clipBegin="${x.b}" clipEnd="${x.b + x.d}"/>
     </par>`
       );
     return `data:application/xml;base64,${this.xmlStringToB64(
