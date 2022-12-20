@@ -128,7 +128,7 @@ export const audio_file_step: any = {
 
 export const language_step: any = {
   title: $localize`Select your language\n`,
-  text: $localize`Then, select the language of your ReadAlong. We support over 30 different languages, but if your language is not here, you can try using the Undetermined (und) option. If that doesn't work very well, you can always add your own language. This requires some understanding of your language's writing system. Feel free to reach out to us or visit our <a href="https://blog.mothertongues.org/g2p-background/">blog posts</a> for more information.`,
+  text: $localize`Then, select the language of your ReadAlong. We support over 30 different languages, but if your language is not here, you can try using the Undetermined (und) option. If that doesn't work very well, you can always add your own language. This requires some understanding of your language's writing system. Feel free to reach out to us or visit our <a href="https://blog.mothertongues.org/g2p-background/" target="_blank" rel="noopener noreferrer">blog posts</a> for more information.`,
   attachTo: {
     element: "#language-section",
     on: "bottom",

@@ -133,4 +133,7 @@ export class AppComponent {
 })
 export class PrivacyDialog {
   constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
+  ngOnInit() {
+    this.dialogRef.updateSize("400px");
+  }
 }
