@@ -61,7 +61,7 @@ export class UploadComponent implements OnInit {
     this.microphoneService.recorderError.subscribe((recorderErrorCase) => {
       this.toastr.error(
         recorderErrorCase.toString(),
-        "Whoops, something went wrong!"
+        $localize`Whoops, something went wrong while recording!`
       );
     });
   }
@@ -87,7 +87,7 @@ export class UploadComponent implements OnInit {
       a.click();
       a.remove();
     } else {
-      this.toastr.error("No audio to download.", "Sorry!");
+      this.toastr.error($localize`No audio to download.`, $localize`Sorry!`);
     }
   }
 
@@ -103,7 +103,7 @@ export class UploadComponent implements OnInit {
       a.click();
       a.remove();
     } else {
-      this.toastr.error("No text to download.", "Sorry!");
+      this.toastr.error($localize`No text to download.`, $localize`Sorry!`);
     }
   }
 
@@ -152,14 +152,17 @@ export class UploadComponent implements OnInit {
     this.microphoneService
       .stopRecording()
       .then((output) => {
-        this.toastr.success("Audio was successfully recorded", "Yay!");
+        this.toastr.success(
+          $localize`Audio was successfully recorded`,
+          $localize`Yay!`
+        );
         this.audioControl.setValue(output as Blob);
         // do post output steps
       })
       .catch((errorCase) => {
         this.toastr.error(
-          "Please try again, or upload a file.",
-          "Audio not recorded!"
+          $localize`Please try again, or upload a file.`,
+          $localize`Audio not recorded!`
         );
         console.log(errorCase);
         // Handle Error
@@ -182,11 +185,17 @@ export class UploadComponent implements OnInit {
         });
         this.textControl.setValue(inputText);
       } else {
-        this.toastr.error("Please enter text to align.", "No text");
+        this.toastr.error(
+          $localize`Please enter text to align.`,
+          $localize`No text`
+        );
       }
     } else {
       if (this.textControl.value === null) {
-        this.toastr.error("Please select a text file.", "No text file");
+        this.toastr.error(
+          $localize`Please select a text file.`,
+          $localize`No text file`
+        );
       }
     }
     if (this.uploadFormGroup.valid) {
@@ -242,15 +251,21 @@ export class UploadComponent implements OnInit {
         ]);
       });
     } else {
+      if (this.langControl.value === null) {
+        this.toastr.error(
+          $localize`Please select a language.`,
+          $localize`No language`
+        );
+      }
       if (this.audioControl.value === null) {
         this.toastr.error(
-          "Please record some audio or select an audio file.",
-          "No audio"
+          $localize`Please (re-)record some audio or select an audio file.`,
+          $localize`No audio`
         );
       }
       this.toastr.error(
-        "Please upload a text and audio file and select the language.",
-        "Form not complete"
+        $localize`Please upload a text and audio file and select the language.`,
+        $localize`Form not complete`
       );
     }
   }
@@ -258,7 +273,7 @@ export class UploadComponent implements OnInit {
   onFileSelected(type: any, event: any) {
     const file: File = event.target.files[0];
     if (file.size > this.maxAudioSize) {
-      this.toastr.error("File too large", "Sorry!");
+      this.toastr.error($localize`File too large`, $localize`Sorry!`);
     } else {
       if (type === "audio") {
         if (file.type == "video/webm") {
@@ -269,16 +284,20 @@ export class UploadComponent implements OnInit {
           this.audioControl.setValue(file);
         }
         this.toastr.success(
-          "File " +
+          $localize`File ` +
             file.name +
-            " processed, but not uploaded. Your audio will stay on your computer.",
-          "Great!"
+            $localize` processed, but not uploaded. Your audio will stay on your computer.`,
+          $localize`Great!`,
+          { timeOut: 10000 }
         );
       } else if (type === "text") {
         this.textControl.setValue(file);
         this.toastr.success(
-          "File " + file.name + " uploaded through an encrypted connection",
-          "Great!"
+          $localize`File ` +
+            file.name +
+            $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
+          $localize`Great!`,
+          { timeOut: 10000 }
         );
       }
     }
