@@ -5,12 +5,14 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "ng build --configuration development",
-        "build:prod": "ng build --configuration production",
-        "watch": "ng build --watch --configuration development",
+        "start-fr": "ng serve --configuration=fr",
+        "build": "ng build --configuration development --localize",
+        "build:prod": "ng build --configuration production --localize",
+        "watch": "ng build --watch --configuration development --localize",
         "test": "ng test",
         "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "extract-i18n": "ng extract-i18n --format json --output-path src/i18n"
     },
     "private": true,
     "commitlint": {
@@ -43,6 +45,7 @@
         "@angular-devkit/build-angular": "^14.2.0",
         "@angular/cli": "^14.2.0",
         "@angular/compiler-cli": "^14.2.0",
+        "@angular/localize": "^14.2.12",
         "@commitlint/cli": "^17.0.3",
         "@commitlint/config-conventional": "^17.0.3",
         "@types/dom-mediacapture-record": "^1.0.14",

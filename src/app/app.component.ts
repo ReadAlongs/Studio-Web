@@ -46,8 +46,8 @@ export class AppComponent {
   ngOnInit(): void {
     this.b64Inputs$.subscribe((x) => console.log(x));
     this.toastr.warning(
-      "This app has not been officially released and should not be expected to work properly yet.",
-      "Warning",
+      $localize`This app has not been officially released and should not be expected to work properly yet.`,
+      $localize`Warning`,
       { timeOut: 10000 }
     );
   }
