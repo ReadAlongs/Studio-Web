@@ -87,7 +87,7 @@ export class UploadComponent implements OnInit {
       a.click();
       a.remove();
     } else {
-      this.toastr.error("No audio to download", "Sorry!");
+      this.toastr.error("No audio to download.", "Sorry!");
     }
   }
 
@@ -103,7 +103,7 @@ export class UploadComponent implements OnInit {
       a.click();
       a.remove();
     } else {
-      this.toastr.error("No text to download", "Sorry!");
+      this.toastr.error("No text to download.", "Sorry!");
     }
   }
 
@@ -176,10 +176,18 @@ export class UploadComponent implements OnInit {
 
   nextStep() {
     if (this.inputMethod.text === "edit") {
-      let inputText = new Blob([this.textInput], {
-        type: "text/plain",
-      });
-      this.textControl.setValue(inputText);
+      if (this.textInput) {
+        let inputText = new Blob([this.textInput], {
+          type: "text/plain",
+        });
+        this.textControl.setValue(inputText);
+      } else {
+        this.toastr.error("Please enter text to align.", "No text");
+      }
+    } else {
+      if (this.textControl.value === null) {
+        this.toastr.error("Please select a text file.", "No text file");
+      }
     }
     if (this.uploadFormGroup.valid) {
       // Loading
@@ -234,9 +242,15 @@ export class UploadComponent implements OnInit {
         ]);
       });
     } else {
+      if (this.audioControl.value === null) {
+        this.toastr.error(
+          "Please record some audio or select an audio file.",
+          "No audio"
+        );
+      }
       this.toastr.error(
         "Please upload a text and audio file and select the language.",
-        "Form not complete!"
+        "Form not complete"
       );
     }
   }
