@@ -10,7 +10,12 @@ import { MatDialog } from "@angular/material/dialog";
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
-import { RasService, ReadAlong, ReadAlongRequest } from "../ras.service";
+import {
+  RasService,
+  ReadAlong,
+  ReadAlongRequest,
+  LanguageMap,
+} from "../ras.service";
 import {
   SoundswallowerService,
   AlignmentProgress,
@@ -24,12 +29,10 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
 })
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
-    map((langs: object) =>
-      Object.entries(langs).map(
-        ([lang_code, lang_name]: Array<Array<string>>) => {
-          return { id: lang_code, name: lang_name };
-        }
-      )
+    map((langs: LanguageMap) =>
+      Object.entries(langs).map(([lang_code, lang_name]) => {
+        return { id: lang_code, name: lang_name };
+      })
     )
   );
   $loading = new Subject<boolean>();

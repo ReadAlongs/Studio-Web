@@ -6,7 +6,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "../environments/environment";
 
 export interface ReadAlong {
-  lexicon: any; // FIXME
+  lexicon: { [id: string]: string };
   jsgf: string;
   text_ids: string;
   processed_xml: string;
@@ -23,6 +23,10 @@ export interface ReadAlongRequest {
   text_languages: Array<string>;
 }
 
+export interface LanguageMap {
+  [id: string]: string;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -32,8 +36,7 @@ export class RasService {
   assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong> {
     return this.http.post<ReadAlong>(this.baseURL + "/assemble", body);
   }
-  getLangs$(): Observable<any> {
-    // FIXME
-    return this.http.get(this.baseURL + "/langs");
+  getLangs$(): Observable<LanguageMap> {
+    return this.http.get<LanguageMap>(this.baseURL + "/langs");
   }
 }
