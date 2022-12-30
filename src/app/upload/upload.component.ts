@@ -209,9 +209,8 @@ export class UploadComponent implements OnInit {
       ) {
         text_type = "xml";
       }
-      let body: any = {
-        text_languages: [this.langControl.value, "und"],
-        encoding: "utf8",
+      let body: ReadAlongRequest = {
+        text_languages: [this.langControl.value as string, "und"],
       };
       // Combine audio and text observables
       // Read file
@@ -221,7 +220,8 @@ export class UploadComponent implements OnInit {
         ras: this.fileService.readFile$(this.textControl.value).pipe(
           switchMap((xml: any) => {
             console.log("query api");
-            body[text_type] = xml;
+            if (text_type == "text") body.text = xml;
+            else body.xml = xml;
             return this.rasService.assembleReadalong$(body);
           })
         ),
