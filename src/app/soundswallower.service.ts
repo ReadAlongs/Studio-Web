@@ -11,6 +11,12 @@ import { Injectable } from "@angular/core";
 
 var soundswallower: SoundSwallowerModule;
 
+export interface AlignmentProgress {
+  pos: number;
+  length: number;
+  hypseg?: Segment;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -26,7 +32,7 @@ export class SoundswallowerService {
     audio: AudioBuffer,
     text: string,
     dict: any
-  ): Observable<string | Segment> {
+  ): Observable<AlignmentProgress> {
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
@@ -51,7 +57,7 @@ export class SoundswallowerService {
           const channel_data = audio.getChannelData(0);
           const BUFSIZ = 8192;
           let pos = 0;
-          subscriber.next(`${pos} / ${channel_data.length}`);
+          subscriber.next({ pos: pos, length: channel_data.length });
           while (pos < channel_data.length) {
             let len = channel_data.length - pos;
             if (len > BUFSIZ) len = BUFSIZ;
@@ -67,14 +73,18 @@ export class SoundswallowerService {
               }, 0);
             });
             pos += len;
-            subscriber.next(`${pos} / ${channel_data.length}`);
+            subscriber.next({ pos: pos, length: channel_data.length });
             if (cancelled) {
               decoder.stop();
               return;
             }
           }
           decoder.stop();
-          subscriber.next(decoder.get_alignment());
+          subscriber.next({
+            pos: pos,
+            length: channel_data.length,
+            hypseg: decoder.get_alignment(),
+          });
           subscriber.complete();
         })
         .catch((err) => {

@@ -10,9 +10,11 @@ import { MatDialog } from "@angular/material/dialog";
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
-import { RasService } from "../ras.service";
-import { SoundswallowerService } from "../soundswallower.service";
-import { Segment } from "soundswallower";
+import { RasService, ReadAlong, ReadAlongRequest } from "../ras.service";
+import {
+  SoundswallowerService,
+  AlignmentProgress,
+} from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
 @Component({
@@ -229,7 +231,7 @@ export class UploadComponent implements OnInit {
         .pipe(
           switchMap(({ audio, ras }: { audio: AudioBuffer; ras: any }) => {
             return forkJoin({
-              hypseg: this.ssjsService.align$(
+              progress: this.ssjsService.align$(
                 audio,
                 ras["text_ids"],
                 ras["lexicon"]
@@ -239,13 +241,13 @@ export class UploadComponent implements OnInit {
           })
         )
         .subscribe(
-          ({ hypseg, xml }: { hypseg: string | Segment; xml: string }) => {
+          ({ progress, xml }: { progress: AlignmentProgress; xml: string }) => {
             this.$loading.next(false);
             this.stepChange.emit([
               "aligned",
               this.audioControl.value,
               xml,
-              hypseg,
+              progress.hypseg,
             ]);
           }
         );
