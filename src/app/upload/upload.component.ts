@@ -1,6 +1,6 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
-import { forkJoin, from, Subject, zip } from "rxjs";
+import { forkJoin, of, Subject, zip } from "rxjs";
 import { map, switchMap, take } from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
@@ -12,6 +12,7 @@ import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
 import { RasService } from "../ras.service";
 import { SoundswallowerService } from "../soundswallower.service";
+import { Segment } from "soundswallower";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
 @Component({
@@ -41,7 +42,6 @@ export class UploadComponent implements OnInit {
     text: this.textControl,
     audio: this.audioControl,
   });
-  processedXML = "";
   inputMethod = {
     audio: "mic",
     text: "edit",
@@ -67,7 +67,7 @@ export class UploadComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      await this.ssjsService.initialize({});
+      await this.ssjsService.initialize();
     } catch (err) {
       console.log(err);
     }
@@ -216,40 +216,39 @@ export class UploadComponent implements OnInit {
       // Combine audio and text observables
       // Read file
       let currentAudio: any = this.audioControl.value;
-      let sampleRate = this.ssjsService.decoder.get_config(
-        "samprate"
-      ) as number;
       forkJoin({
-        audio: this.audioService.loadAudioBufferFromFile$(
-          currentAudio,
-          sampleRate
-        ),
+        audio: this.audioService.loadAudioBufferFromFile$(currentAudio, 8000),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
-          // Only take first response
-          take(1),
-          // Query RAS service
           switchMap((xml: any) => {
             console.log("query api");
             body[text_type] = xml;
             return this.rasService.assembleReadalong$(body);
           })
         ),
-      }).subscribe((response: any) => {
-        let { audio, ras } = response;
-        let hypseg = this.ssjsService.align$(
-          audio,
-          ras["text_ids"],
-          ras["lexicon"]
+      })
+        .pipe(
+          switchMap(({ audio, ras }: { audio: AudioBuffer; ras: any }) => {
+            return forkJoin({
+              hypseg: this.ssjsService.align$(
+                audio,
+                ras["text_ids"],
+                ras["lexicon"]
+              ),
+              xml: of(ras["processed_xml"]),
+            });
+          })
+        )
+        .subscribe(
+          ({ hypseg, xml }: { hypseg: string | Segment; xml: string }) => {
+            this.$loading.next(false);
+            this.stepChange.emit([
+              "aligned",
+              this.audioControl.value,
+              xml,
+              hypseg,
+            ]);
+          }
         );
-        this.processedXML = ras["processed_xml"];
-        this.$loading.next(false);
-        this.stepChange.emit([
-          "aligned",
-          this.audioControl.value,
-          this.processedXML,
-          hypseg,
-        ]);
-      });
     } else {
       if (this.langControl.value === null) {
         this.toastr.error(
