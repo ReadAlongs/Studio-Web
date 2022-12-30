@@ -1,6 +1,6 @@
 /* -*- typescript-indent-level: 2 -*- */
 import { TestBed } from "@angular/core/testing";
-
+import { last } from "rxjs";
 import { SoundswallowerService } from "./soundswallower.service";
 import { AudioService } from "./audio.service";
 
@@ -596,33 +596,32 @@ describe("SoundswallowerService", () => {
   });
 
   it("should be initialized", async () => {
-    await service.initialize({});
-    expect(service.decoder).toBeTruthy();
-    expect(service.decoder.get_config("dict")).toBeNull();
+    await service.initialize();
   });
 
   it("should align text", async () => {
-    await service.initialize({});
-
+    await service.initialize();
     const response = await fetch(b64audio);
     const audio_file = (await response.blob()) as File;
     const audio = (await audioService
       .loadAudioBufferFromFile$(audio_file, 8000)
       .toPromise()) as AudioBuffer; /* We *know* it's defined! */
     expect(audio).toBeDefined();
-    const hypseg = await service.align$(audio, "go forward ten meters", {
+    const aligner = service.align$(audio, "go forward ten meters", {
       go: "G OW",
       forward: "F AO R W ER D",
       ten: "T EH N",
       meters: "M IY T ER Z",
     });
-    expect(hypseg.t).toEqual("go forward ten meters");
-    expect(hypseg.w).toEqual([
-      { t: "<sil>", b: 0, d: 0.38, p: 0.945 },
-      { t: "go", b: 0.38, d: 0.17, p: 0.983 },
-      { t: "forward", b: 0.55, d: 0.52, p: 0.958 },
-      { t: "ten", b: 1.07, d: 0.31, p: 0.965 },
-      { t: "meters", b: 1.38, d: 0.66, p: 0.922 },
-    ]);
+    aligner.pipe(last()).subscribe((hypseg) => {
+      expect(hypseg.t).toEqual("go forward ten meters");
+      expect(hypseg.w).toEqual([
+        { t: "<sil>", b: 0, d: 0.38, p: 0.945 },
+        { t: "go", b: 0.38, d: 0.17, p: 0.983 },
+        { t: "forward", b: 0.55, d: 0.52, p: 0.958 },
+        { t: "ten", b: 1.07, d: 0.31, p: 0.965 },
+        { t: "meters", b: 1.38, d: 0.66, p: 0.922 },
+      ]);
+    });
   });
 });
