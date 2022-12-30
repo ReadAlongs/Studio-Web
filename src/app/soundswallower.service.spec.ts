@@ -597,6 +597,7 @@ describe("SoundswallowerService", () => {
 
   it("should be initialized", async () => {
     await service.initialize();
+    expect(true).toBeTruthy();
   });
 
   it("should align text", async () => {
@@ -613,19 +614,20 @@ describe("SoundswallowerService", () => {
       ten: "T EH N",
       meters: "M IY T ER Z",
     });
-    aligner.pipe(last()).subscribe((progress) => {
-      expect(progress).toBeDefined();
-      expect(progress.hypseg).toBeDefined();
-      if (progress.hypseg) {
-        expect(progress.hypseg.t).toEqual("go forward ten meters");
-        expect(progress.hypseg.w).toEqual([
-          { t: "<sil>", b: 0, d: 0.38, p: 0.945 },
-          { t: "go", b: 0.38, d: 0.17, p: 0.983 },
-          { t: "forward", b: 0.55, d: 0.52, p: 0.958 },
-          { t: "ten", b: 1.07, d: 0.31, p: 0.965 },
-          { t: "meters", b: 1.38, d: 0.66, p: 0.922 },
-        ]);
-      }
-    });
+    let progress = await aligner.toPromise();
+    expect(progress!).toBeDefined();
+    expect(progress!.hypseg!).toBeDefined();
+    expect(progress!.hypseg!.t).toBeDefined();
+    expect(progress!.hypseg!.w).toBeDefined();
+    expect(progress!.hypseg!.t).toEqual("go forward ten meters");
+    let prev = -1;
+    const hypseg_words = [];
+    for (const { t, b, d } of progress!.hypseg!.w!) {
+      expect(d).toBeGreaterThan(0);
+      expect(b).toBeGreaterThan(prev);
+      prev = b;
+      if (t != "<sil>" && t != "(NULL)") hypseg_words.push(t);
+    }
+    expect(hypseg_words.join(" ")).toEqual("go forward ten meters");
   });
 });
