@@ -1,6 +1,6 @@
 import { ShepherdService } from "angular-shepherd";
 import { ToastrService } from "ngx-toastr";
-import { forkJoin, from, of, Subject } from "rxjs";
+import { forkJoin, of, Subject } from "rxjs";
 import { map } from "rxjs/operators";
 import { Segment } from "soundswallower";
 
