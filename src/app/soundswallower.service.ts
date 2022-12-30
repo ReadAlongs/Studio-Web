@@ -31,7 +31,7 @@ export class SoundswallowerService {
   align$(
     audio: AudioBuffer,
     text: string,
-    dict: any
+    dict: { [id: string]: string }
   ): Observable<AlignmentProgress> {
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
