@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import soundswallower_factory, {
   Decoder,
   DictEntry,
+  Segment,
   SoundSwallowerModule,
 } from "soundswallower";
 
@@ -16,50 +17,75 @@ var soundswallower: SoundSwallowerModule;
 export class SoundswallowerService {
   constructor() {}
 
-  decoder: Decoder;
-  async initialize({
-    hmm = "model/en-us",
-    loglevel = "INFO",
-    samprate = 8000,
-    beam = 1e-100,
-    wbeam = 1e-100,
-    pbeam = 1e-100,
-  }) {
+  async initialize() {
     if (soundswallower === undefined)
       soundswallower = await soundswallower_factory();
-    this.decoder = new soundswallower.Decoder({
-      loglevel,
-      hmm,
-      samprate,
-      beam,
-      wbeam,
-      pbeam,
-    });
-    this.decoder.unset_config("dict");
-    this.decoder.initialize();
   }
 
-  async align$(audio: AudioBuffer, text: string, dict: any) {
-    if (this.decoder.get_config("samprate") != audio.sampleRate) {
-      this.decoder.set_config("samprate", audio.sampleRate);
-      console.log(
-        "Updated decoder sampling rate to " +
-          this.decoder.get_config("samprate")
-      );
-    }
-    console.log("Audio sampling rate is " + audio.sampleRate);
-    await this.decoder.initialize();
-    const words: Array<DictEntry> = [];
-    for (const name in dict) words.push([name, dict[name]]);
-    this.decoder.add_words(...words);
-    console.log("Added words to dictionary");
-    this.decoder.set_align_text(text);
-    console.log("Added word sequence for alignment");
-    this.decoder.start();
-    this.decoder.process_audio(audio.getChannelData(0), false, true);
-    this.decoder.stop();
-    const e = this.decoder.get_alignment();
-    console.log(e);
-    return e;
+  align$(
+    audio: AudioBuffer,
+    text: string,
+    dict: any
+  ): Observable<string | Segment> {
+    return new Observable((subscriber) => {
+      // Do synchronous (and hopefully fast) initialization
+      const decoder = new soundswallower.Decoder({
+        loglevel: "INFO",
+        beam: 1e-100,
+        wbeam: 1e-100,
+        pbeam: 1e-80,
+        samprate: audio.sampleRate,
+      });
+      decoder.unset_config("dict");
+      let cancelled = false;
+      // Now do some async (and interruptible) stuff
+      decoder
+        .initialize()
+        .then(async () => {
+          // Not async but we have to initialize() first, so...
+          const words: Array<DictEntry> = [];
+          for (const name in dict) words.push([name, dict[name]]);
+          decoder.add_words(...words);
+          decoder.set_align_text(text);
+          decoder.start();
+          const channel_data = audio.getChannelData(0);
+          const BUFSIZ = 8192;
+          let pos = 0;
+          subscriber.next(`${pos} / ${channel_data.length}`);
+          while (pos < channel_data.length) {
+            let len = channel_data.length - pos;
+            if (len > BUFSIZ) len = BUFSIZ;
+            // Do this in a loop with async/await to make it readable
+            await new Promise<void>((resolve) => {
+              setTimeout(() => {
+                decoder.process_audio(
+                  channel_data.subarray(pos, pos + len),
+                  false,
+                  false
+                );
+                resolve();
+              }, 0);
+            });
+            pos += len;
+            subscriber.next(`${pos} / ${channel_data.length}`);
+            if (cancelled) {
+              decoder.stop();
+              return;
+            }
+          }
+          decoder.stop();
+          subscriber.next(decoder.get_alignment());
+          subscriber.complete();
+        })
+        .catch((err) => {
+          subscriber.error(err);
+        })
+        .finally(() => {
+          decoder.delete();
+        });
+      return () => {
+        cancelled = true;
+      };
+    });
   }
 }
