@@ -118,10 +118,8 @@ export class AppComponent {
             event[2]
           )}`
         ),
-        from(event[3]).pipe(
-          map((hypseg) =>
-            this.b64Service.alignmentToSmil(hypseg as Segment, "test", "test")
-          )
+        of(
+          this.b64Service.alignmentToSmil(event[3] as Segment, "test", "test")
         ),
         this.b64Service.getBundle$(),
       ]).subscribe((x: any) => this.b64Inputs$.next(x));
