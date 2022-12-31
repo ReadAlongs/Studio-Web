@@ -6,6 +6,7 @@ import soundswallower_factory, {
   Segment,
   SoundSwallowerModule,
 } from "soundswallower";
+import { ReadAlong } from "./ras.service";
 
 import { Injectable } from "@angular/core";
 
@@ -14,6 +15,7 @@ var soundswallower: SoundSwallowerModule;
 export interface AlignmentProgress {
   pos: number;
   length: number;
+  xml?: string;
   hypseg?: Segment;
 }
 
@@ -28,11 +30,10 @@ export class SoundswallowerService {
       soundswallower = await soundswallower_factory();
   }
 
-  align$(
-    audio: AudioBuffer,
-    text: string,
-    dict: { [id: string]: string }
-  ): Observable<AlignmentProgress> {
+  align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
+    const text = ras["text_ids"];
+    const dict = ras["lexicon"];
+    const xml = ras["processed_xml"];
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
@@ -84,6 +85,7 @@ export class SoundswallowerService {
             pos: pos,
             length: channel_data.length,
             hypseg: decoder.get_alignment(),
+            xml: xml,
           });
           subscriber.complete();
         })
