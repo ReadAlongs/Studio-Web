@@ -213,9 +213,9 @@ export class UploadComponent implements OnInit {
       this.progressMode = "query";
       // Determine text type for API request
       const text_is_xml =
-        (this.inputMethod.text === "upload" &&
-          this.textControl.value.name.toLowerCase().endsWith(".xml")) ||
-        this.textControl.value.name.toLowerCase().endsWith(".ras");
+        this.inputMethod.text === "upload" &&
+        (this.textControl.value.name.toLowerCase().endsWith(".xml") ||
+          this.textControl.value.name.toLowerCase().endsWith(".ras"));
       // Create request (have to set text later...)
       let body: ReadAlongRequest = {
         text_languages: [this.langControl.value as string, "und"],
