@@ -1,6 +1,6 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
-import { forkJoin, of, Subject, zip } from "rxjs";
+import { Observable, forkJoin, of, zip } from "rxjs";
 import { map, switchMap, take } from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
@@ -36,7 +36,7 @@ export class UploadComponent implements OnInit {
       })
     )
   );
-  $loading = new Subject<boolean>();
+  loading = false;
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
@@ -207,57 +207,57 @@ export class UploadComponent implements OnInit {
         );
       }
     }
-    if (this.uploadFormGroup.valid) {
-      // Loading
-      this.$loading.next(true);
-      // Determine text type
-      let text_type = "text";
-      if (
-        this.inputMethod.text === "upload" &&
-        this.textControl.value.name.endsWith("xml")
-      ) {
-        text_type = "xml";
-      }
+    if (this.uploadFormGroup.valid && this.audioControl.value !== null) {
+      // Show progress bar
+      this.loading = true;
+      this.progressMode = "query";
+      // Determine text type for API request
+      const text_is_xml =
+        (this.inputMethod.text === "upload" &&
+          this.textControl.value.name.toLowerCase().endsWith(".xml")) ||
+        this.textControl.value.name.toLowerCase().endsWith(".ras");
+      // Create request (have to set text later...)
       let body: ReadAlongRequest = {
         text_languages: [this.langControl.value as string, "und"],
       };
-      // Combine audio and text observables
-      // Read file
-      let currentAudio: any = this.audioControl.value;
       forkJoin({
-        audio: this.audioService.loadAudioBufferFromFile$(currentAudio, 8000),
+        audio: this.audioService.loadAudioBufferFromFile$(
+          this.audioControl.value as File,
+          8000
+        ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
-          switchMap((xml: any) => {
-            console.log("query api");
-            if (text_type == "text") body.text = xml;
-            else body.xml = xml;
+          // WTF RxJS, why does the type get lost here?!?!?!?!
+          // See https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
+          switchMap((text: string): Observable<ReadAlong> => {
+            if (text_is_xml) body.xml = text;
+            else body.text = text;
+            this.progressMode = "determinate";
+            this.progressValue = 0;
             return this.rasService.assembleReadalong$(body);
           })
         ),
       })
         .pipe(
-          switchMap(({ audio, ras }: { audio: AudioBuffer; ras: any }) => {
-            return forkJoin({
-              progress: this.ssjsService.align$(
-                audio,
-                ras["text_ids"],
-                ras["lexicon"]
-              ),
-              xml: of(ras["processed_xml"]),
-            });
-          })
+          switchMap(({ audio, ras }) =>
+            // FIXME: see WTF above
+            this.ssjsService.align$(audio, ras as ReadAlong)
+          )
         )
-        .subscribe(
-          ({ progress, xml }: { progress: AlignmentProgress; xml: string }) => {
-            this.$loading.next(false);
+        .subscribe((progress) => {
+          if (progress.pos == progress.length) {
+            this.loading = false;
             this.stepChange.emit([
               "aligned",
               this.audioControl.value,
-              xml,
+              progress.xml,
               progress.hypseg,
             ]);
+          } else {
+            this.progressValue = Math.round(
+              (progress.pos / progress.length) * 100
+            );
           }
-        );
+        });
     } else {
       if (this.langControl.value === null) {
         this.toastr.error(
