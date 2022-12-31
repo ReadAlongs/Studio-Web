@@ -138,7 +138,7 @@
             <div class="row g-2">
                 <button i18n="Next button" id="next-step" class="mt-4"
                       mat-raised-button type="submit" (click)="nextStep()">Go to the next step!</button>
-                <mat-progress-bar *ngIf="$loading | async" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar *ngIf="$loading | async" [mode]="progressMode" [value]="progressValue"></mat-progress-bar>
             </div>
         </div>
 

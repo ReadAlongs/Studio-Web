@@ -6,6 +6,7 @@ import { map, switchMap, take } from "rxjs/operators";
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
+import { ProgressBarMode } from "@angular/material/progress-bar";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
@@ -41,6 +42,9 @@ export class UploadComponent implements OnInit {
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   recording = false;
   playing = false;
+  progressMode: ProgressBarMode = "indeterminate";
+  progressValue = 0;
+
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl,
