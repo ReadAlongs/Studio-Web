@@ -604,15 +604,21 @@ describe("SoundswallowerService", () => {
     await service.initialize();
     const response = await fetch(b64audio);
     const audio_file = (await response.blob()) as File;
-    const audio = (await audioService
+    const audio = await audioService
       .loadAudioBufferFromFile$(audio_file, 8000)
-      .toPromise()) as AudioBuffer; /* We *know* it's defined! */
+      .toPromise();
     expect(audio).toBeDefined();
-    const aligner = service.align$(audio, "go forward ten meters", {
-      go: "G OW",
-      forward: "F AO R W ER D",
-      ten: "T EH N",
-      meters: "M IY T ER Z",
+    const aligner = service.align$(audio!, {
+      text_ids: "go forward ten meters",
+      lexicon: {
+        go: "G OW",
+        forward: "F AO R W ER D",
+        ten: "T EH N",
+        meters: "M IY T ER Z",
+      },
+      // These are both bogus and we do not care
+      processed_xml: "go forward ten meters",
+      jsgf: "go forward ten meters",
     });
     let progress = await aligner.toPromise();
     expect(progress!).toBeDefined();
