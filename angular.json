@@ -85,7 +85,8 @@
               "namedChunks": true
             },
             "fr": {
-              "localize": ["fr"]
+              "localize": ["fr"],
+              "deleteOutputPath": false
             }
           },
           "defaultConfiguration": "production"
