@@ -1,17 +1,7 @@
-import { Howl } from 'howler';
-import { BehaviorSubject, Subject } from 'rxjs';
+import {Howl} from 'howler';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {Alignment, Page} from "../index.ds";
 
-
-export interface Page {
-  id: string,
-  paragraphs: Node[],
-  img?: string,
-  attributes?:NamedNodeMap[]
-}
-
-export interface Alignment {
-  [id: string]: [number, number];
-}
 
 /**
  * Gets XML from path

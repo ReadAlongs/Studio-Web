@@ -1,19 +1,15 @@
-import { Howl } from 'howler';
-import { Subject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import {Howl} from 'howler';
+import {Subject} from 'rxjs';
+import {distinctUntilChanged} from 'rxjs/operators';
 
-import { Component, Element, h, Listen, Method, Prop, State } from '@stencil/core';
+import {Component, Element, h, Listen, Method, Prop, State} from '@stencil/core';
 
-import { Alignment, Page, parseSMIL, parseTEI, Sprite } from '../../utils/utils';
+import {parseSMIL, parseTEI, Sprite} from '../../utils/utils';
+import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.ds";
 
 const LOADING = 0;
 const LOADED = 1;
 const ERROR_LOADING = 2;
-export type ReadAlongMode = "VIEW" | "EDIT";
-export type InterfaceLanguage = "eng" | "fra";//iso 639-3 code
-export type Translation = {
-  [lang in InterfaceLanguage]: string;
-};
 
 @Component({
   tag: 'read-along',
