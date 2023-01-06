@@ -8,6 +8,7 @@
         "start-fr": "ng serve --configuration=fr",
         "build": "ng build --configuration development --localize",
         "build:prod": "ng build --configuration production --localize",
+        "build:prod:ghpages": "ng build --configuration production && ng build --configuration production,fr",
         "watch": "ng build --watch --configuration development --localize",
         "test": "ng test",
         "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",

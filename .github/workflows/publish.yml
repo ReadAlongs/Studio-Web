@@ -21,7 +21,7 @@ jobs:
           npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
       - name: Build
         run: |
-          npm run-script build:prod
+          npm run-script build:prod:ghpages
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.2.3
         with:
