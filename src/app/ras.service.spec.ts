@@ -52,11 +52,7 @@ describe("RasService", () => {
         debug: true,
       })
       .subscribe((data) => {
-        console.log(data);
-        switch (data.type) {
-          case HttpEventType.Response:
-            expect(data).toEqual(ASSEMBLE_MOCK);
-        }
+        expect(data).toEqual(ASSEMBLE_MOCK);
       });
     const req = httpTestingController.expectOne({
       method: "POST",

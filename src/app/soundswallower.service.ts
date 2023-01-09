@@ -1,82 +1,103 @@
-/* -*- mode: javascript; js-indent-level: 2 -*- */
-import { BehaviorSubject, from } from "rxjs";
+/* -*- typescript-indent-level: 2 -*- */
+import { Observable } from "rxjs";
 import soundswallower_factory, {
   Decoder,
+  DictEntry,
+  Segment,
   SoundSwallowerModule,
 } from "soundswallower";
+import { ReadAlong } from "./ras.service";
 
 import { Injectable } from "@angular/core";
 
 var soundswallower: SoundSwallowerModule;
 
+export interface AlignmentProgress {
+  pos: number;
+  length: number;
+  xml?: string;
+  hypseg?: Segment;
+}
+
 @Injectable({
   providedIn: "root",
 })
 export class SoundswallowerService {
-  alignerReady$ = new BehaviorSubject<boolean>(false);
   constructor() {}
 
-  decoder: Decoder;
-  async initialize$({
-    hmm = "model/en-us",
-    loglevel = "INFO",
-    samprate = 8000,
-    beam = 1e-100,
-    wbeam = 1e-100,
-    pbeam = 1e-100,
-  }) {
+  async initialize() {
     if (soundswallower === undefined)
       soundswallower = await soundswallower_factory();
-    this.decoder = new soundswallower.Decoder({
-      loglevel,
-      hmm,
-      samprate,
-      beam,
-      wbeam,
-      pbeam,
+  }
+
+  align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
+    const text = ras["text_ids"];
+    const dict = ras["lexicon"];
+    const xml = ras["processed_xml"];
+    return new Observable((subscriber) => {
+      // Do synchronous (and hopefully fast) initialization
+      const decoder = new soundswallower.Decoder({
+        loglevel: "INFO",
+        beam: 1e-100,
+        wbeam: 1e-100,
+        pbeam: 1e-80,
+        samprate: audio.sampleRate,
+      });
+      decoder.unset_config("dict");
+      let cancelled = false;
+      // Now do some async (and interruptible) stuff
+      decoder
+        .initialize()
+        .then(async () => {
+          // Not async but we have to initialize() first, so...
+          const words: Array<DictEntry> = [];
+          for (const name in dict) words.push([name, dict[name]]);
+          decoder.add_words(...words);
+          decoder.set_align_text(text);
+          decoder.start();
+          const channel_data = audio.getChannelData(0);
+          const BUFSIZ = 8192;
+          let pos = 0;
+          subscriber.next({ pos: pos, length: channel_data.length });
+          while (pos < channel_data.length) {
+            let len = channel_data.length - pos;
+            if (len > BUFSIZ) len = BUFSIZ;
+            // Do this in a loop with async/await to make it readable
+            await new Promise<void>((resolve) => {
+              setTimeout(() => {
+                decoder.process_audio(
+                  channel_data.subarray(pos, pos + len),
+                  false,
+                  false
+                );
+                resolve();
+              }, 0);
+            });
+            pos += len;
+            subscriber.next({ pos: pos, length: channel_data.length });
+            if (cancelled) {
+              decoder.stop();
+              return;
+            }
+          }
+          decoder.stop();
+          subscriber.next({
+            pos: pos,
+            length: channel_data.length,
+            hypseg: decoder.get_alignment(),
+            xml: xml,
+          });
+          subscriber.complete();
+        })
+        .catch((err) => {
+          subscriber.error(err);
+        })
+        .finally(() => {
+          decoder.delete();
+        });
+      return () => {
+        cancelled = true;
+      };
     });
-    this.decoder.unset_config("dict");
-    return await this.decoder.initialize();
-  }
-
-  async addDict(dict: any) {
-    const n = dict.length;
-    let idx = 0;
-    for (const word in dict) {
-      const pron = dict[word];
-      console.log(`adding word ${word} with phones ${pron}`);
-      await this.decoder.add_word(word, pron, idx === n - 1);
-      ++idx;
-    }
-    console.log("finished adding words");
-  }
-
-  async createGrammarFromJSGF(jsgf: string) {
-    await this.decoder.set_jsgf(jsgf);
-    console.log("finished creating grammar");
-  }
-
-  async align$(audio: any, text: string, dict: any) {
-    if (this.decoder.get_config("samprate") != audio.sampleRate) {
-      this.decoder.set_config("samprate", audio.sampleRate);
-      console.log(
-        "Updated decoder sampling rate to " +
-          this.decoder.get_config("samprate")
-      );
-    }
-    console.log("Audio sampling rate is " + audio.sampleRate);
-    await this.decoder.initialize();
-    await this.addDict(dict);
-    console.log("Added words to dictionary");
-    await this.decoder.set_align_text(text);
-    console.log("Added word sequence for alignment");
-    await this.decoder.start();
-    /* FIXME: Decompose this to allow progress bar, non-blocking of
-     * long files (requires API for separate CMN) */
-    await this.decoder.process(audio.getChannelData(0), false, true);
-    await this.decoder.stop();
-    const e = this.decoder.get_hypseg();
-    console.log(e);
-    return e;
   }
 }

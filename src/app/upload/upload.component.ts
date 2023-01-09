@@ -1,17 +1,26 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
-import { forkJoin, from, Subject, zip } from "rxjs";
+import { Observable, forkJoin, of, zip } from "rxjs";
 import { map, switchMap, take } from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
+import { ProgressBarMode } from "@angular/material/progress-bar";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
-import { RasService } from "../ras.service";
-import { SoundswallowerService } from "../soundswallower.service";
+import {
+  RasService,
+  ReadAlong,
+  ReadAlongRequest,
+  LanguageMap,
+} from "../ras.service";
+import {
+  SoundswallowerService,
+  AlignmentProgress,
+} from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
 @Component({
@@ -21,28 +30,27 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
 })
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
-    map((langs: object) =>
-      Object.entries(langs).map(
-        ([lang_code, lang_name]: Array<Array<string>>) => {
-          return { id: lang_code, name: lang_name };
-        }
-      )
+    map((langs: LanguageMap) =>
+      Object.entries(langs).map(([lang_code, lang_name]) => {
+        return { id: lang_code, name: lang_name };
+      })
     )
   );
-  $loading = new Subject<boolean>();
+  loading = false;
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   recording = false;
   playing = false;
+  progressMode: ProgressBarMode = "indeterminate";
+  progressValue = 0;
+
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl,
     text: this.textControl,
     audio: this.audioControl,
   });
-  processedXML = "";
-  maxAudioSize = 10 * 1024 ** 2; // Max 10 MB audio file size
   inputMethod = {
     audio: "mic",
     text: "edit",
@@ -66,13 +74,12 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.ssjsService.initialize$({}).then(
-      (_) => {
-        this.ssjsService.alignerReady$.next(true);
-      },
-      (err) => console.log(err)
-    );
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.ssjsService.initialize();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   downloadRecording() {
@@ -200,58 +207,57 @@ export class UploadComponent implements OnInit {
         );
       }
     }
-    if (this.uploadFormGroup.valid) {
-      // Loading
-      this.$loading.next(true);
-      // Determine text type
-      let text_type = "text";
-      if (
+    if (this.uploadFormGroup.valid && this.audioControl.value !== null) {
+      // Show progress bar
+      this.loading = true;
+      this.progressMode = "query";
+      // Determine text type for API request
+      const text_is_xml =
         this.inputMethod.text === "upload" &&
-        this.textControl.value.name.endsWith("xml")
-      ) {
-        text_type = "xml";
-      }
-      let body: any = {
-        text_languages: [this.langControl.value, "und"],
-        encoding: "utf8",
+        (this.textControl.value.name.toLowerCase().endsWith(".xml") ||
+          this.textControl.value.name.toLowerCase().endsWith(".ras"));
+      // Create request (have to set text later...)
+      let body: ReadAlongRequest = {
+        text_languages: [this.langControl.value as string, "und"],
       };
-      // Combine audio and text observables
-      // Read file
-      let currentAudio: any = this.audioControl.value;
-      let sampleRate = this.ssjsService.decoder.get_config(
-        "samprate"
-      ) as number;
       forkJoin({
         audio: this.audioService.loadAudioBufferFromFile$(
-          currentAudio,
-          sampleRate
+          this.audioControl.value as File,
+          8000
         ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
-          // Only take first response
-          take(1),
-          // Query RAS service
-          switchMap((xml: any) => {
-            console.log("query api");
-            body[text_type] = xml;
+          // WTF RxJS, why does the type get lost here?!?!?!?!
+          // See https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
+          switchMap((text: string): Observable<ReadAlong> => {
+            if (text_is_xml) body.xml = text;
+            else body.text = text;
+            this.progressMode = "determinate";
+            this.progressValue = 0;
             return this.rasService.assembleReadalong$(body);
           })
         ),
-      }).subscribe((response: any) => {
-        let { audio, ras } = response;
-        let hypseg = this.ssjsService.align$(
-          audio,
-          ras["text_ids"],
-          ras["lexicon"]
-        );
-        this.processedXML = ras["processed_xml"];
-        this.$loading.next(false);
-        this.stepChange.emit([
-          "aligned",
-          this.audioControl.value,
-          this.processedXML,
-          hypseg,
-        ]);
-      });
+      })
+        .pipe(
+          switchMap(({ audio, ras }) =>
+            // FIXME: see WTF above
+            this.ssjsService.align$(audio, ras as ReadAlong)
+          )
+        )
+        .subscribe((progress) => {
+          if (progress.pos == progress.length) {
+            this.loading = false;
+            this.stepChange.emit([
+              "aligned",
+              this.audioControl.value,
+              progress.xml,
+              progress.hypseg,
+            ]);
+          } else {
+            this.progressValue = Math.round(
+              (progress.pos / progress.length) * 100
+            );
+          }
+        });
     } else {
       if (this.langControl.value === null) {
         this.toastr.error(
@@ -277,34 +283,30 @@ export class UploadComponent implements OnInit {
 
   onFileSelected(type: any, event: any) {
     const file: File = event.target.files[0];
-    if (file.size > this.maxAudioSize) {
-      this.toastr.error($localize`File too large`, $localize`Sorry!`);
-    } else {
-      if (type === "audio") {
-        if (file.type == "video/webm") {
-          // No, it is audio, because we say so.
-          const audioFile = new File([file], file.name, { type: "audio/webm" });
-          this.audioControl.setValue(audioFile);
-        } else {
-          this.audioControl.setValue(file);
-        }
-        this.toastr.success(
-          $localize`File ` +
-            file.name +
-            $localize` processed, but not uploaded. Your audio will stay on your computer.`,
-          $localize`Great!`,
-          { timeOut: 10000 }
-        );
-      } else if (type === "text") {
-        this.textControl.setValue(file);
-        this.toastr.success(
-          $localize`File ` +
-            file.name +
-            $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
-          $localize`Great!`,
-          { timeOut: 10000 }
-        );
+    if (type === "audio") {
+      if (file.type == "video/webm") {
+        // No, it is audio, because we say so.
+        const audioFile = new File([file], file.name, { type: "audio/webm" });
+        this.audioControl.setValue(audioFile);
+      } else {
+        this.audioControl.setValue(file);
       }
+      this.toastr.success(
+        $localize`File ` +
+          file.name +
+          $localize` processed, but not uploaded. Your audio will stay on your computer.`,
+        $localize`Great!`,
+        { timeOut: 10000 }
+      );
+    } else if (type === "text") {
+      this.textControl.setValue(file);
+      this.toastr.success(
+        $localize`File ` +
+          file.name +
+          $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
+        $localize`Great!`,
+        { timeOut: 10000 }
+      );
     }
   }
 }
