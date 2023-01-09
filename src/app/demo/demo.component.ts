@@ -8,7 +8,7 @@ import { Component, Input, OnInit } from "@angular/core";
 export class DemoComponent implements OnInit {
   @Input() b64Inputs: string[];
 
-  slots: any = { title: "Title", subtitle: "Subtitle" };
+  slots: any = { title: $localize`Title`, subtitle: $localize`Subtitle` };
   constructor() {}
 
   ngOnInit(): void {}

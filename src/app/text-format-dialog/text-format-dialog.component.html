@@ -1,8 +1,3 @@
-<mat-toolbar class="p-0">
-    <h3 i18n="Title for text format help">Text Format Help</h3>
-    <span class="flex-spacer"></span>
-    <button mat-button mat-dialog-close>&times;</button>
-</mat-toolbar>
 <h2 i18n="Header for text format help">Here is how to format your plain text input text.</h2>
 <mat-dialog-content>
 <p i18n="Suggestion for one sentence per line">Each line should ideally contain one sentence, although that is not a strict rule.</p>
@@ -20,3 +15,6 @@ This is sentence two in paragraph two on page one.
 This is sentence one in paragraph one on page two.
 </pre>
 </mat-dialog-content>
+<div mat-dialog-actions>
+    <button i18n="Close button" style="margin: 0 auto;" mat-raised-button mat-dialog-close>Close</button>
+</div>
