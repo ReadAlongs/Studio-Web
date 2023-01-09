@@ -5,7 +5,7 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "start-fr": "ng serve --configuration=fr",
+        "start-fr": "ng serve --configuration=fr --port=5200",
         "build": "ng build --configuration development --localize",
         "build:prod": "ng build --configuration production --localize",
         "build:prod:ghpages": "ng build --configuration production && ng build --configuration production,fr",
@@ -13,7 +13,8 @@
         "test": "ng test",
         "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
         "prepare": "husky install",
-        "extract-i18n": "ng extract-i18n --format json --output-path src/i18n"
+        "extract-i18n": "ng extract-i18n --format json --output-path src/i18n",
+        "check-fr-l10n": "bash -c \"diff -w <(cat src/i18n/messages.json | sed 's/:.*//') <(cat src/i18n/messages.fr.json | sed 's/:.*//')\""
     },
     "private": true,
     "commitlint": {

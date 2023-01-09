@@ -161,7 +161,7 @@ export class UploadComponent implements OnInit {
       })
       .catch((errorCase) => {
         this.toastr.error(
-          $localize`Please try again, or upload a file.`,
+          $localize`Please try again, or select a pre-recorded file.`,
           $localize`Audio not recorded!`
         );
         console.log(errorCase);
@@ -187,14 +187,16 @@ export class UploadComponent implements OnInit {
       } else {
         this.toastr.error(
           $localize`Please enter text to align.`,
-          $localize`No text`
+          $localize`No text`,
+          { timeOut: 15000 }
         );
       }
     } else {
       if (this.textControl.value === null) {
         this.toastr.error(
           $localize`Please select a text file.`,
-          $localize`No text file`
+          $localize`No text`,
+          { timeOut: 15000 }
         );
       }
     }
@@ -254,18 +256,21 @@ export class UploadComponent implements OnInit {
       if (this.langControl.value === null) {
         this.toastr.error(
           $localize`Please select a language.`,
-          $localize`No language`
+          $localize`No language`,
+          { timeOut: 15000 }
         );
       }
       if (this.audioControl.value === null) {
         this.toastr.error(
           $localize`Please (re-)record some audio or select an audio file.`,
-          $localize`No audio`
+          $localize`No audio`,
+          { timeOut: 15000 }
         );
       }
       this.toastr.error(
-        $localize`Please upload a text and audio file and select the language.`,
-        $localize`Form not complete`
+        $localize`Please select or write text, select or record audio data, and select the language.`,
+        $localize`Form not complete`,
+        { timeOut: 15000 }
       );
     }
   }

@@ -1,6 +1,6 @@
 <section>
     <div class="container export__desc">
-        <h2 i18n="Header for upload box" class="subtitle" id="upload-header">Upload data to start creating your ReadAlong</h2>
+        <h2 i18n="Header for upload box" class="subtitle" id="upload-header">Select data to start creating your ReadAlong</h2>
         <p i18n="Upload instructions">In order to make a ReadAlong, we need 3 different things. We need to know <b>which language</b> your readalong is in, and we also need some <b>text</b>, and corresponding
             <b>audio</b>.
         </p>
@@ -24,7 +24,7 @@
                     <div class="row">
                         <div class="mt-4 mb-3">
                             <!-- <div class="container"> -->
-                            <label i18n="Instructions for uploading text" for="updateText" class="form-label">Upload plain text files (.txt) or ReadAlong Studio temporary files (.ras)</label>
+                            <label i18n="Instructions for uploading text" for="updateText" class="form-label">Select a plain text file (.txt) or a ReadAlong Studio temporary file (.ras)</label>
                             <input #textInputElement (change)="onFileSelected('text', $event)" class="form-control" name="text" type="file" id="updateText" accept=".txt,.xml,.ras">
                         <!-- </div> -->
                         </div>
@@ -67,9 +67,8 @@
                 </div>
 
                 <div *ngIf="inputMethod.audio === 'upload'" class="row mb-3">
-                    <h2 i18n="Title for upload box" class="subtitle">Upload the audio</h2>
-                    <label i18n="Instructions for uploading audio" for="updateAudio" class="form-label">You must upload your audio as mp3, wav, or webm
-                            file.</label>
+                    <h2 i18n="Title for upload box" class="subtitle">Select an audio file</h2>
+                    <label i18n="Instructions for uploading audio" for="updateAudio" class="form-label">Use pre-recorded audio from an mp3, wav, or webm file.</label>
                     <input (change)="onFileSelected('audio', $event)" class="form-control" name="audio" type="file" id="updateAudio" accept=".mp3,.wav,.webm">
                 </div>
                 <div *ngIf="inputMethod.audio === 'mic'" class="mb-0 mb-md-3">
