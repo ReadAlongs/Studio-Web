@@ -87,7 +87,7 @@ $value in $ui-themes {
 
         // @extend %border--strong--left;
         // @extend %border--strong--right;
-  
+
     }
 
     /* Handle */
@@ -180,13 +180,17 @@ $space: 0;
         top: em($space);
     }
 
-    .left-#{$space} {
-        left: em($space);
-    }
+  .left-#{$space} {
+    left: em($space);
+  }
 
-    .right-#{$space} {
-        right: em($space);
-    }
+  .right-#{$space} {
+    right: em($space);
+  }
 
-    $space: $space+5;
+  $space: $space+5;
+}
+
+ml-2 {
+  margin-left: 1.2rem !important;
 }

@@ -9,7 +9,8 @@ import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "..
 
 const LOADING = 0;
 const LOADED = 1;
-const ERROR_LOADING = 2;
+const ERROR_PARSING = 2;
+const ERROR_LOADING = 3;
 
 @Component({
   tag: 'read-along',
@@ -90,6 +91,20 @@ export class ReadAlongComponent {
    */
   @Prop() mode: ReadAlongMode = "VIEW";
 
+  /**
+   *
+   */
+  @Prop({mutable: true, reflect: true}) scrollBehavior: "smooth" | "auto" = "smooth";
+  /**
+   * Pause when at the end of a page
+   */
+  @Prop({mutable: true, reflect: true}) autoPauseEndOfPage = false;
+
+  /**
+   * Pause timeout when at the end of a page
+   */
+  @Prop({mutable: true, reflect: true}) timeoutAtEndOfPage = 0;
+
   /************
    *  STATES  *
    ************/
@@ -118,13 +133,16 @@ export class ReadAlongComponent {
     'XML': LOADING,
     'SMIL': LOADING
   };
+  @State() autoPauseState: "init" | "playing" | "paused" | "resumed" | "ended" = "init";
+
+  @State() atEnd = false;
 
 
   /************
    *  LISTENERS  *
    ************/
 
-  @Listen('wheel', { target: 'window' })
+  @Listen('wheel', {target: 'window'})
   wheelHandler(event: MouseEvent): void {
     // only show guide if there is an actual highlighted element
     if (this.el.shadowRoot.querySelector('.reading')) {
@@ -139,6 +157,25 @@ export class ReadAlongComponent {
           }
         }
       }
+    }
+  }
+
+
+  scrollEventHandler(event: UIEvent): void {
+    if (this.current_page == undefined || this.playing === false) return
+    const containterRect: DOMRect = (event.currentTarget as Element).getBoundingClientRect()
+    const currentPageRect: DOMRect = this.el.shadowRoot.querySelector('#' + this.current_page).getBoundingClientRect()
+    //console.log("scrolled",containterRect.x,currentPageRect.x )
+    //auto resume if not pausing at the end of page
+    if (this.autoPauseState === "paused" && this.play_id && !this.atEnd &&
+      (containterRect.x + 20) > currentPageRect.x
+    ) {
+
+      setTimeout(() => this.audio_howl_sprites.sound.play(), 100)
+      this.autoPauseState = "resumed"
+
+    } else {
+      this.audio_howl_sprites.pause()
     }
   }
 
@@ -299,14 +336,20 @@ export class ReadAlongComponent {
   play() {
     this.playing = true;
     // If already playing once, continue playing
-    if (this.play_id !== undefined) {
-      this.play_id = this.audio_howl_sprites.play(this.play_id)
+    if (this.autoPauseEndOfPage && this.autoPauseState === "paused") {
+      this.scrollToPage(this.current_page)
+
     } else {
-      // else, start a new play
-      this.play_id = this.audio_howl_sprites.play('all')
+      this.autoPauseState = "playing"
+      if (this.play_id !== undefined) {
+        this.play_id = this.audio_howl_sprites.play(this.play_id)
+      } else {
+        // else, start a new play
+        this.play_id = this.audio_howl_sprites.play('all')
+      }
+      // animate the progress bar
+      this.animateProgress()
     }
-    // animate the progress bar
-    this.animateProgress()
 
   }
 
@@ -335,6 +378,7 @@ export class ReadAlongComponent {
       this.autoScroll = true;
       this.showGuide = false;
     }
+
 
   }
 
@@ -384,6 +428,8 @@ export class ReadAlongComponent {
       });
       this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
       this.playing = false;
+      this.atEnd = true;
+      this.autoPauseState = "ended"
       // }
     }, this.play_id);
   }
@@ -408,6 +454,9 @@ export class ReadAlongComponent {
       // this.audio_howl_sprites = [];
       this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
       this.playing = false;
+      this.playing = false;
+      this.atEnd = true;
+      this.autoPauseState = "ended"
       // }
     }, this.play_id);
   }
@@ -606,14 +655,16 @@ export class ReadAlongComponent {
   }
 
   scrollToPage(pg_id: string): void {
+
     let page_container: any = this.el.shadowRoot.querySelector('.pages__container')
     let next_page: any = this.el.shadowRoot.querySelector('#' + pg_id)
     page_container.scrollBy({
       top: this.pageScrolling.match("vertical") != null ? (next_page.offsetTop - page_container.scrollTop) : 0,
       left: this.pageScrolling.match("vertical") != null ? 0 : (next_page.offsetLeft - page_container.scrollLeft),
-      behavior: 'smooth'
+      behavior: this.scrollBehavior
     });
     next_page.scrollTo(0, 0)//reset to top of the page
+
   }
 
   scrollByHeight(el: HTMLElement): void {
@@ -625,7 +676,7 @@ export class ReadAlongComponent {
     sent_container.scrollBy({
       top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
       left: 0,
-      behavior: 'smooth'
+      behavior: this.scrollBehavior
     })
 
   }
@@ -640,7 +691,7 @@ export class ReadAlongComponent {
     sent_container.scrollTo({
       left: anchor.left - 10, // negative value acceptable
       top: 0,
-      behavior: 'smooth'
+      behavior: this.scrollBehavior
     })
 
   }
@@ -648,7 +699,7 @@ export class ReadAlongComponent {
   scrollTo(el: HTMLElement): void {
 
     el.scrollIntoView({
-      behavior: 'smooth'
+      behavior: this.scrollBehavior
     });
   }
 
@@ -670,6 +721,11 @@ export class ReadAlongComponent {
 
   }
 
+  audioEnded() {
+    this.atEnd = true;
+    this.autoPauseState = "ended"
+  }
+
   /*************
    * LIFECYCLE *
    *************/
@@ -685,6 +741,8 @@ export class ReadAlongComponent {
     if (this.svgOverlay) {
       this.changeFill()
     }
+
+
   }
 
   /**
@@ -709,10 +767,25 @@ export class ReadAlongComponent {
       }
     }
 
+
     // Parse the text to be displayed
-    this.parsed_text = parseTEI(this.text)
-    this.images = this.parsed_text.map((page) => page.img ? page.img : null)
-    this.assetsStatus.XML = this.parsed_text.length ? LOADED : ERROR_LOADING
+    parseTEI(this.text).then((pages) => {
+      this.parsed_text = pages
+      this.assetsStatus.XML = LOADED
+      this.images = this.parsed_text.map((page) => page.img ? page.img : null)
+    }).catch((error) => {
+      if (error.type) this.assetsStatus.XML = ERROR_PARSING
+      else this.assetsStatus.XML = ERROR_LOADING
+    })
+    parseSMIL(this.alignment).then((alignments) => {
+      this.processed_alignment = alignments
+      this.assetsStatus.SMIL = LOADED
+
+    }).catch((error) => {
+      if (error.type) this.assetsStatus.SMIL = ERROR_PARSING
+      else this.assetsStatus.SMIL = ERROR_LOADING
+    })
+
 
   }
 
@@ -723,15 +796,16 @@ export class ReadAlongComponent {
    */
   componentDidLoad() {
 
-    this.processed_alignment = parseSMIL(this.alignment)
-    this.assetsStatus.SMIL = Object.keys(this.processed_alignment).length ? LOADED : ERROR_LOADING
+
 
     // load basic Howl
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
       preload: true,
       onloaderror: this.audioFailedToLoad.bind(this),
-      onload: this.audioLoaded.bind(this)
+      onload: this.audioLoaded.bind(this),
+      onend: this.audioEnded.bind(this)
+
 
     })
     // Once loaded, get duration and build Sprite
@@ -759,16 +833,40 @@ export class ReadAlongComponent {
           // Scroll horizontally (to different page) if needed
           let current_page = ReadAlongComponent._getSentenceContainerOfWord(query_el).parentElement.id
 
+
           if (current_page !== this.current_page) {
             if (this.current_page !== undefined) {
-              this.scrollToPage(current_page)
+              if (this.autoPauseEndOfPage && this.autoPauseState === "playing") {
+                this.pause()
+              } else {
+                this.audio_howl_sprites.sound.pause()
+                if (this.timeoutAtEndOfPage > 0) {
+
+                  setTimeout(() => {
+                    this.scrollToPage(current_page)
+                  }, this.timeoutAtEndOfPage * 1000)
+                } else {
+
+                  this.scrollToPage(current_page)
+                }
+              }
+              if (this.autoPauseState === "playing" && this.scrollBehavior == "smooth") {
+
+                this.autoPauseState = "paused"
+
+              }
+
+
             }
             this.current_page = current_page
+          } else {
+            if (this.autoPauseState === "resumed") this.autoPauseState = "playing"
           }
 
-          //if the user has scrolled away from the from the current page bring them page
+          //if the user has scrolled away from the current page bring them page
           if (query_el.getBoundingClientRect().left < 0 || this.el.shadowRoot.querySelector("#" + current_page).getBoundingClientRect().left !== 0) {
-            this.scrollToPage(current_page)
+            if (this.autoPauseState === "playing")
+              this.scrollToPage(current_page)
           }
 
           // scroll vertically (through paragraph) if needed
@@ -789,6 +887,7 @@ export class ReadAlongComponent {
       this.isLoaded = true;
       this.assetsStatus.AUDIO = LOADED;
     })
+
 
   }
 
@@ -826,6 +925,14 @@ export class ReadAlongComponent {
       "alignment-error": {
         "eng": "Error: The alignment file could not be loaded",
         "fra": "Erreur: le fichier alignement n'a pas pu être chargé"
+      },
+      "text-parse-error": {
+        "eng": "Error: The text file could not be parsed",
+        "fra": "Erreur: le fichier texte n'a pas pu être analysé"
+      },
+      "alignment-parse-error": {
+        "eng": "Error: The alignment file could not be parse",
+        "fra": "Erreur: le fichier alignement n'a pas pu être analysé"
       },
       "loading": {
         "eng": "Loading...",
@@ -1126,40 +1233,44 @@ export class ReadAlongComponent {
           <slot name="read-along-subheader" />
         </h3>
         {
-          this.assetsStatus.AUDIO &&
+
           <p data-cy="audio-error"
-            class={"alert status-" + this.assetsStatus.AUDIO + (this.assetsStatus.AUDIO == LOADED ? ' fade' : '')}>
+             class={"alert status-" + this.assetsStatus.AUDIO + (this.assetsStatus.AUDIO == LOADED ? ' fade' : '')}>
             <span
-              class="material-icons-outlined"> {this.assetsStatus.AUDIO == ERROR_LOADING ? 'error' : (this.assetsStatus.AUDIO > 0 ? 'done' : 'pending_actions')}</span>
-            <span>{this.assetsStatus.AUDIO == ERROR_LOADING ? this.returnTranslation('audio-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'AUDIO' : this.returnTranslation('loading', this.language))}</span>
+              class="material-icons-outlined"> {this.assetsStatus.AUDIO == ERROR_LOADING ? 'error' : (this.assetsStatus.AUDIO > 0 ? 'done' : 'music_note')}</span>
+            <span
+              class={"ml-2"}>{this.assetsStatus.AUDIO > LOADED ? this.returnTranslation('audio-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'AUDIO' : this.returnTranslation('loading', this.language))}</span>
           </p>
         }
 
         {
-          this.assetsStatus.XML && <p data-cy="text-error"
-            class={"alert status-" + this.assetsStatus.XML + (this.assetsStatus.XML == LOADED ? ' fade' : '')}>
+          <p data-cy="text-error"
+             class={"alert status-" + this.assetsStatus.XML + (this.assetsStatus.XML == LOADED ? ' fade' : '')}>
             <span
-              class="material-icons-outlined"> {this.assetsStatus.XML == ERROR_LOADING ? 'error' : (this.assetsStatus.XML > 0 ? 'done' : 'pending_actions')}</span>
-            <span>{this.assetsStatus.XML == ERROR_LOADING ? this.returnTranslation('text-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}</span>
+              class="material-icons-outlined"> {this.assetsStatus.XML == ERROR_PARSING || this.assetsStatus.XML == ERROR_LOADING ? 'error' : (this.assetsStatus.XML > 0 ? 'done' : 'auto_stories')}</span>
+            <span
+              class={"ml-2"}>{this.assetsStatus.XML > LOADED ? this.returnTranslation(this.assetsStatus.XML == ERROR_PARSING ? 'text-error' : 'text-prase-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}</span>
           </p>
         }
 
         {
-          this.assetsStatus.SMIL && <p data-cy="alignment-error"
-            class={"alert status-" + this.assetsStatus.SMIL + (this.assetsStatus.SMIL == LOADED ? ' fade' : '')}>
+          <p data-cy="alignment-error"
+             class={"alert status-" + this.assetsStatus.SMIL + (this.assetsStatus.SMIL == LOADED ? ' fade' : '')}>
             <span
-              class="material-icons-outlined"> {this.assetsStatus.SMIL == ERROR_LOADING ? 'error' : (this.assetsStatus.SMIL > 0 ? 'done' : 'pending_actions')}</span>
-            <span>{this.assetsStatus.SMIL == ERROR_LOADING ? this.returnTranslation('alignment-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'SMIL' : this.returnTranslation('loading', this.language))}</span>
+              class="material-icons-outlined"> {this.assetsStatus.SMIL >= ERROR_PARSING ? 'error' : (this.assetsStatus.SMIL > 0 ? 'done' : 'lyrics')}</span>
+            <span
+              class={"ml-2"}>{this.assetsStatus.SMIL > LOADED ? this.returnTranslation(this.assetsStatus.SMIL == ERROR_LOADING ? 'alignment-error' : 'alignment-parse-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'SMIL' : this.returnTranslation('loading', this.language))}</span>
           </p>
         }
-        <div data-cy="text-container" class={"pages__container theme--" + this.theme + " " + this.pageScrolling}>
+        <div data-cy="text-container" class={"pages__container theme--" + this.theme + " " + this.pageScrolling}
+             onScroll={e => this.scrollEventHandler(e)}>
 
-          {this.showGuide ? <this.Guide /> : null}
+          {this.showGuide ? <this.Guide/> : null}
           {this.assetsStatus.XML == LOADED && this.parsed_text.map((page) =>
             <this.Page pageData={page}>
             </this.Page>
           )}
-          {this.isLoaded == false && <div class="loader" />}
+          {this.isLoaded == false && <div class="loader"/>}
 
         </div>
         {this.assetsStatus.SMIL == LOADED &&
@@ -1167,9 +1278,9 @@ export class ReadAlongComponent {
             class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
             {this.svgOverlay ? <this.Overlay /> : null}
           </div>}
-        {this.assetsStatus.AUDIO == LOADED && <this.ControlPanel />}
-
-        {this.cssUrl && this.cssUrl.match(".css") != null && <link href={this.cssUrl} rel="stylesheet" />}
+        {this.assetsStatus.AUDIO == LOADED && <this.ControlPanel/>}
+        { /*TODO create a dialog with options for autopause and scrolling behaviour */}
+        {this.cssUrl && this.cssUrl.match(".css") != null && <link href={this.cssUrl} rel="stylesheet"/>}
       </div>
 
     )
