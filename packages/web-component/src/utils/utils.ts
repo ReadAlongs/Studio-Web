@@ -1,22 +1,15 @@
 import {Howl} from 'howler';
 import {BehaviorSubject, Subject} from 'rxjs';
-import {Alignment, Page} from "../index.ds";
+import {Alignment, Page, LoadingError} from "../index.ds";
 
 
 /**
  * Gets XML from path
  * @param {string} path - the path to the xml file
  */
-function getXML(path: string): string {
+function getXML(path: string): Promise<string> {
+  return fetch(path, {method: "GET", mode: "cors"}).then((response) => response.text())
 
-  let xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", path, false);//TODO rewrite as async
-  xmlhttp.addEventListener("error", function (error) {
-    console.log(error);
-  })
-  xmlhttp.send();
-
-  return xmlhttp.responseText;
 }
 
 
@@ -63,8 +56,9 @@ export function zip(arrays): Array<any[]> {
  * Return sentences from TEI xml file
  * @param {string} - the path to the TEI file
  */
-export function parseTEI(path: string): Page[] {
-  let xmlDocument =  getXML(path)
+export async function parseTEI(path: string): Promise<Page[]> {
+  let xmlDocument = await getXML(path)
+  if (xmlDocument == undefined || xmlDocument.length < 1) throw {type: 1, message: "File not found"} as LoadingError
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
   let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
@@ -74,30 +68,30 @@ export function parseTEI(path: string): Page[] {
     let img = getNodeByXpath(img_xpath, xml_text)
     let p_xpath = `.//div[@id='${id}']/p`
     let paragraphs = getNodeByXpath(p_xpath, xml_text)
-    let parsed_page = { id: id, paragraphs: paragraphs }
+    let parsed_page = {id: id, paragraphs: paragraphs}
     if (img.length > 0) {
       parsed_page['img'] = img[0].nodeValue;
     }
-    if(p.attributes)parsed_page["attributes"]=p.attributes;
+    if (p.attributes) parsed_page["attributes"] = p.attributes;
     return parsed_page
   });
   return parsed_pages
 }
 
 
-
 /**
  * Return useful data from SMIL xml file
  * @param {string} - the path to the SMIL file
  */
-export function parseSMIL(path: string): Alignment {
-  let xmlDocument = getXML(path)
+export async function parseSMIL(path: string): Promise<Alignment> {
+  let xmlDocument = await getXML(path)
+  if (xmlDocument == undefined || xmlDocument.length < 1) throw {type: 1, message: "File not found"} as LoadingError
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
   let text = getNodeByXpath('/i:smil/i:body/i:par/i:text/@src', xml_text).map(x => {
-    let split = x['value'].split('#');
-    return split[split.length - 1]
-  }
+      let split = x['value'].split('#');
+      return split[split.length - 1]
+    }
   )
   let audio_begin = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
   let audio_end = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)

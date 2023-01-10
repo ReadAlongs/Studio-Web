@@ -18,17 +18,20 @@ you make to `/src` will be automatically shown in the browser.
 
 ## Properties
 
-| Property          | Attribute           | Description                                                                                            | Type                         | Default        |
-| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------- | -------------- |
-| `alignment`       | `alignment`         | The alignment as SMIL                                                                                  | `string`                     | `undefined`    |
-| `audio`           | `audio`             | The audio file                                                                                         | `string`                     | `undefined`    |
-| `cssUrl`          | `css-url`           | Optional custom Stylesheet to override defaults                                                        | `string`                     | `undefined`    |
-| `language`        | `language`          | Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French           | `"eng" \| "fra"`             | `'eng'`        |
-| `pageScrolling`   | `page-scrolling`    | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                         | `"horizontal" \| "vertical"` | `"horizontal"` |
-| `svgOverlay`      | `svg-overlay`       | Overlay This is an SVG overlay to place over the progress bar                                          | `string`                     | `undefined`    |
-| `text`            | `text`              | The text as TEI                                                                                        | `string`                     | `undefined`    |
-| `theme`           | `theme`             | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`                     | `'light'`      |
-| `useAssetsFolder` | `use-assets-folder` | Toggle the use of assets folder for resolving image urls. Defaults to 'true' for backwards compatibility   | `boolean`              | `true`         |
+| Property             | Attribute                | Description                                                                                              | Type            | Default     |
+|----------------------|--------------------------|----------------------------------------------------------------------------------------------------------|-----------------|-------------|
+| `alignment`          | `alignment`              | The alignment as SMIL                                                                                    | `string`        | `undefined` |
+| `audio`              | `audio`                  | The audio file                                                                                           | `string`        | `undefined` |
+| `cssUrl`             | `css-url`                | Optional custom Stylesheet to override defaults                                                          | `string`        | `undefined` |
+| `language`           | `language`               | Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French             | `"eng" \        | "fra"`      | `'eng'`        |
+| `pageScrolling`      | `page-scrolling`         | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                           | `"horizontal" \ | "vertical"` | `"horizontal"` |
+| `svgOverlay`         | `svg-overlay`            | Overlay This is an SVG overlay to place over the progress bar                                            | `string`        | `undefined` |
+| `text`               | `text`                   | The text as TEI                                                                                          | `string`        | `undefined` |
+| `theme`              | `theme`                  | Theme to use: ['light', 'dark'] defaults to 'dark'                                                       | `string`        | `'light'`   |
+| `useAssetsFolder`    | `use-assets-folder`      | Toggle the use of assets folder for resolving image urls. Defaults to 'true' for backwards compatibility | `boolean`       | `true`      |
+| `scrollBehavior`     | `scroll-behavior`        | Toggle the use of animation during scrolling. Defaults to 'smooth' for backwards compatibility           | `"auto  \       | "smooth"`   | `smooth`    |
+| `autoPauseEndOfPage` | `auto-pause-end-of-page` | Toggle the auto pause at the end of each page. Defaults to 'false' for backwards compatibility           | `boolean`       | `false`     |
+| `timeoutAtEndOfPage` | `timeout-at-end-of-page` | Set a default pause between each page. Defaults to '0' for backwards compatibility                       | `number`        | `0`         |
 
 
 #### IMAGES

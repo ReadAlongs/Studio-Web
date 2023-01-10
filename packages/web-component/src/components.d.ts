@@ -17,6 +17,10 @@ export namespace Components {
          */
         "audio": string;
         /**
+          * Pause when at the end of a page
+         */
+        "autoPauseEndOfPage": boolean;
+        /**
           * Change theme
          */
         "changeTheme": () => Promise<void>;
@@ -40,6 +44,7 @@ export namespace Components {
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
          */
         "pageScrolling": "horizontal" | "vertical";
+        "scrollBehavior": "smooth" | "auto";
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
@@ -52,6 +57,10 @@ export namespace Components {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme": string;
+        /**
+          * Pause timeout when at the end of a page
+         */
+        "timeoutAtEndOfPage": number;
         /**
           * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
          */
@@ -80,6 +89,10 @@ declare namespace LocalJSX {
          */
         "audio"?: string;
         /**
+          * Pause when at the end of a page
+         */
+        "autoPauseEndOfPage"?: boolean;
+        /**
           * Optional custom Stylesheet to override defaults
          */
         "cssUrl"?: string;
@@ -95,6 +108,7 @@ declare namespace LocalJSX {
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
          */
         "pageScrolling"?: "horizontal" | "vertical";
+        "scrollBehavior"?: "smooth" | "auto";
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
@@ -107,6 +121,10 @@ declare namespace LocalJSX {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme"?: string;
+        /**
+          * Pause timeout when at the end of a page
+         */
+        "timeoutAtEndOfPage"?: number;
         /**
           * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
          */
