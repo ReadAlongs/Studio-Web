@@ -33,6 +33,10 @@ export namespace Components {
          */
         "language": InterfaceLanguage;
         /**
+          * Limit play back rate to 30%-75% range (with less pitch distortion)
+         */
+        "limitPlayBackRate": boolean;
+        /**
           * Choose mode of ReadAlong - either view (default) or edit
          */
         "mode": ReadAlongMode;
@@ -41,6 +45,10 @@ export namespace Components {
          */
         "pageScrolling": "horizontal" | "vertical";
         "scrollBehavior": "smooth" | "auto";
+        /**
+          * Show text translation  on load
+         */
+        "startWithTranslation": boolean;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
@@ -97,6 +105,10 @@ declare namespace LocalJSX {
          */
         "language"?: InterfaceLanguage;
         /**
+          * Limit play back rate to 30%-75% range (with less pitch distortion)
+         */
+        "limitPlayBackRate"?: boolean;
+        /**
           * Choose mode of ReadAlong - either view (default) or edit
          */
         "mode"?: ReadAlongMode;
@@ -105,6 +117,10 @@ declare namespace LocalJSX {
          */
         "pageScrolling"?: "horizontal" | "vertical";
         "scrollBehavior"?: "smooth" | "auto";
+        /**
+          * Show text translation  on load
+         */
+        "startWithTranslation"?: boolean;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */

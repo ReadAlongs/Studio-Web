@@ -4,7 +4,7 @@ import {distinctUntilChanged} from 'rxjs/operators';
 
 import {Component, Element, h, Listen, Method, Prop, State} from '@stencil/core';
 
-import {parseSMIL, parseTEI, Sprite} from '../../utils/utils';
+import {parseSMIL, parseTEI, Sprite, looksLikeRelativePath} from '../../utils/utils';
 import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.ds";
 
 const LOADING = 0;
@@ -162,13 +162,14 @@ export class ReadAlongComponent {
 
 
   scrollEventHandler(event: UIEvent): void {
-    if (this.current_page == undefined || this.playing === false) return
-    const containterRect: DOMRect = (event.currentTarget as Element).getBoundingClientRect()
+    if (this.scrollBehavior == "auto" || this.current_page == undefined || this.playing === false) return
+
+    const containerRect: DOMRect = (event.currentTarget as Element).getBoundingClientRect()
     const currentPageRect: DOMRect = this.el.shadowRoot.querySelector('#' + this.current_page).getBoundingClientRect()
-    //console.log("scrolled",containterRect.x,currentPageRect.x )
+
     //auto resume if not pausing at the end of page
     if (this.autoPauseState === "paused" && this.play_id && !this.atEnd &&
-      (containterRect.x + 20) > currentPageRect.x
+      (containerRect.x + 20) > currentPageRect.x
     ) {
 
       setTimeout(() => this.audio_howl_sprites.sound.play(), 100)
@@ -192,9 +193,7 @@ export class ReadAlongComponent {
       return "assets/" + path;
     return path;
 
-    function looksLikeRelativePath(path: string): boolean {
-      return !(/^(https?:[/]|assets)[/]\b/).test(path);
-    }
+
   }
 
   /**
@@ -769,22 +768,37 @@ export class ReadAlongComponent {
 
 
     // Parse the text to be displayed
-    parseTEI(this.text).then((pages) => {
-      this.parsed_text = pages
-      this.assetsStatus.XML = LOADED
-      this.images = this.parsed_text.map((page) => page.img ? page.img : null)
-    }).catch((error) => {
-      if (error.type) this.assetsStatus.XML = ERROR_PARSING
-      else this.assetsStatus.XML = ERROR_LOADING
-    })
-    parseSMIL(this.alignment).then((alignments) => {
-      this.processed_alignment = alignments
-      this.assetsStatus.SMIL = LOADED
+    parseTEI((looksLikeRelativePath(this.text) && !this.text.startsWith("./") ? "./" : "") + this.text).then((pages) => {
+
+      if (pages.length) {
+        this.parsed_text = pages
+        this.assetsStatus.XML = LOADED
+        this.images = this.parsed_text.map((page) => page.img ? page.img : null)
+      } else {
+        this.assetsStatus.XML = ERROR_PARSING
+      }
 
     }).catch((error) => {
-      if (error.type) this.assetsStatus.SMIL = ERROR_PARSING
+
+      if (error.match('P') != null) this.assetsStatus.XML = ERROR_PARSING
+      else this.assetsStatus.XML = ERROR_LOADING
+    })
+    parseSMIL((looksLikeRelativePath(this.alignment) && !this.alignment.startsWith("./") ? "./" : "") + this.alignment).then((alignments) => {
+
+      if (alignments) {
+        this.processed_alignment = alignments
+        this.assetsStatus.SMIL = LOADED
+      } else {
+        this.assetsStatus.SMIL = ERROR_PARSING
+      }
+
+
+    }).catch((error) => {
+
+      if (error.match('P') != null) this.assetsStatus.SMIL = ERROR_PARSING
       else this.assetsStatus.SMIL = ERROR_LOADING
     })
+
 
 
   }
@@ -838,7 +852,7 @@ export class ReadAlongComponent {
             if (this.current_page !== undefined) {
               if (this.autoPauseEndOfPage && this.autoPauseState === "playing") {
                 this.pause()
-              } else {
+              } else if (this.scrollBehavior === "smooth") {
                 this.audio_howl_sprites.sound.pause()
                 if (this.timeoutAtEndOfPage > 0) {
 
@@ -849,8 +863,11 @@ export class ReadAlongComponent {
 
                   this.scrollToPage(current_page)
                 }
+              } else {
+
+                this.scrollToPage(current_page)
               }
-              if (this.autoPauseState === "playing" && this.scrollBehavior == "smooth") {
+              if (this.autoPauseState === "playing" && this.scrollBehavior === "smooth") {
 
                 this.autoPauseState = "paused"
 
@@ -1200,6 +1217,11 @@ export class ReadAlongComponent {
     <i class="material-icons-outlined">subtitles</i>
   </button>
 
+  ToggleConfigureOptionsDialog = (): Element => <button data-cy={"configure-toggle"} title={"Change Configuration"}
+                                                        class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons" aria-label="Show Configuration">settings</i>
+  </button>
+
   ControlPanel = (): Element => <div data-cy="control-panel"
     class={"control-panel theme--" + this.theme + " background--" + this.theme}>
     <div class="control-panel__buttons--left">
@@ -1249,7 +1271,7 @@ export class ReadAlongComponent {
             <span
               class="material-icons-outlined"> {this.assetsStatus.XML == ERROR_PARSING || this.assetsStatus.XML == ERROR_LOADING ? 'error' : (this.assetsStatus.XML > 0 ? 'done' : 'auto_stories')}</span>
             <span
-              class={"ml-2"}>{this.assetsStatus.XML > LOADED ? this.returnTranslation(this.assetsStatus.XML == ERROR_PARSING ? 'text-error' : 'text-prase-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}</span>
+              class={"ml-2"}>{this.assetsStatus.XML > LOADED ? this.returnTranslation(this.assetsStatus.XML == ERROR_PARSING ? 'text-error' : 'text-parse-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}</span>
           </p>
         }
 

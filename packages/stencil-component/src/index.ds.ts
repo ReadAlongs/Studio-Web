@@ -15,7 +15,3 @@ export type Translation = {
   [lang in InterfaceLanguage]: string;
 };
 
-export type LoadingError = {
-  type: number
-  message: string
-}
