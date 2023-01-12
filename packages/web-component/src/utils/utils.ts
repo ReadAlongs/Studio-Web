@@ -1,14 +1,33 @@
 import {Howl} from 'howler';
 import {BehaviorSubject, Subject} from 'rxjs';
-import {Alignment, Page, LoadingError} from "../index.ds";
-
+import {Alignment, Page} from "../index.ds";
 
 /**
- * Gets XML from path
+ * Inspect path
+ * @param path
+ * @return boolean
+ */
+export function looksLikeRelativePath(path: string): boolean {
+  return !(/^(https?:[/]|assets)[/]\b/).test(path);
+}
+
+/**
+ * Gets Document from path
  * @param {string} path - the path to the xml file
  */
-function getXML(path: string): Promise<string> {
-  return fetch(path, {method: "GET", mode: "cors"}).then((response) => response.text())
+function fetchDoc(path: string): Promise<string> {
+
+  return fetch(path, {method: "GET", mode: "cors"}).then((response) => {
+    if (!response.ok) {
+
+      return Promise.reject(response.status + ": " + path + " " + response.statusText);
+    }
+    return response.text()
+  }).catch((error) => {
+
+    return Promise.reject(error)
+
+  })
 
 }
 
@@ -57,25 +76,35 @@ export function zip(arrays): Array<any[]> {
  * @param {string} - the path to the TEI file
  */
 export async function parseTEI(path: string): Promise<Page[]> {
-  let xmlDocument = await getXML(path)
-  if (xmlDocument == undefined || xmlDocument.length < 1) throw {type: 1, message: "File not found"} as LoadingError
+  let xmlDocument
+  try {
+    xmlDocument = await fetchDoc(path)
+  } catch (e) {
+
+    return Promise.reject(e)
+  }
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
-  let parsed_pages = pages.map((p: Element) => {
-    let id = p.id;
-    let img_xpath = `.//div[@id='${id}']/graphic/@url`
-    let img = getNodeByXpath(img_xpath, xml_text)
-    let p_xpath = `.//div[@id='${id}']/p`
-    let paragraphs = getNodeByXpath(p_xpath, xml_text)
-    let parsed_page = {id: id, paragraphs: paragraphs}
-    if (img.length > 0) {
-      parsed_page['img'] = img[0].nodeValue;
-    }
-    if (p.attributes) parsed_page["attributes"] = p.attributes;
-    return parsed_page
-  });
-  return parsed_pages
+  try {
+    let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
+    let parsed_pages = pages.map((p: Element) => {
+      let id = p.id;
+      let img_xpath = `.//div[@id='${id}']/graphic/@url`
+      let img = getNodeByXpath(img_xpath, xml_text)
+      let p_xpath = `.//div[@id='${id}']/p`
+      let paragraphs = getNodeByXpath(p_xpath, xml_text)
+      let parsed_page = {id: id, paragraphs: paragraphs}
+      if (img.length > 0) {
+        parsed_page['img'] = img[0].nodeValue;
+      }
+      if (p.attributes) parsed_page["attributes"] = p.attributes;
+      return parsed_page
+    });
+    return parsed_pages
+  } catch (e) {
+    return Promise.reject("Parsing ERROR: " + e)
+  }
+
 }
 
 
@@ -84,28 +113,39 @@ export async function parseTEI(path: string): Promise<Page[]> {
  * @param {string} - the path to the SMIL file
  */
 export async function parseSMIL(path: string): Promise<Alignment> {
-  let xmlDocument = await getXML(path)
-  if (xmlDocument == undefined || xmlDocument.length < 1) throw {type: 1, message: "File not found"} as LoadingError
-  let parser = new DOMParser();
-  let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let text = getNodeByXpath('/i:smil/i:body/i:par/i:text/@src', xml_text).map(x => {
-      let split = x['value'].split('#');
-      return split[split.length - 1]
+  let xmlDocument
+  try {
+    xmlDocument = await fetchDoc(path)
+  } catch (e) {
+    return Promise.reject(e)
+  }
+
+  try {
+    let parser = new DOMParser();
+    let xml_text = parser.parseFromString(xmlDocument, "text/xml")
+    let text = getNodeByXpath('/i:smil/i:body/i:par/i:text/@src', xml_text).map(x => {
+        let split = x['value'].split('#');
+        return split[split.length - 1]
+      }
+    )
+    let audio_begin = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
+    let audio_end = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
+    let audio_duration = []
+    for (var i = 0; i < audio_begin.length; i++) {
+      let duration = audio_end[i] - audio_begin[i]
+      audio_duration.push(duration)
     }
-  )
-  let audio_begin = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
-  let audio_end = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
-  let audio_duration = []
-  for (var i = 0; i < audio_begin.length; i++) {
-    let duration = audio_end[i] - audio_begin[i]
-    audio_duration.push(duration)
+    let audio = zip([audio_begin, audio_duration])
+    let result = {}
+    for (var i = 0; i < text.length; i++) {
+      result[text[i]] = audio[i]
+    }
+    return result
+  } catch (e) {
+    return Promise.reject("Parsing ERROR: " + e);
   }
-  let audio = zip([audio_begin, audio_duration])
-  let result = {}
-  for (var i = 0; i < text.length; i++) {
-    result[text[i]] = audio[i]
-  }
-  return result
+
+
 }
 
 /**
