@@ -8,7 +8,11 @@ context("The Readalong Component", () => {
   const FOR_ERIC_TO_TALK_A_BIT = 3000; // ms
 
   beforeEach(() => {
+    cy.intercept(/\.js/).as('page')
+    cy.intercept(/\.m4a/).as('audio')
     cy.visit("/ej-fra/");
+    cy.wait('@page')
+    cy.wait('@audio')
   });
 
   it("should load successfully", () => {
@@ -20,6 +24,7 @@ context("The Readalong Component", () => {
   });
 
   it("should play the entire ReadAlong", () => {
+
     cy.wait(EXPECTED_LOADING_TIME);
 
     cy.readalong().within(() => {

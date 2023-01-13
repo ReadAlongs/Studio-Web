@@ -29,6 +29,10 @@ export namespace Components {
          */
         "cssUrl"?: string;
         /**
+          * Show text translation  on at load time
+         */
+        "displayTranslation": boolean;
+        /**
           * Get Images
          */
         "getImages": () => Promise<object>;
@@ -36,6 +40,10 @@ export namespace Components {
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
         "language": InterfaceLanguage;
+        /**
+          * Limit play back rate to 85%-110% range (with less pitch distortion)
+         */
+        "limitPlayBackRate": boolean;
         /**
           * Choose mode of ReadAlong - either view (default) or edit
          */
@@ -62,7 +70,7 @@ export namespace Components {
          */
         "timeoutAtEndOfPage": number;
         /**
-          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
+          * Toggle the use of assets folder for resolving urls. Defaults: on to maintain backwards compatibility
          */
         "useAssetsFolder": boolean;
     }
@@ -97,9 +105,17 @@ declare namespace LocalJSX {
          */
         "cssUrl"?: string;
         /**
+          * Show text translation  on at load time
+         */
+        "displayTranslation"?: boolean;
+        /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
         "language"?: InterfaceLanguage;
+        /**
+          * Limit play back rate to 85%-110% range (with less pitch distortion)
+         */
+        "limitPlayBackRate"?: boolean;
         /**
           * Choose mode of ReadAlong - either view (default) or edit
          */
@@ -126,7 +142,7 @@ declare namespace LocalJSX {
          */
         "timeoutAtEndOfPage"?: number;
         /**
-          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
+          * Toggle the use of assets folder for resolving urls. Defaults: on to maintain backwards compatibility
          */
         "useAssetsFolder"?: boolean;
     }

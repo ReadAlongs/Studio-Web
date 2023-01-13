@@ -27,6 +27,28 @@ context("Readalong Component with missing assets", () => {
     });
   });
 
+  it("parsing text warning show show successfully", () => {
+    cy.visit("/ej-fra/index-malformed-xml.html");
+    cy.wait(EXPECTED_LOADING_TIME);
+    cy.readalongElement().should("be.visible");
+
+    cy.readalong().within(() => {
+      cy.get("[data-cy=text-container]").should(($el) => {
+        expect($el.children().length).equal(0, "has text")
+      })
+      cy.get("[data-cy=audio-error]").should('have.class', 'fade').should("not.be.visible")
+      cy.get("[data-cy=control-panel]").should("have.length", 1).should("be.visible")
+      cy.get("[data-cy=text-error]").should(($el) => {
+        expect($el.hasClass("fade")).equal(false, "error message box visible")
+        //check that message is visible
+        expect($el.text()).contains("The text file could not be parsed", "error message visible")
+      }).should("be.visible")
+      cy.get("[data-cy=alignment-error]").should('have.class', 'fade').should("not.be.visible")
+      cy.get("[data-cy=progress-bar]").should("have.length", 1).should("be.visible")
+
+    });
+  });
+
   it("missing audio warning should show successfully", () => {
     cy.visit("/ej-fra/index-missing-audio.html");
     cy.wait(EXPECTED_LOADING_TIME);

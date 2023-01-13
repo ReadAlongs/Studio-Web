@@ -28,21 +28,20 @@ export class ReadAlongComponent {
   /**
    * The text as TEI
    */
-  @Prop() text: string;
-
+  @Prop({mutable: true, reflect: true}) text: string;
 
 
   /**
    * The alignment as SMIL
    */
-  @Prop() alignment: string;
+  @Prop({mutable: true, reflect: true}) alignment: string;
 
   processed_alignment: Alignment;
 
   /**
    * The audio file
    */
-  @Prop() audio: string;
+  @Prop({mutable: true, reflect: true}) audio: string;
 
   audio_howl_sprites: any;
   reading$: Subject<string>; // An RxJs Subject for the current item being read.
@@ -57,7 +56,7 @@ export class ReadAlongComponent {
   /**
    * Theme to use: ['light', 'dark'] defaults to 'dark'
    */
-  @Prop({ mutable: true, reflect: true }) theme: string = 'light';
+  @Prop({mutable: true, reflect: true}) theme: string = 'light';
 
   /**
    * Language  of the interface. In 639-3 code
@@ -65,7 +64,7 @@ export class ReadAlongComponent {
    * - "eng" for English
    * - "fra" for French
    */
-  @Prop({ mutable: true, reflect: true }) language: InterfaceLanguage = 'eng';
+  @Prop({mutable: true, reflect: true}) language: InterfaceLanguage = 'eng';
 
   /**
    * Optional custom Stylesheet to override defaults
@@ -73,7 +72,7 @@ export class ReadAlongComponent {
   @Prop() cssUrl?: string;
 
   /**
-   * Toggle the use of assets folder for resolving urls. Defaults to on
+   * Toggle the use of assets folder for resolving urls. Defaults: on
    * to maintain backwards compatibility
    */
 
@@ -105,6 +104,16 @@ export class ReadAlongComponent {
    */
   @Prop({mutable: true, reflect: true}) timeoutAtEndOfPage = 0;
 
+  /**
+   * Show text translation  on at load time
+   */
+  @Prop() displayTranslation = true
+
+  /**
+   * Limit play back rate to 85%-110% range (with less pitch distortion)
+   */
+  @Prop() limitPlayBackRate = false
+
   /************
    *  STATES  *
    ************/
@@ -120,7 +129,7 @@ export class ReadAlongComponent {
   @State() fullscreen: boolean = false;
 
   @State() autoScroll: boolean = true;
-  @State() isLoaded: boolean = false;
+  @State() hasLoaded: number = 0;
   showGuide: boolean = false;
 
   parsed_text;
@@ -322,7 +331,7 @@ export class ReadAlongComponent {
    */
   pause(): void {
     this.playing = false;
-    this.audio_howl_sprites.pause()
+    this.audio_howl_sprites.sound.pause()
   }
 
 
@@ -387,6 +396,28 @@ export class ReadAlongComponent {
   toggleTextTranslation(): void {
     this.el.shadowRoot.querySelectorAll('.translation').forEach(translation => translation.classList.toggle('invisible'))
     this.el.shadowRoot.querySelectorAll('.sentence__translation').forEach(translation => translation.classList.toggle('invisible'))
+
+  }
+
+  toggleSettings(): void {
+    if (this.playing) {
+      this.pause()
+    } else if (this.current_page) {
+      setTimeout(() => {
+
+        this.playing = true
+        this.audio_howl_sprites.sound.play()
+      }, 100)
+    }
+    this.el.shadowRoot.querySelector('.pages__container').classList.toggle('settings-is-visible')
+    this.el.shadowRoot.querySelector('.overlay__container').classList.toggle('settings-is-visible')
+    this.el.shadowRoot.querySelector('.control-panel').classList.toggle('settings-is-visible')
+    this.el.shadowRoot.querySelector('#settings').classList.toggle('is-visible')
+
+  }
+
+  toggleScrollBehavior(): void {
+    this.scrollBehavior = this.scrollBehavior === "auto" ? "smooth" : "auto"
 
   }
 
@@ -703,6 +734,10 @@ export class ReadAlongComponent {
 
   }
 
+  /**
+   *
+   * @param el
+   */
   scrollTo(el: HTMLElement): void {
 
     el.scrollIntoView({
@@ -716,21 +751,42 @@ export class ReadAlongComponent {
    */
   audioFailedToLoad() {
 
-    this.isLoaded = true;
+    this.hasLoaded += 1;
     this.assetsStatus.AUDIO = ERROR_LOADING;
 
   }
 
   audioLoaded() {
 
-    this.isLoaded = true;
+    this.hasLoaded += 1;
     this.assetsStatus.AUDIO = LOADED;
 
   }
 
+
   audioEnded() {
     this.atEnd = true;
     this.autoPauseState = "ended"
+  }
+
+  /**
+   *
+   * @param current_page
+   * @private
+   */
+
+  private _doScrollAnimation(current_page: string) {
+    if (this.timeoutAtEndOfPage > 0) {
+      this.audio_howl_sprites.sound.pause()
+      setTimeout(() => {
+        if (this.scrollBehavior === "auto") this.audio_howl_sprites.sound.play()
+        this.scrollToPage(current_page)
+      }, this.timeoutAtEndOfPage * 1000)
+    } else {
+      if (this.scrollBehavior === "smooth") this.audio_howl_sprites.sound.pause()
+
+      this.scrollToPage(current_page)
+    }
   }
 
   /*************
@@ -800,8 +856,11 @@ export class ReadAlongComponent {
         this.assetsStatus.XML = ERROR_PARSING
       }
     }).catch((error) => {
-      if (error.match('P') != null) this.assetsStatus.XML = ERROR_PARSING
+      console.log(error)//for developer to see details
+      if (error[0] == 'P') this.assetsStatus.XML = ERROR_PARSING
       else this.assetsStatus.XML = ERROR_LOADING
+    }).finally(() => {
+      this.hasLoaded += 1;
     })
 
     parseSMIL((looksLikeRelativePath(this.alignment) && !this.alignment.startsWith("./") ? "./" : "") + this.alignment).then((alignments) => {
@@ -812,8 +871,11 @@ export class ReadAlongComponent {
         this.assetsStatus.SMIL = ERROR_PARSING
       }
     }).catch((error) => {
-      if (error.match('P') != null) this.assetsStatus.SMIL = ERROR_PARSING
+      console.log(error)//for developer to see details
+      if (error[0] == 'P') this.assetsStatus.SMIL = ERROR_PARSING
       else this.assetsStatus.SMIL = ERROR_LOADING
+    }).finally(() => {
+      this.hasLoaded += 1;
     })
 
   }
@@ -862,20 +924,8 @@ export class ReadAlongComponent {
             if (this.current_page !== undefined) {
               if (this.autoPauseEndOfPage && this.autoPauseState === "playing") {
                 this.pause()
-              } else if (this.scrollBehavior === "smooth") {
-                this.audio_howl_sprites.sound.pause()
-                if (this.timeoutAtEndOfPage > 0) {
-
-                  setTimeout(() => {
-                    this.scrollToPage(current_page)
-                  }, this.timeoutAtEndOfPage * 1000)
-                } else {
-
-                  this.scrollToPage(current_page)
-                }
               } else {
-
-                this.scrollToPage(current_page)
+                this._doScrollAnimation(current_page)
               }
               if (this.autoPauseState === "playing" && this.scrollBehavior === "smooth") {
 
@@ -888,13 +938,16 @@ export class ReadAlongComponent {
             this.current_page = current_page
           } else {
             if (this.autoPauseState === "resumed") this.autoPauseState = "playing"
+
+
+            //if the user has scrolled away from the current page bring them page
+            if (this.el.shadowRoot.querySelector("#" + current_page).getBoundingClientRect().left > 20) {
+
+              if (this.autoPauseState === "playing")
+                this.scrollToPage(current_page)
+            }
           }
 
-          //if the user has scrolled away from the current page bring them page
-          if (query_el.getBoundingClientRect().left < 0 || this.el.shadowRoot.querySelector("#" + current_page).getBoundingClientRect().left !== 0) {
-            if (this.autoPauseState === "playing")
-              this.scrollToPage(current_page)
-          }
 
           // scroll vertically (through paragraph) if needed
           if (this.inPageContentOverflow(query_el)) {
@@ -910,11 +963,23 @@ export class ReadAlongComponent {
             }
           }
         }
+
       })
-      this.isLoaded = true;
+
       this.assetsStatus.AUDIO = LOADED;
     })
     this.audio_howl_sprites.load()
+
+    console.log("loaded")
+  }
+
+  componentDidRender(): void {
+    //if creator does not want the translation to show at
+    if (this.parsed_text && this.parsed_text.length > 0 && this.hasLoaded < 3) {
+      this.el.shadowRoot.querySelectorAll('.translation').forEach(translation => translation.classList.add('invisible'))
+      this.el.shadowRoot.querySelectorAll('.sentence__translation').forEach(translation => translation.classList.add('invisible'))
+
+    }
   }
 
   /**********
@@ -923,7 +988,7 @@ export class ReadAlongComponent {
 
   /**
    * Any text used in the Web Component should be at least bilingual in English and French.
-   * To add a new term, add a new key to the translations object. Then add 'eng' and 'fr' keys
+   * To add a new term, add a new key to the translations object. Then add 'eng' and 'fra' keys
    * and give the translations as values.
    *
    * @param word
@@ -941,31 +1006,31 @@ export class ReadAlongComponent {
         "fra": "Réaligner avec l'audio"
       },
       "audio-error": {
-        "eng": "Error: The audio file could not be loaded",
-        "fra": "Erreur: le fichier audio n'a pas pu être chargé"
+        "eng": "  The audio file could not be loaded",
+        "fra": "  le fichier audio n'a pas pu être chargé"
       },
       "text-error": {
-        "eng": "Error: The text file could not be loaded",
-        "fra": "Erreur: le fichier texte n'a pas pu être chargé"
+        "eng": "  The text file could not be loaded",
+        "fra": "  le fichier texte n'a pas pu être chargé"
       },
       "alignment-error": {
-        "eng": "Error: The alignment file could not be loaded",
-        "fra": "Erreur: le fichier alignement n'a pas pu être chargé"
+        "eng": "  The alignment file could not be loaded",
+        "fra": "  le fichier alignement n'a pas pu être chargé"
       },
       "text-parse-error": {
-        "eng": "Error: The text file could not be parsed",
-        "fra": "Erreur: le fichier texte n'a pas pu être analysé"
+        "eng": " The text file could not be parsed",
+        "fra": " le fichier texte n'a pas pu être analysé"
       },
       "alignment-parse-error": {
-        "eng": "Error: The alignment file could not be parse",
-        "fra": "Erreur: le fichier alignement n'a pas pu être analysé"
+        "eng": " The alignment file could not be parse",
+        "fra": " le fichier alignement n'a pas pu être analysé"
       },
       "loading": {
         "eng": "Loading...",
         "fra": "Chargement en cours"
       }
     }
-    if (translations[word])
+    if (translations[word] && translations[word][lang])
       return translations[word][lang]
     return word;
   }
@@ -1001,7 +1066,7 @@ export class ReadAlongComponent {
    */
   Guide = (): Element =>
     <button class={'scroll-guide__container ripple ui-button theme--' + this.theme}
-      onClick={() => this.hideGuideAndScroll()}>
+            onClick={() => this.hideGuideAndScroll()}>
       <span class={'scroll-guide__text theme--' + this.theme}>
         {this.returnTranslation('re-align', this.language)}
       </span>
@@ -1011,7 +1076,7 @@ export class ReadAlongComponent {
    * Render svg overlay
    */
   Overlay = (): Element => <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object'
-    type='image/svg+xml' data={this.svgOverlay} />
+                                   type='image/svg+xml' data={this.svgOverlay}/>
 
   /**
    * Remove image at given page
@@ -1035,7 +1100,7 @@ export class ReadAlongComponent {
    */
   Img = (props: { url: string }): Element => {
     return (<div class={"image__container page__col__image theme--" + this.theme}>
-      <img alt={"image"} class="image" src={this.urlTransform(props.url)} />
+      <img alt={"image"} class="image" src={this.urlTransform(props.url)}/>
     </div>)
   }
 
@@ -1083,25 +1148,25 @@ export class ReadAlongComponent {
       id={props.pageData['id']}>
       { /* Display the PageCount only if there's more than 1 page */
         this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length}
-          currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
+                                                      currentPage={this.parsed_text.indexOf(props.pageData) + 1}/> : null
       }
       <span id="image-container">
       {
         this.mode === "EDIT" && props.pageData.img ? <this.RemoveImg pageData={props.pageData}/> : null
       }
       { /* Display an Img if it exists on the page */
-        props.pageData.img ? <this.Img url={props.pageData.img} /> : null
+        props.pageData.img ? <this.Img url={props.pageData.img}/> : null
       }
       </span>
       {
-        this.mode === "EDIT" && !props.pageData.img ? <this.ImgPlaceHolder pageData={props.pageData} /> : null
+        this.mode === "EDIT" && !props.pageData.img ? <this.ImgPlaceHolder pageData={props.pageData}/> : null
       }
       <div class={"page__col__text paragraph__container theme--" + this.theme}>
         { /* Here are the Paragraph children */
           props.pageData.paragraphs.map((paragraph: Element) => {
 
-            return <this.Paragraph sentences={Array.from(paragraph.childNodes)} attributes={paragraph.attributes} />
-          }
+              return <this.Paragraph sentences={Array.from(paragraph.childNodes)} attributes={paragraph.attributes}/>
+            }
           )
         }
       </div>
@@ -1121,7 +1186,7 @@ export class ReadAlongComponent {
         /* Here are the Sentence children */
         props.sentences.map((sentence: Element) =>
           (sentence.childNodes.length > 0) &&
-          <this.Sentence words={Array.from(sentence.childNodes)} attributes={sentence.attributes} />)
+          <this.Sentence words={Array.from(sentence.childNodes)} attributes={sentence.attributes}/>)
       }
     </div>
 
@@ -1147,22 +1212,22 @@ export class ReadAlongComponent {
     }
 
     return <div {...nodeProps}
-      class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
+                class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
       {
         /* Here are the Word and NonWordText children */
         props.words.map((child: Element, c) => {
 
           if (child.nodeName === '#text') {
             return <this.NonWordText text={child.textContent} attributes={child.attributes}
-              id={(props.attributes["id"] ? props.attributes["id"].value : "P") + 'text' + c} />
+                                     id={(props.attributes["id"] ? props.attributes["id"].value : "P") + 'text' + c}/>
           } else if (child.nodeName === 'w') {
-            return <this.Word text={child.textContent} id={child['id']} attributes={child.attributes} />
+            return <this.Word text={child.textContent} id={child['id']} attributes={child.attributes}/>
           } else if (child) {
             let cnodeProps = {};
             if (child.attributes['xml:lang']) cnodeProps['lang'] = props.attributes['xml:lang'].value
             if (child.attributes['lang']) cnodeProps['lang'] = props.attributes['lang'].value
             return <span {...cnodeProps} class={'sentence__text theme--' + this.theme + (' ' + child.className)}
-              id={child.id ? child.id : 'text_' + c}>{child.textContent}</span>
+                         id={child.id ? child.id : 'text_' + c}>{child.textContent}</span>
           }
         })
       }
@@ -1200,84 +1265,125 @@ export class ReadAlongComponent {
     if (props.attributes && props.attributes['lang']) nodeProps['lang'] = props.attributes['lang'].value
 
     return <span {...nodeProps}
-      class={'sentence__word theme--' + this.theme + " " + (props && props.attributes["class"] ? props.attributes["class"].value : "")}
-      id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
+                 class={'sentence__word theme--' + this.theme + " " + (props && props.attributes["class"] ? props.attributes["class"].value : "")}
+                 id={props.id} onClick={(ev) => this.playSprite(ev)}>{props.text}</span>
   }
   /**
    * Render controls for ReadAlong
    */
 
-  PlayControl = (): Element => <button data-cy="play-button" disabled={!this.isLoaded} aria-label="Play"
-    title="Play audio recording"
-    onClick={() => {
-      this.playing ? this.pause() : this.play()
-    }}
-    class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  PlayControl = (): Element => <button data-cy="play-button" disabled={!this.hasLoaded} aria-label="Play"
+                                       title="Play audio recording"
+                                       onClick={() => {
+                                         this.playing ? this.pause() : this.play()
+                                       }}
+                                       class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
   </button>
 
-  ReplayControl = (): Element => <button data-cy="replay-button" disabled={!this.isLoaded} aria-label="Rewind"
-    title="Replay audio recording"
-    onClick={() => this.goBack(5)}
-    class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  ReplayControl = (): Element => <button data-cy="replay-button" disabled={!this.hasLoaded} aria-label="Rewind"
+                                         title="Replay audio recording"
+                                         onClick={() => this.goBack(5)}
+                                         class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
-  StopControl = (): Element => <button data-cy="stop-button" disabled={!this.isLoaded} aria-label="Stop"
-    title="Stop audio recording"
-    onClick={() => this.stop()}
-    class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+  StopControl = (): Element => <button data-cy="stop-button" disabled={!this.hasLoaded} aria-label="Stop"
+                                       title="Stop audio recording"
+                                       onClick={() => this.stop()}
+                                       class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
   </button>
 
   PlaybackSpeedControl = (): Element => <div>
     <h5
       class={"control-panel__buttons__header color--" + this.theme}>{this.returnTranslation('speed', this.language)}</h5>
-    <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control"
-      id="myRange" onInput={(v) => this.changePlayback(v)} />
+    <input type="range" min={this.limitPlayBackRate ? 85 : 75} max={this.limitPlayBackRate ? 110 : 125}
+           value={this.playback_rate * 100} class="slider control-panel__control"
+           id="myRange" onInput={(v) => this.changePlayback(v)}/>
   </div>
 
   StyleControl = (): Element => <button aria-label="Change theme" onClick={() => this.changeTheme()}
-    title="Change theme"
-    class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+                                        title="Change theme"
+                                        class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">style</i>
   </button>
 
   FullScreenControl = (): Element => <button aria-label="Full screen mode" onClick={() => this.toggleFullscreen()}
-    title="Full screen mode"
-    class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+                                             title="Full screen mode"
+                                             class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons" aria-label="Full screen mode">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
   TextTranslationDisplayControl = (): Element => <button data-cy="translation-toggle" aria-label="Toggle Translation"
-    title="Toggle translation"
-    onClick={() => this.toggleTextTranslation()}
-    class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+                                                         title="Toggle translation"
+                                                         onClick={() => this.toggleTextTranslation()}
+                                                         class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">subtitles</i>
   </button>
 
-  ToggleConfigureOptionsDialog = (): Element => <button data-cy={"configure-toggle"} title={"Change Configuration"}
-                                                        class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
-    <i class="material-icons" aria-label="Show Configuration">settings</i>
+  ToggleSettings = (): Element => <button data-cy={"configure-toggle"} title={"Change Configuration"}
+                                          onClick={() => this.toggleSettings()}
+                                          class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons" aria-label="Show settings">settings</i>
   </button>
 
   ControlPanel = (): Element => <div data-cy="control-panel"
-    class={"control-panel theme--" + this.theme + " background--" + this.theme}>
+                                     class={"control-panel theme--" + this.theme + " background--" + this.theme}>
     <div class="control-panel__buttons--left">
-      <this.PlayControl />
-      <this.ReplayControl />
-      <this.StopControl />
+      <this.PlayControl/>
+      <this.ReplayControl/>
+      <this.StopControl/>
     </div>
 
     <div class="control-panel__buttons--center">
-      <this.PlaybackSpeedControl />
+      <this.PlaybackSpeedControl/>
     </div>
 
     <div class="control-panel__buttons--right">
-      {this.hasTextTranslations && <this.TextTranslationDisplayControl />}
-      <this.StyleControl />
-      <this.FullScreenControl />
+      <this.ToggleSettings/>
+      {this.hasTextTranslations && <this.TextTranslationDisplayControl/>}
+      <this.StyleControl/>
+      <this.FullScreenControl/>
     </div>
+  </div>
+
+  Settings = (): Element => <div id={"settings"} data-cy={"settings"} class={"settings"}>
+    <button class={"close"} onClick={() => {
+
+      this.toggleSettings()
+    }}>&times; </button>
+    <h3>{this.returnTranslation('Settings')}</h3>
+    <p>
+      <label class={"switch"}>
+        <input type="checkbox" checked={this.scrollBehavior === "smooth"} onClick={() => {
+          this.toggleScrollBehavior();
+
+        }}/>
+        <span class="slider"></span>
+
+      </label>
+      {this.returnTranslation('Page Animation')}
+    </p>
+    <p>
+      <label class={"switch"}>
+        <input type="checkbox" checked={!this.autoPauseEndOfPage}
+               onClick={() => {
+                 this.autoPauseEndOfPage = !this.autoPauseEndOfPage;
+
+               }}/>
+        <span class="slider"></span>
+
+      </label>
+      {this.returnTranslation('Auto turn page')}
+    </p>
+    {!this.autoPauseEndOfPage &&
+      <p>
+        <input onChange={e => this.timeoutAtEndOfPage = parseFloat((e.target as HTMLInputElement).value)}
+               type={"number"} size={1} step={0.5} min={0} max={10} value={this.timeoutAtEndOfPage}/>
+        {this.returnTranslation('End of page pause in seconds')}
+      </p>
+    }
   </div>
 
 
@@ -1288,17 +1394,17 @@ export class ReadAlongComponent {
     return (
       <div id='read-along-container' class='read-along-container'>
         <h1 class="slot__header">
-          <slot name="read-along-header" />
+          <slot name="read-along-header"/>
         </h1>
         <h3 class="slot__subheader">
-          <slot name="read-along-subheader" />
+          <slot name="read-along-subheader"/>
         </h3>
         {
 
           <p data-cy="audio-error"
              class={"alert status-" + this.assetsStatus.AUDIO + (this.assetsStatus.AUDIO == LOADED ? ' fade' : '')}>
             <span
-              class="material-icons-outlined"> {this.assetsStatus.AUDIO == ERROR_LOADING ? 'error' : (this.assetsStatus.AUDIO > 0 ? 'done' : 'music_note')}</span>
+              class="material-icons-outlined"> {this.assetsStatus.AUDIO == ERROR_LOADING ? 'error_outline_outlined' : (this.assetsStatus.AUDIO > 0 ? 'done' : 'music_note')}</span>
             <span
               class={"ml-2"}>{this.assetsStatus.AUDIO > LOADED ? this.returnTranslation('audio-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'AUDIO' : this.returnTranslation('loading', this.language))}</span>
           </p>
@@ -1308,9 +1414,9 @@ export class ReadAlongComponent {
           <p data-cy="text-error"
              class={"alert status-" + this.assetsStatus.XML + (this.assetsStatus.XML == LOADED ? ' fade' : '')}>
             <span
-              class="material-icons-outlined"> {this.assetsStatus.XML == ERROR_PARSING || this.assetsStatus.XML == ERROR_LOADING ? 'error' : (this.assetsStatus.XML > 0 ? 'done' : 'auto_stories')}</span>
+              class="material-icons"> {this.assetsStatus.XML == ERROR_PARSING || this.assetsStatus.XML == ERROR_LOADING ? 'error_outline_outlined' : (this.assetsStatus.XML > 0 ? 'done' : 'auto_stories')}</span>
             <span
-              class={"ml-2"}>{this.assetsStatus.XML > LOADED ? this.returnTranslation(this.assetsStatus.XML == ERROR_PARSING ? 'text-error' : 'text-parse-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}</span>
+              class={"ml-2"}>{this.assetsStatus.XML > LOADED ? this.returnTranslation(this.assetsStatus.XML == ERROR_PARSING ? 'text-parse-error' : 'text-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}</span>
           </p>
         }
 
@@ -1318,7 +1424,7 @@ export class ReadAlongComponent {
           <p data-cy="alignment-error"
              class={"alert status-" + this.assetsStatus.SMIL + (this.assetsStatus.SMIL == LOADED ? ' fade' : '')}>
             <span
-              class="material-icons-outlined"> {this.assetsStatus.SMIL >= ERROR_PARSING ? 'error' : (this.assetsStatus.SMIL > 0 ? 'done' : 'lyrics')}</span>
+              class="material-icons"> {this.assetsStatus.SMIL >= ERROR_PARSING ? 'error_outline_outlined' : (this.assetsStatus.SMIL > 0 ? 'done' : 'lyrics')}</span>
             <span
               class={"ml-2"}>{this.assetsStatus.SMIL > LOADED ? this.returnTranslation(this.assetsStatus.SMIL == ERROR_LOADING ? 'alignment-error' : 'alignment-parse-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'SMIL' : this.returnTranslation('loading', this.language))}</span>
           </p>
@@ -1328,22 +1434,23 @@ export class ReadAlongComponent {
 
           {this.showGuide ? <this.Guide/> : null}
           {this.assetsStatus.XML == LOADED && this.parsed_text.map((page) =>
-            <this.Page pageData={page}>
-            </this.Page>
+            <this.Page pageData={page}/>
           )}
-          {this.isLoaded == false && <div class="loader"/>}
 
         </div>
+        <this.Settings/>
+        {this.hasLoaded < 3 && <div class="loader"/>}
         {this.assetsStatus.SMIL == LOADED &&
           <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' data-cy="progress-bar"
-            class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
-            {this.svgOverlay ? <this.Overlay /> : null}
+               class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
+            {this.svgOverlay ? <this.Overlay/> : null}
           </div>}
         {this.assetsStatus.AUDIO == LOADED && <this.ControlPanel/>}
-        { /*TODO create a dialog with options for autopause and scrolling behaviour */}
+
         {this.cssUrl && this.cssUrl.match(".css") != null && <link href={this.cssUrl} rel="stylesheet"/>}
       </div>
 
     )
   }
+
 }

@@ -64,6 +64,9 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  max-width: 26px;
+  marign-right: 3px;
+  vertical-align: bottom;
 }
 
 .material-icons-outlined {
@@ -80,4 +83,7 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  max-width: 26px;
+  marign-right: 3px;
+  vertical-align: bottom;
 }

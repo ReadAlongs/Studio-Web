@@ -8,7 +8,7 @@ import {Alignment, Page} from "../index.ds";
  * @return boolean
  */
 export function looksLikeRelativePath(path: string): boolean {
-  return !(/^(https?:[/]|assets)[/]\b/).test(path);
+  return !(/^(https?:\/|assets)\/\b/).test(path);
 }
 
 /**
@@ -33,7 +33,7 @@ function fetchDoc(path: string): Promise<string> {
 
 
 /**
- * Return list of nodess from XPath
+ * Return list of nodes from XPath
  * @param {string} xpath - the xpath to evaluate with
  * @param {Document} xml - the xml to evaluate
  */
@@ -43,7 +43,7 @@ function getNodeByXpath(xpath: string, xml: Document): Node[] {
     // console.error("Your XML file is missing an XML namespace.");
   }
   function nsResolver(prefix) {
-    var ns = {
+    const ns = {
       'i': xmlns
     };
     return ns[prefix] || null;
@@ -73,7 +73,7 @@ export function zip(arrays): Array<any[]> {
 
 /**
  * Return sentences from TEI xml file
- * @param {string} - the path to the TEI file
+ * @param {string} path the path to the TEI file
  */
 export async function parseTEI(path: string): Promise<Page[]> {
   let xmlDocument
@@ -87,7 +87,7 @@ export async function parseTEI(path: string): Promise<Page[]> {
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
   try {
     let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
-    let parsed_pages = pages.map((p: Element) => {
+    return pages.map((p: Element) => {
       let id = p.id;
       let img_xpath = `.//div[@id='${id}']/graphic/@url`
       let img = getNodeByXpath(img_xpath, xml_text)
@@ -100,7 +100,7 @@ export async function parseTEI(path: string): Promise<Page[]> {
       if (p.attributes) parsed_page["attributes"] = p.attributes;
       return parsed_page
     });
-    return parsed_pages
+
   } catch (e) {
     return Promise.reject("Parsing ERROR: " + e)
   }
@@ -110,7 +110,7 @@ export async function parseTEI(path: string): Promise<Page[]> {
 
 /**
  * Return useful data from SMIL xml file
- * @param {string} - the path to the SMIL file
+ * @param {string} path the path to the SMIL file
  */
 export async function parseSMIL(path: string): Promise<Alignment> {
   let xmlDocument
@@ -131,13 +131,13 @@ export async function parseSMIL(path: string): Promise<Alignment> {
     let audio_begin = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
     let audio_end = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
     let audio_duration = []
-    for (var i = 0; i < audio_begin.length; i++) {
+    for (let i = 0; i < audio_begin.length; i++) {
       let duration = audio_end[i] - audio_begin[i]
       audio_duration.push(duration)
     }
     let audio = zip([audio_begin, audio_duration])
     let result = {}
-    for (var i = 0; i < text.length; i++) {
+    for (let i = 0; i < text.length; i++) {
       result[text[i]] = audio[i]
     }
     return result
@@ -153,7 +153,7 @@ export async function parseSMIL(path: string): Promise<Alignment> {
  * @param {Object} options Settings to pass into and setup the sound and visuals.
  */
 export var Sprite = function (options) {
-  var self = this;
+  let self = this;
 
   self.sounds = [];
   // Setup the options to define this sprite display.
@@ -181,19 +181,19 @@ export var Sprite = function (options) {
 Sprite.prototype = {
   /**
    * Play a sprite when clicked and track the progress.
-   * @param  {String} key Key in the sprite map object.
+   * @param  {String} sprite Key in the sprite map object.
    */
-  play: function (key: string): number {
-    var self = this;
+  play: function (sprite: string): number {
+    const self = this;
     self._spriteLeft = self._tinySprite
-    var sprite = key;
+
     // Play the sprite sound and capture the ID.
-    var id = self.sound.play(sprite);
-    return id
+    return self.sound.play(sprite);
+
   },
 
   pause: function (): number {
-    var self = this;
+    const self = this;
     self.sound.pause()
     return self.sound.id
   },
@@ -206,16 +206,18 @@ Sprite.prototype = {
    * @param s - the number of seconds to go back
    */
   goBack: function (id : number, s: number): number {
-    var self = this;
+    const self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
     // if current_seek - s is greater than 0, find the closest sprite
     // and highlight it; seek to current_seek -s.
+    //FIXME Duplicate declaration
     if (self.sound.seek(id = id) - s > 0) {
-      var id : number = self.sound.seek(self.sound.seek(id = id) - s, id);
+      //FIXME Duplicate declaration
+      var id: number = self.sound.seek(self.sound.seek(id = id) - s, id);
       // move highlight back TODO: refactor out into its own function and combine with version in step()
-      var seek = self.sound.seek(id = id)
-      for (var j = 0; j < self._spriteLeft.length; j++) {
+      let seek = self.sound.seek(id = id)
+      for (let j = 0; j < self._spriteLeft.length; j++) {
         // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
         if (seek * 1000 >= self._spriteLeft[j][0]) {
           self._reading$.next(self._spriteLeft[j][1])
@@ -224,6 +226,7 @@ Sprite.prototype = {
       }
       // else, return back to beginning
     } else {
+      //FIXME Duplicate declaration
       var id : number = self.sound.seek(0, id);
       self._reading$.next(self._spriteLeft[0][1])
     }
@@ -238,16 +241,16 @@ Sprite.prototype = {
  * @param s - the number of seconds to go back
  */
   goTo: function (id : number, s : number): number {
-    var self = this;
+    const self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
     // if current_seek - s is greater than 0, find the closest sprite
     // and highlight it; seek to current_seek -s.
-
-    var id : number = self.sound.seek(s, id);
+    //FIXME Duplicate declaration
+    var id: number = self.sound.seek(s, id);
     // move highlight back TODO: refactor out into its own function and combine with version in step()
-    var seek = self.sound.seek(id = id)
-    for (var j = 0; j < self._spriteLeft.length; j++) {
+    let seek = self.sound.seek(id = id)//FIXME
+    for (let j = 0; j < self._spriteLeft.length; j++) {
       // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
       if (seek * 1000 >= self._spriteLeft[j][0]) {
         self._reading$.next(self._spriteLeft[j][1])
@@ -262,23 +265,23 @@ Sprite.prototype = {
    * Stop the sound
    */
   stop: function (): number {
-    var self = this;
+    const self = this;
     // remove reading
     self._reading$.next('')
     // Play the sprite sound and capture the ID.
-    var id = self.sound.stop();
-    return id
+    return self.sound.stop();
+
   },
 
   /**
    * The step called within requestAnimationFrame to update the playback positions.
    */
   step: function (): void {
-    var self = this;
+    const self = this;
     // // Loop through all active sounds and update their progress bar.
-    for (var i = 0; i < self.sounds.length; i++) {
-      var seek = (self.sound.seek() || 0);
-      for (var j = 0; j < self._spriteLeft.length; j++) { // TODO: refactor out into its own function and combine with version in step()
+    for (let i = 0; i < self.sounds.length; i++) {
+      let seek = (self.sound.seek() || 0);
+      for (let j = 0; j < self._spriteLeft.length; j++) { // TODO: refactor out into its own function and combine with version in step()
         // if stopped
         if (seek > 0) {
           // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left

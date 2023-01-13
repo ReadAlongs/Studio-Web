@@ -1,21 +1,28 @@
 $max-height: 98vh;
 .pages {
     &__container {
-        overflow: auto;
-        max-height: $page-size + 0vh;
-        height: 100%;
-        max-width: 100%;
-        width: 100%;
-        position: relative;
-        display: -webkit-inline-flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        @extend %border--strong--top;
-        @extend %border--strong--left;
-        @extend %border--strong--right;
-        border-radius: em(5) em(5) 0 0;
+      transition: margin-right .5s;
+      overflow: auto;
+      max-height: $page-size + 0vh;
+      height: 100%;
+      max-width: 100%;
+      width: 100%;
+      position: relative;
+      display: -webkit-inline-flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      @extend %border--strong--top;
+      @extend %border--strong--left;
+      @extend %border--strong--right;
+      border-radius: em(5) em(5) 0 0;
+
+      &.settings-is-visible {
+        width: calc(100% - $setting-width) !important;
+
+      }
     }
+
 }
 
 .page {
