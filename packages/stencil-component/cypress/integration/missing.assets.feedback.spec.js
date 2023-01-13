@@ -59,7 +59,7 @@ context("Readalong Component with missing assets", () => {
       cy.get("[data-cy=audio-error]").should(($el) => {
         expect($el.hasClass("fade")).equal(false)
         //check that message is visible
-        expect($el.text()).contains("Error: The audio file could not be loaded")
+        expect($el.text()).contains("The audio file could not be loaded")
       }).should("be.visible")
       cy.get("[data-cy=control-panel]").should("have.length", 0)
       cy.get("[data-cy=text-error]").should('have.class', 'fade').should("not.be.visible")
@@ -82,7 +82,7 @@ context("Readalong Component with missing assets", () => {
       cy.get("[data-cy=alignment-error]").should(($el) => {
         expect($el.hasClass("fade")).equal(false)
         // check that message is visible
-        expect($el.text()).contains("Error: The alignment file could not be loaded")
+        expect($el.text()).contains("The alignment file could not be loaded")
       }).should("be.visible")
       cy.get("[data-cy=progress-bar]").should("have.length", 0)
 
