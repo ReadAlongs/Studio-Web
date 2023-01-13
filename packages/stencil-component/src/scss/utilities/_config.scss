@@ -47,13 +47,14 @@ $zindex: (
   modal:                      1000,
   overlay:                    900,
   dropdown:                   800,
-  nav:                        700,
-  ui-button:                  650,
-  header:                     600,
-  footer:                     500,
-  pseduo:                     400,
-  default:                    1,
-  bottomless-pit:             -10000
+  nav: 700,
+  ui-button: 650,
+  header: 600,
+  footer: 500,
+  pseduo: 400,
+  default: 1,
+  bottomless-pit: -10000
 );
 
 $page-size: 55;
+$setting-width: 350px;

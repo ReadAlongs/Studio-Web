@@ -16,14 +16,20 @@
 
 .overlay {
     &__container {
-        // margin-top: -3px;
-        width: 100%;
-        max-width: 100%;
-        height: em(50);
-        position: relative;
-        z-index: 8000;
-        @extend %border--strong;
-        @extend %border--strong;
+      // margin-top: -3px;
+      width: 100%;
+      max-width: 100%;
+      height: em(50);
+      position: relative;
+      z-index: 8000;
+      @extend %border--strong;
+      @extend %border--strong;
+      transition: margin-right .5s;
+
+      &.settings-is-visible {
+        width: calc(100% - $setting-width) !important;
+
+      }
     }
 }
 

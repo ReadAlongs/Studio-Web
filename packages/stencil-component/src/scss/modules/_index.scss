@@ -18,6 +18,7 @@
 @import 'controls';
 @import 'overlay';
 @import 'pages';
+@import 'settings';
 @import 'slots';
 
 // loader
@@ -59,11 +60,11 @@
   border-radius: .25rem;
 
   transition-delay: 2s;
-  transition: visibility 5s height 5s;
+  transition: visibility 15s height 5s;
 
 }
 .alert.status-1 {
-  color: #0f5132;
+  color: #198754;
   background-color: #d1e7dd;
   border-color: #badbcc;
 }

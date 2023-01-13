@@ -1,23 +1,30 @@
 .control-panel {
-    @extend %border--strong--bottom;
-    @extend %border--strong--left;
-    @extend %border--strong--right;
-    border-radius: 0 0 em(5) em(5);
-    position: relative;
-    min-width: 100%;
-    display: inline-flex;
-    // margin: em(25) auto;
+  @extend %border--strong--bottom;
+  @extend %border--strong--left;
+  @extend %border--strong--right;
+  border-radius: 0 0 em(5) em(5);
+  position: relative;
+  min-width: 100%;
+  display: inline-flex;
+  transition: margin-right .5s;
+  // margin: em(25) auto;
 
-    &__buttons {
-        &--left {
-            width: 25%;
-            float: left;
-            margin-top: em(5);
-            padding: em(5);
-        }
+  &.settings-is-visible {
+    width: calc(100% - $setting-width) !important;
+    min-width: calc(100% - $setting-width) !important;
 
-        &--center {
-            width: 25%;
+  }
+
+  &__buttons {
+    &--left {
+      width: 25%;
+      float: left;
+      margin-top: em(5);
+      padding: em(5);
+    }
+
+    &--center {
+      width: 25%;
             text-align: center;
             margin: 0 auto;
         }

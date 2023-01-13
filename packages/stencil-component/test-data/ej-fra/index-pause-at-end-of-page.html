@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Insert Title Here</title>
+    <!-- Import fonts. Material Icons are needed by the web component -->
+    <link href="https://fonts.googleapis.com/css?family=Lato%7CMaterial+Icons%7CMaterial+Icons+Outlined"
+          rel="stylesheet">
+</head>
+
+<body>
+<!-- Here is how you declare the Web Component. Supported languages: en, fr -->
+<read-along auto-pause-end-of-page="true" use-assets-folder="false" text="ej-fra.xml" alignment="ej-fra.smil"
+            audio="ej-fra.m4a" language="fra">
+    <span slot="read-along-header">Insert Title Here Too</span>
+</read-along>
+</body>
+
+<!-- The last step needed is to import the package -->
+<script type="module" src='//localhost:3333/build/read-along.esm.js'></script>
+</html>

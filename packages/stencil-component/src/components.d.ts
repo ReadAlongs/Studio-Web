@@ -29,11 +29,15 @@ export namespace Components {
          */
         "cssUrl"?: string;
         /**
+          * Show text translation  on at load time
+         */
+        "displayTranslation": boolean;
+        /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
         "language": InterfaceLanguage;
         /**
-          * Limit play back rate to 30%-75% range (with less pitch distortion)
+          * Limit play back rate to 85%-110% range (with less pitch distortion)
          */
         "limitPlayBackRate": boolean;
         /**
@@ -45,10 +49,6 @@ export namespace Components {
          */
         "pageScrolling": "horizontal" | "vertical";
         "scrollBehavior": "smooth" | "auto";
-        /**
-          * Show text translation  on load
-         */
-        "startWithTranslation": boolean;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
@@ -66,7 +66,7 @@ export namespace Components {
          */
         "timeoutAtEndOfPage": number;
         /**
-          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
+          * Toggle the use of assets folder for resolving urls. Defaults: on to maintain backwards compatibility
          */
         "useAssetsFolder": boolean;
     }
@@ -101,11 +101,15 @@ declare namespace LocalJSX {
          */
         "cssUrl"?: string;
         /**
+          * Show text translation  on at load time
+         */
+        "displayTranslation"?: boolean;
+        /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
         "language"?: InterfaceLanguage;
         /**
-          * Limit play back rate to 30%-75% range (with less pitch distortion)
+          * Limit play back rate to 85%-110% range (with less pitch distortion)
          */
         "limitPlayBackRate"?: boolean;
         /**
@@ -117,10 +121,6 @@ declare namespace LocalJSX {
          */
         "pageScrolling"?: "horizontal" | "vertical";
         "scrollBehavior"?: "smooth" | "auto";
-        /**
-          * Show text translation  on load
-         */
-        "startWithTranslation"?: boolean;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
@@ -138,7 +138,7 @@ declare namespace LocalJSX {
          */
         "timeoutAtEndOfPage"?: number;
         /**
-          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
+          * Toggle the use of assets folder for resolving urls. Defaults: on to maintain backwards compatibility
          */
         "useAssetsFolder"?: boolean;
     }
