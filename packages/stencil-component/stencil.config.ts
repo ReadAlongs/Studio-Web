@@ -23,11 +23,6 @@ export const config: Config = {
         { src: 'scss/fonts', dest: 'build/assets/fonts' }
       ]
     },
-    angularOutputTarget({
-      componentCorePackage: '@readalong/dist/components',
-      directivesProxyFile: '../angular-workspace/projects/readalong/src/lib/stencil-generated/proxies.ts',
-      valueAccessorConfigs: angularValueAccessorBindings,
-    }),
   ],
   plugins: [sass()],
   devServer: {

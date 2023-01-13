@@ -27,7 +27,6 @@ jobs:
           start: npm run test-servers
           wait-on: npm run wait-for-test-server
       - run: cd ./packages/stencil-component && npm version patch
-      - run: cd ./packages/angular-workspace && npm version patch
       - run: npx lerna run prepublish
       - run: npx lerna publish from-package
         env:

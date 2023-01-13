@@ -5,10 +5,9 @@ Interactive story telling embeddable into any website!
 
 <!-- TODO: put an animated GIF here, showing it off! -->
 
-This mono repo combines two components:
+This mono repo combines ****** components:
 
  - A [stencil web component](packages/stencil-component/) for visualizing read alongs,
- - An [angular web component](packages/angular-workspace/) currently in development for editing them.
 
 For maintainers
 ---------------
