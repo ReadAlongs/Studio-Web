@@ -23,18 +23,20 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          working-directory: ./packages/stencil-component
+          working-directory: ./packages/web-component
           start: npm run test-servers
           wait-on: npm run wait-for-test-server
-      - run: cd ./packages/stencil-component && npm version patch
-      - run: npx lerna run prepublish
-      - run: npx lerna publish from-package
+      - run: cd ./packages/web-component && npm version patch
+      - run: nx build web-component && nx prepublish web-component && nx build ngx-web-component
+      - run: |
+          cd dist/packages/web-component && npm publish
+          cd dist/packages/ngx-web-component && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Determine tag
         id: determine_tag
         run: |
-          echo "::set-output name=TAG_VERSION::$(npm view @roedoejet/readalong version)"
+          echo "::set-output name=TAG_VERSION::$(npm view @readalongs/web-component version)"
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.5

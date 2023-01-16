@@ -4,10 +4,10 @@ const TerserPlugin = require("terser-webpack-plugin");
 const webpack = require('webpack');
 
 module.exports = {
-    entry: './dist/esm/read-along.js',
+    entry: '../../dist/packages/web-component/dist/esm/read-along.js',
     output: {
         filename: 'bundle.js',
-        path: path.resolve('./dist'),
+        path: path.resolve('../../dist/packages/web-component/dist'),
         publicPath: ''
     },
     mode: "production",

@@ -1,6 +1,6 @@
 {
-    "name": "@roedoejet/readalong",
-    "version": "0.1.6",
+    "name": "@readalongs/web-component",
+    "version": "0.0.1",
     "description": "ReadAlong Web Component",
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
@@ -9,9 +9,10 @@
     "types": "dist/types/components.d.ts",
     "collection": "dist/collection/collection-manifest.json",
     "collection:main": "dist/collection/index.js",
-    "unpkg": "dist/readalongs/readalongs.js",
+    "unpkg": "dist/bundle.js",
     "files": [
-        "dist/"
+        "dist/",
+        "loader/"
     ],
     "scripts": {
         "build": "stencil build --docs",

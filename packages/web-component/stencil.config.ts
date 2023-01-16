@@ -1,15 +1,22 @@
-import { angularOutputTarget, ValueAccessorConfig } from '@stencil/angular-output-target';
 import { Config } from '@stencil/core';
 import { sass } from '@stencil/sass';
 
 const angularValueAccessorBindings: ValueAccessorConfig[] = [];
 
+import { angularOutputTarget, ValueAccessorConfig } from '@stencil/angular-output-target';
+
 export const config: Config = {
-  namespace: "read-along",
+  namespace: "web-component",
+  taskQueue: 'async',
+  sourceMap: true,
+
+  extras: {
+    experimentalImportInjection: true,
+  },
   outputTargets: [
     {
       type: 'dist',
-      esmLoaderPath: '../loader',
+      esmLoaderPath: './loader',
     },
     {
       type: 'dist-custom-elements',
@@ -23,6 +30,14 @@ export const config: Config = {
         { src: 'scss/fonts', dest: 'build/assets/fonts' }
       ]
     },
+
+      angularOutputTarget({
+          componentCorePackage: '@readalongs/web-component',
+          directivesProxyFile: '../../../packages/ngx-web-component/src/generated/directives/proxies.ts',
+          directivesArrayFile: '../../../packages/ngx-web-component/src/generated/directives/index.ts',
+          valueAccessorConfigs: angularValueAccessorBindings
+        }),
+
   ],
   plugins: [sass()],
   devServer: {

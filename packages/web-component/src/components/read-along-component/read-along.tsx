@@ -31,21 +31,21 @@ export class ReadAlongComponent {
   /**
    * The text as TEI
    */
-  @Prop({ mutable: true, reflect: true }) text: string;
+  @Prop() text: string;
 
 
 
   /**
    * The alignment as SMIL
    */
-  @Prop({ mutable: true, reflect: true }) alignment: string;
+  @Prop() alignment: string;
 
   processed_alignment: Alignment;
 
   /**
    * The audio file
    */
-  @Prop({ mutable: true, reflect: true }) audio: string;
+  @Prop() audio: string;
 
   audio_howl_sprites: any;
   reading$: Subject<string>; // An RxJs Subject for the current item being read.
@@ -679,6 +679,15 @@ export class ReadAlongComponent {
    *************/
 
   /**
+   * When the component is disconnected, stop all audio.
+   *
+   */
+
+  disconnectedCallback() {
+    this.stop()
+  }
+
+  /**
    * When the component updates, change the fill of the progress bar.
    * This is because the fill colour is determined by a computed CSS
    * value set by the Web Component's theme. When the @prop theme changes and
@@ -703,7 +712,6 @@ export class ReadAlongComponent {
     //this.alignment = this.urlTransform(this.alignment)
     //this.text = this.urlTransform(this.text)
     //this.cssUrl = this.urlTransform(this.cssUrl)
-
     // TO maintain backwards compatibility language code
     if (this.language.length < 3) {
       if (this.language.match("fr") != null) {
@@ -726,21 +734,19 @@ export class ReadAlongComponent {
    * is being read
    */
   componentDidLoad() {
-
     this.processed_alignment = parseSMIL(this.alignment)
     this.assetsStatus.SMIL = Object.keys(this.processed_alignment).length ? LOADED : ERROR_LOADING
 
     // load basic Howl
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
-      preload: true,
-      onloaderror: this.audioFailedToLoad.bind(this),
-      onload: this.audioLoaded.bind(this)
+      preload: false,
+      // onloaderror: this.audioFailedToLoad.bind(this),
+      // onload: this.audioLoaded.bind(this)
 
     })
     // Once loaded, get duration and build Sprite
     this.audio_howl_sprites.once('load', () => {
-
       this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
       this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
@@ -793,7 +799,7 @@ export class ReadAlongComponent {
       this.isLoaded = true;
       this.assetsStatus.AUDIO = LOADED;
     })
-
+    this.audio_howl_sprites.load()
   }
 
   /**********
