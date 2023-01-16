@@ -14,41 +14,33 @@ This mono repo combines ****** components:
 For maintainers
 ---------------
 
-This repo is managed using [Lerna] and [Nx]. We use Lerna to manage multiple,
-interdependent packages. The biggest change between using Lerna and
+This repo is managed using [Nx]. The biggest change between using Nx and
 using npm is **you can no longer run `npm install` within packages**.
-Instead, always run `npx lerna bootstrap` from the root directory of the
+Instead, always run `npm install` from the root directory of the
 repository.
 
-[Lerna]: https://lerna.js.org/
+[Nx]: https://nx.dev/
 
 ### Installing dependencies
 
 First, make sure Lerna is installed:
 
-    npm install
+    npm install -g nx
 
 Then,
 
-    npx lerna bootstrap
+    npm install
 
 ### Building
 
 The TypeScript code must be compiled:
 
-    npx lerna run build
+    nx build web-component
 
-### Testing
+You need to run `nx build web-component` if you want to try out the angular-demo because running nx build web-component will build the angular wrapper into the generated folder in the ngx-web-component wrapper library.
 
-    npx lerna run test
+If you want to try out the angular app demo to see an example of how to integrate readalongs into your Angular project, run `nx serve angular-demo`
 
-### Updating dependencies
-
-    npx lerna bootstrap
-
-### Adding new dependencies
-
-    npx lerna add <package> path/to/subpackage
 
 License
 -------
