@@ -46,3 +46,15 @@ p {
 #fileElem {
     display: none;
 }
+
+#img-remover {
+    margin: 60px;
+    position: absolute;
+    z-index: 9999;
+    border-radius: 50px;
+    color: red;
+}
+
+#image-stuff {
+    display: contents
+}

@@ -859,6 +859,17 @@ export class ReadAlongComponent {
     this.images = this.images.slice(0, pageIndex).concat([imageURL]).concat(this.images.slice(pageIndex + 1))
   }
 
+  deleteImage(props){
+    let pageIndex = this.parsed_text.indexOf(props.pageData)
+    console.log(this.images)
+    console.log(props.pageData)
+    delete props.pageData.img
+    this.images = this.images.splice(pageIndex, 1)
+    
+    console.log(pageIndex)
+    console.log(this.images)
+  }
+
   /**********
    * RENDER *
    **********/
@@ -879,6 +890,21 @@ export class ReadAlongComponent {
    */
   Overlay = (): Element => <object onClick={(e) => this.goToSeekFromProgress(e)} id='overlay__object'
     type='image/svg+xml' data={this.svgOverlay} />
+
+  /**
+   * Remove image at given page
+   *
+   * @param props
+   */
+  RemoveImg = (props: { pageData: Page }): Element => {
+    return (<button data-cy="delete-button" aria-label="Delete"
+    title="Delete image"
+    onClick={() => this.deleteImage(props)}
+    id="img-remover"
+    class={"ripple theme--" + this.theme + " background--" + this.theme}>
+    <i class="material-icons">delete</i>
+  </button>)
+  }
 
   /**
    * Render image at path 'url' in assets folder.
@@ -938,7 +964,7 @@ export class ReadAlongComponent {
           currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
       }
       { /* Display an Img if it exists on the page */
-        props.pageData.img ? <this.Img url={props.pageData.img} /> : null
+        props.pageData.img ? <span id="image-stuff"><this.RemoveImg pageData={props.pageData}/> <this.Img url={props.pageData.img} /></span> : null
       }
       {
         this.mode === "EDIT" && !props.pageData.img ? <this.ImgPlaceHolder pageData={props.pageData} /> : null
