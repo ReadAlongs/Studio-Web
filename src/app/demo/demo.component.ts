@@ -28,7 +28,6 @@ export class DemoComponent implements OnInit {
   ngOnInit(): void {}
 
   download() {
-    console.log(this.slots);
     var element = document.createElement("a");
     let blob = new Blob(
       [
