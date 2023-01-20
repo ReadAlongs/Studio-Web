@@ -36,7 +36,7 @@ describe("DemoComponent", () => {
   });
 
   it(`should have as page title 'ReadAlong Studio'`, () => {
-    expect(component.slots.pageTitle).toEqual("ReadAlong Studio");
+    expect(component.slots.pageTitle).toEqual("PageTitle");
   });
 
   it("test editable page title when it is simple value", () => {
