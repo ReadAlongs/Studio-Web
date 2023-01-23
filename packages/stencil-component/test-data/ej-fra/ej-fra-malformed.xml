@@ -5,7 +5,7 @@
     <body id="t0b0">
       <!-- div should have type="page" not class="page"-->
       <div class="page" id="t0b0d0">
-        <graphic url="http://localhost:5000/ej-fra/avatar.png"/>
+        <graphic url="avatar.png"/>
         <p id="t0b0d0p0">
           <s id="t0b0d0p0s0"><w id="t0b0d0p0s0w0">Bonjour</w>.
           </s>

@@ -33,6 +33,7 @@ you make to `/src` will be automatically shown in the browser.
 | `autoPauseEndOfPage` | `auto-pause-end-of-page` | Toggle the auto pause at the end of each page. Defaults to 'false' for backwards compatibility                   | `boolean`       | `false`     |
 | `timeoutAtEndOfPage` | `timeout-at-end-of-page` | Set a default pause between each page. Defaults to '0' for backwards compatibility                               | `number`        | `0`         |
 | `limitPlayBackRate`  | `limit-play-back-rate`   | Set a limit to reduce pitch change when playback rate is adjusted. Defaults to false for backwards compatibility | `boolean`       | `false`     |
+| `displayTranslation` | `display-translation`    | Set the default display of the text translation. Defaults to true for backwards compatibility                    | `boolean`       | `true`      |
 
 
 #### IMAGES

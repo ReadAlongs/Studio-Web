@@ -285,9 +285,10 @@ export class ReadAlongComponent {
    *
    */
   goTo(seek: number): void {
-    if (this.play_id === undefined) {
-      this.play();
-      this.pause();
+    console.log("goto", seek)
+    if (this.play_id == undefined) {//initialize the sound sprite
+      this.play_id = this.audio_howl_sprites.play('all')
+      this.audio_howl_sprites.pause('all')
     }
     this.autoScroll = false;
     seek = seek / 1000
@@ -323,6 +324,8 @@ export class ReadAlongComponent {
     // get seek in milliseconds
     let seek = ((click / width) * this.duration) * 1000
     this.goTo(seek)
+    this.animateProgress(this.play_id)
+
   }
 
 
@@ -331,7 +334,7 @@ export class ReadAlongComponent {
    */
   pause(): void {
     this.playing = false;
-    this.audio_howl_sprites.sound.pause()
+    this.audio_howl_sprites.pause()
   }
 
 
@@ -342,6 +345,7 @@ export class ReadAlongComponent {
    *
    */
   play() {
+    console.log("play", this.autoPauseEndOfPage, this.autoPauseState, this.current_page, this.play_id)
     this.playing = true;
     // If already playing once, continue playing
     if (this.autoPauseEndOfPage && this.autoPauseState === "paused") {
@@ -367,10 +371,16 @@ export class ReadAlongComponent {
    * @param ev
    */
   playSprite(ev: MouseEvent): void {
-    let tag = this.goToSeekAtEl(ev)
-    if (!this.playing) {
-      this.audio_howl_sprites.play(tag)
+    try {
+      let tag = this.goToSeekAtEl(ev)
+      console.log("playSprite", tag, this.autoPauseEndOfPage, this.autoPauseState, this.current_page, this.play_id)
+      if (!this.playing) {
+        this.audio_howl_sprites.play(tag)
+      }
+    } catch (e) {
+      console.error(e)
     }
+
   }
 
 
@@ -401,7 +411,8 @@ export class ReadAlongComponent {
 
   toggleSettings(): void {
     if (this.playing) {
-      this.pause()
+      this.playing = false
+      this.audio_howl_sprites.sound.pause()
     } else if (this.current_page) {
       setTimeout(() => {
 
@@ -835,7 +846,7 @@ export class ReadAlongComponent {
       }
 
     }).catch((error) => {
-      console.log(error)//for developer to see details
+      console.error(error)//for developer to see details
       if (error[0] == 'P') this.assetsStatus.XML = ERROR_PARSING
       else this.assetsStatus.XML = ERROR_LOADING
     }).finally(() => {
@@ -852,7 +863,7 @@ export class ReadAlongComponent {
 
 
     }).catch((error) => {
-      console.log(error)//for developer to see details
+      console.error(error)//for developer to see details
       if (error[0] == 'P') this.assetsStatus.SMIL = ERROR_PARSING
       else this.assetsStatus.SMIL = ERROR_LOADING
     }).finally(() => {
@@ -882,85 +893,109 @@ export class ReadAlongComponent {
     })
     // Once loaded, get duration and build Sprite
     this.audio_howl_sprites.once('load', () => {
+      if (this.processed_alignment) {
+        this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
+        this.duration = this.audio_howl_sprites.duration();
 
-      this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
-      this.duration = this.audio_howl_sprites.duration();
-      this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
-      // Once Sprites are built, subscribe to reading subject and update element class
-      // when new distinct values are emitted
-      this.reading$ = this.audio_howl_sprites._reading$.pipe(
-        distinctUntilChanged()
-      ).subscribe(el_tag => {
-        // Only highlight when playing
-        if (this.playing) {
-          // Turn tag to query
-          let query = this.tagToQuery(el_tag);
-          // select the element with that tag
-          let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
-          // Remove all elements with reading class
-          this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
-          // Add reading to the selected el
-          query_el.classList.add('reading')
+        this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
+        // Once Sprites are built, subscribe to reading subject and update element class
+        // when new distinct values are emitted
+        this.reading$ = this.audio_howl_sprites._reading$.pipe(
+          distinctUntilChanged()
+        ).subscribe(el_tag => {
+          if (el_tag) {
+            // Turn tag to query
+            let query = this.tagToQuery(el_tag);
+            // select the element with that tag
+            let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
+            let current_page = ReadAlongComponent._getSentenceContainerOfWord(query_el).parentElement.id
 
-          // Scroll horizontally (to different page) if needed
-          let current_page = ReadAlongComponent._getSentenceContainerOfWord(query_el).parentElement.id
+            const rect: DOMRect = this.el.shadowRoot.querySelector("#" + current_page).getBoundingClientRect()
 
 
-          if (current_page !== this.current_page) {
-            if (this.current_page !== undefined) {
-              if (this.autoPauseEndOfPage && this.autoPauseState === "playing") {
-                this.pause()
+            // Only highlight when playing
+            if (this.playing) {
+              // Remove all elements with reading class
+              this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
+              // Add reading to the selected el
+              query_el.classList.add('reading')
+
+              // Scroll horizontally (to different page) if needed
+              if (current_page !== this.current_page) {
+                if (this.current_page !== undefined) {
+                  if (this.autoPauseEndOfPage && this.autoPauseState === "playing") {
+                    this.pause()
+                  } else {
+                    this._doScrollAnimation(current_page)
+                  }
+                  if (this.autoPauseState === "playing" && this.scrollBehavior === "smooth") {
+
+                    this.autoPauseState = "paused"
+
+                  }
+
+
+                } else {
+                  //if the user has scrolled away from the current page bring them page
+                  if (rect.left > 20 || rect.left < 0) {
+
+                    this.scrollToPage(current_page)
+                  }
+
+                }
+                this.current_page = current_page
               } else {
-                this._doScrollAnimation(current_page)
+                if (this.autoPauseState === "resumed") this.autoPauseState = "playing"
+
+                //if the user has scrolled away from the current page bring them page
+                if (rect.left > 20 || rect.left < 0) {
+
+                  if (this.autoPauseState === "playing")
+                    this.scrollToPage(current_page)
+                }
+
+
               }
-              if (this.autoPauseState === "playing" && this.scrollBehavior === "smooth") {
 
-                this.autoPauseState = "paused"
 
+              // scroll vertically (through paragraph) if needed
+              if (this.inPageContentOverflow(query_el)) {
+                if (this.autoScroll) {
+                  query_el.scrollIntoView(false);
+                  this.scrollByHeight(query_el)
+                }
+              }// scroll horizontal (through paragraph) if needed
+              if (this.inParagraphContentOverflow(query_el)) {
+                if (this.autoScroll) {
+                  query_el.scrollIntoView(false);
+                  this.scrollByWidth(query_el)
+                }
               }
+            } else {
 
+              //turn the page to where selection
+              if (rect.left > 20 || rect.left < 0) {
 
-            }
-            this.current_page = current_page
-          } else {
-            if (this.autoPauseState === "resumed") this.autoPauseState = "playing"
-
-
-            //if the user has scrolled away from the current page bring them page
-            if (this.el.shadowRoot.querySelector("#" + current_page).getBoundingClientRect().left > 20) {
-
-              if (this.autoPauseState === "playing")
                 this.scrollToPage(current_page)
+              }
+              this.current_page = current_page
             }
           }
 
 
-          // scroll vertically (through paragraph) if needed
-          if (this.inPageContentOverflow(query_el)) {
-            if (this.autoScroll) {
-              query_el.scrollIntoView(false);
-              this.scrollByHeight(query_el)
-            }
-          }// scroll horizontal (through paragraph) if needed
-          if (this.inParagraphContentOverflow(query_el)) {
-            if (this.autoScroll) {
-              query_el.scrollIntoView(false);
-              this.scrollByWidth(query_el)
-            }
-          }
-        }
+        })
 
+        this.assetsStatus.AUDIO = LOADED;
+      }
       })
 
-      this.assetsStatus.AUDIO = LOADED;
-    })
 
-    console.log("loaded")
+
   }
 
   componentDidRender(): void {
     //if creator does not want the translation to show at
-    if (this.parsed_text && this.parsed_text.length > 0 && this.hasLoaded < 3) {
+    if (!this.displayTranslation && this.parsed_text && this.parsed_text.length > 0 && this.hasLoaded < 3) {
       this.el.shadowRoot.querySelectorAll('.translation').forEach(translation => translation.classList.add('invisible'))
       this.el.shadowRoot.querySelectorAll('.sentence__translation').forEach(translation => translation.classList.add('invisible'))
 
@@ -1278,7 +1313,7 @@ export class ReadAlongComponent {
     <i class="material-icons-outlined">subtitles</i>
   </button>
 
-  ToggleSettings = (): Element => <button data-cy={"configure-toggle"} title={"Change Configuration"}
+  ToggleSettings = (): Element => <button data-cy={"settings-button"} title={"Change Configuration"}
                                           onClick={() => this.toggleSettings()}
                                           class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons" aria-label="Show settings">settings</i>
@@ -1286,11 +1321,12 @@ export class ReadAlongComponent {
 
   ControlPanel = (): Element => <div data-cy="control-panel"
                                      class={"control-panel theme--" + this.theme + " background--" + this.theme}>
-    <div class="control-panel__buttons--left">
-      <this.PlayControl/>
-      <this.ReplayControl/>
-      <this.StopControl/>
-    </div>
+    {this.hasLoaded === 3 &&
+      <div class="control-panel__buttons--left">
+        <this.PlayControl/>
+        <this.ReplayControl/>
+        <this.StopControl/>
+      </div>}
 
     <div class="control-panel__buttons--center">
       <this.PlaybackSpeedControl/>
@@ -1312,10 +1348,11 @@ export class ReadAlongComponent {
     <h3>{this.returnTranslation('Settings')}</h3>
     <p>
       <label class={"switch"}>
-        <input type="checkbox" checked={this.scrollBehavior === "smooth"} onClick={() => {
-          this.toggleScrollBehavior();
+        <input type="checkbox" data-cy={"settings-scroll-behavior"} checked={this.scrollBehavior === "smooth"}
+               onClick={() => {
+                 this.toggleScrollBehavior();
 
-        }}/>
+               }}/>
         <span class="slider"></span>
 
       </label>
@@ -1323,7 +1360,7 @@ export class ReadAlongComponent {
     </p>
     <p>
       <label class={"switch"}>
-        <input type="checkbox" checked={!this.autoPauseEndOfPage}
+        <input type="checkbox" data-cy={"settings-auto-pause"} checked={!this.autoPauseEndOfPage}
                onClick={() => {
                  this.autoPauseEndOfPage = !this.autoPauseEndOfPage;
 
@@ -1335,7 +1372,8 @@ export class ReadAlongComponent {
     </p>
     {!this.autoPauseEndOfPage &&
       <p>
-        <input onChange={e => this.timeoutAtEndOfPage = parseFloat((e.target as HTMLInputElement).value)}
+        <input data-cy={"settings-pause-timeout"}
+               onChange={e => this.timeoutAtEndOfPage = parseFloat((e.target as HTMLInputElement).value)}
                type={"number"} size={1} step={0.5} min={0} max={10} value={this.timeoutAtEndOfPage}/>
         {this.returnTranslation('End of page pause in seconds')}
       </p>

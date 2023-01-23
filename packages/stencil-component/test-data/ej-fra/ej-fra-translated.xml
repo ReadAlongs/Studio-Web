@@ -8,10 +8,23 @@
             <div type="page" id="t0b0d0" class="two-column-layout-page">
               <graphic url="avatar.png" />
                 <p id="t0b0d0p0">
-                    <s id="t0b0d0p0s0"><w id="t0b0d0p0s0w0">Bonjour</w>.</s>
-                    <s xml:lang="eng" id="t0b0d0p0s0" class="sentence__translation"><w id="t0b0d0p0s0w0">Hello</w>.</s>
-                    <s id="t0b0d0p0s1"><w id="t0b0d0p0s1w0">Je</w> <w id="t0b0d0p0s1w1">m</w>'<w id="t0b0d0p0s1w2">appelle</w> <w id="t0b0d0p0s1w3">Éric</w> <w id="t0b0d0p0s1w4">Joanis</w>.</s>
-                    <s xml:lang="eng" id="t0b0d0p0s1" class="sentence__translation"><w id="t0b0d0p0s1w0">My</w> <w id="t0b0d0p0s1w2">name</w> <w id="t0b0d0p0s1w1">is</w> <w id="t0b0d0p0s1w3">Éric</w> <w id="t0b0d0p0s1w4">Joanis</w>.</s>
+                  <s id="t0b0d0p0s0"><w id="t0b0d0p0s0w0">Bonjour</w>.
+                  </s>
+                  <s xml:lang="eng" id="t0b0d0p0s0" class="sentence__translation"><w id="t0b0d0p0s0w0t">Hello</w>.
+                  </s>
+                  <s id="t0b0d0p0s1">
+                    <w id="t0b0d0p0s1w0">Je</w>
+                    <w id="t0b0d0p0s1w1">m</w>'<w id="t0b0d0p0s1w2">appelle</w>
+                    <w id="t0b0d0p0s1w3">Éric</w>
+                    <w id="t0b0d0p0s1w4">Joanis</w>.
+                  </s>
+                  <s xml:lang="eng" id="t0b0d0p0s1" class="sentence__translation">
+                    <w id="t0b0d0p0s1w0">My</w>
+                    <w id="t0b0d0p0s1w2">name</w>
+                    <w id="t0b0d0p0s1w1">is</w>
+                    <w id="t0b0d0p0s1w3">Éric</w>
+                    <w id="t0b0d0p0s1w4">Joanis</w>.
+                  </s>
 
                 </p>
             </div>
