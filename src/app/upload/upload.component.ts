@@ -5,8 +5,8 @@ import { map, switchMap, take } from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
-import { MatDialog } from "@angular/material/dialog";
-import { ProgressBarMode } from "@angular/material/progress-bar";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { LegacyProgressBarMode as ProgressBarMode } from "@angular/material/legacy-progress-bar";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
