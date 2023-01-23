@@ -12,7 +12,7 @@ export class DemoComponent implements OnInit {
   slots: any = {
     title: $localize`Title`,
     subtitle: $localize`Subtitle`,
-    pageTitle: "ReadAlong Studio",
+    pageTitle: $localize`PageTitle`,
   };
 
   constructor(public titleService: Title) {
