@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: "app-demo",
@@ -8,13 +9,25 @@ import { Component, Input, OnInit } from "@angular/core";
 export class DemoComponent implements OnInit {
   @Input() b64Inputs: string[];
 
-  slots: any = { title: $localize`Title`, subtitle: $localize`Subtitle` };
-  constructor() {}
+  slots: any = {
+    title: $localize`Title`,
+    subtitle: $localize`Subtitle`,
+    pageTitle: $localize`PageTitle`,
+  };
+
+  constructor(public titleService: Title) {
+    titleService.setTitle(this.slots.pageTitle);
+  }
+
+  onPageTitleChange(e: Event): void {
+    const titleValue: string = (<HTMLTextAreaElement>e.target).value;
+    this.slots.pageTitle = titleValue;
+    this.titleService.setTitle(titleValue);
+  }
 
   ngOnInit(): void {}
 
   download() {
-    console.log(this.slots);
     var element = document.createElement("a");
     let blob = new Blob(
       [
@@ -23,7 +36,7 @@ export class DemoComponent implements OnInit {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
-      <title>Test ReadAlong</title>
+      <title>${this.slots.pageTitle}</title>
       <link rel="stylesheet" href="${this.b64Inputs[3][1]}">
       <script src="${this.b64Inputs[3][0]}"></script>
     </head>
