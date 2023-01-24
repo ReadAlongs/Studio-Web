@@ -1354,7 +1354,7 @@ export class ReadAlongComponent {
     <i class="material-icons" aria-label="Show settings">settings</i>
   </button>
 
-  ErrorMessage = (props: {msg: string}): Element =>  <p class="alert status-error"><span class="material-icons">error_outline_outlined</span>{props.msg}</p>
+  ErrorMessage = (props: {msg: string, data_cy: string}): Element =>  <p data-cy={props.data_cy} class="alert status-error"><span class="material-icons">error_outline_outlined</span>{props.msg}</p>
 
   ControlPanel = (): Element => <div data-cy="control-panel"
                                      class={"control-panel theme--" + this.theme + " background--" + this.theme}>
@@ -1433,11 +1433,11 @@ export class ReadAlongComponent {
           let code = asset[1]
             if ( code === 2 ) {
               let path = this.getPathFromAssetType(assetType)              
-              return <this.ErrorMessage msg={this.returnTranslation("parse-error", this.language, path, assetType)}/>
+              return <this.ErrorMessage msg={this.returnTranslation("parse-error", this.language, path, assetType)} data_cy={assetType + "-error"}/>
             };
             if ( code === 3 ) {
               let path = this.getPathFromAssetType(assetType)              
-              return <this.ErrorMessage msg={this.returnTranslation("loading-error", this.language, path, assetType)}/>
+              return <this.ErrorMessage msg={this.returnTranslation("loading-error", this.language, path, assetType)} data_cy={assetType + "-error"}/>
             };
         })}
 
