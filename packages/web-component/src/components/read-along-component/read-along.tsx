@@ -1032,7 +1032,7 @@ export class ReadAlongComponent {
    * @param word
    * @param lang
    */
-  returnTranslation(word: string, lang?: InterfaceLanguage, path?: string): string {
+  returnTranslation(word: string, lang?: InterfaceLanguage, path?: string, assetType?: string): string {
     if (lang === undefined) lang = this.language;
     let translations: { [message: string]: Translation } = {
       "speed": {
@@ -1044,12 +1044,12 @@ export class ReadAlongComponent {
         "fra": "Réaligner avec l'audio"
       },
       "loading-error": {
-        "eng": "  The file '" + path + "' could not be loaded",
-        "fra": "  le fichier '" + path + "' n'a pas pu être chargé"
+        "eng": "  The " + assetType + " file '" + path + "' could not be loaded",
+        "fra": "  le fichier " + assetType + " '" + path + "' n'a pas pu être chargé"
       },
       "parse-error": {
-        "eng": " The file '" + path + "' could not be parsed",
-        "fra": " le fichier '" + path + "' n'a pas pu être analysé"
+        "eng": " The " + assetType + " file '" + path + "' could not be parsed",
+        "fra": " le fichier " + assetType + " '" + path + "' n'a pas pu être analysé"
       },
       "loading": {
         "eng": "Loading...",
@@ -1354,7 +1354,7 @@ export class ReadAlongComponent {
     <i class="material-icons" aria-label="Show settings">settings</i>
   </button>
 
-  ErrorMessage = (props: {msg: string}): Element =>  <p class="alert status-error">{props.msg}</p>
+  ErrorMessage = (props: {msg: string}): Element =>  <p class="alert status-error"><span class="material-icons">error_outline_outlined</span>{props.msg}</p>
 
   ControlPanel = (): Element => <div data-cy="control-panel"
                                      class={"control-panel theme--" + this.theme + " background--" + this.theme}>
@@ -1432,12 +1432,12 @@ export class ReadAlongComponent {
           let assetType = asset[0]
           let code = asset[1]
             if ( code === 2 ) {
-              let path = this.getPathFromAssetType(assetType)
-              return <this.ErrorMessage msg={this.returnTranslation("parse-error", this.language, path)}/>
+              let path = this.getPathFromAssetType(assetType)              
+              return <this.ErrorMessage msg={this.returnTranslation("parse-error", this.language, path, assetType)}/>
             };
             if ( code === 3 ) {
-              let path = this.getPathFromAssetType(assetType)
-              return <this.ErrorMessage msg={this.returnTranslation("loading-error", this.language, path)}/>
+              let path = this.getPathFromAssetType(assetType)              
+              return <this.ErrorMessage msg={this.returnTranslation("loading-error", this.language, path, assetType)}/>
             };
         })}
 
