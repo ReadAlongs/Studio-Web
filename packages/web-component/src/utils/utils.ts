@@ -250,15 +250,29 @@ Sprite.prototype = {
     var id: number = self.sound.seek(s, id);
     // move highlight back TODO: refactor out into its own function and combine with version in step()
     let seek = self.sound.seek(id = id)//FIXME
+    let end_point = 0;
     for (let j = 0; j < self._spriteLeft.length; j++) {
-      // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
+
       if (seek * 1000 >= self._spriteLeft[j][0]) {
-        self._reading$.next(self._spriteLeft[j][1])
-        self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length)
+        //self._reading$.next(self._spriteLeft[j][1])
+        end_point = j;
+      } else {
+        break;
       }
     }
-    // else, return back to beginning
-    return id
+    self._reading$.next(self._spriteLeft[end_point][1])
+    // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
+    if (end_point != 0) {
+      if (self._spriteLeft.length > end_point + 1) {
+        self._percentPlayed = Math.floor((end_point / self._spriteLeft.length) * 100)
+        self._spriteLeft = self._spriteLeft.slice(end_point, self._spriteLeft.length)
+      } else {
+        self._spriteLeft = []
+      }
+    }
+    console.log("end goTo", id, s, seek, end_point, self._spriteLeft.length)
+
+    return seek
   },
 
   /**

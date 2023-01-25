@@ -2,6 +2,8 @@ context("The Readalong Component", () => {
   /**
    * Wait for the audio and the SMIL to load.
    */
+
+    // not needed using intercept now
   const EXPECTED_LOADING_TIME = 2000; // ms
 
   const FOR_PAGE_TURN_ANIMATION = 500; // ms
@@ -67,4 +69,45 @@ context("The Readalong Component", () => {
       });
     });
   });
+
+  describe("stress test the internal states", () => {
+    it("randomly click words and try to do play back", () => {
+      cy.wait(EXPECTED_LOADING_TIME)
+      const ids = ["t0b0d0p0s0w0",
+        "t0b0d0p0s1w0", "t0b0d0p0s1w1", "t0b0d0p0s1w2", "t0b0d0p0s1w3", "t0b0d0p0s1w4",
+        "t0b0d0p0s2w0", "t0b0d0p0s2w1", "t0b0d0p0s2w2", "t0b0d0p0s2w3", "t0b0d0p0s2w4", "t0b0d0p0s2w5", "t0b0d0p0s2w6", "t0b0d0p0s2w7", "t0b0d0p0s2w8", "t0b0d0p0s2w9", "t0b0d0p0s2w10", "t0b0d0p0s2w11", "t0b0d0p0s2w12", "t0b0d0p0s2w13", "t0b0d0p0s2w14", "t0b0d0p0s2w15",
+        "t0b0d1p0s0w0", "t0b0d1p0s0w1", "t0b0d1p0s0w2", "t0b0d1p0s0w3", "t0b0d1p0s0w4", "t0b0d1p0s0w5", "t0b0d1p0s0w6", "t0b0d1p0s0w7", "t0b0d1p0s0w8", "t0b0d1p0s0w9", "t0b0d1p0s0w10", "t0b0d1p0s0w11", "t0b0d1p0s0w12", "t0b0d1p0s0w13", "t0b0d1p0s0w14", "t0b0d1p0s0w15", "t0b0d1p0s0w16", "t0b0d1p0s0w17", "t0b0d1p0s0w18", "t0b0d1p0s0w19", "t0b0d1p0s0w20", "t0b0d1p0s0w21", "t0b0d1p0s0w22",
+        "t0b0d1p0s1w0", "t0b0d1p0s1w1", "t0b0d1p0s1w2", "t0b0d1p0s1w3", "t0b0d1p0s1w4", "t0b0d1p0s1w5", "t0b0d1p0s1w6", "t0b0d1p0s1w7", "t0b0d1p0s1w8", "t0b0d1p0s1w9", "t0b0d1p0s1w10", "t0b0d1p0s1w11", "t0b0d1p0s1w12", "t0b0d1p0s1w13", "t0b0d1p0s1w14", "t0b0d1p0s1w15", "t0b0d1p0s1w16", "t0b0d1p0s1w17", "t0b0d1p0s1w18",
+        "t0b0d1p0s2w0", "t0b0d1p0s2w1", "t0b0d1p0s2w2", "t0b0d1p0s2w3", "t0b0d1p0s2w4", "t0b0d1p0s2w5", "t0b0d1p0s2w6", "t0b0d1p0s2w7", "t0b0d1p0s2w8", "t0b0d1p0s2w9", "t0b0d1p0s2w10", "t0b0d1p0s2w11", "t0b0d1p0s2w12", "t0b0d1p0s2w13", "t0b0d1p0s2w14", "t0b0d1p0s2w15", "t0b0d1p0s2w16", "t0b0d1p0s2w17", "t0b0d1p0s2w18", "t0b0d1p0s2w19",
+        "t0b0d1p1s0w0", "t0b0d1p1s0w1", "t0b0d1p1s0w2", "t0b0d1p1s0w3", "t0b0d1p1s0w4", "t0b0d1p1s0w5", "t0b0d1p1s0w6", "t0b0d1p1s0w7", "t0b0d1p1s0w8", "t0b0d1p1s0w9", "t0b0d1p1s0w10", "t0b0d1p1s0w11", "t0b0d1p1s0w12", "t0b0d1p1s0w13", "t0b0d1p1s0w14",
+
+      ];
+      let randomIDs = [];
+      for (let i = 0; i < 20; i++) {
+        randomIDs.push(ids[Math.floor(Math.random() * (ids.length - 1))])
+      }
+      cy.readalong().within(() => {
+        for (const randomID of randomIDs) {
+          cy.get("#" + randomID).click()
+          cy.wait(Math.random() * 500)//simulate how long it take a person to click another item
+        }
+
+        cy.get("[data-cy=play-button]").click();
+        cy.wait(FOR_ERIC_TO_TALK_A_BIT)
+        cy.get("[data-cy=play-button]").click();
+        randomIDs = [];
+        for (let i = 0; i < 20; i++) {
+          randomIDs.push(ids[Math.floor(Math.random() * (ids.length - 1))])
+        }
+        for (const randomID of randomIDs) {
+          cy.get("#" + randomID).click()
+          cy.wait(Math.random() * 500)//simulate how long it take a person to click another item
+        }
+        cy.get("[data-cy=play-button]").click();
+        cy.wait(FOR_ERIC_TO_TALK_A_BIT)
+        cy.get("[data-cy=stop-button]").click();
+      })
+    })
+  })
+
 });
