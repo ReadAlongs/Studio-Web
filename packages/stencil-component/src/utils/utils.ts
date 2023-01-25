@@ -253,15 +253,16 @@ Sprite.prototype = {
     let seek = (self.sound.seek() || 0);
     let end_point = 0;
     for (let j = 0; j < self._spriteLeft.length; j++) {
-      // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
 
       if (seek * 1000 >= self._spriteLeft[j][0]) {
-        self._reading$.next(self._spriteLeft[j][1])
+        //self._reading$.next(self._spriteLeft[j][1])
         end_point = j;
       } else {
         break;
       }
     }
+    self._reading$.next(self._spriteLeft[end_point][1])
+    // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
     if (end_point != 0) {
       if (self._spriteLeft.length > end_point + 1) {
         self._percentPlayed = Math.floor((end_point / self._spriteLeft.length) * 100)

@@ -313,6 +313,9 @@ export class ReadAlongComponent {
    * Go to seek from progress bar
    */
   goToSeekFromProgress(ev: MouseEvent): void {
+    //side step the page turn animations
+    const previousScrollBehavior = this.scrollBehavior;
+    this.scrollBehavior = "auto";
     let el = ev.currentTarget as HTMLElement;
     let client_rect = el.getBoundingClientRect()
     // get offset of clicked element
@@ -325,7 +328,7 @@ export class ReadAlongComponent {
     let seek = ((click / width) * this.duration) * 1000
     this.goTo(seek)
     this.animateProgress(this.play_id)
-
+    this.scrollBehavior = previousScrollBehavior;
   }
 
 
@@ -371,6 +374,9 @@ export class ReadAlongComponent {
    * @param ev
    */
   playSprite(ev: MouseEvent): void {
+    //side step the page turn animations
+    const previousScrollBehavior = this.scrollBehavior;
+    this.scrollBehavior = "auto"
     try {
       let tag = this.goToSeekAtEl(ev)
       console.log("playSprite", tag, this.autoPauseEndOfPage, this.autoPauseState, this.current_page, this.play_id)
@@ -380,6 +386,7 @@ export class ReadAlongComponent {
     } catch (e) {
       console.error(e)
     }
+    this.scrollBehavior = previousScrollBehavior;
 
   }
 
@@ -413,7 +420,7 @@ export class ReadAlongComponent {
     if (this.playing) {
       this.playing = false
       this.audio_howl_sprites.sound.pause()
-    } else if (this.current_page) {
+    } else if (this.current_page && this.autoPauseState === "playing") {
       setTimeout(() => {
 
         this.playing = true
@@ -1268,7 +1275,7 @@ export class ReadAlongComponent {
                                        onClick={() => {
                                          this.playing ? this.pause() : this.play()
                                        }}
-                                       class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+                                       class={"control-panel__control play-button ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
   </button>
 
@@ -1282,7 +1289,7 @@ export class ReadAlongComponent {
   StopControl = (): Element => <button data-cy="stop-button" disabled={!this.hasLoaded} aria-label="Stop"
                                        title="Stop audio recording"
                                        onClick={() => this.stop()}
-                                       class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
+                                       class={"control-panel__control stop-button ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
   </button>
 
