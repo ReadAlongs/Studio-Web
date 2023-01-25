@@ -41,7 +41,7 @@ export class AppComponent {
     private b64Service: B64Service,
     private fileService: FileService,
     private toastr: ToastrService,
-    public dialog: MatDialog,
+    private dialog: MatDialog,
     public shepherdService: ShepherdService
   ) {}
   ngOnInit(): void {
