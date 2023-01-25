@@ -114,7 +114,6 @@
         },
         "test": {
           "builder": "@angular-builders/custom-webpack:karma",
-          "include": ["**/*.spec.ts"],
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",

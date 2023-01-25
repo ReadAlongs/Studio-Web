@@ -25,5 +25,4 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting()
 );
 
-// Then we used to find the tests here, but since Angular 15 we find them
-// with the option "include": [ "**/*.spec.ts" ] in angular.json
+// Then we used to find the tests here, but since Angular 15 karma finds them automatically.
