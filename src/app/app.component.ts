@@ -6,10 +6,7 @@ import { Segment } from "soundswallower";
 
 import { Component, ViewChild } from "@angular/core";
 import { FormGroup } from "@angular/forms";
-import {
-  MatLegacyDialog as MatDialog,
-  MatLegacyDialogRef as MatDialogRef,
-} from "@angular/material/legacy-dialog";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatStepper } from "@angular/material/stepper";
 
 import { B64Service } from "./b64.service";

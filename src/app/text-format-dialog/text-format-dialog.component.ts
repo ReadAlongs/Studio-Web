@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
+import { MatDialogModule } from "@angular/material/dialog";
 import { MatToolbarModule } from "@angular/material/toolbar";
 
 @Component({
