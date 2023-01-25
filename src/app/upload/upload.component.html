@@ -8,7 +8,6 @@
     <div class="container">
         <div class="row g-2 mb-3">
             <div id="text-section" class="col-12 col-md-6 p-3 border bg-light">
-                <!-- <div class="container"> -->
                 <div class="d-flex flex-row justify-content-between">
                     <div class="p-0">
                         <h1 i18n="Title for text box" class="title">Text</h1>
@@ -34,23 +33,22 @@
                     <div class="d-flex flex-row justify-content-between p-0">
                         <span class="p-0"><h2 i18n="Title for text writing box" class="subtitle">Write or paste your text here</h2></span>
                         <span class="p-0 align-right" align="right">
-                            <button i18n="Text format help button" mat-button (click)="displayFormatHelp()" aria-label="Text format help button" style="padding: 0">
-                                <mat-icon>help_outline</mat-icon> Format
+                            <button i18n="Text format help button" mat-button (click)="displayFormatHelp()" aria-label="Text format help button" class="p-0">
+                                <mat-icon class="mat-icon-lg">help_outline</mat-icon> Format
                             </button>
                             <button i18n="Text download button" mat-button [disabled]="!textInput" (click)="downloadText()"
-                                    aria-label="Text download button" style="padding: 0">
-                                <mat-icon>save</mat-icon> Save
+                                    aria-label="Text download button" class="p-0">
+                                <mat-icon class="mat-icon-lg">save</mat-icon> Save
                             </button>
                         </span>
                     </div>
                     <div class="row">
-                        <div class="col-12">
-                          <textarea (input)="handleTextInput($event)" id="textInput" class="border rounded h-100"
+                        <mat-form-field class="col-12 p-0 b-0">
+                          <textarea (input)="handleTextInput($event)" id="textInput" class="border rounded b-0 p-0 bg-light"
                                     matInput i18n-placeholder="Example input text" placeholder="Ex. Hello my name is..."></textarea>
-                        </div>
+                        </mat-form-field>
                     </div>
                 </div>
-                <!-- </div> -->
             </div>
             <div id="audio-section" class="col-12 col-md-6 p-3 border bg-light">
                 <!-- <div class="container"> -->
@@ -76,33 +74,33 @@
                         <h2 i18n="Title for record box" class="subtitle">Record your voice here</h2>
                     </div>
                     <div class="row text-center">
-                      <button class="audioControl" mat-icon-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
-                        <mat-icon>mic</mat-icon>
+                      <button class="audioControl" mat-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
+                        <mat-icon class="mat-icon-lg">mic</mat-icon>
                         <span i18n="Audio re-record button" *ngIf="audioControl.value !== null">Re-Record</span>
                         <span i18n="Audio record button" *ngIf="audioControl.value === null">Record</span>
                       </button>
-                      <button i18n="Audio stop button" class="audioControl" (click)="stopRecording()" *ngIf="recording" mat-icon-button color="primary" aria-label="Stop button">
-                        <mat-icon>stop_circle</mat-icon>
+                      <button i18n="Audio stop button" class="audioControl" (click)="stopRecording()" *ngIf="recording" mat-button color="primary" aria-label="Stop button">
+                        <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
                         Stop
                       </button>
                     </div>
                 </div>
                 <div class="row">
-                  <div class="col-12 col-md-4">
-                    <button i18n="Audio play button" class="audioControl" [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && audioControl.value !== null" mat-icon-button color="primary" aria-label="Play button">
-                      <mat-icon>play_circle</mat-icon>
+                  <div class="col-12 col-lg-4">
+                    <button i18n="Audio play button" class="audioControl" [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && audioControl.value !== null" mat-button color="primary" aria-label="Play button">
+                      <mat-icon class="mat-icon-lg">play_circle</mat-icon>
                       Play
                     </button>
                   </div>
-                  <div class="col-12 col-md-4">
-                    <button i18n="Audio download button" class="audioControl" color="primary" (click)="downloadRecording()" *ngIf="!recording && audioControl.value !== null" mat-icon-button color="primary" aria-label="Audio download button">
-                      <mat-icon>file_download</mat-icon>
+                  <div class="col-12 col-lg-4">
+                    <button i18n="Audio download button" class="audioControl" color="primary" (click)="downloadRecording()" *ngIf="!recording && audioControl.value !== null" mat-button color="primary" aria-label="Audio download button">
+                      <mat-icon class="mat-icon-lg">file_download</mat-icon>
                       Download
                     </button>
                   </div>
-                  <div class="col-12 col-md-4">
-                    <button i18n="Audio delete button" class="audioControl" (click)="deleteRecording()" *ngIf="!recording && audioControl.value !== null" mat-icon-button color="warn" aria-label="Delete button">
-                      <mat-icon>delete</mat-icon>
+                  <div class="col-12 col-lg-4">
+                    <button i18n="Audio delete button" class="audioControl" (click)="deleteRecording()" *ngIf="!recording && audioControl.value !== null" mat-button color="warn" aria-label="Delete button">
+                      <mat-icon class="mat-icon-lg">delete</mat-icon>
                       Delete
                     </button>
                   </div>
