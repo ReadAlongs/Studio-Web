@@ -107,31 +107,40 @@ context("The Readalong Component", () => {
         "t0b0d1p1s0w0", "t0b0d1p1s0w1", "t0b0d1p1s0w2", "t0b0d1p1s0w3", "t0b0d1p1s0w4", "t0b0d1p1s0w5", "t0b0d1p1s0w6", "t0b0d1p1s0w7", "t0b0d1p1s0w8", "t0b0d1p1s0w9", "t0b0d1p1s0w10", "t0b0d1p1s0w11", "t0b0d1p1s0w12", "t0b0d1p1s0w13", "t0b0d1p1s0w14",
 
       ];
-      let randomIDs = [];
-      for (let i = 0; i < 20; i++) {
-        randomIDs.push(ids[Math.floor(Math.random() * (ids.length - 1))])
-      }
-      cy.readalong().within(() => {
-        for (const randomID of randomIDs) {
-          cy.get("#" + randomID).click()
-          cy.wait(Math.random() * 500)//simulate how long it take a person to click another item
-        }
+      const numOfTest = Math.ceil(Math.random() * 5) + 1
+      for (let t = 0; t < numOfTest; t++) {
+        cy.log("running test " + t)
 
-        cy.get("[data-cy=play-button]").click();
-        cy.wait(FOR_ERIC_TO_TALK_A_BIT)
-        cy.get("[data-cy=play-button]").click();
-        randomIDs = [];
+        let randomIDs = [];
         for (let i = 0; i < 20; i++) {
           randomIDs.push(ids[Math.floor(Math.random() * (ids.length - 1))])
         }
-        for (const randomID of randomIDs) {
-          cy.get("#" + randomID).click()
-          cy.wait(Math.random() * 500)//simulate how long it take a person to click another item
-        }
-        cy.get("[data-cy=play-button]").click();
-        cy.wait(FOR_ERIC_TO_TALK_A_BIT)
-        cy.get("[data-cy=stop-button]").click();
-      })
+        cy.readalong().within(() => {
+          cy.log("clicking " + randomIDs.length + " words")
+          for (const randomID of randomIDs) {
+            cy.get("#" + randomID).click()
+            cy.wait(Math.ceil(Math.random() * 150))//simulate how long it take a person to click another item
+          }
+
+          cy.get("[data-cy=play-button]").click();
+          cy.wait(FOR_ERIC_TO_TALK_A_BIT)
+          cy.get("[data-cy=play-button]").click();
+          randomIDs = [];
+          for (let i = 0; i < 20; i++) {
+            randomIDs.push(ids[Math.floor(Math.random() * (ids.length - 1))])
+          }
+          cy.log("clicking " + randomIDs.length + " words")
+          for (const randomID of randomIDs) {
+            cy.get("#" + randomID).click()
+            cy.wait(Math.ceil(Math.random() * 250))//simulate how long it take a person to click another item
+          }
+          cy.get("[data-cy=play-button]").click();
+          cy.wait(FOR_ERIC_TO_TALK_A_BIT)
+          cy.get("[data-cy=stop-button]").click();
+
+        })
+        cy.log("completed test " + t)
+      }
     })
   })
 
