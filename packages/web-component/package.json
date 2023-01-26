@@ -21,6 +21,8 @@
         "prepublish": "npm run build && webpack --config webpack.config.js && node b64Fonts.js",
         "test": "npm run test-servers & npm run wait-for-test-server && npm run cy:run",
         "test-servers": "bash ./bin/run-test-servers",
+        "test:once": "cypress run",
+        "test:open": "cypress open",
         "serve-test-data": "sirv --dev --port 5000 test-data/",
         "generate": "stencil generate",
         "wait-for-test-server": "wait-on -i 1000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
