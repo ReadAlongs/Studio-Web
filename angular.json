@@ -32,7 +32,7 @@
             "assets": [
               "src/assets",
               {
-                "glob": "soundswallower.wasm",
+                "glob": "soundswallower.web.wasm",
                 "input": "./node_modules/soundswallower",
                 "output": "."
               },
@@ -123,7 +123,7 @@
             "assets": [
               "src/favicon.ico",
               {
-                "glob": "soundswallower.wasm",
+                "glob": "soundswallower.web.wasm",
                 "input": "./node_modules/soundswallower",
                 "output": "."
               },
