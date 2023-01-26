@@ -1,16 +1,11 @@
 module.exports = {
-  // Eliminate emscripten's node junk when using webpack
-  resolve: {
-    fallback: {
-      crypto: false,
-      fs: false,
-      path: false,
+  // Stop webpack from munging import.meta.url (this should be the default in
+  // Angular but unfortunately it isn't)
+  module: {
+    parser: {
+      javascript: {
+        importMeta: false,
+      },
     },
-  },
-  // ARGH! More node junk! WTF!
-  node: {
-    global: false,
-    __filename: false,
-    __dirname: false,
   },
 };
