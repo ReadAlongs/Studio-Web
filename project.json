@@ -19,7 +19,7 @@
         "index": "packages/Studio-Web/src/index.html",
         "main": "packages/Studio-Web/src/main.ts",
         "i18nMissingTranslation": "warning",
-        "polyfills": ["zone.js"],
+        "polyfills": ["packages/Studio-Web/src/polyfills.ts"],
         "tsConfig": "packages/Studio-Web/tsconfig.app.json",
         "customWebpackConfig": {
           "path": "packages/Studio-Web/custom-webpack.config.js"
