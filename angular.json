@@ -32,11 +32,6 @@
             "assets": [
               "src/assets",
               {
-                "glob": "soundswallower.wasm",
-                "input": "./node_modules/soundswallower",
-                "output": "."
-              },
-              {
                 "glob": "**/*",
                 "ignore": ["fr-fr/*"],
                 "input": "./node_modules/soundswallower/model",
@@ -122,11 +117,6 @@
             "inlineStyleLanguage": "sass",
             "assets": [
               "src/favicon.ico",
-              {
-                "glob": "soundswallower.wasm",
-                "input": "./node_modules/soundswallower",
-                "output": "."
-              },
               {
                 "glob": "**/*",
                 "ignore": ["fr-fr/*"],

@@ -34,11 +34,12 @@
         "@angular/platform-browser": "^15.1.1",
         "@angular/platform-browser-dynamic": "^15.1.1",
         "@angular/router": "^15.1.1",
+        "@types/emscripten": "^1.39.6",
         "angular-shepherd": "^14.0.0",
         "bootstrap": "^5.2.3",
         "ngx-toastr": "^15.0.0",
         "rxjs": "~7.5.0",
-        "soundswallower": "^0.5.0",
+        "soundswallower": "^0.6.1",
         "standardized-audio-context": "^25.3.36",
         "tslib": "^2.3.0",
         "zone.js": "~0.11.4"
