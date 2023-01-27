@@ -49,7 +49,7 @@ You can either modify the `/src/index.html` or after running `npm start` you can
 the following script import in your own `index.html` page:
 
 ```html 
-  <script type="module" src="https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/read-along/read-along.esm.js"></script>
+  <script type="module" src="https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/read-along/web-component.esm.js"></script>
   <script nomodule src="https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/read-along/read-along.js"></script>
 ```
 
