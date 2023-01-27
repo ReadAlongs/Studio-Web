@@ -2,7 +2,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -21,9 +20,9 @@
     "target": "ES2022",
     "module": "es2020",
     "lib": ["es2020", "dom"],
-    "useDefineForClassFields": false,
-    "paths": { "@angular/*": ["./node_modules/@angular/*"] }
+    "useDefineForClassFields": false
   },
+  "extends": "../../tsconfig.base.json",
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
