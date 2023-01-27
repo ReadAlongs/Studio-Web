@@ -7,7 +7,7 @@
   "i18n": {
     "locales": {
       "fr": "packages/Studio-Web/src/i18n/messages.fr.json",
-      "en": "packages/Studio-Web/src/i18n/messages.en.json"
+      "en": "packages/Studio-Web/src/i18n/messages.json"
     }
   },
   "targets": {
@@ -19,7 +19,6 @@
         "index": "packages/Studio-Web/src/index.html",
         "main": "packages/Studio-Web/src/main.ts",
         "i18nMissingTranslation": "warning",
-        "localize": ["fr", "en"],
         "polyfills": ["zone.js"],
         "tsConfig": "packages/Studio-Web/tsconfig.app.json",
         "customWebpackConfig": {
