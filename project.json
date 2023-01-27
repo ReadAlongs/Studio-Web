@@ -1,0 +1,109 @@
+{
+  "name": "Studio-Web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "packages/Studio-Web/src",
+  "prefix": "app",
+  "i18n": {
+    "locales": {
+      "fr": "packages/Studio-Web/src/i18n/messages.fr.json",
+      "en": "packages/Studio-Web/src/i18n/messages.en.json"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-builders/custom-webpack:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/Studio-Web",
+        "index": "packages/Studio-Web/src/index.html",
+        "main": "packages/Studio-Web/src/main.ts",
+        "i18nMissingTranslation": "warning",
+        "localize": ["fr", "en"],
+        "polyfills": ["zone.js"],
+        "tsConfig": "packages/Studio-Web/tsconfig.app.json",
+        "customWebpackConfig": {
+          "path": "packages/Studio-Web/custom-webpack.config.js"
+        },
+        "assets": [
+          "packages/Studio-Web/src/favicon.ico",
+          "packages/Studio-Web/src/assets"
+        ],
+        "styles": ["packages/Studio-Web/src/styles.sass"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "en": {
+          "localize": ["en"]
+        },
+        "fr": {
+          "localize": ["fr"]
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-builders/custom-webpack:dev-server",
+      "options": {
+        "browserTarget": "Studio-Web:build:en"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "Studio-Web:build:production"
+        },
+        "development": {
+          "browserTarget": "Studio-Web:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-builders/custom-webpack:extract-i18n",
+      "options": {
+        "browserTarget": "Studio-Web:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/Studio-Web/**/*.ts",
+          "packages/Studio-Web/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/Studio-Web/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
