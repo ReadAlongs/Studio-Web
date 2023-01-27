@@ -22,10 +22,10 @@
         "packages/ngx-web-component/src/index.ts"
       ],
       "@readalongs/web-component": [
-        "dist/packages/web-component/dist"
+        "dist/packages/web-component"
       ],
       "@readalongs/web-component/loader": [
-        "dist/packages/web-component/dist/loader"
+        "dist/packages/web-component/loader"
       ]
     }
   },
