@@ -41,10 +41,7 @@
             "customWebpackConfig": {
               "path": "./custom-webpack.config.js"
             },
-            "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.sass"
-            ],
+            "styles": ["src/styles.sass"],
             "stylePreprocessorOptions": {
               "includePaths": ["./node_modules"]
             }
@@ -127,10 +124,7 @@
             "customWebpackConfig": {
               "path": "./custom-webpack.config.js"
             },
-            "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.sass"
-            ]
+            "styles": ["src/styles.sass"]
           }
         }
       }
