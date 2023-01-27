@@ -1,0 +1,3 @@
+[submodule "packages/Studio-Web"]
+	path = packages/Studio-Web
+	url = git@github.com:ReadAlongs/Studio-Web.git
