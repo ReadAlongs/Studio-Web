@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Title } from "@angular/platform-browser";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-demo",
@@ -8,7 +9,7 @@ import { Title } from "@angular/platform-browser";
 })
 export class DemoComponent implements OnInit {
   @Input() b64Inputs: string[];
-
+  @Input() render$: Observable<boolean>;
   slots: any = {
     title: $localize`Title`,
     subtitle: $localize`Subtitle`,

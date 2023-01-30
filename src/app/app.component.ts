@@ -1,6 +1,6 @@
 import { ShepherdService } from "angular-shepherd";
 import { ToastrService } from "ngx-toastr";
-import { forkJoin, of, Subject } from "rxjs";
+import { forkJoin, of, BehaviorSubject, Subject } from "rxjs";
 import { map } from "rxjs/operators";
 import { Segment } from "soundswallower";
 
@@ -22,6 +22,7 @@ import {
   text_write_step,
 } from "./shepherd.steps";
 import { UploadComponent } from "./upload/upload.component";
+import { StepperSelectionEvent } from "@angular/cdk/stepper";
 
 @Component({
   selector: "app-root",
@@ -35,6 +36,7 @@ export class AppComponent {
   text = new Subject<string>();
   audio = new Subject<string>();
   b64Inputs$ = new Subject<string[]>();
+  render$ = new BehaviorSubject<boolean>(false);
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("stepper") private stepper: MatStepper;
   constructor(
@@ -51,6 +53,14 @@ export class AppComponent {
       $localize`Warning`,
       { timeOut: 10000 }
     );
+  }
+
+  selectionChange(event: StepperSelectionEvent) {
+    if (event.selectedIndex === 0) {
+      this.render$.next(false);
+    } else if (event.selectedIndex === 1) {
+      this.render$.next(true);
+    }
   }
 
   ngAfterViewInit() {
@@ -122,8 +132,10 @@ export class AppComponent {
           this.b64Service.alignmentToSmil(event[3] as Segment, "test", "test")
         ),
         this.b64Service.getBundle$(),
-      ]).subscribe((x: any) => this.b64Inputs$.next(x));
-      this.stepper.next();
+      ]).subscribe((x: any) => {
+        this.b64Inputs$.next(x);
+        this.stepper.next();
+      });
     }
   }
 }
