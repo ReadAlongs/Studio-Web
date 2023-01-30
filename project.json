@@ -26,7 +26,13 @@
         },
         "assets": [
           "packages/Studio-Web/src/favicon.ico",
-          "packages/Studio-Web/src/assets"
+          "packages/Studio-Web/src/assets",
+          {
+            "glob": "**/*",
+            "ignore": ["fr-fr/*"],
+            "input": "./node_modules/soundswallower/model",
+            "output": "./model"
+          }
         ],
         "styles": ["packages/Studio-Web/src/styles.sass"],
         "scripts": []
