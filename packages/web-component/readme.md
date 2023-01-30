@@ -250,6 +250,15 @@ Or run all tests automatically using this command:
 
     npx cypress run
 
+### Run the tests in the mono repo:
+
+In the monorepo root directory, follow the monorepo installation instructions
+with and run these commands in three separate windows:
+
+    nx serve web-component
+    nx serve-test-data web-component
+    nx cy:run web-component
+
 ### Interactively testing your local copy
 
 If you want to use your local copy of the Web Component instead of the version published at unpkg, change the two `script` lines in your HTML and set the module URL to your localhost.
