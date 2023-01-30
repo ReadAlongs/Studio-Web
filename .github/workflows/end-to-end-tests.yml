@@ -1,8 +1,5 @@
 name: End-to-end tests
 on: [push]
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   cypress-run:
     runs-on: ubuntu-20.04
@@ -17,9 +14,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Cypress run
-        uses: cypress-io/github-action@v4
-        with:
-          working-directory: ./packages/web-component
-          start: npm run test-servers
-          wait-on: npm run wait-for-test-server
+      - name: Install
+        run: |
+          git submodule update --init
+          npm install -g nx
+          npm install --force
+      - name: Cypress run manually
+        run: |
+          nx serve web-component --verbose &
+          nx serve-test-data web-component &
+          nx wait-for-test-server web-component
+          nx cy:run web-component
