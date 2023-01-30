@@ -11,9 +11,11 @@ jobs:
       - name: Use Node.js ${{ matrix.node_version }}
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - name: Install
         run: |
+          # The default config is for the monorepo, while this is for standalone
+          cp tsconfig.json-ci tsconfig.json
           # We use --force because angular-shepherd 15 is not released yet and
           # 14 has dependencies that are incompatible with angular 15
           npm install --force
