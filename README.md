@@ -55,4 +55,4 @@ If you want to try out the angular app demo to see an example of how to integrat
 License
 -------
 
-2022 © National Research Council of Canada. MIT Licensed. See LICENSE for details.
+2023 © National Research Council of Canada. MIT Licensed. See LICENSE for details.

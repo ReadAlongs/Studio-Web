@@ -25,7 +25,7 @@
         "test:open": "cypress open",
         "serve-test-data": "sirv --dev --port 5000 test-data/",
         "generate": "stencil generate",
-        "wait-for-test-server": "wait-on -i 1000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
+        "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
     },
     "dependencies": {
         "howler": "^2.2.3",

@@ -2,26 +2,24 @@ name: End-to-end tests
 on: [push]
 jobs:
   cypress-run:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     # Stop the occasional rogue instance before the 6h GitHub limit
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
+        with:
+          submodules: recursive
       - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install
-        run: |
-          git submodule update --init
-          npm install -g nx
-          npm install --force
-      - name: Cypress run manually
-        run: |
-          nx serve web-component --verbose &
-          nx serve-test-data web-component &
-          nx wait-for-test-server web-component
-          nx cy:run web-component
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          install-command: npm install --force
+          start: |
+            npx nx serve web-component
+            npx nx serve-test-data web-component
+          wait-on: 'http://localhost:3333/build/web-component.esm.js'
+          command: npx nx cy:run web-component
