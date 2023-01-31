@@ -58,7 +58,7 @@ elements with arguments for where to find your text, alignments and audio file. 
 using _________ service located here: ____________.
 
 ```html
-<read-along text="assets/s2.xml" alignment="assets/s2.smil" audio="assets/s2.wav"
+<read-along readalong="assets/s2.xml" audio="assets/s2.wav"
             css-url="assets/custom.css" use-assets-folder="true"></read-along>
 ```
 

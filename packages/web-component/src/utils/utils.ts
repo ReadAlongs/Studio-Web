@@ -60,10 +60,10 @@ export function zip(arrays): Array<any[]> {
 
 
 /**
- * Return sentences from TEI xml file
- * @param {string} - the path to the TEI file
+ * Return sentences from readalong XML file
+ * @param {string} - the path to the readalong file
  */
-export function parseTEI(path: string): Page[] {
+export function parseRAS(path: string): Page[] {
   let xmlDocument =  getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
@@ -84,6 +84,17 @@ export function parseTEI(path: string): Page[] {
   return parsed_pages
 }
 
+
+/**
+ * Extract alignment data from parsed text
+ */
+export function extractAlignment(parsed_text: Page[]): Alignment {
+    let alignment = {};
+    for (const page of parsed_text) {
+        console.log(page);
+    }
+    return alignment;
+}
 
 
 /**

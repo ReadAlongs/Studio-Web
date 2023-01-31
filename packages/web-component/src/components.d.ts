@@ -9,10 +9,6 @@ import { InterfaceLanguage, ReadAlongMode } from "./index.ds";
 export namespace Components {
     interface ReadAlong {
         /**
-          * The alignment as SMIL
-         */
-        "alignment": string;
-        /**
           * The audio file
          */
         "audio": string;
@@ -37,13 +33,13 @@ export namespace Components {
          */
         "pageScrolling": "horizontal" | "vertical";
         /**
+          * The aligned text as readalong XML
+         */
+        "readalong": string;
+        /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
         "svgOverlay": string;
-        /**
-          * The text as TEI
-         */
-        "text": string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
@@ -68,10 +64,6 @@ declare global {
 declare namespace LocalJSX {
     interface ReadAlong {
         /**
-          * The alignment as SMIL
-         */
-        "alignment"?: string;
-        /**
           * The audio file
          */
         "audio"?: string;
@@ -92,13 +84,13 @@ declare namespace LocalJSX {
          */
         "pageScrolling"?: "horizontal" | "vertical";
         /**
+          * The aligned text as readalong XML
+         */
+        "readalong"?: string;
+        /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
         "svgOverlay"?: string;
-        /**
-          * The text as TEI
-         */
-        "text"?: string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */

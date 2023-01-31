@@ -4,7 +4,7 @@ import {distinctUntilChanged} from 'rxjs/operators';
 
 import {Component, Element, h, Listen, Method, Prop, State} from '@stencil/core';
 
-import {parseSMIL, parseTEI, Sprite} from '../../utils/utils';
+import {parseRAS, Sprite} from '../../utils/utils';
 import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.ds";
 
 const LOADING = 0;
@@ -25,16 +25,9 @@ export class ReadAlongComponent {
    ************/
 
   /**
-   * The text as TEI
+   * The aligned text as readalong XML
    */
-  @Prop() text: string;
-
-
-
-  /**
-   * The alignment as SMIL
-   */
-  @Prop() alignment: string;
+  @Prop() readalong: string;
 
   processed_alignment: Alignment;
 
@@ -718,7 +711,7 @@ export class ReadAlongComponent {
     }
 
     // Parse the text to be displayed
-    this.parsed_text = parseTEI(this.text)
+    this.parsed_text = parseRAS(this.readalong)
     this.images = this.parsed_text.map((page) => page.img ? page.img : null)
     this.assetsStatus.XML = this.parsed_text.length ? LOADED : ERROR_LOADING
 
@@ -730,7 +723,7 @@ export class ReadAlongComponent {
    * is being read
    */
   componentDidLoad() {
-    this.processed_alignment = parseSMIL(this.alignment)
+    this.processed_alignment = extractAlignment(this.parsed_text)
     this.assetsStatus.SMIL = Object.keys(this.processed_alignment).length ? LOADED : ERROR_LOADING
 
     // load basic Howl
