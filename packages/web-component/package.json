@@ -37,7 +37,6 @@
         "@stencil/sass": "^1.5.2",
         "@stencil/webpack": "0.0.6",
         "@types/jest": "^26.0.24",
-        "@types/puppeteer": "^5.4.4",
         "cypress": "^12.3.0",
         "jest-cli": "^27.5.1",
         "sirv-cli": "^1.0.14",
