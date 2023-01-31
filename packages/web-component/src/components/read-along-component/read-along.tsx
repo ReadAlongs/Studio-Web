@@ -25,10 +25,9 @@ export class ReadAlongComponent {
    ************/
 
   /**
-   * Overlay
-   * This is an SVG overlay to place over the progress bar
+   * The aligned text as readalong XML
    */
-  @Prop() svgOverlay: string;
+  @Prop() readalong: string;
 
   processed_alignment: Alignment;
 
@@ -42,9 +41,10 @@ export class ReadAlongComponent {
   duration: number; // Duration of the audio file
 
   /**
-   * The aligned text as readalong XML
+   * Overlay
+   * This is an SVG overlay to place over the progress bar
    */
-  @Prop() readalong: string;
+  @Prop() svgOverlay: string;
 
   /**
    * Theme to use: ['light', 'dark'] defaults to 'dark'
