@@ -8,14 +8,6 @@
     }
   },
   "defaultBase": "main",
-  "implicitDependencies": {
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
-    "tsconfig.base.json": "*",
-    "nx.json": "*"
-  },
   "generators": {
     "@nrwl/angular:application": {
       "style": "css",
