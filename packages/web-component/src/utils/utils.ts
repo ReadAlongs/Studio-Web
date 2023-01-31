@@ -25,7 +25,7 @@ function getXML(path: string): string {
  * @param {string} xpath - the xpath to evaluate with
  * @param {Document} xml - the xml to evaluate
  */
-function getNodeByXpath(xpath: string, xml: Document): Node[] {
+function getNodeByXpath(xpath: string, xml: Document): Array<Element> {
   let xmlns = xml.lookupNamespaceURI(null);
   if (xmlns === null) {
     // console.error("Your XML file is missing an XML namespace.");
@@ -37,11 +37,11 @@ function getNodeByXpath(xpath: string, xml: Document): Node[] {
     return ns[prefix] || null;
   }
 
-  let result_container: Node[] = []
+  let result_container: Array<Element> = []
   let results = xml.evaluate(xpath, xml, nsResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
   let node = results.iterateNext();
   while (node) {
-    result_container.push(node);
+    result_container.push(node as Element);
     node = results.iterateNext()
   }
   return result_container
@@ -63,7 +63,7 @@ export function zip(arrays): Array<any[]> {
  * Return sentences from readalong XML file
  * @param {string} - the path to the readalong file
  */
-export function parseRAS(path: string): Page[] {
+export function parseRAS(path: string): Array<Page> {
   let xmlDocument =  getXML(path)
   let parser = new DOMParser();
   let xml_text = parser.parseFromString(xmlDocument, "text/xml")
@@ -88,10 +88,18 @@ export function parseRAS(path: string): Page[] {
 /**
  * Extract alignment data from parsed text
  */
-export function extractAlignment(parsed_text: Page[]): Alignment {
+export function extractAlignment(parsed_text: Array<Page>): Alignment {
     let alignment = {};
     for (const page of parsed_text) {
-        console.log(page);
+        for (const p of page.paragraphs) {
+            const words = Array.from(p.getElementsByTagName("w"));
+            for (const w of words) {
+                alignment[w.getAttribute("id")] = [
+                    Math.round(parseFloat(w.getAttribute("time")) * 1000),
+                    Math.round(parseFloat(w.getAttribute("dur")) * 1000)
+                ];
+            }
+        }
     }
     return alignment;
 }

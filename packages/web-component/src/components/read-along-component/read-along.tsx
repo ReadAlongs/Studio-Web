@@ -4,7 +4,7 @@ import {distinctUntilChanged} from 'rxjs/operators';
 
 import {Component, Element, h, Listen, Method, Prop, State} from '@stencil/core';
 
-import {parseRAS, Sprite} from '../../utils/utils';
+import {parseRAS, Sprite, extractAlignment} from '../../utils/utils';
 import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.ds";
 
 const LOADING = 0;

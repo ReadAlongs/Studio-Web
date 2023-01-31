@@ -1,6 +1,6 @@
 export interface Page {
   id: string,
-  paragraphs: Node[],
+  paragraphs: Array<Element>,
   img?: string,
   attributes?: NamedNodeMap[]
 }
