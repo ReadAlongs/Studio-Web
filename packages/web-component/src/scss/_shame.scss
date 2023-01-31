@@ -43,7 +43,7 @@ p {
     background: #ddd;
 }
 
-#fileElem {
+.fileElem {
     display: none;
 }
 
@@ -55,6 +55,6 @@ p {
     color: red;
 }
 
-#image-stuff {
+#image-container {
     display: contents
 }
