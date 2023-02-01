@@ -39,7 +39,7 @@ First, make sure Nx is installed:
 
 Then,
 
-    npm install --force
+    npm install
 
 ### Building
 
