@@ -49,6 +49,7 @@ export class DemoComponent implements OnInit {
         let currentPage = page_nodes[parseInt(i)];
         if (currentPage && img) {
           let graphic = doc.createElement("graphic");
+          // @ts-ignore
           let blob = await fetch(img).then((r) => r.blob());
           let b64 = await this.b64Service.blobToB64(blob);
           // @ts-ignore
