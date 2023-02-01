@@ -7,7 +7,7 @@
       }
     }
   },
-  "defaultBase": "master",
+  "defaultBase": "main",
   "generators": {
     "@nrwl/angular:application": {
       "style": "css",

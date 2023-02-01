@@ -16,7 +16,7 @@
     },
     "private": false,
     "nx": {
-        "implicitDependencies": ["@readalongs/web-component"]
+        "implicitDependencies": ["web-component"]
     },
     "devDependencies": {
         "@angular-devkit/architect": "^0.1501.1",
