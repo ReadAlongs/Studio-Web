@@ -348,15 +348,15 @@ export class ReadAlongComponent {
    *
    */
   play() {
-    console.log("play", this.autoPauseEndOfPage, this.autoPauseState, this.current_page, this.play_id)
-    this.playing = true;
+    //console.log("play", this.autoPauseEndOfPage, this.autoPauseState, this.current_page, this.play_id)
+
     // If already playing once, continue playing
     if (this.autoPauseEndOfPage && this.autoPauseState === "paused") {
       this.scrollToPage(this.current_page)
 
     } else {
       this.autoPauseState = "playing"
-      if (this.play_id !== undefined) {
+      if (this.play_id) {
         this.play_id = this.audio_howl_sprites.play(this.play_id)
       } else {
         // else, start a new play
@@ -365,7 +365,7 @@ export class ReadAlongComponent {
       // animate the progress bar
       this.animateProgress()
     }
-
+    this.playing = true;
   }
 
   /**
@@ -378,8 +378,8 @@ export class ReadAlongComponent {
     const previousScrollBehavior = this.scrollBehavior;
     this.scrollBehavior = "auto"
     try {
-      let tag = this.goToSeekAtEl(ev)
-      console.log("playSprite", tag, this.autoPauseEndOfPage, this.autoPauseState, this.current_page, this.play_id)
+      const tag = this.goToSeekAtEl(ev)
+      //console.log("playSprite", tag, this.autoPauseEndOfPage, this.autoPauseState, this.current_page, this.play_id)
       if (!this.playing) {
         this.audio_howl_sprites.play(tag)
       }
@@ -397,6 +397,7 @@ export class ReadAlongComponent {
   stop(): void {
     this.playing = false;
     this.audio_howl_sprites.stop()
+    this.autoPauseState = "ended"
     this.el.shadowRoot.querySelectorAll(".reading").forEach(x => x.classList.remove('reading'))
 
     if (!this.autoScroll) {
@@ -994,8 +995,7 @@ export class ReadAlongComponent {
 
         this.assetsStatus.AUDIO = LOADED;
       }
-      })
-
+    })
 
 
   }
