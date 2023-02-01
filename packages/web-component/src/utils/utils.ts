@@ -42,6 +42,7 @@ function getNodeByXpath(xpath: string, xml: Document): Node[] {
   if (xmlns === null) {
     // console.error("Your XML file is missing an XML namespace.");
   }
+
   function nsResolver(prefix) {
     const ns = {
       'i': xmlns
@@ -66,7 +67,9 @@ function getNodeByXpath(xpath: string, xml: Document): Node[] {
  */
 export function zip(arrays): Array<any[]> {
   return arrays[0].map(function (_, i) {
-    return arrays.map(function (array) { return array[i] })
+    return arrays.map(function (array) {
+      return array[i]
+    })
   });
 }
 
@@ -205,7 +208,8 @@ Sprite.prototype = {
    * @param id - the id of the audio to roll back
    * @param s - the number of seconds to go back
    */
-  goBack: function (id : number, s: number): number {
+  goBack: function (id: number, s: number): number {
+
     const self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
@@ -234,14 +238,15 @@ Sprite.prototype = {
   },
 
   /**
- * Go back s seconds, or if current position - s is less than 0
- * go back to the beginning.
- *
- * @param id - the id of the audio to roll back
- * @param s - the number of seconds to go back
- */
-  goTo: function (id : number, s : number): number {
-    const self = this;
+   * Go back s seconds, or if current position - s is less than 0
+   * go back to the beginning.
+   *
+   * @param id - the id of the audio to roll back
+   * @param s - the number of seconds to go back
+   */
+  goTo: function (id: number, s: number): number {
+
+    let self = this;
     // reset sprites left
     self._spriteLeft = self._tinySprite
     // if current_seek - s is greater than 0, find the closest sprite
@@ -270,7 +275,7 @@ Sprite.prototype = {
         self._spriteLeft = []
       }
     }
-    console.log("end goTo", id, s, seek, end_point, self._spriteLeft.length)
+    //console.log("end goTo", id, s, seek, end_point, self._spriteLeft.length)
 
     return seek
   },
