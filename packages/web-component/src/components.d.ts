@@ -33,13 +33,13 @@ export namespace Components {
          */
         "pageScrolling": "horizontal" | "vertical";
         /**
-          * Overlay This is an SVG overlay to place over the progress bar
-         */
-        "svgOverlay": string;
-        /**
           * The aligned text as readalong XML
          */
         "readalong": string;
+        /**
+          * Overlay This is an SVG overlay to place over the progress bar
+         */
+        "svgOverlay": string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
@@ -84,13 +84,13 @@ declare namespace LocalJSX {
          */
         "pageScrolling"?: "horizontal" | "vertical";
         /**
-          * Overlay This is an SVG overlay to place over the progress bar
-         */
-        "svgOverlay"?: string;
-        /**
           * The aligned text as readalong XML
          */
         "readalong"?: string;
+        /**
+          * Overlay This is an SVG overlay to place over the progress bar
+         */
+        "svgOverlay"?: string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
