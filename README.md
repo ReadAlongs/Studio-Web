@@ -39,7 +39,7 @@ First, make sure Lerna is installed:
 
 Then,
 
-    npm install --force
+    npm install
 
 ### Building
 
