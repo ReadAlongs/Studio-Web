@@ -16,12 +16,15 @@
     },
     "private": false,
     "nx": {
-        "implicitDependencies": ["web-component"]
+        "implicitDependencies": [
+            "web-component"
+        ]
     },
     "devDependencies": {
         "@angular-devkit/architect": "^0.1501.1",
         "@angular-devkit/build-angular": "^15.1.1",
         "@angular/cli": "^15.1.1",
-        "ng-packagr": "^15.1.1"
+        "ng-packagr": "^15.1.1",
+        "postcss-preset-env": "^8.0.1"
     }
 }
