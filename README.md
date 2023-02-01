@@ -53,16 +53,13 @@ angular wrapper into the `generated` folder in the `ngx-web-component`
 wrapper library. The watch flag will auto-build the stencil component
 and angular wrapper if you change web-component source.
 
-If you want to try out the angular app demo to see an example of how
-to integrate readalongs into your Angular project, run `nx serve
-angular-demo`. Otherwise run `nx serve Studio-Web` to see the
-
 If you want to test the web component on its own, you will need to
 start the test data server with:
 
     nx serve-test-data web-component
 
-Then you can start the web component's example code with:
+Then you can start the web component's example code in a different
+shell with:
 
     nx serve web-component
     
@@ -71,6 +68,15 @@ localhost:5000 and localhost:3337 are different "origins".  Currently
 you'll have to download and activate an extension for your browser
 (such as the "Allow CORS" extension for Chrome) to get around this
 problem.
+
+If you want to try out the angular app demo to see an example of how
+to integrate readalongs into your Angular project, run `nx serve
+angular-demo`. Note that you will have a broken image icon unless you
+are running `nx serve-test-data web-component`.
+
+Finally, you can run `nx serve Studio-Web` to see the full
+application, which does not require any extra servers.
+
 
 License
 -------
