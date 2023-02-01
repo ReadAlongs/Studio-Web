@@ -1,4 +1,4 @@
-import { ShepherdService } from "angular-shepherd";
+import { ShepherdService } from "./shepherd.service";
 import { ToastrService } from "ngx-toastr";
 import { forkJoin, of, BehaviorSubject, Subject } from "rxjs";
 import { map } from "rxjs/operators";
