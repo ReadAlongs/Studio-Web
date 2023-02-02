@@ -1,5 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from "@angular/common/http/testing";
 // add By to query
 import { By } from "@angular/platform-browser";
 
@@ -13,7 +17,7 @@ describe("DemoComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MaterialModule],
+      imports: [HttpClientTestingModule, MaterialModule],
       declarations: [DemoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();

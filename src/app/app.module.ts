@@ -14,6 +14,10 @@ import { DemoComponent } from "./demo/demo.component";
 import { MaterialModule } from "./material.module";
 import { UploadComponent } from "./upload/upload.component";
 import { TextFormatDialogComponent } from "./text-format-dialog/text-format-dialog.component";
+import { NgxRAWebComponentModule } from "@readalongs/ngx-web-component";
+import { defineCustomElements } from "@readalongs/web-component/loader";
+
+defineCustomElements();
 
 @NgModule({
   declarations: [
@@ -35,6 +39,7 @@ import { TextFormatDialogComponent } from "./text-format-dialog/text-format-dial
     MaterialModule,
     MatToolbarModule,
     FormsModule,
+    NgxRAWebComponentModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
