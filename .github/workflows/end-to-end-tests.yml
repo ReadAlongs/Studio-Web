@@ -1,7 +1,7 @@
 name: End-to-end tests
 on: [push]
 jobs:
-  cypress-run:
+  test-suites:
     runs-on: ubuntu-latest
     # Stop the occasional rogue instance before the 6h GitHub limit
     timeout-minutes: 15
@@ -14,10 +14,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Cypress run
+      - name: Install everything
+        run: npm install
+      - name: Ng test for Studio-Web
+        run: npx nx test:once Studio-Web
+      - name: Cypress run for web-component
         uses: cypress-io/github-action@v5
         with:
-          install-command: npm install
+          install: false
           start: |
             npx nx serve web-component
             npx nx serve-test-data web-component
