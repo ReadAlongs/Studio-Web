@@ -78,21 +78,22 @@ Studio-Web will automatically [publish](.github/workflows/publish.yml) to https:
 
 #### Understanding where the components come from when you run locally
 
-When you run `nx serve Studio-Web`, that process is actually serving all the components needed
-by the Studio-Web application, including `web-component` and `ngx-web-component`.
+When you run `nx serve Studio-Web`, that process is actually serving all the files needed
+by the Studio-Web application, and it's able to import `web-component` and `ngx-web-component`
+as it needs them, making them visible to that application as needed.
 
 However, `web-component` requires a build in order to have the .js files generated and available
-to serve. In the instructions above, you we actually show two methods you can use:
+to serve or import. In the instructions above, we actually show two methods you can use:
 
  - `nx build web-component --watch` will only build that component, in production mode, and
    rebuild it any time you change that component's source code.
 
  - `nx serve web-component` goes further, serving that component, which also requires building
-   it, and also watches source code changes.  However, it produces a development build, which
+   it. It also watches source code for changes.  However, it produces a development build, which
    may be different from the production build.
 
-   In this case, the web-component is also being served on port 3333, but the Studio-Web app
-   just ignores that and uses the copy served by `nx serve Studio-Web` instead.
+   In this case, the web-component is being served on port 3333, but the Studio-Web app
+   just ignores that and uses the copy provided by `nx serve Studio-Web` instead.
 
 ### Testing
 
