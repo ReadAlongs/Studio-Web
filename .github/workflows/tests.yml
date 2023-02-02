@@ -16,9 +16,8 @@ jobs:
         run: |
           # The default config is for the monorepo, while this is for standalone
           cp tsconfig.json-ci tsconfig.json
-          # We use --force because angular-shepherd 15 is not released yet and
-          # 14 has dependencies that are incompatible with angular 15
-          npm install --force
+          npm install
+          npm install @readalongs/web-component@^0.0.2
       - name: Test
         run: |
           npm run test:once

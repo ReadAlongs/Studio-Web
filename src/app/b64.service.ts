@@ -58,11 +58,22 @@ export class B64Service {
         .join("")
     );
   }
+
   xmlStringToB64(xml: string) {
     let parser = new DOMParser();
     let xml_doc = parser.parseFromString(xml, "application/xml");
     return this.utf8_to_b64(new XMLSerializer().serializeToString(xml_doc));
   }
+
+  blobToB64(blob: any) {
+    return new Promise((resolve, _) => {
+      const reader = new FileReader();
+      // @ts-ignore
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
+
   alignmentToSmil(alignment: Segment, text_path: string, audio_path: string) {
     let topLine =
       '<smil xmlns="http://www.w3.org/ns/SMIL" version="3.0"><body>';

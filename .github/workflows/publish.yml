@@ -15,7 +15,8 @@ jobs:
           node-version: "16"
       - name: Install
         run: |
-          npm install --force
+          npm install
+          npm install @readalongs/web-component@^0.0.2
       - name: Test
         run: |
           npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI

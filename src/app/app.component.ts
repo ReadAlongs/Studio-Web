@@ -1,4 +1,4 @@
-import { ShepherdService } from "angular-shepherd";
+import { ShepherdService } from "./shepherd.service";
 import { ToastrService } from "ngx-toastr";
 import { forkJoin, of, BehaviorSubject, Subject } from "rxjs";
 import { map } from "rxjs/operators";
@@ -47,7 +47,6 @@ export class AppComponent {
     public shepherdService: ShepherdService
   ) {}
   ngOnInit(): void {
-    this.b64Inputs$.subscribe((x) => console.log(x));
     this.toastr.warning(
       $localize`This app has not been officially released and should not be expected to work properly yet.`,
       $localize`Warning`,
@@ -132,6 +131,7 @@ export class AppComponent {
           this.b64Service.alignmentToSmil(event[3] as Segment, "test", "test")
         ),
         this.b64Service.getBundle$(),
+        of(event[2]),
       ]).subscribe((x: any) => {
         this.b64Inputs$.next(x);
         this.stepper.next();
