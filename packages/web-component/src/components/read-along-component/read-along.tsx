@@ -187,7 +187,7 @@ export class ReadAlongComponent {
       (containerRect.x + 20) > currentPageRect.x
     ) {
 
-      setTimeout(() => this.audio_howl_sprites.sound.play(), 100)
+      setTimeout(() => this.audio_howl_sprites.sound.play(this.play_id), 100)
       this.autoPauseState = "resumed"
 
     } else {
@@ -306,9 +306,10 @@ export class ReadAlongComponent {
    *
    */
   goTo(seek: number): void {
-    if (this.play_id === undefined) {
-      this.play();
-      this.pause();
+    //console.log("goto", seek)
+    if (!this.play_id) {//initialize the sound sprite
+      this.play_id = this.audio_howl_sprites.play('all')
+      this.audio_howl_sprites.pause('all')
     }
     this.autoScroll = false;
     seek = seek / 1000
@@ -376,10 +377,21 @@ export class ReadAlongComponent {
     } else {
       this.autoPauseState = "playing"
       if (this.play_id) {
-        this.play_id = this.audio_howl_sprites.play(this.play_id)
+        try {
+          this.play_id = this.audio_howl_sprites.play(this.play_id)
+        } catch (err) {
+          console.log("play error:", err)
+          this.play_id = this.audio_howl_sprites.play('all')
+        }
+
       } else {
-        // else, start a new play
-        this.play_id = this.audio_howl_sprites.play('all')
+        try {
+          // else, start a new play
+          this.play_id = this.audio_howl_sprites.play('all')
+        } catch (e) {
+          console.log("play howl error", e)
+        }
+
       }
       // animate the progress bar
       this.animateProgress()
