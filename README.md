@@ -3,7 +3,7 @@
 :construction: :construction: This project is moving to a monorepo, please don't do development on this repo. Instead, please go to https://github.com/ReadAlongs/Web-Component :construction: :construction:
 
 [![Build Status](https://github.com/readalongs/Studio-Web/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Studio-Web/actions)
-[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Studio-Web)](https://github.com/ReadAlongs/Studio-Web/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Studio-Web)](https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/ReadAlongs/Studio-Web)
 
 > Web application for audiobook alignment for Indigenous languages!
