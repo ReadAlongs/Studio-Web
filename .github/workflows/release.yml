@@ -51,12 +51,12 @@ jobs:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           release_name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
-      - name: Commit bumped version and merge with master
+      - name: Commit bumped version and merge with main
         run: |
           git add package.json packages/*/package.json
           git commit -m "chore: commit version"
           git fetch --unshallow
           git push origin release
-          git checkout master
+          git checkout main
           git merge release
-          git push origin master
+          git push origin main
