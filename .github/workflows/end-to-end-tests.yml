@@ -17,7 +17,9 @@ jobs:
       - name: Install everything
         run: npm install
       - name: Ng test for Studio-Web
-        run: npx nx test:once Studio-Web
+        run: |
+          npx nx build web-component
+          npx nx test:once Studio-Web
       - name: Cypress run for web-component
         uses: cypress-io/github-action@v5
         with:

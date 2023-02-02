@@ -115,7 +115,8 @@ Then run:
 
 #### Studio-Web
 
-This command by itself will run the test suite once:
+To run the unit tests for Studio-Web, first build `web-component` in one of the ways listed
+above (or just `nx build web-component`) if you have not already done so, and then run:
 
     nx test:once Studio-Web
 
