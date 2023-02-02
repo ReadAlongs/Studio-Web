@@ -19,10 +19,10 @@ jobs:
           npm install
       - name: Test
         run: |
-          nx test:once Studio-Web
+          npx nx test:once Studio-Web
       - name: Build
         run: |
-          nx build Studio-Web
+          npx nx build Studio-Web
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.2.3
         with:
