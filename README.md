@@ -34,7 +34,7 @@ Then clone the submodule:
 
 ### Installing dependencies
 
-First, make sure Lerna is installed:
+First, make sure Nx is installed:
 
     npm install -g nx
 
@@ -64,7 +64,7 @@ Then serve Studio-Web by running:
 
     nx serve Studio-Web
 
-Note, that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
+Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
 
     git clone https://github.com/ReadAlongs/Studio.git
     cd Studio
@@ -74,16 +74,47 @@ then run:
 
     PRODUCTION= uvicorn readalongs.web_api:web_api_app --reload     
 
-Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ everytime there is a change to `main`. Note, that you will need to have CORS enabled through an extension like [this one](https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?hl=en) in order to have the requests between Studio-Web and the API work. You will not be able to test against the prodution ReadAlongs Studio API because of the CORS protections.
+Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ every time there is a change to `main`. Note that you will need to have CORS enabled through an extension like [this one](https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?hl=en) in order to have the requests between Studio-Web and the API work. You will not be able to test against the prodution ReadAlongs Studio API because of the CORS protections.
 
+#### Understanding where the components come from when you run locally
+
+When you run `nx serve Studio-Web`, that process is actually serving all the components needed
+by the Studio-Web application, including `web-component` and `ngx-web-component`.
+
+However, `web-component` requires a build in order to have the .js files generated and available
+to serve. In the instructions above, you we actually show two methods you can use:
+
+ - `nx build web-component --watch` will only build that component, in production mode, and
+   rebuild it any time you change that component's source code.
+
+ - `nx serve web-component` goes further, serving that component, which also requires building
+   it, and also watches source code changes.  However, it produces a development build, which
+   may be different from the production build.
+
+   In this case, the web-component is also being served on port 3333, but the Studio-Web app
+   just ignores that and uses the copy served by `nx serve Studio-Web` instead.
 
 ### Testing
 
 #### Web-Component
 
+In three different terminal windows:
+
+Make sure this command is serving the web-component on port 3333:
+
+    nx serve web-component
+
+Make sure this command is serving the test data on port 5000:
+
+    nx serve-test-data web-component
+
+Then run:
+
     nx cy:run web-component
 
 #### Studio-Web
+
+This command by itself will run the test suite once:
 
     nx test:once Studio-Web
 
