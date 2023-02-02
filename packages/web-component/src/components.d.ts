@@ -25,6 +25,10 @@ export namespace Components {
          */
         "cssUrl"?: string;
         /**
+          * Get Images
+         */
+        "getImages": () => Promise<object>;
+        /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
         "language": InterfaceLanguage;

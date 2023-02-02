@@ -17,5 +17,5 @@ git clone https://github.com/ReadAlongs/Web-Component.git
 cd Web-Component
 git checkout dev.multi-feature.mono2
 git submodules update --init
-npm install --force
+npm install
 npx nx build web-component
