@@ -20,6 +20,9 @@ jobs:
         run: |
           # The default config is for the monorepo, while this is for standalone
           npm install
+      - name: Build web-component
+        run: |
+          npx nx build web-component
       - name: Test
         run: |
           npx nx test:once Studio-Web
