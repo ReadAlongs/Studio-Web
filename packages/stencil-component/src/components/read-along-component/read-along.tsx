@@ -357,7 +357,13 @@ export class ReadAlongComponent {
     } else {
       this.autoPauseState = "playing"
       if (this.play_id) {
-        this.play_id = this.audio_howl_sprites.play(this.play_id)
+        try {
+          this.play_id = this.audio_howl_sprites.play(this.play_id)
+        } catch (err) {
+          console.log("play error:", err)
+          this.play_id = this.audio_howl_sprites.play('all')
+        }
+
       } else {
         // else, start a new play
         this.play_id = this.audio_howl_sprites.play('all')
