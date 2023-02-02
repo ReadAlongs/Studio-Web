@@ -39,11 +39,17 @@
       },
       "configurations": {
         "production": {
+          "fileReplacements": [
+            {
+              "replace": "packages/Studio-Web/src/environments/environment.ts",
+              "with": "packages/Studio-Web/src/environments/environment.prod.ts"
+            }
+          ],
           "budgets": [
             {
               "type": "initial",
               "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumError": "2mb"
             },
             {
               "type": "anyComponentStyle",
