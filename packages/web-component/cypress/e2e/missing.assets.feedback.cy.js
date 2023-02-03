@@ -34,7 +34,6 @@ context("Readalong Component with missing assets", () => {
 
     cy.readalong().within(() => {
       cy.contains("Page");
-      return; // TODO fix this test case and then reactivate it
       cy.get("[data-cy=audio-error]").should(($el) => {
         expect($el.hasClass("fade")).equal(false)
         //check that message is visible

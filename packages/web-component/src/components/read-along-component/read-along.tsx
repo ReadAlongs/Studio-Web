@@ -754,8 +754,8 @@ export class ReadAlongComponent {
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
       preload: false,
-      // onloaderror: this.audioFailedToLoad.bind(this),
-      // onload: this.audioLoaded.bind(this)
+      onloaderror: this.audioFailedToLoad.bind(this),
+      onload: this.audioLoaded.bind(this)
 
     })
     // Once loaded, get duration and build Sprite
