@@ -8,7 +8,7 @@ import {Alignment, Page} from "../index.ds";
  * @return boolean
  */
 export function looksLikeRelativePath(path: string): boolean {
-  return !(/^(https?:\/|assets)\/\b/).test(path);
+  return !(/^(https?:[/]|assets)[/]\b|^data:/).test(path);
 }
 
 /**
