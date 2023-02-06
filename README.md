@@ -10,7 +10,7 @@ This mono repo combines four packages:
  - A [stencil web component](packages/web-component/) for visualizing read alongs,
  - An [Angular Library](packages/ngx-web-component/) that wraps the stencil web component,
  - A [demo web application](packages/angular-demo/) to show how to use the angular library in an Angular web application.
-- The [studio-web](packages/studio-web/) application for creating ReadAlongs
+- The [Studio-Web](packages/studio-web/) application for creating ReadAlongs
 
 For maintainers
 ---------------
@@ -60,7 +60,7 @@ To run Studio-Web, you first have to build the web-component:
 
     nx build web-component --watch
 
-Then serve studio-web by running:
+Then serve Studio-Web by running:
 
     nx serve studio-web
 
