@@ -1,0 +1,23 @@
+name: Run Tests
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - name: Install
+        run: |
+          # The default config is for the monorepo, while this is for standalone
+          cp tsconfig.json-ci tsconfig.json
+          npm install
+          npm install @readalongs/web-component@^0.0.2
+      - name: Test
+        run: |
+          npm run test:once
