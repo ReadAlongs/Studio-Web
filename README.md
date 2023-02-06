@@ -72,11 +72,11 @@ Note that you will need to also spin-up the ReadAlong-Studio API in order to hav
 
 then run:
 
-    PRODUCTION= uvicorn readalongs.web_api:web_api_app --reload     
+    DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload
 
 If your Studio sandbox is in a sibling directory to this sandbox, and you Python environment is active, `nx serve-web-api studio-web` will run that command for you.
 
-Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ every time there is a change to `main`. Note that you will need to have CORS enabled through an extension like [this one](https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?hl=en) in order to have the requests between Studio-Web and the API work. You will not be able to test against the prodution ReadAlongs Studio API because of the CORS protections.
+Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ every time there is a change to `main`.
 
 #### Understanding where the components come from when you run locally
 
@@ -103,7 +103,10 @@ to serve or import. In the instructions above, we actually show two methods you 
 
 In three different terminal windows:
 
-Make sure this command is serving the web-component on port 3333:
+Make sure this command is serving the web-component on port 3333 (if
+it launches on a different port, you will have to kill the currently
+running process using that port, whose PID you can find with `fuser -n
+tcp 3333`):
 
     nx serve web-component
 
