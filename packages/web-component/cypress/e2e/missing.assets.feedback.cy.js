@@ -5,7 +5,7 @@ context("Readalong Component with missing assets", () => {
   const EXPECTED_LOADING_TIME = 3000; // ms
 
 
-  it("missing text warning show show successfully", () => {
+  it("missing text warning should show successfully", () => {
     cy.visit("/ej-fra/index-missing-xml.html");
     cy.wait(EXPECTED_LOADING_TIME);
     cy.readalongElement().should("be.visible");
@@ -26,7 +26,7 @@ context("Readalong Component with missing assets", () => {
     });
   });
 
-  it("parsing text warning show show successfully", () => {
+  it("parsing text warning should show successfully", () => {
     cy.visit("/ej-fra/index-malformed-xml.html");
     cy.wait(EXPECTED_LOADING_TIME);
     cy.readalongElement().should("be.visible");
@@ -40,7 +40,7 @@ context("Readalong Component with missing assets", () => {
       cy.get("[data-cy=XML-error]").should(($el) => {
         expect($el.hasClass("fade")).equal(false, "error message box visible")
         //check that message is visible
-        expect($el.text()).contains("could not be parsed", "error message visible")
+        expect($el.text()).contains("pas pu être analysé", "error message visible")
       }).should("be.visible")
       cy.get("[data-cy=SMIL-error]").should("not.exist")
       cy.get("[data-cy=progress-bar]").should("have.length", 1).should("be.visible")

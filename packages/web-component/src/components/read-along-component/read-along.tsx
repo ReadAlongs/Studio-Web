@@ -933,8 +933,10 @@ export class ReadAlongComponent {
       onend: this.audioEnded.bind(this)
 
     })
+
     // Once loaded, get duration and build Sprite
     this.audio_howl_sprites.once('load', () => {
+      if (this.assetsStatus.SMIL === ERROR_LOADING || this.assetsStatus.SMIL === ERROR_PARSING) return;
       this.processed_alignment['all'] = [0, this.audio_howl_sprites.duration() * 1000];
       this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(this.audio, this.processed_alignment);
@@ -1014,9 +1016,11 @@ export class ReadAlongComponent {
   componentDidRender(): void {
     //if creator does not want the translation to show at
     if (this.parsed_text && this.parsed_text.length > 0 && this.hasLoaded < 3) {
-      this.el.shadowRoot.querySelectorAll('.translation').forEach(translation => translation.classList.add('invisible'))
-      this.el.shadowRoot.querySelectorAll('.sentence__translation').forEach(translation => translation.classList.add('invisible'))
-
+      if (!this.displayTranslation) {
+        this.el.shadowRoot.querySelectorAll('.translation').forEach(translation => translation.classList.add('invisible'))
+        this.el.shadowRoot.querySelectorAll('.sentence__translation').forEach(translation => translation.classList.add('invisible'))
+        this.displayTranslation = true
+      }
     }
   }
 
