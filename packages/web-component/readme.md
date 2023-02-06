@@ -257,7 +257,7 @@ with and run these commands in three separate windows:
 
     nx serve web-component
     nx serve-test-data web-component
-    nx cy:run web-component
+    nx test:once web-component
 
 ### Interactively testing your local copy
 

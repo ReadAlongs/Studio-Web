@@ -20,7 +20,7 @@
         "cy:run": "cypress run",
         "start": "stencil build --dev --watch --serve",
         "prepublish": "node b64Fonts.js",
-        "test": "npm run test-servers & npm run wait-for-test-server && npm run cy:run",
+        "test": "npm run test-servers & npm run wait-for-test-server && npm run test:once",
         "test-servers": "bash ./bin/run-test-servers",
         "test:once": "cypress run",
         "test:open": "cypress open",

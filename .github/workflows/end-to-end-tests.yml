@@ -28,4 +28,4 @@ jobs:
             npx nx serve web-component
             npx nx serve-test-data web-component
           wait-on: 'http://localhost:3333/build/web-component.esm.js'
-          command: npx nx cy:run web-component
+          command: npx nx test:once web-component
