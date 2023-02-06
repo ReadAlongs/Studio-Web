@@ -72,7 +72,7 @@ Note that you will need to also spin-up the ReadAlong-Studio API in order to hav
 
 then run:
 
-    DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload     
+    DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload
 
 If your Studio sandbox is in a sibling directory to this sandbox, and you Python environment is active, `nx serve-web-api studio-web` will run that command for you.
 
@@ -103,7 +103,10 @@ to serve or import. In the instructions above, we actually show two methods you 
 
 In three different terminal windows:
 
-Make sure this command is serving the web-component on port 3333:
+Make sure this command is serving the web-component on port 3333 (if
+it launches on a different port, you will have to kill the currently
+running process using that port, whose PID you can find with `fuser -n
+tcp 3333`):
 
     nx serve web-component
 
