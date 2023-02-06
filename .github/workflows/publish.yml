@@ -25,12 +25,12 @@ jobs:
           npx nx build web-component
       - name: Test
         run: |
-          npx nx test:once Studio-Web
+          npx nx test:once studio-web
       - name: Build
         run: |
-          npx nx build Studio-Web
+          npx nx build studio-web
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.2.3
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: dist/packages/Studio-Web # The folder the action should deploy.
+          folder: dist/packages/studio-web # The folder the action should deploy.

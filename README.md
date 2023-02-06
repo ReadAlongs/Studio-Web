@@ -10,7 +10,7 @@ This mono repo combines four packages:
  - A [stencil web component](packages/web-component/) for visualizing read alongs,
  - An [Angular Library](packages/ngx-web-component/) that wraps the stencil web component,
  - A [demo web application](packages/angular-demo/) to show how to use the angular library in an Angular web application.
-- The [Studio-Web](packages/Studio-Web/) application for creating ReadAlongs
+- The [studio-web](packages/studio-web/) application for creating ReadAlongs
 
 For maintainers
 ---------------
@@ -60,9 +60,9 @@ To run Studio-Web, you first have to build the web-component:
 
     nx build web-component --watch
 
-Then serve Studio-Web by running:
+Then serve studio-web by running:
 
-    nx serve Studio-Web
+    nx serve studio-web
 
 Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
 
@@ -78,7 +78,7 @@ Studio-Web will automatically [publish](.github/workflows/publish.yml) to https:
 
 #### Understanding where the components come from when you run locally
 
-When you run `nx serve Studio-Web`, that process is actually serving all the files needed
+When you run `nx serve studio-web`, that process is actually serving all the files needed
 by the Studio-Web application, and it's able to import `web-component` and `ngx-web-component`,
 providing them to the application as needed.
 
@@ -93,7 +93,7 @@ to serve or import. In the instructions above, we actually show two methods you 
    may be different from the production build.
 
    In this case, the web-component is being served on port 3333, but the Studio-Web app
-   just ignores that and uses the copy provided by `nx serve Studio-Web` instead.
+   just ignores that and uses the copy provided by `nx serve studio-web` instead.
 
 ### Testing
 
@@ -118,7 +118,7 @@ Then run:
 To run the unit tests for Studio-Web, first build `web-component` in one of the ways listed
 above (or just `nx build web-component`) if you have not already done so, and then run:
 
-    nx test:once Studio-Web
+    nx test:once studio-web
 
 ### Build & Publish
 

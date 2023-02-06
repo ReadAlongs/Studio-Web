@@ -16,10 +16,10 @@ jobs:
           node-version: 18
       - name: Install everything
         run: npm install
-      - name: Ng test for Studio-Web
+      - name: Ng test for studio-web
         run: |
           npx nx build web-component
-          npx nx test:once Studio-Web
+          npx nx test:once studio-web
       - name: Cypress run for web-component
         uses: cypress-io/github-action@v5
         with:

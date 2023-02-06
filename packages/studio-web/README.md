@@ -1,10 +1,9 @@
 # ReadAlong-Studio Web
 
-:construction: :construction: This project is moving to a monorepo, please don't do development on this repo. Instead, please go to https://github.com/ReadAlongs/Web-Component :construction: :construction:
 
-[![Build Status](https://github.com/readalongs/Studio-Web/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Studio-Web/actions)
-[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Studio-Web)](https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE)
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/ReadAlongs/Studio-Web)
+[![Build Status](https://github.com/readalongs/Web-Component/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Web-Component/actions)
+[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Web-Component)](https://github.com/ReadAlongs/Web-Component/blob/main/LICENSE)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/ReadAlongs/Web-Component/tree/main/packages/studio-web)
 
 > Web application for audiobook alignment for Indigenous languages!
 
@@ -60,7 +59,7 @@ Run `npm run-script build:prod` to build the project. The build artifacts will b
 
 ## Contributing
 
-Feel free to dive in! [Open an issue](https://github.com/ReadAlongs/Studio-Web/issues/new) or submit PRs.
+Feel free to dive in! [Open an issue](https://github.com/ReadAlongs/Web-Component/issues/new) or submit PRs.
 
 This repo follows the [Contributor Covenant](https://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
@@ -90,4 +89,4 @@ Littell, P., Joanis, E., Pine, A., Tessier, M., Huggins-Daines, D., & Torkornoo,
 
 ## License
 
-[MIT](LICENSE) © 2022 National Research Council Canada
+[MIT](LICENSE) © 2023 National Research Council Canada
