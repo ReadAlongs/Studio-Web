@@ -66,10 +66,11 @@ export class DemoComponent implements OnInit {
   }
 
   async download() {
-    let updatedImages = await this.getImages(this.b64Inputs[4]);
-    let text = this.b64Inputs[1];
+    console.log(this.b64Inputs);
+    let updatedImages = await this.getImages(this.b64Inputs[3]);
+    let readalong = this.b64Inputs[1];
     if (updatedImages !== false) {
-      text = updatedImages;
+      readalong = updatedImages;
     }
     var element = document.createElement("a");
     let blob = new Blob(
@@ -80,11 +81,11 @@ export class DemoComponent implements OnInit {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
       <title>${this.slots.pageTitle}</title>
-      <link rel="stylesheet" href="${this.b64Inputs[3][1]}">
-      <script src="${this.b64Inputs[3][0]}"></script>
+      <link rel="stylesheet" href="${this.b64Inputs[2][1]}">
+      <script src="${this.b64Inputs[2][0]}"></script>
     </head>
     <body>
-        <read-along text="${text}" alignment="${this.b64Inputs[2]}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
+        <read-along readalong="${readalong}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
         <span slot="read-along-header">${this.slots.title}</span>
         <span slot="read-along-subheader">${this.slots.subtitle}</span>
         </read-along>
