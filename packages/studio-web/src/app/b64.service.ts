@@ -59,10 +59,8 @@ export class B64Service {
     );
   }
 
-  xmlStringToB64(xml: string) {
-    let parser = new DOMParser();
-    let xml_doc = parser.parseFromString(xml, "application/xml");
-    return this.utf8_to_b64(new XMLSerializer().serializeToString(xml_doc));
+  xmlToB64(xml: Document) {
+    return this.utf8_to_b64(new XMLSerializer().serializeToString(xml));
   }
 
   blobToB64(blob: any) {
