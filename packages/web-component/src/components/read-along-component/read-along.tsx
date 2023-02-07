@@ -1364,7 +1364,7 @@ export class ReadAlongComponent {
     <i class="material-icons-outlined">subtitles</i>
   </button>
 
-  ToggleSettings = (): Element => <button data-cy={"configure-toggle"} title={"Change Configuration"}
+  ToggleSettings = (): Element => <button data-cy={"settings-button"} title={"Change Configuration"}
                                           onClick={() => this.toggleSettings()}
                                           class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons" aria-label="Show settings">settings</i>
@@ -1400,7 +1400,7 @@ export class ReadAlongComponent {
     <h3>{this.returnTranslation('Settings')}</h3>
     <p>
       <label class={"switch"}>
-        <input type="checkbox" checked={this.scrollBehavior === "smooth"} onClick={() => {
+        <input type="checkbox" data-cy={"settings-scroll-behavior"} checked={this.scrollBehavior === "smooth"} onClick={() => {
           this.toggleScrollBehavior();
 
         }}/>
@@ -1411,7 +1411,7 @@ export class ReadAlongComponent {
     </p>
     <p>
       <label class={"switch"}>
-        <input type="checkbox" checked={!this.autoPauseEndOfPage}
+        <input type="checkbox" data-cy={"settings-auto-pause"} checked={!this.autoPauseEndOfPage}
                onClick={() => {
                  this.autoPauseEndOfPage = !this.autoPauseEndOfPage;
 
@@ -1423,7 +1423,8 @@ export class ReadAlongComponent {
     </p>
     {!this.autoPauseEndOfPage &&
       <p>
-        <input onChange={e => this.timeoutAtEndOfPage = parseFloat((e.target as HTMLInputElement).value)}
+        <input data-cy={"settings-pause-timeout"}
+               onChange={e => this.timeoutAtEndOfPage = parseFloat((e.target as HTMLInputElement).value)}
                type={"number"} size={1} step={0.5} min={0} max={10} value={this.timeoutAtEndOfPage}/>
         {this.returnTranslation('End of page pause in seconds')}
       </p>
