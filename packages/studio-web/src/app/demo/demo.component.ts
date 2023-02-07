@@ -66,7 +66,6 @@ export class DemoComponent implements OnInit {
   }
 
   async download() {
-    console.log(this.b64Inputs);
     let updatedImages = await this.getImages(this.b64Inputs[3]);
     let readalong = this.b64Inputs[1];
     if (updatedImages !== false) {

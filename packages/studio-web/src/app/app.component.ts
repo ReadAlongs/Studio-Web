@@ -127,6 +127,7 @@ export class AppComponent {
         this.fileService.readFileAsData$(event[1]),
         of(`data:application/xml;base64,${b64_xml}`),
         this.b64Service.getBundle$(),
+        of(event[2]),
       ]).subscribe((x: any) => {
         this.b64Inputs$.next(x);
         this.stepper.next();
