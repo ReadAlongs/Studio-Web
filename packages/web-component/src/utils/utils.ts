@@ -63,34 +63,6 @@ export function extractAlignment(parsed_text: Array<Page>): Alignment {
 
 
 /**
- * Return useful data from SMIL xml file
- * @param {string} - the path to the SMIL file
- */
-export function parseSMIL(path: string): Alignment {
-  let xmlDocument = getXML(path)
-  let parser = new DOMParser();
-  let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let text = getNodeByXpath('/i:smil/i:body/i:par/i:text/@src', xml_text).map(x => {
-    let split = x['value'].split('#');
-    return split[split.length - 1]
-  }
-  )
-  let audio_begin = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipBegin', xml_text).map(x => x['value'] * 1000)
-  let audio_end = getNodeByXpath('/i:smil/i:body/i:par/i:audio/@clipEnd', xml_text).map(x => x['value'] * 1000)
-  let audio_duration = []
-  for (var i = 0; i < audio_begin.length; i++) {
-    let duration = audio_end[i] - audio_begin[i]
-    audio_duration.push(duration)
-  }
-  let audio = zip([audio_begin, audio_duration])
-  let result = {}
-  for (var i = 0; i < text.length; i++) {
-    result[text[i]] = audio[i]
-  }
-  return result
-}
-
-/**
  * Sprite class containing the state of our sprites to play and their progress.
  * @param {Object} options Settings to pass into and setup the sound and visuals.
  */
