@@ -1,0 +1,18 @@
+<section>
+    <div class="container export__desc">
+        <h2 class="subtitle">
+            Configure your ReadAlong</h2>
+        <p>Select which output formats you want your ReadAlong to use.</p>
+    </div>
+    <div class="container">
+        <div class="row g-2 p-3 border bg-light">
+            <h2>Export</h2>
+            <form [formGroup]="formGroup" ngNativeValidate>
+                <mat-slide-toggle [disabled]="true" class="m-2" formControlName="closedCaptioning">Closed Captions</mat-slide-toggle>
+                <mat-slide-toggle [disabled]="true" class="m-2" formControlName="textGrids">Text Grids</mat-slide-toggle>
+                <mat-slide-toggle [disabled]="true" class="m-2" formControlName="singleHTML">HTML</mat-slide-toggle>
+            </form>
+            <button class="mt-4" mat-raised-button type="submit" (click)="nextStep()">Make your ReadAlong!</button>
+        </div>
+    </div>
+</section>

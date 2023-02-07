@@ -1,0 +1,5 @@
+package.json
+package-lock.json
+*.html
+dist/word-weaver/
+src/assets/*

@@ -1,0 +1,120 @@
+{
+  "name": "studio-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "packages/studio-web/src",
+  "prefix": "app",
+  "i18n": {
+    "locales": {
+      "fr": "packages/studio-web/src/i18n/messages.fr.json",
+      "en": "packages/studio-web/src/i18n/messages.json"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-builders/custom-webpack:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/studio-web",
+        "index": "packages/studio-web/src/index.html",
+        "main": "packages/studio-web/src/main.ts",
+        "i18nMissingTranslation": "warning",
+        "polyfills": ["packages/studio-web/src/polyfills.ts"],
+        "tsConfig": "packages/studio-web/tsconfig.app.json",
+        "customWebpackConfig": {
+          "path": "packages/studio-web/custom-webpack.config.js"
+        },
+        "assets": [
+          "packages/studio-web/src/favicon.ico",
+          "packages/studio-web/src/assets",
+          {
+            "glob": "**/*",
+            "ignore": ["fr-fr/*"],
+            "input": "./node_modules/soundswallower/model",
+            "output": "./model"
+          }
+        ],
+        "styles": ["packages/studio-web/src/styles.sass"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "packages/studio-web/src/environments/environment.ts",
+              "with": "packages/studio-web/src/environments/environment.prod.ts"
+            }
+          ],
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "2mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "en": {
+          "localize": ["en"]
+        },
+        "fr": {
+          "localize": ["fr"]
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-builders/custom-webpack:dev-server",
+      "options": {
+        "browserTarget": "studio-web:build:en"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "studio-web:build:production"
+        },
+        "development": {
+          "browserTarget": "studio-web:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-builders/custom-webpack:extract-i18n",
+      "options": {
+        "browserTarget": "studio-web:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/studio-web/**/*.ts",
+          "packages/studio-web/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/studio-web/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

@@ -32,6 +32,16 @@ Type: `Promise<void>`
 
 
 
+### `getImages() => Promise<object>`
+
+Get Images
+
+#### Returns
+
+Type: `Promise<object>`
+
+
+
 
 ----------------------------------------------
 

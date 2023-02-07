@@ -1,6 +1,6 @@
 {
     "name": "@readalongs/web-component",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "ReadAlong Web Component",
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
@@ -10,6 +10,7 @@
     "collection": "dist/collection/collection-manifest.json",
     "collection:main": "dist/collection/index.js",
     "unpkg": "dist/bundle.js",
+    "private": false,
     "files": [
         "dist/"
     ],
@@ -18,12 +19,12 @@
         "bundle": "webpack --config webpack.config.js",
         "cy:run": "cypress run",
         "start": "stencil build --dev --watch --serve",
-        "prepublish": "npm run build && webpack --config webpack.config.js && node b64Fonts.js",
-        "test": "npm run test-servers & npm run wait-for-test-server && npm run cy:run",
+        "prepublish": "node b64Fonts.js",
+        "test": "npm run test-servers & npm run wait-for-test-server && npm run test:once",
         "test-servers": "bash ./bin/run-test-servers",
         "test:once": "cypress run",
         "test:open": "cypress open",
-        "serve-test-data": "sirv --dev --port 5000 test-data/",
+        "serve-test-data": "sirv --dev --cors --port 5000 test-data/",
         "generate": "stencil generate",
         "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
     },

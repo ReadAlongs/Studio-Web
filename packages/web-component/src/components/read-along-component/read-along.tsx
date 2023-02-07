@@ -105,7 +105,7 @@ export class ReadAlongComponent {
   dropAreas;
   current_page;
   hasTextTranslations: boolean = false;
-  @State() images: string[];
+  @State() images: object;
   assetsStatus = {
     'AUDIO': LOADING,
     'XML': LOADING,
@@ -444,6 +444,14 @@ export class ReadAlongComponent {
   }
 
   /**
+   * Get Images
+   */
+  @Method()
+  async getImages(): Promise<object> {
+    return this.images
+  }
+
+  /**
    * Change theme
    */
   @Method()
@@ -712,7 +720,16 @@ export class ReadAlongComponent {
 
     // Parse the text to be displayed
     this.parsed_text = parseRAS(this.readalong)
-    this.images = this.parsed_text.map((page) => page.img ? page.img : null)
+    this.images = {}
+
+    for (const [i, page] of this.parsed_text.entries()) {
+      if ('img' in page) {
+        this.images[i] = page.img
+      } else {
+        this.images[i] = null
+      }
+    }
+    // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
     this.assetsStatus.XML = this.parsed_text.length ? LOADED : ERROR_LOADING
 
   }
@@ -843,20 +860,19 @@ export class ReadAlongComponent {
   async handleFiles(event: any, props) {
     // const reader = new FileReader()
     let imageURL = URL.createObjectURL(event)
-    let pageIndex = this.parsed_text.indexOf(props.pageData)
+    let pageIndex = this.parsed_text.map((page: Page) => page.id).indexOf(props.pageData.id)
     props.pageData.img = imageURL
-    this.images = this.images.slice(0, pageIndex).concat([imageURL]).concat(this.images.slice(pageIndex + 1))
+    let newImage = {}
+    newImage[pageIndex] = imageURL
+    this.images = {...this.images, ...newImage}  // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
   deleteImage(props){
-    let pageIndex = this.parsed_text.indexOf(props.pageData)
-    console.log(this.images)
-    console.log(props.pageData)
+    let pageIndex = this.parsed_text.map((page: Page) => page.id).indexOf(props.pageData.id)
     delete props.pageData.img
-    this.images = this.images.splice(pageIndex, 1)
-    
-    console.log(pageIndex)
-    console.log(this.images)
+    let newImage = {}
+    newImage[pageIndex] = null
+    this.images = {...this.images, ...newImage}  // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
   /**********
@@ -911,8 +927,8 @@ export class ReadAlongComponent {
       <div class='drop-area'>
         <form class="my-form">
           <p class={"theme--" + this.theme}>Upload an image for this page with the file dialog below</p>
-          <input type="file" id="fileElem" accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props)} />
-          <label class="button" htmlFor="fileElem">Select some files</label>
+          <input type="file" class='fileElem' id={"fileElem--" + props.pageData.id} accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props)} />
+          <label class="button" htmlFor={"fileElem--" + props.pageData.id}>Select some files</label>
         </form>
       </div>
 
@@ -952,9 +968,14 @@ export class ReadAlongComponent {
         this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length}
           currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
       }
-      { /* Display an Img if it exists on the page */
-        props.pageData.img ? <span id="image-stuff"><this.RemoveImg pageData={props.pageData}/> <this.Img url={props.pageData.img} /></span> : null
+      <span id="image-container">
+      {
+        this.mode === "EDIT" && props.pageData.img ? <this.RemoveImg pageData={props.pageData}/> : null
       }
+      { /* Display an Img if it exists on the page */
+        props.pageData.img ? <this.Img url={props.pageData.img} /> : null
+      }
+      </span>
       {
         this.mode === "EDIT" && !props.pageData.img ? <this.ImgPlaceHolder pageData={props.pageData} /> : null
       }
