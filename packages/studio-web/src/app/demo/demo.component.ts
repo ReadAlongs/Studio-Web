@@ -38,13 +38,7 @@ export class DemoComponent implements OnInit {
     if (Object.keys(images).length == 0)
       return false;
     else {
-      const pages = doc.evaluate("//div[@type='page']", doc);
-      const page_nodes = [];
-      let node = pages.iterateNext();
-      while (node) {
-        page_nodes.push(node);
-        node = pages.iterateNext();
-      }
+      const page_nodes = doc.querySelectorAll("div[type=page]");
       for (const [i, img] of Object.entries(images)) {
         let currentPage = page_nodes[parseInt(i)];
         if (currentPage && img) {
