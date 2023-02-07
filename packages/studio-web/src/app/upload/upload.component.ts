@@ -244,7 +244,7 @@ export class UploadComponent implements OnInit {
           )
         )
         .subscribe((progress) => {
-          if (progress.pos == progress.length) {
+          if (progress.hypseg !== undefined) {
             this.loading = false;
             this.stepChange.emit([
               "aligned",
