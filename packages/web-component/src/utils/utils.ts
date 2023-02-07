@@ -46,19 +46,22 @@ export async function parseRAS(path: string): Promise<Array<Page>> {
  * Extract alignment data from parsed text
  */
 export function extractAlignment(parsed_text: Array<Page>): Alignment {
-    let alignment = {};
-    for (const page of parsed_text) {
-        for (const p of page.paragraphs) {
-            const words = Array.from(p.getElementsByTagName("w"));
-            for (const w of words) {
-                alignment[w.getAttribute("id")] = [
-                    Math.round(parseFloat(w.getAttribute("time")) * 1000),
-                    Math.round(parseFloat(w.getAttribute("dur")) * 1000)
-                ];
-            }
-        }
+  let alignment = {};
+  for (const page of parsed_text) {
+    for (const p of page.paragraphs) {
+      const words = Array.from(p.getElementsByTagName("w"));
+      for (const w of words) {
+        const time = w.getAttribute("time");
+        const dur = w.getAttribute("dur");
+        if (time !== null && dur !== null)
+          alignment[w.getAttribute("id")] = [
+            Math.round(parseFloat(time) * 1000),
+            Math.round(parseFloat(dur) * 1000),
+          ];
+      }
     }
-    return alignment;
+  }
+  return alignment;
 }
 
 

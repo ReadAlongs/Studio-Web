@@ -109,8 +109,8 @@ export class ReadAlongComponent {
   assetsStatus = {
     'AUDIO': LOADING,
     'XML': LOADING,
-    'SMIL': LOADING
   };
+  alignment_failed: boolean = false;
 
 
   /************
@@ -741,8 +741,7 @@ export class ReadAlongComponent {
    */
   componentDidLoad() {
     this.processed_alignment = extractAlignment(this.parsed_text)
-    this.assetsStatus.SMIL = Object.keys(this.processed_alignment).length ? LOADED : ERROR_LOADING
-
+    this.alignment_failed = (Object.keys(this.processed_alignment).length == 0)
     // load basic Howl
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
@@ -840,8 +839,8 @@ export class ReadAlongComponent {
         "fra": "Erreur: le fichier texte n'a pas pu être chargé"
       },
       "alignment-error": {
-        "eng": "Error: The alignment file could not be loaded",
-        "fra": "Erreur: le fichier alignement n'a pas pu être chargé"
+        "eng": "Error: No alignments were found",
+        "fra": "Erreur: aucun alignement n'a été trouvé"
       },
       "loading": {
         "eng": "Loading...",
@@ -1182,9 +1181,10 @@ export class ReadAlongComponent {
             </span>
             <span>{this.assetsStatus.AUDIO == ERROR_LOADING
                  ? this.returnTranslation('audio-error', this.language)
-                 : (this.assetsStatus.SMIL > 0
+                 : (this.assetsStatus.XML > 0
                                            ? 'AUDIO'
-                                           : this.returnTranslation('loading', this.language))}</span>
+                                           : this.returnTranslation('loading', this.language))}
+            </span>
           </p>
         }
 
@@ -1200,24 +1200,17 @@ export class ReadAlongComponent {
             <span>
               {this.assetsStatus.XML == ERROR_LOADING
               ? this.returnTranslation('text-error', this.language)
-              : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}
+              : "XML"}
             </span>
           </p>
         }
 
         {
-          this.assetsStatus.SMIL &&
-          <p data-cy="alignment-error"
-            class={"alert status-" + this.assetsStatus.SMIL + (this.assetsStatus.SMIL == LOADED ? ' fade' : '')}>
-            <span class="material-icons-outlined">
-              {this.assetsStatus.SMIL == ERROR_LOADING
-                ? 'error'
-                : (this.assetsStatus.SMIL > 0 ? 'done' : 'pending_actions')}
-            </span>
+          this.alignment_failed && this.assetsStatus.XML !== ERROR_LOADING &&
+          <p data-cy="alignment-error" class="alert status-2">
+            <span class="material-icons-outlined">error</span>
             <span>
-              {this.assetsStatus.SMIL == ERROR_LOADING
-                ? this.returnTranslation('alignment-error', this.language)
-              : (this.assetsStatus.SMIL > 0 ? 'SMIL' : this.returnTranslation('loading', this.language))}
+              {this.returnTranslation('alignment-error', this.language)}
             </span>
           </p>
         }
@@ -1231,7 +1224,7 @@ export class ReadAlongComponent {
           {this.isLoaded == false && <div class="loader" />}
 
         </div>
-        {this.assetsStatus.SMIL == LOADED &&
+        {this.alignment_failed ||
           <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' data-cy="progress-bar"
             class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
             {this.svgOverlay ? <this.Overlay /> : null}
