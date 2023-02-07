@@ -1175,27 +1175,50 @@ export class ReadAlongComponent {
           this.assetsStatus.AUDIO &&
           <p data-cy="audio-error"
             class={"alert status-" + this.assetsStatus.AUDIO + (this.assetsStatus.AUDIO == LOADED ? ' fade' : '')}>
-            <span
-              class="material-icons-outlined"> {this.assetsStatus.AUDIO == ERROR_LOADING ? 'error' : (this.assetsStatus.AUDIO > 0 ? 'done' : 'pending_actions')}</span>
-            <span>{this.assetsStatus.AUDIO == ERROR_LOADING ? this.returnTranslation('audio-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'AUDIO' : this.returnTranslation('loading', this.language))}</span>
+            <span class="material-icons-outlined">
+                {this.assetsStatus.AUDIO == ERROR_LOADING
+                ? 'error'
+                : (this.assetsStatus.AUDIO > 0 ? 'done' : 'pending_actions')}
+            </span>
+            <span>{this.assetsStatus.AUDIO == ERROR_LOADING
+                 ? this.returnTranslation('audio-error', this.language)
+                 : (this.assetsStatus.SMIL > 0
+                                           ? 'AUDIO'
+                                           : this.returnTranslation('loading', this.language))}</span>
           </p>
         }
 
         {
-          this.assetsStatus.XML && <p data-cy="text-error"
+          this.assetsStatus.XML &&
+          <p data-cy="text-error"
             class={"alert status-" + this.assetsStatus.XML + (this.assetsStatus.XML == LOADED ? ' fade' : '')}>
-            <span
-              class="material-icons-outlined"> {this.assetsStatus.XML == ERROR_LOADING ? 'error' : (this.assetsStatus.XML > 0 ? 'done' : 'pending_actions')}</span>
-            <span>{this.assetsStatus.XML == ERROR_LOADING ? this.returnTranslation('text-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}</span>
+            <span class="material-icons-outlined">
+              {this.assetsStatus.XML == ERROR_LOADING
+                  ? 'error'
+                  : (this.assetsStatus.XML > 0 ? 'done' : 'pending_actions')}
+            </span>
+            <span>
+              {this.assetsStatus.XML == ERROR_LOADING
+              ? this.returnTranslation('text-error', this.language)
+              : (this.assetsStatus.SMIL > 0 ? 'XML' : this.returnTranslation('loading', this.language))}
+            </span>
           </p>
         }
 
         {
-          this.assetsStatus.SMIL && <p data-cy="alignment-error"
+          this.assetsStatus.SMIL &&
+          <p data-cy="alignment-error"
             class={"alert status-" + this.assetsStatus.SMIL + (this.assetsStatus.SMIL == LOADED ? ' fade' : '')}>
-            <span
-              class="material-icons-outlined"> {this.assetsStatus.SMIL == ERROR_LOADING ? 'error' : (this.assetsStatus.SMIL > 0 ? 'done' : 'pending_actions')}</span>
-            <span>{this.assetsStatus.SMIL == ERROR_LOADING ? this.returnTranslation('alignment-error', this.language) : (this.assetsStatus.SMIL > 0 ? 'SMIL' : this.returnTranslation('loading', this.language))}</span>
+            <span class="material-icons-outlined">
+              {this.assetsStatus.SMIL == ERROR_LOADING
+                ? 'error'
+                : (this.assetsStatus.SMIL > 0 ? 'done' : 'pending_actions')}
+            </span>
+            <span>
+              {this.assetsStatus.SMIL == ERROR_LOADING
+                ? this.returnTranslation('alignment-error', this.language)
+              : (this.assetsStatus.SMIL > 0 ? 'SMIL' : this.returnTranslation('loading', this.language))}
+            </span>
           </p>
         }
         <div data-cy="text-container" class={"pages__container theme--" + this.theme + " " + this.pageScrolling}>
