@@ -365,8 +365,13 @@ export class ReadAlongComponent {
         }
 
       } else {
-        // else, start a new play
-        this.play_id = this.audio_howl_sprites.play('all')
+        try {
+          // else, start a new play
+          this.play_id = this.audio_howl_sprites.play('all')
+        } catch (e) {
+          console.log("play howl error", e)
+        }
+
       }
       // animate the progress bar
       this.animateProgress()
