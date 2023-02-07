@@ -181,7 +181,7 @@ export class ReadAlongComponent {
       (containerRect.x + 20) > currentPageRect.x
     ) {
 
-      setTimeout(() => this.audio_howl_sprites.sound.play(), 100)
+      setTimeout(() => this.audio_howl_sprites.sound.play(this.play_id), 100)
       this.autoPauseState = "resumed"
 
     } else {
@@ -285,8 +285,8 @@ export class ReadAlongComponent {
    *
    */
   goTo(seek: number): void {
-    console.log("goto", seek)
-    if (this.play_id == undefined) {//initialize the sound sprite
+    //console.log("goto", seek)
+    if (!this.play_id) {//initialize the sound sprite
       this.play_id = this.audio_howl_sprites.play('all')
       this.audio_howl_sprites.pause('all')
     }
