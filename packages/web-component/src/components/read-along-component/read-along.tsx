@@ -700,7 +700,7 @@ export class ReadAlongComponent {
   /**
    * Using this Lifecycle hook to handle backwards compatibility of component attribute
    */
-  componentWillLoad() {
+  async componentWillLoad() {
     // The backward compatible behaviour used to be audio, alignment and text files outside assets
     // and only image files inside assets.
     // See version 0.1.0, where it only looks in assets/ for images, nothing else.
@@ -719,7 +719,7 @@ export class ReadAlongComponent {
     }
 
     // Parse the text to be displayed
-    this.parsed_text = parseRAS(this.readalong)
+    this.parsed_text = await parseRAS(this.readalong)
     this.images = {}
 
     for (const [i, page] of this.parsed_text.entries()) {

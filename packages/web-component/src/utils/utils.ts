@@ -4,51 +4,6 @@ import {Alignment, Page} from "../index.ds";
 
 
 /**
- * Gets XML from path
- * @param {string} path - the path to the xml file
- */
-function getXML(path: string): string {
-
-  let xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", path, false);//TODO rewrite as async
-  xmlhttp.addEventListener("error", function (error) {
-    console.log(error);
-  })
-  xmlhttp.send();
-
-  return xmlhttp.responseText;
-}
-
-
-/**
- * Return list of nodess from XPath
- * @param {string} xpath - the xpath to evaluate with
- * @param {Document} xml - the xml to evaluate
- */
-function getNodeByXpath(xpath: string, xml: Document): Array<Element> {
-  let xmlns = xml.lookupNamespaceURI(null);
-  if (xmlns === null) {
-    // console.error("Your XML file is missing an XML namespace.");
-  }
-  function nsResolver(prefix) {
-    var ns = {
-      'i': xmlns
-    };
-    return ns[prefix] || null;
-  }
-
-  let result_container: Array<Element> = []
-  let results = xml.evaluate(xpath, xml, nsResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-  let node = results.iterateNext();
-  while (node) {
-    result_container.push(node as Element);
-    node = results.iterateNext()
-  }
-  return result_container
-}
-
-
-/**
  * Return a zipped array of arrays
  * @param {array[]} arrays
  */
@@ -63,25 +18,27 @@ export function zip(arrays): Array<any[]> {
  * Return sentences from readalong XML file
  * @param {string} - the path to the readalong file
  */
-export function parseRAS(path: string): Array<Page> {
-  let xmlDocument =  getXML(path)
+export async function parseRAS(path: string): Promise<Array<Page>> {
+  let response = await fetch(path);
+  if (!response.ok) {
+    console.log(`fetch(${path}) failed with status ${response.status}`);
+    return [];
+  }
+  let xmlDocument = await response.text();
   let parser = new DOMParser();
-  let xml_text = parser.parseFromString(xmlDocument, "text/xml")
-  let pages = getNodeByXpath('.//div[@type="page"]', xml_text)
-  let parsed_pages = pages.map((p: Element) => {
-    let id = p.id;
-    let img_xpath = `.//div[@id='${id}']/graphic/@url`
-    let img = getNodeByXpath(img_xpath, xml_text)
-    let p_xpath = `.//div[@id='${id}']/p`
-    let paragraphs = getNodeByXpath(p_xpath, xml_text)
-    let parsed_page = { id: id, paragraphs: paragraphs }
-    if (img.length > 0) {
-      parsed_page['img'] = img[0].nodeValue;
+  let xml = parser.parseFromString(xmlDocument, "text/xml");
+  let parsed_pages = Array.from(xml.querySelectorAll("div[type=page]")).map((page) => {
+    let img = page.querySelector("graphic[url]");
+    let paragraphs = page.querySelectorAll("p");
+    let parsed_page = { id: page.getAttribute("id"), paragraphs: Array.from(paragraphs) }
+    if (img !== null) {
+      parsed_page['img'] = img.getAttribute("url");
     }
-    if(p.attributes)parsed_page["attributes"]=p.attributes;
-    return parsed_page
+    if (page.attributes)
+      parsed_page["attributes"] = page.attributes;
+    return parsed_page;
   });
-  return parsed_pages
+  return parsed_pages;
 }
 
 
