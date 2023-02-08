@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<readalong>
+<read-along>
     <!-- To exclude any element from alignment, add the do-not-align="true" attribute to
          it, e.g., <p do-not-align="true">...</p>, or
          <s>Some text <foo do-not-align="true">do not align this</foo> more text</s> -->
@@ -17,4 +17,4 @@
 
         </body>
     </text>
-</readalong>
+</read-along>
