@@ -610,15 +610,13 @@ describe("SoundswallowerService", () => {
   //   expect(audio).toBeDefined();
   //   const aligner = service.align$(audio!, {
   //     text_ids: "go forward ten meters",
-  //     lexicon: {
-  //       go: "G OW",
-  //       forward: "F AO R W ER D",
-  //       ten: "T EH N",
-  //       meters: "M IY T ER Z",
-  //     },
-  //     // These are both bogus and we do not care
-  //     processed_xml: "go forward ten meters",
-  //     jsgf: "go forward ten meters",
+  //     lexicon: [
+  //       ["go", "G OW"],
+  //       ["forward", "F AO R W ER D"],
+  //       ["ten", "T EH N"],
+  //       ["meters", "M IY T ER Z"],
+  //     ],
+  //     processed_ras: "go forward ten meters",
   //   });
   //   let progress = await aligner.toPromise();
   //   expect(progress!).toBeDefined();

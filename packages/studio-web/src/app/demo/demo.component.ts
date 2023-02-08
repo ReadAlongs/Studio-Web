@@ -12,7 +12,7 @@ import { B64Service } from "../b64.service";
   styleUrls: ["./demo.component.sass"],
 })
 export class DemoComponent implements OnInit {
-  @Input() b64Inputs: string[];
+  @Input() b64Inputs: [string, Document, [string, string]];
   @Input() render$: Observable<boolean>;
   @ViewChild("readalong") readalong!: Components.ReadAlong;
   slots: any = {
@@ -21,7 +21,7 @@ export class DemoComponent implements OnInit {
     pageTitle: $localize`PageTitle`,
   };
 
-  constructor(public titleService: Title, private b64Service: B64Service) {
+  constructor(public titleService: Title, public b64Service: B64Service) {
     titleService.setTitle(this.slots.pageTitle);
   }
 
@@ -33,18 +33,12 @@ export class DemoComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  async getImages(originalDoc: string) {
+  async updateImages(doc: Document): Promise<boolean> {
     const images = await this.readalong.getImages();
-    if (images) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(originalDoc, "application/xml");
-      const pages = doc.evaluate("//div[@type='page']", doc);
-      const page_nodes = [];
-      let node = pages.iterateNext();
-      while (node) {
-        page_nodes.push(node);
-        node = pages.iterateNext();
-      }
+    if (Object.keys(images).length == 0)
+      return false;
+    else {
+      const page_nodes = doc.querySelectorAll("div[type=page]");
       for (const [i, img] of Object.entries(images)) {
         let currentPage = page_nodes[parseInt(i)];
         if (currentPage && img) {
@@ -57,20 +51,14 @@ export class DemoComponent implements OnInit {
           currentPage.appendChild(graphic);
         }
       }
-      return `data:application/xml;base64,${this.b64Service.utf8_to_b64(
-        new XMLSerializer().serializeToString(doc)
-      )}`;
-    } else {
-      return false;
+      return true;
     }
   }
 
   async download() {
-    let updatedImages = await this.getImages(this.b64Inputs[4]);
-    let text = this.b64Inputs[1];
-    if (updatedImages !== false) {
-      text = updatedImages;
-    }
+    let ras = this.b64Inputs[1];
+    await this.updateImages(ras);
+    let b64ras = this.b64Service.xmlToB64(ras);
     var element = document.createElement("a");
     let blob = new Blob(
       [
@@ -80,11 +68,11 @@ export class DemoComponent implements OnInit {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
       <title>${this.slots.pageTitle}</title>
-      <link rel="stylesheet" href="${this.b64Inputs[3][1]}">
-      <script src="${this.b64Inputs[3][0]}"></script>
+      <link rel="stylesheet" href="${this.b64Inputs[2][1]}">
+      <script src="${this.b64Inputs[2][0]}"></script>
     </head>
     <body>
-        <read-along text="${text}" alignment="${this.b64Inputs[2]}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
+        <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
         <span slot="read-along-header">${this.slots.title}</span>
         <span slot="read-along-subheader">${this.slots.subtitle}</span>
         </read-along>

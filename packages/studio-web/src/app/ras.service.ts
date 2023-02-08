@@ -2,29 +2,30 @@ import { Observable } from "rxjs";
 
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { DictEntry } from "soundswallower";
 
 import { environment } from "../environments/environment";
 
 export interface ReadAlong {
-  lexicon: { [id: string]: string };
-  jsgf: string;
+  lexicon: Array<DictEntry>;
   text_ids: string;
-  processed_xml: string;
-  input?: string;
-  parsed?: string;
-  tokenized?: string;
-  g2ped?: string;
+  processed_ras: string;
+  input: string | null;
+  parsed: string | null;
+  tokenized: string | null;
+  g2ped: string | null;
 }
 
 export interface ReadAlongRequest {
-  text?: string;
-  xml?: string;
+  input?: string;
+  type?: string;
   debug?: boolean;
   text_languages: Array<string>;
 }
 
-export interface LanguageMap {
-  [id: string]: string;
+export interface SupportedLanguage {
+  code: string;
+  names: {[code: string]: string};
 }
 
 @Injectable({
@@ -36,7 +37,7 @@ export class RasService {
   assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong> {
     return this.http.post<ReadAlong>(this.baseURL + "/assemble", body);
   }
-  getLangs$(): Observable<LanguageMap> {
-    return this.http.get<LanguageMap>(this.baseURL + "/langs");
+  getLangs$(): Observable<Array<SupportedLanguage>> {
+    return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs");
   }
 }

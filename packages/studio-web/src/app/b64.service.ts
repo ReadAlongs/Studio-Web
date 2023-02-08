@@ -11,16 +11,6 @@ import { Segment } from "soundswallower";
   providedIn: "root",
 })
 export class B64Service {
-  smilTemplate = `<smil xmlns="http://www.w3.org/ns/SMIL" version="3.0">
-  <body>
-      {{#words}}
-      <par id="par-{{word}}">
-          <text src="{{text_path}}#{{word}}"/>
-          <audio src="{{audio_path}}" clipBegin="{{start}}" clipEnd="{{end}}"/>
-      </par>
-      {{/words}}
-  </body>
-</smil>`;
   JS_BUNDLE_URL =
     "https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/bundle.js";
   FONTS_BUNDLE_URL =
@@ -59,10 +49,8 @@ export class B64Service {
     );
   }
 
-  xmlStringToB64(xml: string) {
-    let parser = new DOMParser();
-    let xml_doc = parser.parseFromString(xml, "application/xml");
-    return this.utf8_to_b64(new XMLSerializer().serializeToString(xml_doc));
+  xmlToB64(xml: Document) {
+    return this.utf8_to_b64(new XMLSerializer().serializeToString(xml));
   }
 
   blobToB64(blob: any) {
@@ -72,25 +60,5 @@ export class B64Service {
       reader.onloadend = () => resolve(reader.result);
       reader.readAsDataURL(blob);
     });
-  }
-
-  alignmentToSmil(alignment: Segment, text_path: string, audio_path: string) {
-    let topLine =
-      '<smil xmlns="http://www.w3.org/ns/SMIL" version="3.0"><body>';
-    let bottomLine = "</body></smil>";
-    let noiseWords = new Set(["<sil>", "(NULL)"]);
-    if (alignment.w === undefined) throw "Missing segmentation in alignment";
-    let middle = alignment.w
-      .filter((x: Segment) => !noiseWords.has(x.t))
-      .map(
-        (x: Segment) =>
-          `<par id="par-${x.t}">
-     <text src="${text_path}#${x.t}"/>
-    <audio src="${audio_path}" clipBegin="${x.b}" clipEnd="${x.b + x.d}"/>
-    </par>`
-      );
-    return `data:application/xml;base64,${this.xmlStringToB64(
-      topLine + middle + bottomLine
-    )}`;
   }
 }

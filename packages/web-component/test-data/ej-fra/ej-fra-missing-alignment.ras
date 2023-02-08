@@ -1,12 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<TEI>
-    <!-- To exclude any element from alignment, add the do-not-align="true" attribute to
-         it, e.g., <p do-not-align="true">...</p>, or
-         <s>Some text <foo do-not-align="true">do not align this</foo> more text</s> -->
+<read-along>
     <text xml:lang="fra" id="t0">
         <body id="t0b0">
             <div type="page" id="t0b0d0">
-            <graphic url="avatar.png"/>
                 <p id="t0b0d0p0">
                     <s id="t0b0d0p0s0"><w id="t0b0d0p0s0w0">Bonjour</w>.</s>
                     <s id="t0b0d0p0s1"><w id="t0b0d0p0s1w0">Je</w> <w id="t0b0d0p0s1w1">m</w>'<w id="t0b0d0p0s1w2">appelle</w> <w id="t0b0d0p0s1w3">Éric</w> <w id="t0b0d0p0s1w4">Joanis</w>.</s>
@@ -25,4 +21,4 @@
             </div>
         </body>
     </text>
-</TEI>
+</read-along>

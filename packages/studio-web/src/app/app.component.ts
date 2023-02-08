@@ -10,6 +10,7 @@ import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatStepper } from "@angular/material/stepper";
 
 import { B64Service } from "./b64.service";
+import { createAlignedXML } from "./soundswallower.service";
 import { FileService } from "./file.service";
 import {
   audio_file_step,
@@ -35,7 +36,7 @@ export class AppComponent {
   alignment = new Subject<string>();
   text = new Subject<string>();
   audio = new Subject<string>();
-  b64Inputs$ = new Subject<string[]>();
+  b64Inputs$ = new Subject<[string, Document, [string, string]]>();
   render$ = new BehaviorSubject<boolean>(false);
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("stepper") private stepper: MatStepper;
@@ -120,18 +121,11 @@ export class AppComponent {
 
   stepChange(event: any[]) {
     if (event[0] === "aligned") {
+      const aligned_xml = createAlignedXML(event[2], event[3] as Segment);
       forkJoin([
         this.fileService.readFileAsData$(event[1]),
-        of(
-          `data:application/xml;base64,${this.b64Service.xmlStringToB64(
-            event[2]
-          )}`
-        ),
-        of(
-          this.b64Service.alignmentToSmil(event[3] as Segment, "test", "test")
-        ),
+        of(aligned_xml),
         this.b64Service.getBundle$(),
-        of(event[2]),
       ]).subscribe((x: any) => {
         this.b64Inputs$.next(x);
         this.stepper.next();

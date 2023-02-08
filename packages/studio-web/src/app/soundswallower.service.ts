@@ -33,7 +33,7 @@ export class SoundswallowerService {
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
     const text = ras["text_ids"];
     const dict = ras["lexicon"];
-    const xml = ras["processed_xml"];
+    const xml = ras["processed_ras"];
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
@@ -50,9 +50,7 @@ export class SoundswallowerService {
         .initialize()
         .then(async () => {
           // Not async but we have to initialize() first, so...
-          const words: Array<DictEntry> = [];
-          for (const name in dict) words.push([name, dict[name]]);
-          decoder.add_words(...words);
+          decoder.add_words(...dict);
           decoder.set_align_text(text);
           decoder.start();
           const channel_data = audio.getChannelData(0);
@@ -100,4 +98,24 @@ export class SoundswallowerService {
       };
     });
   }
+}
+
+export function createAlignedXML(
+  xmlText: string,
+  alignment: Segment
+): Document {
+  if (alignment.w === undefined) throw "Missing segmentation in alignment";
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlText, "text/xml");
+  const word_times: { [id: string]: [number, number] } = {};
+  for (const { t, b, d } of alignment.w) word_times[t] = [b, d];
+  for (const w of Array.from(xml.querySelectorAll("w[id]"))) {
+    const word_id = w.getAttribute("id");
+    if (word_id !== null && word_id in word_times) {
+      const [b, d] = word_times[word_id];
+      w.setAttribute("time", "" + b);
+      w.setAttribute("dur", "" + d);
+    }
+  }
+  return xml;
 }

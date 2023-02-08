@@ -47,7 +47,8 @@ describe("RasService", () => {
   it("should be able to reach the assemble endpoint", () => {
     service
       .assembleReadalong$({
-        text: "hej verden",
+        input: "hej verden",
+        type: "text/plain",
         text_languages: ["dan", "und"],
         debug: true,
       })

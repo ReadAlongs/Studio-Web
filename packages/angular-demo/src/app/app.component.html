@@ -1,4 +1,4 @@
-<read-along *ngIf="!hidden" #readalong [language]="language" text="assets/ej-fra.xml" alignment="assets/ej-fra.smil" audio="assets/ej-fra.m4a"></read-along>
+<read-along *ngIf="!hidden" #readalong [language]="language" href="assets/ej-fra.ras" audio="assets/ej-fra.m4a"></read-along>
 <button (click)="changeLanguage()">change language</button>
 <button (click)="changeTheme()">change theme</button>
 <button (click)="toggleHidden()"><span *ngIf="hidden">Show</span><span *ngIf="!hidden">Hide</span></button>

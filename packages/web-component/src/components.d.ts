@@ -9,11 +9,7 @@ import { InterfaceLanguage, ReadAlongMode } from "./index.ds";
 export namespace Components {
     interface ReadAlong {
         /**
-          * The alignment as SMIL
-         */
-        "alignment": string;
-        /**
-          * The audio file
+          * URL of the audio file
          */
         "audio": string;
         /**
@@ -28,6 +24,10 @@ export namespace Components {
           * Get Images
          */
         "getImages": () => Promise<object>;
+        /**
+          * URL of the aligned text as readalong XML
+         */
+        "href": string;
         /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
@@ -44,10 +44,6 @@ export namespace Components {
           * Overlay This is an SVG overlay to place over the progress bar
          */
         "svgOverlay": string;
-        /**
-          * The text as TEI
-         */
-        "text": string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
@@ -72,17 +68,17 @@ declare global {
 declare namespace LocalJSX {
     interface ReadAlong {
         /**
-          * The alignment as SMIL
-         */
-        "alignment"?: string;
-        /**
-          * The audio file
+          * URL of the audio file
          */
         "audio"?: string;
         /**
           * Optional custom Stylesheet to override defaults
          */
         "cssUrl"?: string;
+        /**
+          * URL of the aligned text as readalong XML
+         */
+        "href"?: string;
         /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
@@ -99,10 +95,6 @@ declare namespace LocalJSX {
           * Overlay This is an SVG overlay to place over the progress bar
          */
         "svgOverlay"?: string;
-        /**
-          * The text as TEI
-         */
-        "text"?: string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
