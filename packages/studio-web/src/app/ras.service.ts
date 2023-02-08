@@ -10,10 +10,10 @@ export interface ReadAlong {
   lexicon: Array<DictEntry>;
   text_ids: string;
   processed_ras: string;
-  input?: string;
-  parsed?: string;
-  tokenized?: string;
-  g2ped?: string;
+  input: string | null;
+  parsed: string | null;
+  tokenized: string | null;
+  g2ped: string | null;
 }
 
 export interface ReadAlongRequest {
