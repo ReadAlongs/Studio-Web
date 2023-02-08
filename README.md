@@ -138,6 +138,10 @@ Run the prepublish step for web-component:
 
     nx prepublish web-component
 
+Run the bundler for single-file html exports:
+
+    nx bundle web-component
+
 Then, go to the directory and publish:
 
     cd dist/packages/web-component && npm publish --access=public
