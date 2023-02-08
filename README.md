@@ -24,13 +24,9 @@ repository. You also should only run commands from the root of the repo. See gui
 
 ### Cloning
 
-First clone the repo:
+Clone the repo:
 
     git clone git@github.com:ReadAlongs/Web-Component.git
-
-Then clone the submodule:
-
-    cd Web-Component && git submodule update --init 
 
 ### Installing dependencies
 
@@ -40,6 +36,7 @@ First, make sure Nx is installed:
 
 Then,
 
+    cd Web-Component
     npm install
 
 ### Serving/Development
