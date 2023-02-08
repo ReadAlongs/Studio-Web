@@ -6,6 +6,8 @@ import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
 
+import { compress } from "image-conversion";
+
 @Component({
   selector: "app-demo",
   templateUrl: "./demo.component.html",
@@ -45,6 +47,7 @@ export class DemoComponent implements OnInit {
           let graphic = doc.createElement("graphic");
           // @ts-ignore
           let blob = await fetch(img).then((r) => r.blob());
+          blob = await compress(blob, 0.75);
           let b64 = await this.b64Service.blobToB64(blob);
           // @ts-ignore
           graphic.setAttribute("url", b64);
