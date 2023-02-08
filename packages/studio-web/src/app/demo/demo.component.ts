@@ -72,7 +72,7 @@ export class DemoComponent implements OnInit {
       <script src="${this.b64Inputs[2][0]}"></script>
     </head>
     <body>
-        <read-along href="data:application/xml;base64,${b64ras}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
+        <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
         <span slot="read-along-header">${this.slots.title}</span>
         <span slot="read-along-subheader">${this.slots.subtitle}</span>
         </read-along>

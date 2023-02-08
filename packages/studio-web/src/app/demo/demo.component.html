@@ -21,7 +21,7 @@
 
         <div class="row" *ngIf="b64Inputs">
             <read-along #readalong *ngIf="render$ | async" mode="EDIT"
-                        href="data:application/xml;base64,{{b64Service.xmlToB64(b64Inputs[1])}}"
+                        href="data:application/readalong+xml;base64,{{b64Service.xmlToB64(b64Inputs[1])}}"
                         audio="{{b64Inputs[0]}}" class="hydrated">
                 <input #title [(ngModel)]="slots.title" [ngStyle]="{'width.ch': slots.title.length, 'min-width.ch': 20}" style="border:none" placeholder="Enter your title here" slot="read-along-header" />
                 <input #subtitle [(ngModel)]="slots.subtitle" [ngStyle]="{'width.ch': slots.subtitle.length, 'min-width.ch': 20}" style="border:none" placeholder="Enter your subtitle here" slot="read-along-subheader" />
