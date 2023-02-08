@@ -25,14 +25,14 @@ export class ReadAlongComponent {
    ************/
 
   /**
-   * The aligned text as readalong XML
+   * URL of the aligned text as readalong XML
    */
-  @Prop() readalong: string;
+  @Prop() href: string;
 
   processed_alignment: Alignment;
 
   /**
-   * The audio file
+   * URL of the audio file
    */
   @Prop() audio: string;
 
@@ -719,7 +719,7 @@ export class ReadAlongComponent {
     }
 
     // Parse the text to be displayed
-    this.parsed_text = await parseRAS(this.readalong)
+    this.parsed_text = await parseRAS(this.href)
     this.images = {}
 
     for (const [i, page] of this.parsed_text.entries()) {

@@ -9,7 +9,7 @@ import { InterfaceLanguage, ReadAlongMode } from "./index.ds";
 export namespace Components {
     interface ReadAlong {
         /**
-          * The audio file
+          * URL of the audio file
          */
         "audio": string;
         /**
@@ -25,6 +25,10 @@ export namespace Components {
          */
         "getImages": () => Promise<object>;
         /**
+          * URL of the aligned text as readalong XML
+         */
+        "href": string;
+        /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
         "language": InterfaceLanguage;
@@ -36,10 +40,6 @@ export namespace Components {
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
          */
         "pageScrolling": "horizontal" | "vertical";
-        /**
-          * The aligned text as readalong XML
-         */
-        "readalong": string;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
@@ -68,13 +68,17 @@ declare global {
 declare namespace LocalJSX {
     interface ReadAlong {
         /**
-          * The audio file
+          * URL of the audio file
          */
         "audio"?: string;
         /**
           * Optional custom Stylesheet to override defaults
          */
         "cssUrl"?: string;
+        /**
+          * URL of the aligned text as readalong XML
+         */
+        "href"?: string;
         /**
           * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
          */
@@ -87,10 +91,6 @@ declare namespace LocalJSX {
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
          */
         "pageScrolling"?: "horizontal" | "vertical";
-        /**
-          * The aligned text as readalong XML
-         */
-        "readalong"?: string;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */

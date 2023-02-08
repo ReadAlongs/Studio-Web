@@ -9,12 +9,11 @@
 
     <body>
         <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
-        <read-along use-assets-folder="false" readalong="ej-fra-translated.xml" audio="ej-fra.m4a" language="fra">
+        <read-along use-assets-folder="false" href="ej-fra-translated.xml" audio="ej-fra.m4a" language="fra">
             <span slot="read-along-header">With Translation</span>
         </read-along>
     </body>
 
     <!-- The last step needed is to import the package -->
-    <!-- Note that you will probably have to change 3333 to whatever port `npm serve-test-data` ends up listening on, sorry. -->
     <script type="module" src='//127.0.0.1:3333/build/web-component.esm.js'></script>
 </html>
