@@ -48,8 +48,8 @@ You can either modify the `/src/index.html` or after running `npm start` you can
 the following script import in your own `index.html` page:
 
 ```html 
-  <script type="module" src="https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/read-along/web-component.esm.js"></script>
-  <script nomodule src="https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/read-along/read-along.js"></script>
+  <script type="module" src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/web-component.esm.js"></script>
+  <script nomodule src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/read-along.js"></script>
 ```
 
 Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>`
@@ -63,7 +63,7 @@ using _________ service located here: ____________.
 
 ## Loading as a single file
 
-By default, Stencil (the tool used to build this web component) uses lazy loading. However, some use cases for this web component might involve running the component as a single file, without access to the internet. A single-file script of this web component is therefore made available at https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/bundle.js although we recommend using the default imports using the unpkg content delivery network (cdn) described above.
+By default, Stencil (the tool used to build this web component) uses lazy loading. However, some use cases for this web component might involve running the component as a single file, without access to the internet. A single-file script of this web component is therefore made available at https://unpkg.com/@readalongs/web-component@^0.2.1/dist/bundle.js although we recommend using the default imports using the unpkg content delivery network (cdn) described above.
 
 ## Theming
 
