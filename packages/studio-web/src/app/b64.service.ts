@@ -12,9 +12,9 @@ import { Segment } from "soundswallower";
 })
 export class B64Service {
   JS_BUNDLE_URL =
-    "https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/bundle.js";
+    "https://unpkg.com/@readalongs/web-component@^0.2.1/dist/bundle.js";
   FONTS_BUNDLE_URL =
-    "https://unpkg.com/@roedoejet/readalong@^0.1.6/dist/fonts.b64.css";
+    "https://unpkg.com/@readalongs/web-component@^0.2.1/dist/fonts.b64.css";
   constructor(private http: HttpClient, private fileService: FileService) {}
   getBundle$(): Observable<any[]> {
     return forkJoin([
