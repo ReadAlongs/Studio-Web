@@ -49,8 +49,7 @@ export function extractAlignment(parsed_text: Array<Page>): Alignment {
   let alignment = {};
   for (const page of parsed_text) {
     for (const p of page.paragraphs) {
-      const words = Array.from(p.getElementsByTagName("w"));
-      for (const w of words) {
+      for (const w of Array.from(p.querySelectorAll("w[time][dur]"))) {
         const time = w.getAttribute("time");
         const dur = w.getAttribute("dur");
         if (time !== null && dur !== null)

@@ -109,7 +109,7 @@ export function createAlignedXML(
   const xml = parser.parseFromString(xmlText, "text/xml");
   const word_times: { [id: string]: [number, number] } = {};
   for (const { t, b, d } of alignment.w) word_times[t] = [b, d];
-  for (const w of Array.from(xml.getElementsByTagName("w"))) {
+  for (const w of Array.from(xml.querySelectorAll("w[id]"))) {
     const word_id = w.getAttribute("id");
     if (word_id !== null && word_id in word_times) {
       const [b, d] = word_times[word_id];
