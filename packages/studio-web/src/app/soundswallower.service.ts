@@ -33,7 +33,7 @@ export class SoundswallowerService {
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
     const text = ras["text_ids"];
     const dict = ras["lexicon"];
-    const xml = ras["processed_xml"];
+    const xml = ras["processed_ras"];
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
@@ -50,9 +50,7 @@ export class SoundswallowerService {
         .initialize()
         .then(async () => {
           // Not async but we have to initialize() first, so...
-          const words: Array<DictEntry> = [];
-          for (const name in dict) words.push([name, dict[name]]);
-          decoder.add_words(...words);
+          decoder.add_words(...dict);
           decoder.set_align_text(text);
           decoder.start();
           const channel_data = audio.getChannelData(0);

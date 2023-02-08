@@ -15,7 +15,7 @@ import {
   RasService,
   ReadAlong,
   ReadAlongRequest,
-  LanguageMap,
+  SupportedLanguage,
 } from "../ras.service";
 import {
   SoundswallowerService,
@@ -30,9 +30,9 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
 })
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
-    map((langs: LanguageMap) =>
-      Object.entries(langs).map(([lang_code, lang_name]) => {
-        return { id: lang_code, name: lang_name };
+    map((langs: Array<SupportedLanguage>) =>
+      langs.map((lang) => {
+        return { id: lang.code, name: lang.names["_"] };
       })
     )
   );
@@ -212,13 +212,17 @@ export class UploadComponent implements OnInit {
       this.loading = true;
       this.progressMode = "query";
       // Determine text type for API request
-      const text_is_xml =
-        this.inputMethod.text === "upload" &&
+      let input_type;
+      if (this.inputMethod.text === "upload" &&
         (this.textControl.value.name.toLowerCase().endsWith(".xml") ||
-          this.textControl.value.name.toLowerCase().endsWith(".ras"));
-      // Create request (have to set text later...)
+          this.textControl.value.name.toLowerCase().endsWith(".ras")))
+        input_type = "application/readalong+xml";
+      else
+        input_type = "text/plain";
+      // Create request (text is possibly read from a file later...)
       let body: ReadAlongRequest = {
         text_languages: [this.langControl.value as string, "und"],
+        type: input_type,
       };
       forkJoin({
         audio: this.audioService.loadAudioBufferFromFile$(
@@ -226,11 +230,8 @@ export class UploadComponent implements OnInit {
           8000
         ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
-          // WTF RxJS, why does the type get lost here?!?!?!?!
-          // See https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
           switchMap((text: string): Observable<ReadAlong> => {
-            if (text_is_xml) body.xml = text;
-            else body.text = text;
+            body.input = text;
             this.progressMode = "determinate";
             this.progressValue = 0;
             return this.rasService.assembleReadalong$(body);
@@ -239,7 +240,8 @@ export class UploadComponent implements OnInit {
       })
         .pipe(
           switchMap(({ audio, ras }) =>
-            // FIXME: see WTF above
+            // We can't give the arguments types because RxJS is broken somehow,
+            // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
             this.ssjsService.align$(audio, ras as ReadAlong)
           )
         )
