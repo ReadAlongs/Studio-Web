@@ -176,7 +176,7 @@ This work would not have been possible without the many collaborators who shared
 
 ### Northeastern University collaboration
 
-Several groups of students in the Foundations of Software Enginering course at Northeastern University have contributed to this project, first in sprint 2022 under Michael Running Wolf and then in fall 2022 under Yvonne Cody. We are very grateful for all groups' hard work and contributions, prototypes and ideas. The students involved were: Siqi Chen, Kwok Keung Chung, Koon Kit Kong, He Yang, Yuzhe Shen, Rui Wang, Zirui Wang, Xuehan Yi, Zhenjie Zhou, Yongxiang Chen, Yun Feng, Xiaotong Guan, Mengdi Wei.
+Several groups of students in the Foundations of Software Enginering course at Northeastern University have contributed to this project, first in sprint 2022 under Michael Running Wolf and then in fall 2022 under Yvonne Coady. We are very grateful for all groups' hard work and contributions, prototypes and ideas. The students involved were: Siqi Chen, Kwok Keung Chung, Koon Kit Kong, He Yang, Yuzhe Shen, Rui Wang, Zirui Wang, Xuehan Yi, Zhenjie Zhou, Yongxiang Chen, Yun Feng, Xiaotong Guan, Mengdi Wei.
 
 ## Citing
 
