@@ -1,6 +1,6 @@
 import {Howl} from 'howler';
 import {BehaviorSubject, Subject} from 'rxjs';
-import {Alignment, Page} from "../index.ds";
+import {Alignment, Page} from "../index.d";
 
 
 /**

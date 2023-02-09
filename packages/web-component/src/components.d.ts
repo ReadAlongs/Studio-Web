@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { InterfaceLanguage, ReadAlongMode } from "./index.ds";
+import { InterfaceLanguage, ReadAlongMode } from "./index.d";
 export namespace Components {
     interface ReadAlong {
         /**
