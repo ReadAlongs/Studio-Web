@@ -44,6 +44,7 @@ export class DemoComponent implements OnInit {
       // represents all translation nodes that have already been added
       const translation_node_ids = Array.from(doc.querySelectorAll(".sentence__translation")).map((t_node) => t_node.id)
       sentence_nodes.forEach((sentence: HTMLElement) => {
+        // Add a translation
         if (sentence.id in translations && translation_node_ids.indexOf(sentence.id) < 0) {
           let newSentence = document.createElement('s')
           newSentence.setAttribute('do-not-align', "true")
@@ -53,6 +54,12 @@ export class DemoComponent implements OnInit {
           newSentence.innerText = translations[sentence.id]
           sentence.insertAdjacentElement('afterend', newSentence)
         }
+        // Remove a translation
+        if (sentence.id in translations && translations[sentence.id] === null && translation_node_ids.indexOf(sentence.id) > -1) {
+          let elementToRemove = doc.querySelector(`#${sentence.id}.sentence__translation`)
+          elementToRemove?.remove()
+        }
+
       })
       return true
     }

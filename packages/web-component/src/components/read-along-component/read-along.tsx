@@ -105,8 +105,8 @@ export class ReadAlongComponent {
   dropAreas;
   current_page;
   hasTextTranslations: boolean = false;
-  @State() images: object;
-  @State() translations: object;
+  @State() images: {[key: string]: string | null};
+  @State() translations: {[key: string]: string | null};
   assetsStatus = {
     'AUDIO': LOADING,
     'XML': LOADING,
@@ -1057,38 +1057,35 @@ export class ReadAlongComponent {
    *
    * A sentence element with one or more words
    */
-  Sentence = (props: { sentenceData: any | null }): Element => {
+  Sentence = (props: { sentenceData: Element }): Element => {
     let words: ChildNode[] = Array.from(props.sentenceData.childNodes)
-    let attributes: NamedNodeMap = props.sentenceData.attributes
     let sentenceID: string = props.sentenceData.id
-    if (!this.hasTextTranslations && attributes["class"]) {
-      this.hasTextTranslations = attributes["class"].value.match("translation") != null;
+    if ((!this.hasTextTranslations) && props.sentenceData.hasAttribute('class')) {
+      this.hasTextTranslations = /translation/.test(props.sentenceData.getAttribute('class'));
     }
     let nodeProps = {};
-    if (attributes && attributes['xml:lang']) {
-
-      nodeProps['lang'] = attributes['xml:lang'].value
+    if (props.sentenceData.hasAttribute("xml:lang")) {
+      nodeProps['lang'] = props.sentenceData.getAttribute('xml:lang')
     }
-    if (attributes && attributes['lang']) {
-
-      nodeProps['lang'] = attributes['lang'].value
+    if (props.sentenceData.hasAttribute("lang")) {
+      nodeProps['lang'] = props.sentenceData.getAttribute('lang')
     }
 
     return <div {...nodeProps}
-      class={'sentence' + " " + (attributes["class"] ? attributes["class"].value : "")}>
+      class={'sentence' + " " + props.sentenceData.getAttribute('class')}>
       {
         /* Here are the Word and NonWordText children */
         words.map((child: Element, c) => {
 
           if (child.nodeName === '#text') {
             return <this.NonWordText text={child.textContent} attributes={child.attributes}
-              id={(attributes["id"] ? attributes["id"].value : "P") + 'text' + c} />
+              id={(props.sentenceData.hasAttribute('id') ? props.sentenceData.getAttribute('id') : "P") + 'text' + c} />
           } else if (child.nodeName === 'w') {
             return <this.Word text={child.textContent} id={child['id']} attributes={child.attributes} />
           } else if (child) {
             let cnodeProps = {};
-            if (child.attributes['xml:lang']) cnodeProps['lang'] = attributes['xml:lang'].value
-            if (child.attributes['lang']) cnodeProps['lang'] = attributes['lang'].value
+            if (child.hasAttribute('xml:lang')) cnodeProps['lang'] = props.sentenceData.getAttribute('xml:lang')
+            if (child.hasAttribute('lang')) cnodeProps['lang'] = props.sentenceData.getAttribute('lang')
             return <span {...cnodeProps} class={'sentence__text theme--' + this.theme + (' ' + child.className)}
               id={child.id ? child.id : 'text_' + c}>{child.textContent}</span>
           }
