@@ -106,6 +106,7 @@ export class ReadAlongComponent {
   current_page;
   hasTextTranslations: boolean = false;
   @State() images: object;
+  @State() translations: object;
   assetsStatus = {
     'AUDIO': LOADING,
     'XML': LOADING,
@@ -452,6 +453,14 @@ export class ReadAlongComponent {
   }
 
   /**
+  * Get Translations
+  */
+  @Method()
+  async getTranslations(): Promise<object> {
+    return this.translations
+  }
+
+  /**
    * Change theme
    */
   @Method()
@@ -721,7 +730,7 @@ export class ReadAlongComponent {
     // Parse the text to be displayed
     this.parsed_text = await parseRAS(this.href)
     this.images = {}
-
+    this.translations = {}
     for (const [i, page] of this.parsed_text.entries()) {
       if ('img' in page) {
         this.images[i] = page.img
@@ -845,6 +854,18 @@ export class ReadAlongComponent {
       "loading": {
         "eng": "Loading...",
         "fra": "Chargement en cours"
+      },
+      "add-line": {
+        "eng": "Add line",
+        "fra": "Ajouter une ligne" 
+      },
+      "remove-line": {
+        "eng": "Remove line",
+        "fra": "Suprimer la ligne" 
+      },
+      "line-placeholder": {
+        "eng": "Type your text here",
+        "fra": "Écrivez votre texte ici" 
       }
     }
     if (translations[word])
@@ -855,6 +876,28 @@ export class ReadAlongComponent {
   /**********
    *  EDIT  *
    **********/
+
+
+  addLine(sentence_element: Element){
+    if (!this.hasTextTranslations) {
+      this.hasTextTranslations = true
+    }
+    let newTranslation = {}
+    
+    newTranslation[sentence_element.id] = ""
+    this.translations = {...this.translations, ...newTranslation}
+  }
+
+  removeLine(sentence_element: Element){
+    
+    let newTranslation = {}
+    newTranslation[sentence_element.id] = null
+    this.translations = {...this.translations, ...newTranslation}
+  }
+
+  updateTranslation(sentence_id: string, text: string) {
+    this.translations[sentence_id] = text
+  }
 
   async handleFiles(event: any, props) {
     // const reader = new FileReader()
@@ -1003,7 +1046,7 @@ export class ReadAlongComponent {
         /* Here are the Sentence children */
         props.sentences.map((sentence: Element) =>
           (sentence.childNodes.length > 0) &&
-          <this.Sentence words={Array.from(sentence.childNodes)} attributes={sentence.attributes} />)
+          <this.Sentence sentenceData={sentence} />)
       }
     </div>
 
@@ -1014,40 +1057,59 @@ export class ReadAlongComponent {
    *
    * A sentence element with one or more words
    */
-  Sentence = (props: { words: Node[], attributes: NamedNodeMap }): Element => {
-    if (!this.hasTextTranslations && props.attributes["class"]) {
-      this.hasTextTranslations = props.attributes["class"].value.match("translation") != null;
+  Sentence = (props: { sentenceData: any | null }): Element => {
+    let words: ChildNode[] = Array.from(props.sentenceData.childNodes)
+    let attributes: NamedNodeMap = props.sentenceData.attributes
+    let sentenceID: string = props.sentenceData.id
+    if (!this.hasTextTranslations && attributes["class"]) {
+      this.hasTextTranslations = attributes["class"].value.match("translation") != null;
     }
     let nodeProps = {};
-    if (props.attributes && props.attributes['xml:lang']) {
+    if (attributes && attributes['xml:lang']) {
 
-      nodeProps['lang'] = props.attributes['xml:lang'].value
+      nodeProps['lang'] = attributes['xml:lang'].value
     }
-    if (props.attributes && props.attributes['lang']) {
+    if (attributes && attributes['lang']) {
 
-      nodeProps['lang'] = props.attributes['lang'].value
+      nodeProps['lang'] = attributes['lang'].value
     }
 
     return <div {...nodeProps}
-      class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
+      class={'sentence' + " " + (attributes["class"] ? attributes["class"].value : "")}>
       {
         /* Here are the Word and NonWordText children */
-        props.words.map((child: Element, c) => {
+        words.map((child: Element, c) => {
 
           if (child.nodeName === '#text') {
             return <this.NonWordText text={child.textContent} attributes={child.attributes}
-              id={(props.attributes["id"] ? props.attributes["id"].value : "P") + 'text' + c} />
+              id={(attributes["id"] ? attributes["id"].value : "P") + 'text' + c} />
           } else if (child.nodeName === 'w') {
             return <this.Word text={child.textContent} id={child['id']} attributes={child.attributes} />
           } else if (child) {
             let cnodeProps = {};
-            if (child.attributes['xml:lang']) cnodeProps['lang'] = props.attributes['xml:lang'].value
-            if (child.attributes['lang']) cnodeProps['lang'] = props.attributes['lang'].value
+            if (child.attributes['xml:lang']) cnodeProps['lang'] = attributes['xml:lang'].value
+            if (child.attributes['lang']) cnodeProps['lang'] = attributes['lang'].value
             return <span {...cnodeProps} class={'sentence__text theme--' + this.theme + (' ' + child.className)}
               id={child.id ? child.id : 'text_' + c}>{child.textContent}</span>
           }
         })
       }
+      {(() => {
+       if (this.mode === 'EDIT') {
+          if (sentenceID in this.translations && sentenceID in this.translations && this.translations[sentenceID] !== null) {
+            return <span class="sentence__translation">
+              <button data-cy="remove-translation-button" onClick={() => this.removeLine(props.sentenceData)}>{this.returnTranslation('remove-line', this.language)}</button>
+              <p data-cy="translation-line" class="sentence__text" onInput={(e: any) => {this.updateTranslation(sentenceID, e.currentTarget.innerText)}} contentEditable data-placeholder={this.returnTranslation('line-placeholder', this.language)}></p>
+              </span>
+          } else {
+            return <button data-cy="add-translation-button" class="sentence__translation" onClick={() => this.addLine(props.sentenceData)}>{this.returnTranslation('add-line', this.language)}</button>
+          }
+        }
+       else {
+          return null
+       }
+   })()
+   }
     </div>
   }
 

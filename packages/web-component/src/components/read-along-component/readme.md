@@ -42,6 +42,16 @@ Type: `Promise<object>`
 
 
 
+### `getTranslations() => Promise<object>`
+
+Get Translations
+
+#### Returns
+
+Type: `Promise<object>`
+
+
+
 
 ----------------------------------------------
 

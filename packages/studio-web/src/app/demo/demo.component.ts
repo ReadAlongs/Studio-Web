@@ -35,6 +35,29 @@ export class DemoComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  async updateTranslations(doc: Document): Promise<boolean> {
+    const translations: any = await this.readalong.getTranslations();
+    if (Object.keys(translations).length == 0) {
+      return false;
+    } else {
+      const sentence_nodes = doc.querySelectorAll("s")
+      // represents all translation nodes that have already been added
+      const translation_node_ids = Array.from(doc.querySelectorAll(".sentence__translation")).map((t_node) => t_node.id)
+      sentence_nodes.forEach((sentence: HTMLElement) => {
+        if (sentence.id in translations && translation_node_ids.indexOf(sentence.id) < 0) {
+          let newSentence = document.createElement('s')
+          newSentence.setAttribute('do-not-align', "true")
+          newSentence.setAttribute("id", sentence.id)
+          newSentence.setAttribute("class", "sentence__translation")
+          newSentence.setAttribute("xml:lang", "eng")
+          newSentence.innerText = translations[sentence.id]
+          sentence.insertAdjacentElement('afterend', newSentence)
+        }
+      })
+      return true
+    }
+  }
+
   async updateImages(doc: Document): Promise<boolean> {
     const images = await this.readalong.getImages();
     if (Object.keys(images).length == 0)
@@ -61,6 +84,7 @@ export class DemoComponent implements OnInit {
   async download() {
     let ras = this.b64Inputs[1];
     await this.updateImages(ras);
+    await this.updateTranslations(ras);
     let b64ras = this.b64Service.xmlToB64(ras);
     var element = document.createElement("a");
     let blob = new Blob(
