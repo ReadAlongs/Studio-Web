@@ -62,7 +62,7 @@ export class UploadComponent implements OnInit {
     audio: "mic",
     text: "edit",
   };
-  textInput: any;
+  textInput: string = "";
   constructor(
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
