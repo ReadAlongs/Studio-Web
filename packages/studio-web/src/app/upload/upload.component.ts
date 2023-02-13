@@ -31,8 +31,14 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
     map((langs: Array<SupportedLanguage>) =>
-      langs.map((lang) => {
+      langs
+      .map((lang) => {
         return { id: lang.code, name: lang.names["_"] };
+      })
+      .sort((a, b) => {
+        if (a.name < b.name) return -1;
+        if (a.name > b.name) return 1;
+        return 0;
       })
     )
   );
