@@ -44,7 +44,7 @@
                     </div>
                     <div class="row">
                         <mat-form-field class="col-12 p-0 b-0">
-                          <textarea (input)="handleTextInput($event)" id="textInput" class="border rounded b-0 p-0 bg-light"
+                          <textarea [(ngModel)]="textInput" id="textInput" class="border rounded b-0 p-0 bg-light"
                                     matInput i18n-placeholder="Example input text" placeholder="Ex. Hello my name is..."></textarea>
                         </mat-form-field>
                     </div>

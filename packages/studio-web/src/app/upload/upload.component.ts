@@ -125,10 +125,6 @@ export class UploadComponent implements OnInit {
     this.dialog.open(TextFormatDialogComponent);
   }
 
-  handleTextInput(event: any) {
-    this.textInput = event.target.value;
-  }
-
   startRecording() {
     this.recording = true;
     this.microphoneService.startRecording();
