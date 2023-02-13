@@ -165,12 +165,21 @@ export class UploadComponent implements OnInit {
     this.microphoneService
       .stopRecording()
       .then((output) => {
-        this.toastr.success(
-          $localize`Audio was successfully recorded`,
-          $localize`Yay!`
-        );
-        this.audioControl.setValue(output as Blob);
-        // do post output steps
+        //console.log("recording output", output)
+        if (output) {
+          this.toastr.success(
+            $localize`Audio was successfully recorded`,
+            $localize`Yay!`
+          );
+          this.audioControl.setValue(output as Blob);
+          // do post output steps
+        } else {
+          this.toastr.error(
+            $localize`Please try again, or select a pre-recorded file.`,
+            $localize`Audio not recorded!`
+          )
+        }
+        //console.log("done stopRecording", this.audioControl)
       })
       .catch((errorCase) => {
         this.toastr.error(
