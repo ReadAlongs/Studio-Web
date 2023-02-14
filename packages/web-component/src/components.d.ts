@@ -21,6 +21,10 @@ export namespace Components {
          */
         "cssUrl"?: string;
         /**
+          * Show text translation  on at load time
+         */
+        "displayTranslation": boolean;
+        /**
           * Get Images
          */
         "getImages": () => Promise<object>;
@@ -79,6 +83,10 @@ declare namespace LocalJSX {
           * Optional custom Stylesheet to override defaults
          */
         "cssUrl"?: string;
+        /**
+          * Show text translation  on at load time
+         */
+        "displayTranslation"?: boolean;
         /**
           * URL of the aligned text as readalong XML
          */
