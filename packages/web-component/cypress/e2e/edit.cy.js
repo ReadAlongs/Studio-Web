@@ -18,8 +18,8 @@ context("The Readalong Component", () => {
             // Check translation line was added
             cy.get('[data-cy=translation-line]').should('have.length', 1);
             // Check you can type into the new translation line
-            cy.get('[data-cy=translation-line]').type('this is a test')
-            // Create a new translation line with the last sentence
+            cy.get('[data-cy=translation-line]').type('this is a test', { force: true })
+                // Create a new translation line with the last sentence
             cy.get('[data-cy=add-translation-button]').last().click();
             // Check it was added
             cy.get('[data-cy=translation-line]').should('have.length', 2);

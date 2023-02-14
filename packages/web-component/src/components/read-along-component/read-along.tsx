@@ -107,6 +107,7 @@ export class ReadAlongComponent {
   hasTextTranslations: boolean = false;
   @State() images: {[key: string]: string | null};
   @State() translations: {[key: string]: string | null};
+  latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders 
   assetsStatus = {
     'AUDIO': LOADING,
     'XML': LOADING,
@@ -743,6 +744,15 @@ export class ReadAlongComponent {
 
   }
 
+  componentDidRender() {
+    if (this.latestTranslation){
+      // Add focus to the latest translation line that was added
+      let newLine: HTMLElement = this.el.shadowRoot.querySelector(this.latestTranslation)
+      newLine.focus()
+      this.latestTranslation = ""
+    }
+  }
+
   /**
    * Lifecycle hook: after component loads, build the Sprite and parse the files necessary.
    * Then subscribe to the _reading$ Subject in order to update CSS styles when new element
@@ -886,6 +896,7 @@ export class ReadAlongComponent {
     
     newTranslation[sentence_element.id] = ""
     this.translations = {...this.translations, ...newTranslation}
+    this.latestTranslation = "#" + sentence_element.id + "translation"
   }
 
   removeLine(sentence_element: Element){
@@ -1072,7 +1083,7 @@ export class ReadAlongComponent {
     }
 
     return <div {...nodeProps}
-      class={'sentence' + " " + props.sentenceData.getAttribute('class')}>
+      class={'sentence' + " " + (props.sentenceData.hasAttribute('class') ? props.sentenceData.getAttribute('class') : "")}>
       {
         /* Here are the Word and NonWordText children */
         words.map((child: Element, c) => {
@@ -1092,11 +1103,11 @@ export class ReadAlongComponent {
         })
       }
       {(() => {
-       if (this.mode === 'EDIT') {
+       if (this.mode === 'EDIT' && !/translation/.test(props.sentenceData.getAttribute('class'))) {
           if (sentenceID in this.translations && sentenceID in this.translations && this.translations[sentenceID] !== null) {
             return <span class="sentence__translation">
               <button data-cy="remove-translation-button" onClick={() => this.removeLine(props.sentenceData)}>{this.returnTranslation('remove-line', this.language)}</button>
-              <p data-cy="translation-line" class="sentence__text" onInput={(e: any) => {this.updateTranslation(sentenceID, e.currentTarget.innerText)}} contentEditable data-placeholder={this.returnTranslation('line-placeholder', this.language)}></p>
+              <p id={sentenceID + "translation"} data-cy="translation-line" class="sentence__text" onInput={(e: any) => {this.updateTranslation(sentenceID, e.currentTarget.innerText)}} contentEditable onKeyDown={(event) => { if(event.key == 'Enter') event.preventDefault();}} data-placeholder={this.returnTranslation('line-placeholder', this.language)}></p>
               </span>
           } else {
             return <button data-cy="add-translation-button" class="sentence__translation" onClick={() => this.addLine(props.sentenceData)}>{this.returnTranslation('add-line', this.language)}</button>

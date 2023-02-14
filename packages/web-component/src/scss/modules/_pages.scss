@@ -127,6 +127,8 @@ $max-height: 98vh;
     }
     &__text {
         @extend %basic-text;
+        font-size: 1.5em;
+        padding: 0;
         @extend %themed-text;
     }
     &__word {
