@@ -48,6 +48,7 @@ export class UploadComponent implements OnInit {
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   recording = false;
   playing = false;
+  player: any = null;
   progressMode: ProgressBarMode = "indeterminate";
   progressValue = 0;
 
@@ -146,14 +147,20 @@ export class UploadComponent implements OnInit {
   playRecording() {
     if (!this.playing && this.audioControl.value !== null) {
       let player = new window.Audio();
+      this.player = player
       player.src = URL.createObjectURL(this.audioControl.value);
-      player.onended = () => {
-        this.playing = false;
-      };
+      player.onended = () => this.stopPlayback();
+      player.onerror = () => this.stopPlayback();
       player.load();
       this.playing = true;
       player.play();
     }
+  }
+
+  stopPlayback() {
+    this.playing = false;
+    this.player?.pause();
+    this.player = null;
   }
 
   deleteRecording() {

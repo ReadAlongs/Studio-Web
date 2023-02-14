@@ -89,9 +89,13 @@
                 </div>
                 <div class="row">
                   <div class="col-12 col-lg-4">
-                    <button i18n="Audio play button" class="audioControl" [color]="playing ? 'warn' : 'primary'" (click)="playRecording()" *ngIf="!recording && audioControl.value !== null" mat-button color="primary" aria-label="Play button">
+                    <button i18n="Audio play button" class="audioControl" (click)="playRecording()" *ngIf="!recording && audioControl.value !== null && !playing" mat-button color="primary" aria-label="Play button">
                       <mat-icon class="mat-icon-lg">play_circle</mat-icon>
                       Play
+                    </button>
+                    <button i18n="Audio stop button" class="audioControl" color="warn" (click)="stopPlayback()" *ngIf="!recording && audioControl.value !== null && playing" mat-button aria-label="Stop button">
+                      <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
+                      Stop
                     </button>
                   </div>
                   <div class="col-12 col-lg-4">
