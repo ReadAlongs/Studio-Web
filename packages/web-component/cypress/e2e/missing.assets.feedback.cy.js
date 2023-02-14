@@ -1,12 +1,6 @@
 context("Readalong Component with missing assets", () => {
-  /**
-   * Wait for the audio and the RAS to load.
-   */
-  const EXPECTED_LOADING_TIME = 2000; // ms
-
   it("missing text warning show show successfully", () => {
     cy.visit("/ej-fra/index-missing-xml.html");
-    //cy.wait(EXPECTED_LOADING_TIME);
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
@@ -28,7 +22,6 @@ context("Readalong Component with missing assets", () => {
 
   it("parsing text warning should show successfully", () => {
     cy.visit("/ej-fra/index-malformed-xml.html");
-    //cy.wait(EXPECTED_LOADING_TIME);
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
@@ -49,7 +42,6 @@ context("Readalong Component with missing assets", () => {
 
   it("missing audio warning should show successfully", () => {
     cy.visit("/ej-fra/index-missing-audio.html");
-    //cy.wait(EXPECTED_LOADING_TIME);
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
@@ -69,7 +61,6 @@ context("Readalong Component with missing assets", () => {
 
   it("missing alignment warning should show successfully", () => {
     cy.visit("/ej-fra/index-missing-alignment.html");
-    cy.wait(EXPECTED_LOADING_TIME);
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
@@ -89,7 +80,6 @@ context("Readalong Component with missing assets", () => {
 
   it("should only show missing audio and ras when everything is missing", () => {
     cy.visit("/ej-fra/index-missing-everything.html");
-    cy.wait(EXPECTED_LOADING_TIME);
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
