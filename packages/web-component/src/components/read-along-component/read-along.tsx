@@ -149,7 +149,7 @@ export class ReadAlongComponent {
     return path;
 
     function looksLikeRelativePath(path: string): boolean {
-      return !(/^(https?:[/]|assets)[/]\b/).test(path);
+      return !(/^(https?:[/][/]|assets[/]|data:)/).test(path);
     }
   }
 
