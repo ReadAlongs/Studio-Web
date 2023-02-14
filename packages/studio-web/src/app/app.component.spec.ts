@@ -6,7 +6,7 @@ import {
   HttpTestingController,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 
@@ -23,6 +23,7 @@ describe("AppComponent", () => {
       imports: [
         RouterTestingModule,
         ReactiveFormsModule,
+        FormsModule,
         BrowserAnimationsModule,
         MaterialModule,
         ToastrModule.forRoot(),

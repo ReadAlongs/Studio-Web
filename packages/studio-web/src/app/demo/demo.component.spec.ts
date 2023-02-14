@@ -9,6 +9,7 @@ import { By } from "@angular/platform-browser";
 
 import { MaterialModule } from "../material.module";
 import { DemoComponent } from "./demo.component";
+import { FormsModule } from "@angular/forms";
 
 // ==== check create or not and default value =====
 describe("DemoComponent", () => {
@@ -17,7 +18,7 @@ describe("DemoComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MaterialModule],
+      imports: [HttpClientTestingModule, FormsModule, MaterialModule],
       declarations: [DemoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
