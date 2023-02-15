@@ -1,3 +1,11 @@
+[contenteditable][data-placeholder]:empty:before {
+    content: attr(data-placeholder);
+    position: absolute;
+    color: gray;
+    cursor: text;
+    background-color: transparent;
+}
+
 .drop-area {
     border: 2px dashed #ccc;
     border-radius: 20px;

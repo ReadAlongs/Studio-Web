@@ -212,4 +212,22 @@ Sprite.prototype = {
   }
 };
 
+export async function isFileAvailable(url) {
+  return new Promise(function (resolve, _) {
+      let xhr = new XMLHttpRequest();
+      xhr.open("HEAD", url);
+      xhr.onload = function () {
+          if (this.status >= 200 && this.status < 300) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+      };
+      xhr.onerror = function () {
+          resolve(false)
+      };
+      xhr.send();
+  });
+}
+
 

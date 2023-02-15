@@ -25,6 +25,10 @@ export namespace Components {
          */
         "getImages": () => Promise<object>;
         /**
+          * Get Translations
+         */
+        "getTranslations": () => Promise<object>;
+        /**
           * URL of the aligned text as readalong XML
          */
         "href": string;

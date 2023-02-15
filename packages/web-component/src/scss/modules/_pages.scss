@@ -127,6 +127,8 @@ $max-height: 98vh;
     }
     &__text {
         @extend %basic-text;
+        font-size: 1.5em;
+        padding: 0;
         @extend %themed-text;
     }
     &__word {
@@ -146,6 +148,12 @@ $max-height: 98vh;
         color: #777;
         font-style: italic;
         font-size: 95%;
+    }
+    &__translation__button {
+        margin-left: 10px;
+        i {
+            font-size: medium;
+        }
     }
     .paragraph.visually_aligned .sentence &__text,
     .paragraph.visually_aligned .sentence &__word {

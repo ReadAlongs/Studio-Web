@@ -4,7 +4,7 @@ import {distinctUntilChanged} from 'rxjs/operators';
 
 import {Component, Element, h, Listen, Method, Prop, State} from '@stencil/core';
 
-import {parseRAS, Sprite, extractAlignment} from '../../utils/utils';
+import {parseRAS, Sprite, extractAlignment, isFileAvailable } from '../../utils/utils';
 import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.d";
 
 const LOADING = 0;
@@ -111,7 +111,9 @@ export class ReadAlongComponent {
   dropAreas;
   current_page;
   hasTextTranslations: boolean = false;
-  @State() images: object;
+  @State() images: {[key: string]: string | null};
+  @State() translations: {[key: string]: string | null};
+  latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders 
   assetsStatus: ASSETS_STATUS = {
     'AUDIO': LOADING,
     'RAS': LOADING,
@@ -471,6 +473,14 @@ export class ReadAlongComponent {
   }
 
   /**
+  * Get Translations
+  */
+  @Method()
+  async getTranslations(): Promise<object> {
+    return this.translations
+  }
+
+  /**
    * Change theme
    */
   @Method()
@@ -730,18 +740,35 @@ export class ReadAlongComponent {
       this.assetsStatus.RAS = ERROR_PARSING
     } else {
       this.images = {}
-      for (const [i, page] of this.parsed_text.entries()) {
-        if ('img' in page) {
-          this.images[i] = page.img
-        } else {
-          this.images[i] = null
+    this.translations = {}
+    for (const [i, page] of this.parsed_text.entries()) {
+      if ('img' in page) {
+        var imageURL = this.urlTransform(page.img)
+        this.images[i] = this.urlTransform(page.img)
+        if ((/^(https?:[/]|assets)[/]\b/).test(imageURL)) {
+          let isAvailable = await isFileAvailable(imageURL)
+          if (!isAvailable) {
+            this.images[i] = null
+          }
         }
+      } else {
+        this.images[i] = null
       }
+    }
       // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
 
       this.assetsStatus.RAS = LOADED
     }
     this.hasLoaded += 1
+  }
+
+  componentDidRender() {
+    if (this.latestTranslation){
+      // Add focus to the latest translation line that was added
+      let newLine: HTMLElement = this.el.shadowRoot.querySelector(this.latestTranslation)
+      newLine.focus()
+      this.latestTranslation = ""
+    }
   }
 
   /**
@@ -865,6 +892,10 @@ export class ReadAlongComponent {
         "eng": "Loading...",
         "fra": "Chargement en cours"
       },
+      "line-placeholder": {
+        "eng": "Type your text here",
+        "fra": "Écrivez votre texte ici" 
+      }
     }
     if (translations[word] && translations[word][lang])
       return translations[word][lang]
@@ -875,19 +906,38 @@ export class ReadAlongComponent {
    *  EDIT  *
    **********/
 
-  async handleFiles(event: any, props) {
+
+  addLine(sentence_element: Element){
+    if (!this.hasTextTranslations) {
+      this.hasTextTranslations = true
+    }
+    let newTranslation = {}
+    
+    newTranslation[sentence_element.id] = ""
+    this.translations = {...this.translations, ...newTranslation}
+    this.latestTranslation = "#" + sentence_element.id + "translation"
+  }
+
+  removeLine(sentence_element: Element){
+    
+    let newTranslation = {}
+    newTranslation[sentence_element.id] = null
+    this.translations = {...this.translations, ...newTranslation}
+  }
+
+  updateTranslation(sentence_id: string, text: string) {
+    this.translations[sentence_id] = text
+  }
+
+  async handleFiles(event: any, pageIndex: number) {
     // const reader = new FileReader()
     let imageURL = URL.createObjectURL(event)
-    let pageIndex = this.parsed_text.map((page: Page) => page.id).indexOf(props.pageData.id)
-    props.pageData.img = imageURL
     let newImage = {}
     newImage[pageIndex] = imageURL
     this.images = {...this.images, ...newImage}  // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
-  deleteImage(props){
-    let pageIndex = this.parsed_text.map((page: Page) => page.id).indexOf(props.pageData.id)
-    delete props.pageData.img
+  deleteImage(pageIndex: number){
     let newImage = {}
     newImage[pageIndex] = null
     this.images = {...this.images, ...newImage}  // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
@@ -919,10 +969,10 @@ export class ReadAlongComponent {
    *
    * @param props
    */
-  RemoveImg = (props: { pageData: Page }): Element => {
+  RemoveImg = (props: { pageIndex: number }): Element => {
     return (<button data-cy="delete-button" aria-label="Delete"
     title="Delete image"
-    onClick={() => this.deleteImage(props)}
+    onClick={() => this.deleteImage(props.pageIndex)}
     id="img-remover"
     class={"ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">delete</i>
@@ -934,19 +984,19 @@ export class ReadAlongComponent {
    *
    * @param props
    */
-  Img = (props: { url: string }): Element => {
+  Img = (props: { imgURL: string }): Element => {
     return (<div class={"image__container page__col__image theme--" + this.theme}>
-      <img alt={"image"} class="image" src={this.urlTransform(props.url)} />
+      <img alt={"image"} class="image" src={props.imgURL} />
     </div>)
   }
 
-  ImgPlaceHolder = (props: { pageData: Page }): Element => {
+  ImgPlaceHolder = (props: { pageID: string, pageIndex: number }): Element => {
     return (<div class={"image__container page__col__image theme--" + this.theme}>
       <div class='drop-area'>
         <form class="my-form">
           <p class={"theme--" + this.theme}>Upload an image for this page with the file dialog below</p>
-          <input type="file" class='fileElem' id={"fileElem--" + props.pageData.id} accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props)} />
-          <label class="button" htmlFor={"fileElem--" + props.pageData.id}>Select some files</label>
+          <input type="file" class='fileElem' id={"fileElem--" + props.pageID} accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props.pageIndex)} />
+          <label class="button" htmlFor={"fileElem--" + props.pageID}>Select some files</label>
         </form>
       </div>
 
@@ -970,6 +1020,22 @@ export class ReadAlongComponent {
       <span data-cy="page-count__total">{props.pgCount}</span>
     </div>
 
+
+  ImgContainer = (props: {pageIndex: number, pageID: string}): Element =>
+  <div class="image__container">
+    <span id="image-container">
+    {
+      this.mode === "EDIT" && (props.pageIndex in this.images && this.images[props.pageIndex] !== null) ? <this.RemoveImg pageIndex={props.pageIndex}/> : null
+    }
+    { /* Display an Img if it exists on the page */
+      (props.pageIndex in this.images && this.images[props.pageIndex] !== null) ? <this.Img imgURL={this.images[props.pageIndex]} /> : null
+    }
+    </span>
+    {
+      this.mode === "EDIT" && !(props.pageIndex in this.images && this.images[props.pageIndex] !== null) ? <this.ImgPlaceHolder pageID={props.pageID} pageIndex={props.pageIndex} /> : null
+    }
+  </div>
+
   /**
    * Page element
    *
@@ -986,17 +1052,7 @@ export class ReadAlongComponent {
         this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length}
           currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
       }
-      <span id="image-container">
-      {
-        this.mode === "EDIT" && props.pageData.img ? <this.RemoveImg pageData={props.pageData}/> : null
-      }
-      { /* Display an Img if it exists on the page */
-        props.pageData.img ? <this.Img url={props.pageData.img} /> : null
-      }
-      </span>
-      {
-        this.mode === "EDIT" && !props.pageData.img ? <this.ImgPlaceHolder pageData={props.pageData} /> : null
-      }
+      <this.ImgContainer pageID={props.pageData.id} pageIndex={this.parsed_text.indexOf(props.pageData)}></this.ImgContainer>
       <div class={"page__col__text paragraph__container theme--" + this.theme}>
         { /* Here are the Paragraph children */
           props.pageData.paragraphs.map((paragraph: Element) => {
@@ -1022,7 +1078,7 @@ export class ReadAlongComponent {
         /* Here are the Sentence children */
         props.sentences.map((sentence: Element) =>
           (sentence.childNodes.length > 0) &&
-          <this.Sentence words={Array.from(sentence.childNodes)} attributes={sentence.attributes} />)
+          <this.Sentence sentenceData={sentence} />)
       }
     </div>
 
@@ -1033,40 +1089,56 @@ export class ReadAlongComponent {
    *
    * A sentence element with one or more words
    */
-  Sentence = (props: { words: Node[], attributes: NamedNodeMap }): Element => {
-    if (!this.hasTextTranslations && props.attributes["class"]) {
-      this.hasTextTranslations = props.attributes["class"].value.match("translation") != null;
+  Sentence = (props: { sentenceData: Element }): Element => {
+    let words: ChildNode[] = Array.from(props.sentenceData.childNodes)
+    let sentenceID: string = props.sentenceData.id
+    if ((!this.hasTextTranslations) && props.sentenceData.hasAttribute('class')) {
+      this.hasTextTranslations = /translation/.test(props.sentenceData.getAttribute('class'));
     }
     let nodeProps = {};
-    if (props.attributes && props.attributes['xml:lang']) {
-
-      nodeProps['lang'] = props.attributes['xml:lang'].value
+    if (props.sentenceData.hasAttribute("xml:lang")) {
+      nodeProps['lang'] = props.sentenceData.getAttribute('xml:lang')
     }
-    if (props.attributes && props.attributes['lang']) {
-
-      nodeProps['lang'] = props.attributes['lang'].value
+    if (props.sentenceData.hasAttribute("lang")) {
+      nodeProps['lang'] = props.sentenceData.getAttribute('lang')
     }
 
     return <div {...nodeProps}
-      class={'sentence' + " " + (props.attributes["class"] ? props.attributes["class"].value : "")}>
+      class={'sentence' + " " + (props.sentenceData.hasAttribute('class') ? props.sentenceData.getAttribute('class') : "")}>
       {
         /* Here are the Word and NonWordText children */
-        props.words.map((child: Element, c) => {
+        words.map((child: Element, c) => {
 
           if (child.nodeName === '#text') {
             return <this.NonWordText text={child.textContent} attributes={child.attributes}
-              id={(props.attributes["id"] ? props.attributes["id"].value : "P") + 'text' + c} />
+              id={(props.sentenceData.hasAttribute('id') ? props.sentenceData.getAttribute('id') : "P") + 'text' + c} />
           } else if (child.nodeName === 'w') {
             return <this.Word text={child.textContent} id={child['id']} attributes={child.attributes} />
           } else if (child) {
             let cnodeProps = {};
-            if (child.attributes['xml:lang']) cnodeProps['lang'] = props.attributes['xml:lang'].value
-            if (child.attributes['lang']) cnodeProps['lang'] = props.attributes['lang'].value
+            if (child.hasAttribute('xml:lang')) cnodeProps['lang'] = props.sentenceData.getAttribute('xml:lang')
+            if (child.hasAttribute('lang')) cnodeProps['lang'] = props.sentenceData.getAttribute('lang')
             return <span {...cnodeProps} class={'sentence__text theme--' + this.theme + (' ' + child.className)}
               id={child.id ? child.id : 'text_' + c}>{child.textContent}</span>
           }
         })
       }
+      {(() => {
+       if (this.mode === 'EDIT' && !/translation/.test(props.sentenceData.getAttribute('class'))) {
+          if (sentenceID in this.translations && sentenceID in this.translations && this.translations[sentenceID] !== null) {
+            return <span class="sentence__translation">
+              <button title="Remove translation" aria-label="Remove translation" data-cy="remove-translation-button" onClick={() => this.removeLine(props.sentenceData)} class="sentence__translation__button remove"><i class="material-icons">remove</i></button>
+              <p id={sentenceID + "translation"} data-cy="translation-line" class="sentence__text editable__translation" onInput={(e: any) => {this.updateTranslation(sentenceID, e.currentTarget.innerText)}} contentEditable onKeyDown={(event) => { if(event.key == 'Enter') event.preventDefault();}} data-placeholder={this.returnTranslation('line-placeholder', this.language)}></p>
+              </span>
+          } else {
+            return <button title="Add a translation, transliteration or gloss" aria-label="Add translation" data-cy="add-translation-button" class="sentence__translation sentence__translation__button" onClick={() => this.addLine(props.sentenceData)}><i class="material-icons">add</i></button>
+          }
+        }
+       else {
+          return null
+       }
+   })()
+   }
     </div>
   }
 
