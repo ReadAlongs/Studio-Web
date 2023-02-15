@@ -99,7 +99,13 @@ export class ReadAlongComponent {
   /**
    * Show text translation  on at load time
    */
-  @Prop() displayTranslation = true
+  @Prop() displayTranslation = true;
+
+  /**
+   * Control the range of the playback rate: narrow (default, 85%-115% range),
+   * or medium (75%-125% range)
+   */
+  @Prop() playbackRateRange: "narrow" | "medium" = "narrow";
 
   /************
    *  STATES  *
@@ -1228,8 +1234,18 @@ export class ReadAlongComponent {
   PlaybackSpeedControl = (): Element => <div>
     <h5
       class={"control-panel__buttons__header color--" + this.theme}>{this.returnTranslation('speed', this.language)}</h5>
-    <input type="range" min="75" max="125" value={this.playback_rate * 100} class="slider control-panel__control"
-      id="myRange" onInput={(v) => this.changePlayback(v)} />
+    <input
+      type="range"
+      min={this.playbackRateRange === "medium" ? 75 : 90}
+      max={this.playbackRateRange === "medium" ? 125 : 110}
+      value={this.playback_rate * 100}
+      class="slider control-panel__control"
+      id="myRange"
+      onInput={(v) => {
+        console.log("v", v)
+        this.changePlayback(v)
+      }}
+    />;
   </div>
 
   StyleControl = (): Element => <button aria-label="Change theme" onClick={() => this.changeTheme()}

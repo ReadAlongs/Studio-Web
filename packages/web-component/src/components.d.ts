@@ -49,6 +49,10 @@ export namespace Components {
          */
         "pageScrolling": "horizontal" | "vertical";
         /**
+          * Control the range of the playback rate: narrow (default, 85%-115% range), or medium (75%-125% range)
+         */
+        "playbackRateRange": "narrow" | "medium";
+        /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
          */
         "scrollBehaviour": "smooth" | "auto";
@@ -107,6 +111,10 @@ declare namespace LocalJSX {
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
          */
         "pageScrolling"?: "horizontal" | "vertical";
+        /**
+          * Control the range of the playback rate: narrow (default, 85%-115% range), or medium (75%-125% range)
+         */
+        "playbackRateRange"?: "narrow" | "medium";
         /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
          */
