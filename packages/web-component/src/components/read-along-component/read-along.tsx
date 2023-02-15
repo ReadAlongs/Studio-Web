@@ -89,6 +89,11 @@ export class ReadAlongComponent {
    */
   @Prop() mode: ReadAlongMode = "VIEW";
 
+  /**
+   * Show text translation  on at load time
+   */
+  @Prop() displayTranslation = true
+
   /************
    *  STATES  *
    ************/
@@ -358,7 +363,6 @@ export class ReadAlongComponent {
   toggleTextTranslation(): void {
     this.el.shadowRoot.querySelectorAll('.translation').forEach(translation => translation.classList.toggle('invisible'))
     this.el.shadowRoot.querySelectorAll('.sentence__translation').forEach(translation => translation.classList.toggle('invisible'))
-
   }
 
   /*************
@@ -762,15 +766,6 @@ export class ReadAlongComponent {
     this.hasLoaded += 1
   }
 
-  componentDidRender() {
-    if (this.latestTranslation){
-      // Add focus to the latest translation line that was added
-      let newLine: HTMLElement = this.el.shadowRoot.querySelector(this.latestTranslation)
-      newLine.focus()
-      this.latestTranslation = ""
-    }
-  }
-
   /**
    * Lifecycle hook: after component loads, build the Sprite and parse the files necessary.
    * Then subscribe to the _reading$ Subject in order to update CSS styles when new element
@@ -844,6 +839,21 @@ export class ReadAlongComponent {
       this.assetsStatus.AUDIO = ERROR_LOADING;
     });
     this.audio_howl_sprites.load();
+  }
+
+  componentDidRender(): void {
+    //if creator does not want the translation to show at load time
+    if (!this.displayTranslation && this.parsed_text && this.parsed_text.length > 0) {
+      this.toggleTextTranslation();
+      this.displayTranslation = true
+    }
+
+    if (this.latestTranslation){
+      // Add focus to the latest translation line that was added
+      let newLine: HTMLElement = this.el.shadowRoot.querySelector(this.latestTranslation)
+      newLine.focus()
+      this.latestTranslation = ""
+    }
   }
 
   /**********
