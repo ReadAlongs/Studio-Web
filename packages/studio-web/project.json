@@ -64,7 +64,26 @@
         },
         "fr": {
           "localize": ["fr"],
-          "deleteOutputPath": false
+          "deleteOutputPath": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/studio-web/src/environments/environment.ts",
+              "with": "packages/studio-web/src/environments/environment.prod.ts"
+            }
+          ],
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "2mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
         },
         "development": {
           "buildOptimizer": false,
