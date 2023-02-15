@@ -63,7 +63,8 @@
           "localize": ["en"]
         },
         "fr": {
-          "localize": ["fr"]
+          "localize": ["fr"],
+          "deleteOutputPath": false
         },
         "development": {
           "buildOptimizer": false,
