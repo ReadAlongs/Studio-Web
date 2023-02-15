@@ -4,7 +4,7 @@ import {distinctUntilChanged} from 'rxjs/operators';
 
 import {Component, Element, h, Listen, Method, Prop, State} from '@stencil/core';
 
-import {parseRAS, Sprite, extractAlignment} from '../../utils/utils';
+import {parseRAS, Sprite, extractAlignment, isFileAvailable } from '../../utils/utils';
 import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.ds";
 
 const LOADING = 0;
@@ -734,7 +734,14 @@ export class ReadAlongComponent {
     this.translations = {}
     for (const [i, page] of this.parsed_text.entries()) {
       if ('img' in page) {
-        this.images[i] = page.img
+        var imageURL = this.urlTransform(page.img)
+        this.images[i] = this.urlTransform(page.img)
+        if ((/^(https?:[/]|assets)[/]\b/).test(imageURL)) {
+          let isAvailable = await isFileAvailable(imageURL)
+          if (!isAvailable) {
+            delete this.images[i]
+          }
+        }
       } else {
         this.images[i] = null
       }
@@ -910,19 +917,15 @@ export class ReadAlongComponent {
     this.translations[sentence_id] = text
   }
 
-  async handleFiles(event: any, props) {
+  async handleFiles(event: any, pageIndex: number) {
     // const reader = new FileReader()
     let imageURL = URL.createObjectURL(event)
-    let pageIndex = this.parsed_text.map((page: Page) => page.id).indexOf(props.pageData.id)
-    props.pageData.img = imageURL
     let newImage = {}
     newImage[pageIndex] = imageURL
     this.images = {...this.images, ...newImage}  // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
-  deleteImage(props){
-    let pageIndex = this.parsed_text.map((page: Page) => page.id).indexOf(props.pageData.id)
-    delete props.pageData.img
+  deleteImage(pageIndex: number){
     let newImage = {}
     newImage[pageIndex] = null
     this.images = {...this.images, ...newImage}  // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
@@ -954,10 +957,10 @@ export class ReadAlongComponent {
    *
    * @param props
    */
-  RemoveImg = (props: { pageData: Page }): Element => {
+  RemoveImg = (props: { pageIndex: number }): Element => {
     return (<button data-cy="delete-button" aria-label="Delete"
     title="Delete image"
-    onClick={() => this.deleteImage(props)}
+    onClick={() => this.deleteImage(props.pageIndex)}
     id="img-remover"
     class={"ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">delete</i>
@@ -969,19 +972,19 @@ export class ReadAlongComponent {
    *
    * @param props
    */
-  Img = (props: { url: string }): Element => {
+  Img = (props: { imgURL: string }): Element => {
     return (<div class={"image__container page__col__image theme--" + this.theme}>
-      <img alt={"image"} class="image" src={this.urlTransform(props.url)} />
+      <img alt={"image"} class="image" src={props.imgURL} />
     </div>)
   }
 
-  ImgPlaceHolder = (props: { pageData: Page }): Element => {
+  ImgPlaceHolder = (props: { pageID: string, pageIndex: number }): Element => {
     return (<div class={"image__container page__col__image theme--" + this.theme}>
       <div class='drop-area'>
         <form class="my-form">
           <p class={"theme--" + this.theme}>Upload an image for this page with the file dialog below</p>
-          <input type="file" class='fileElem' id={"fileElem--" + props.pageData.id} accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props)} />
-          <label class="button" htmlFor={"fileElem--" + props.pageData.id}>Select some files</label>
+          <input type="file" class='fileElem' id={"fileElem--" + props.pageID} accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props.pageIndex)} />
+          <label class="button" htmlFor={"fileElem--" + props.pageID}>Select some files</label>
         </form>
       </div>
 
@@ -1005,6 +1008,22 @@ export class ReadAlongComponent {
       <span data-cy="page-count__total">{props.pgCount}</span>
     </div>
 
+
+  ImgContainer = (props: {pageIndex: number, pageID: string}): Element =>
+  <div class="image__container">
+    <span id="image-container">
+    {
+      this.mode === "EDIT" && (props.pageIndex in this.images && this.images[props.pageIndex] !== null) ? <this.RemoveImg pageIndex={props.pageIndex}/> : null
+    }
+    { /* Display an Img if it exists on the page */
+      (props.pageIndex in this.images && this.images[props.pageIndex] !== null) ? <this.Img imgURL={this.images[props.pageIndex]} /> : null
+    }
+    </span>
+    {
+      this.mode === "EDIT" && !(props.pageIndex in this.images && this.images[props.pageIndex] !== null) ? <this.ImgPlaceHolder pageID={props.pageID} pageIndex={props.pageIndex} /> : null
+    }
+  </div>
+
   /**
    * Page element
    *
@@ -1021,17 +1040,7 @@ export class ReadAlongComponent {
         this.parsed_text.length > 1 ? <this.PageCount pgCount={this.parsed_text.length}
           currentPage={this.parsed_text.indexOf(props.pageData) + 1} /> : null
       }
-      <span id="image-container">
-      {
-        this.mode === "EDIT" && props.pageData.img ? <this.RemoveImg pageData={props.pageData}/> : null
-      }
-      { /* Display an Img if it exists on the page */
-        props.pageData.img ? <this.Img url={props.pageData.img} /> : null
-      }
-      </span>
-      {
-        this.mode === "EDIT" && !props.pageData.img ? <this.ImgPlaceHolder pageData={props.pageData} /> : null
-      }
+      <this.ImgContainer pageID={props.pageData.id} pageIndex={this.parsed_text.indexOf(props.pageData)}></this.ImgContainer>
       <div class={"page__col__text paragraph__container theme--" + this.theme}>
         { /* Here are the Paragraph children */
           props.pageData.paragraphs.map((paragraph: Element) => {
@@ -1107,7 +1116,7 @@ export class ReadAlongComponent {
           if (sentenceID in this.translations && sentenceID in this.translations && this.translations[sentenceID] !== null) {
             return <span class="sentence__translation">
               <button data-cy="remove-translation-button" onClick={() => this.removeLine(props.sentenceData)}>{this.returnTranslation('remove-line', this.language)}</button>
-              <p id={sentenceID + "translation"} data-cy="translation-line" class="sentence__text" onInput={(e: any) => {this.updateTranslation(sentenceID, e.currentTarget.innerText)}} contentEditable onKeyDown={(event) => { if(event.key == 'Enter') event.preventDefault();}} data-placeholder={this.returnTranslation('line-placeholder', this.language)}></p>
+              <p id={sentenceID + "translation"} data-cy="translation-line" class="sentence__text editable__translation" onInput={(e: any) => {this.updateTranslation(sentenceID, e.currentTarget.innerText)}} contentEditable onKeyDown={(event) => { if(event.key == 'Enter') event.preventDefault();}} data-placeholder={this.returnTranslation('line-placeholder', this.language)}></p>
               </span>
           } else {
             return <button data-cy="add-translation-button" class="sentence__translation" onClick={() => this.addLine(props.sentenceData)}>{this.returnTranslation('add-line', this.language)}</button>
