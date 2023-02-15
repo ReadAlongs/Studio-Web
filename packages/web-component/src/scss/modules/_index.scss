@@ -62,12 +62,12 @@
   transition: visibility 5s height 5s;
 
 }
-.alert.status-1 {
+.alert.status-success {
   color: #0f5132;
   background-color: #d1e7dd;
   border-color: #badbcc;
 }
-.alert.status-2 {
+.alert.status-error {
   color: #842029;
   background-color: #f8d7da;
   border-color: #f5c2c7;

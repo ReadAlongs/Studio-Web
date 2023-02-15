@@ -22,7 +22,7 @@ export async function parseRAS(path: string): Promise<Array<Page>> {
   let response = await fetch(path);
   if (!response.ok) {
     console.log(`fetch(${path}) failed with status ${response.status}`);
-    return [];
+    return null;
   }
   let xmlDocument = await response.text();
   let parser = new DOMParser();
