@@ -40,16 +40,16 @@ export class DemoComponent implements OnInit {
     if (Object.keys(translations).length == 0) {
       return false;
     } else {
-      const sentence_nodes = doc.querySelectorAll("s")
+      const sentence_nodes = doc.querySelectorAll("s:not(.sentence__translation)")
       // represents all translation nodes that have already been added
-      const translation_node_ids = Array.from(doc.querySelectorAll(".sentence__translation")).map((t_node) => t_node.id)
-      sentence_nodes.forEach((sentence: HTMLElement) => {
+      const translation_node_ids = Array.from(doc.querySelectorAll(".editable__translation")).map((t_node) => t_node.id)
+      sentence_nodes.forEach((sentence: Element) => {
         // Add a translation
         if (sentence.id in translations && translation_node_ids.indexOf(sentence.id) < 0) {
           let newSentence = document.createElement('s')
           newSentence.setAttribute('do-not-align', "true")
           newSentence.setAttribute("id", sentence.id)
-          newSentence.setAttribute("class", "sentence__translation")
+          newSentence.setAttribute("class", "sentence__translation editable__translation")
           newSentence.setAttribute("xml:lang", "eng")
           newSentence.innerText = translations[sentence.id]
           sentence.insertAdjacentElement('afterend', newSentence)
