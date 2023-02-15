@@ -833,7 +833,12 @@ export class ReadAlongComponent {
    * @param path (optional) the path/file/href the error message applies to
    * @param assetType (optional) type of assert the error message applies to
    */
-  returnTranslation(word: string, lang?: InterfaceLanguage, path?: string, assetType?: string): string {
+  returnTranslation(
+    word: string,
+    lang?: InterfaceLanguage,
+    path?: string,
+    assetType?: string
+  ): string {
     if (lang === undefined) lang = this.language;
     let translations: { [message: string]: Translation } = {
       "speed": {
@@ -1152,7 +1157,11 @@ export class ReadAlongComponent {
     <i class="material-icons-outlined">subtitles</i>
   </button>
 
-  ErrorMessage = (props: {msg: string, data_cy: string}): Element => <p data-cy={props.data_cy} class="alert status-error"><span class="material-icons">error_outline_outlined</span> {props.msg}</p>
+  ErrorMessage = (props: { msg: string; data_cy: string }): Element => (
+    <p data-cy={props.data_cy} class="alert status-error">
+      <span class="material-icons">error_outline_outlined</span> {props.msg}
+    </p>
+  );
 
   ControlPanel = (): Element => <div data-cy="control-panel"
     class={"control-panel theme--" + this.theme + " background--" + this.theme}>
@@ -1192,18 +1201,40 @@ export class ReadAlongComponent {
           let code = asset[1]
             if ( code === ERROR_PARSING ) {
               let path = this.getPathFromAssetType(assetType)
-              return <this.ErrorMessage msg={this.returnTranslation("parse-error", this.language, path, assetType)} data_cy={assetType + "-error"}/>
+              return (
+                <this.ErrorMessage
+                  msg={this.returnTranslation(
+                    "parse-error",
+                    this.language,
+                    path,
+                    assetType
+                  )}
+                  data_cy={assetType + "-error"}
+                />
+              );
             };
             if ( code === ERROR_LOADING ) {
-              let path = this.getPathFromAssetType(assetType)              
-              return <this.ErrorMessage msg={this.returnTranslation("loading-error", this.language, path, assetType)} data_cy={assetType + "-error"}/>
+              let path = this.getPathFromAssetType(assetType)
+              return (
+                <this.ErrorMessage
+                  msg={this.returnTranslation(
+                    "loading-error",
+                    this.language,
+                    path,
+                    assetType
+                  )}
+                  data_cy={assetType + "-error"}
+                />
+              );
             };
         })}
 
-        {
-          this.alignment_failed && this.assetsStatus.RAS === LOADED &&
-          <this.ErrorMessage msg={this.returnTranslation("alignment-error", this.language)} data_cy="alignment-error"/>
-        }
+        {this.alignment_failed && this.assetsStatus.RAS === LOADED && (
+          <this.ErrorMessage
+            msg={this.returnTranslation("alignment-error", this.language)}
+            data_cy="alignment-error"
+          />
+        )}
 
         <div data-cy="text-container" class={"pages__container theme--" + this.theme + " " + this.pageScrolling}>
           {this.showGuide ? <this.Guide /> : null}
@@ -1221,7 +1252,9 @@ export class ReadAlongComponent {
           </div>}
         {this.assetsStatus.AUDIO == LOADED && <this.ControlPanel />}
 
-        {this.cssUrl && this.cssUrl.match(".css") != null && <link href={this.cssUrl} rel="stylesheet" />}
+        {this.cssUrl && this.cssUrl.match(".css") != null && (
+          <link href={this.cssUrl} rel="stylesheet" />)
+        }
       </div>
 
     )

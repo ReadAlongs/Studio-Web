@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <read-along>
-    <!--this xml is intentionally modified to simulate someone making a mistake with the expected format of this file-->
+    <!--this xml is intentionally malformed XML to simulate someone making a
+    mistake with the expected format of this file, or passing in bad XML-->
     <text xml:lang="fra" id="t0">
         <body id="t0b0">
 	    <!-- divs should have been div -->
