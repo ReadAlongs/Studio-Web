@@ -39,7 +39,10 @@ export class RasService {
     return this.http.post<ReadAlong>(this.baseURL + "/assemble", body).pipe(
       catchError((err: HttpErrorResponse) => { this.toastr.error(
         err.message,
-        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`
+        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+        {
+          timeOut: 60000,
+        }
       ); return of(err)} )
     );
   }
@@ -47,7 +50,10 @@ export class RasService {
     return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs").pipe(
       catchError((err: HttpErrorResponse) => { this.toastr.error(
         err.message,
-        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`
+        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+        {
+          timeOut: 60000,
+        }
       ); return of(err)} )
     );;
   }
