@@ -49,6 +49,10 @@ export namespace Components {
          */
         "pageScrolling": "horizontal" | "vertical";
         /**
+          * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
+         */
+        "scrollBehaviour": "smooth" | "auto";
+        /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
         "svgOverlay": string;
@@ -103,6 +107,10 @@ declare namespace LocalJSX {
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
          */
         "pageScrolling"?: "horizontal" | "vertical";
+        /**
+          * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
+         */
+        "scrollBehaviour"?: "smooth" | "auto";
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
