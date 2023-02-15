@@ -5,11 +5,17 @@ import {distinctUntilChanged} from 'rxjs/operators';
 import {Component, Element, h, Listen, Method, Prop, State} from '@stencil/core';
 
 import {parseRAS, Sprite, extractAlignment, isFileAvailable } from '../../utils/utils';
-import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.ds";
+import {Alignment, Page, InterfaceLanguage, ReadAlongMode, Translation} from "../../index.d";
 
 const LOADING = 0;
 const LOADED = 1;
-const ERROR_LOADING = 2;
+const ERROR_PARSING = 2;
+const ERROR_LOADING = 3;
+
+interface ASSETS_STATUS {
+  AUDIO: number;
+  RAS: number;
+}
 
 @Component({
   tag: 'read-along',
@@ -98,7 +104,7 @@ export class ReadAlongComponent {
   @State() fullscreen: boolean = false;
 
   @State() autoScroll: boolean = true;
-  @State() isLoaded: boolean = false;
+  @State() hasLoaded: number = 0;
   showGuide: boolean = false;
 
   parsed_text;
@@ -108,9 +114,9 @@ export class ReadAlongComponent {
   @State() images: {[key: string]: string | null};
   @State() translations: {[key: string]: string | null};
   latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders 
-  assetsStatus = {
+  assetsStatus: ASSETS_STATUS = {
     'AUDIO': LOADING,
-    'XML': LOADING,
+    'RAS': LOADING,
   };
   alignment_failed: boolean = false;
 
@@ -151,7 +157,7 @@ export class ReadAlongComponent {
     return path;
 
     function looksLikeRelativePath(path: string): boolean {
-      return !(/^(https?:[/]|assets)[/]\b/).test(path);
+      return !(/^(https?:[/][/]|assets[/]|data:)/).test(path);
     }
   }
 
@@ -194,6 +200,19 @@ export class ReadAlongComponent {
         && s * 1000 < this.processed_alignment[keys[i + 1]][0]) {
         return this.el.shadowRoot.querySelector(this.tagToQuery(keys[i]))
       }
+    }
+  }
+
+  /**
+   * Return the file path given the asset_type
+   */
+  getPathFromAssetType(asset_type: string) {
+    if (asset_type === "AUDIO") {
+      return this.audio
+    } else if (asset_type === "RAS") {
+      return this.href
+    } else {
+      return "Asset Path Not Supported"
     }
   }
 
@@ -663,23 +682,6 @@ export class ReadAlongComponent {
     });
   }
 
-  /****
-   * AUDIO HANDLING
-   *
-   */
-  audioFailedToLoad() {
-
-    this.isLoaded = true;
-    this.assetsStatus.AUDIO = ERROR_LOADING;
-
-  }
-
-  audioLoaded() {
-
-    this.isLoaded = true;
-    this.assetsStatus.AUDIO = LOADED;
-
-  }
 
   /*************
    * LIFECYCLE *
@@ -729,8 +731,15 @@ export class ReadAlongComponent {
     }
 
     // Parse the text to be displayed
+    // TODO: if parseRAS has an error, we need ERROR_PARSING
     this.parsed_text = await parseRAS(this.href)
-    this.images = {}
+    if (this.parsed_text === null) {
+      this.parsed_text = []
+      this.assetsStatus.RAS = ERROR_LOADING
+    } else if (this.parsed_text.length === 0) {
+      this.assetsStatus.RAS = ERROR_PARSING
+    } else {
+      this.images = {}
     this.translations = {}
     for (const [i, page] of this.parsed_text.entries()) {
       if ('img' in page) {
@@ -746,9 +755,11 @@ export class ReadAlongComponent {
         this.images[i] = null
       }
     }
-    // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
-    this.assetsStatus.XML = this.parsed_text.length ? LOADED : ERROR_LOADING
+      // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
 
+      this.assetsStatus.RAS = LOADED
+    }
+    this.hasLoaded += 1
   }
 
   componentDidRender() {
@@ -772,9 +783,6 @@ export class ReadAlongComponent {
     this.audio_howl_sprites = new Howl({
       src: [this.audio],
       preload: false,
-      // onloaderror: this.audioFailedToLoad.bind(this),
-      // onload: this.audioLoaded.bind(this)
-
     })
     // Once loaded, get duration and build Sprite
     this.audio_howl_sprites.once('load', () => {
@@ -827,10 +835,15 @@ export class ReadAlongComponent {
           }
         }
       })
-      this.isLoaded = true;
+      this.hasLoaded += 1;
       this.assetsStatus.AUDIO = LOADED;
-    })
-    this.audio_howl_sprites.load()
+    });
+    // Handle load errors
+    this.audio_howl_sprites.once("loaderror", () => {
+      this.hasLoaded += 1;
+      this.assetsStatus.AUDIO = ERROR_LOADING;
+    });
+    this.audio_howl_sprites.load();
   }
 
   /**********
@@ -842,10 +855,17 @@ export class ReadAlongComponent {
    * To add a new term, add a new key to the translations object. Then add 'eng' and 'fr' keys
    * and give the translations as values.
    *
-   * @param word
-   * @param lang
+   * @param word short name for the text to fetch
+   * @param lang language code
+   * @param path (optional) the path/file/href the error message applies to
+   * @param assetType (optional) type of assert the error message applies to
    */
-  returnTranslation(word: string, lang?: InterfaceLanguage): string {
+  returnTranslation(
+    word: string,
+    lang?: InterfaceLanguage,
+    path?: string,
+    assetType?: string
+  ): string {
     if (lang === undefined) lang = this.language;
     let translations: { [message: string]: Translation } = {
       "speed": {
@@ -856,17 +876,17 @@ export class ReadAlongComponent {
         "eng": "Re-align with audio",
         "fra": "Réaligner avec l'audio"
       },
-      "audio-error": {
-        "eng": "Error: The audio file could not be loaded",
-        "fra": "Erreur: le fichier audio n'a pas pu être chargé"
+      "loading-error": {
+        "eng": "Error: the " + assetType + " file '" + path + "' could not be loaded.",
+        "fra": "Erreur: le fichier " + assetType + " '" + path + "' n'a pas pu être chargé."
       },
-      "text-error": {
-        "eng": "Error: The text file could not be loaded",
-        "fra": "Erreur: le fichier texte n'a pas pu être chargé"
+      "parse-error": {
+        "eng": "Error: the " + assetType + " file '" + path + "' could not be parsed.",
+        "fra": "Erreur: le fichier " + assetType + " '" + path + "' n'a pas pu être analysé."
       },
       "alignment-error": {
-        "eng": "Error: No alignments were found",
-        "fra": "Erreur: aucun alignement n'a été trouvé"
+        "eng": "Error: No alignments were found.",
+        "fra": "Erreur: aucun alignement n'a été trouvé."
       },
       "loading": {
         "eng": "Loading...",
@@ -877,7 +897,7 @@ export class ReadAlongComponent {
         "fra": "Écrivez votre texte ici" 
       }
     }
-    if (translations[word])
+    if (translations[word] && translations[word][lang])
       return translations[word][lang]
     return word;
   }
@@ -1160,7 +1180,7 @@ export class ReadAlongComponent {
    * Render controls for ReadAlong
    */
 
-  PlayControl = (): Element => <button data-cy="play-button" disabled={!this.isLoaded} aria-label="Play"
+  PlayControl = (): Element => <button data-cy="play-button" disabled={this.hasLoaded < 2} aria-label="Play"
     title="Play audio recording"
     onClick={() => {
       this.playing ? this.pause() : this.play()
@@ -1169,14 +1189,14 @@ export class ReadAlongComponent {
     <i class="material-icons">{this.playing ? 'pause' : 'play_arrow'}</i>
   </button>
 
-  ReplayControl = (): Element => <button data-cy="replay-button" disabled={!this.isLoaded} aria-label="Rewind"
+  ReplayControl = (): Element => <button data-cy="replay-button" disabled={this.hasLoaded < 2} aria-label="Rewind"
     title="Replay audio recording"
     onClick={() => this.goBack(5)}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
-  StopControl = (): Element => <button data-cy="stop-button" disabled={!this.isLoaded} aria-label="Stop"
+  StopControl = (): Element => <button data-cy="stop-button" disabled={this.hasLoaded < 2} aria-label="Stop"
     title="Stop audio recording"
     onClick={() => this.stop()}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
@@ -1208,6 +1228,12 @@ export class ReadAlongComponent {
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">subtitles</i>
   </button>
+
+  ErrorMessage = (props: { msg: string; data_cy: string }): Element => (
+    <p data-cy={props.data_cy} class="alert status-error">
+      <span class="material-icons">error_outline_outlined</span> {props.msg}
+    </p>
+  );
 
   ControlPanel = (): Element => <div data-cy="control-panel"
     class={"control-panel theme--" + this.theme + " background--" + this.theme}>
@@ -1241,60 +1267,56 @@ export class ReadAlongComponent {
         <h3 class="slot__subheader">
           <slot name="read-along-subheader" />
         </h3>
-        {
-          this.assetsStatus.AUDIO &&
-          <p data-cy="audio-error"
-            class={"alert status-" + this.assetsStatus.AUDIO + (this.assetsStatus.AUDIO == LOADED ? ' fade' : '')}>
-            <span class="material-icons-outlined">
-                {this.assetsStatus.AUDIO == ERROR_LOADING
-                ? 'error'
-                : (this.assetsStatus.AUDIO > 0 ? 'done' : 'pending_actions')}
-            </span>
-            <span>{this.assetsStatus.AUDIO == ERROR_LOADING
-                 ? this.returnTranslation('audio-error', this.language)
-                 : (this.assetsStatus.XML > 0
-                                           ? 'AUDIO'
-                                           : this.returnTranslation('loading', this.language))}
-            </span>
-          </p>
-        }
 
-        {
-          this.assetsStatus.XML &&
-          <p data-cy="text-error"
-            class={"alert status-" + this.assetsStatus.XML + (this.assetsStatus.XML == LOADED ? ' fade' : '')}>
-            <span class="material-icons-outlined">
-              {this.assetsStatus.XML == ERROR_LOADING
-                  ? 'error'
-                  : (this.assetsStatus.XML > 0 ? 'done' : 'pending_actions')}
-            </span>
-            <span>
-              {this.assetsStatus.XML == ERROR_LOADING
-              ? this.returnTranslation('text-error', this.language)
-              : "XML"}
-            </span>
-          </p>
-        }
+        {Object.entries(this.assetsStatus).map((asset) => {
+          let assetType = asset[0]
+          let code = asset[1]
+            if ( code === ERROR_PARSING ) {
+              let path = this.getPathFromAssetType(assetType)
+              return (
+                <this.ErrorMessage
+                  msg={this.returnTranslation(
+                    "parse-error",
+                    this.language,
+                    path,
+                    assetType
+                  )}
+                  data_cy={assetType + "-error"}
+                />
+              );
+            };
+            if ( code === ERROR_LOADING ) {
+              let path = this.getPathFromAssetType(assetType)
+              return (
+                <this.ErrorMessage
+                  msg={this.returnTranslation(
+                    "loading-error",
+                    this.language,
+                    path,
+                    assetType
+                  )}
+                  data_cy={assetType + "-error"}
+                />
+              );
+            };
+        })}
 
-        {
-          this.alignment_failed && this.assetsStatus.XML !== ERROR_LOADING &&
-          <p data-cy="alignment-error" class="alert status-2">
-            <span class="material-icons-outlined">error</span>
-            <span>
-              {this.returnTranslation('alignment-error', this.language)}
-            </span>
-          </p>
-        }
+        {this.alignment_failed && this.assetsStatus.RAS === LOADED && (
+          <this.ErrorMessage
+            msg={this.returnTranslation("alignment-error", this.language)}
+            data_cy="alignment-error"
+          />
+        )}
+
         <div data-cy="text-container" class={"pages__container theme--" + this.theme + " " + this.pageScrolling}>
-
           {this.showGuide ? <this.Guide /> : null}
-          {this.assetsStatus.XML == LOADED && this.parsed_text.map((page) =>
+          {this.assetsStatus.RAS == LOADED && this.parsed_text.map((page) =>
             <this.Page pageData={page}>
             </this.Page>
           )}
-          {this.isLoaded == false && <div class="loader" />}
-
+          {this.hasLoaded < 2 && <div class="loader" />}
         </div>
+
         {this.alignment_failed ||
           <div onClick={(e) => this.goToSeekFromProgress(e)} id='all' data-cy="progress-bar"
             class={"overlay__container theme--" + this.theme + " background--" + this.theme}>
@@ -1302,7 +1324,9 @@ export class ReadAlongComponent {
           </div>}
         {this.assetsStatus.AUDIO == LOADED && <this.ControlPanel />}
 
-        {this.cssUrl && this.cssUrl.match(".css") != null && <link href={this.cssUrl} rel="stylesheet" />}
+        {this.cssUrl && this.cssUrl.match(".css") != null && (
+          <link href={this.cssUrl} rel="stylesheet" />)
+        }
       </div>
 
     )
