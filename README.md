@@ -64,6 +64,10 @@ Then, in another terminal, run the following to serve the web-component:
 
     nx serve web-component
 
+Alternatively run together as:
+
+    nx run-many --targets=serve-test-data,serve --projects=web-component
+
 #### Studio-Web
 
 To run Studio-Web, you first have to build the web-component:
@@ -85,6 +89,10 @@ then run:
     DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload
 
 If your Studio sandbox is in a sibling directory to this sandbox, and you Python environment is active, `nx serve-web-api studio-web` will run that command for you.
+
+Alternatively run together as:
+
+    nx run-many --targets=serve-test-data,serve-web-api,serve --projects=web-component,studio-web --parallel 5
 
 Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ every time there is a change to `main`.
 
@@ -128,6 +136,10 @@ Then run:
 
     nx test:once web-component
 
+Alternatively run together as:
+
+    nx run-many --targets=serve-test-data,serve,test:once --projects=web-component
+
 #### Studio-Web
 
 To run the unit tests for Studio-Web, first build `web-component` in one of the ways listed
@@ -151,6 +163,10 @@ Run the prepublish step for web-component:
 Run the bundler for single-file html exports:
 
     nx bundle web-component
+
+Alternatively run together as:
+
+    nx run-many --targets=build,prepublish,bundle --projects=web-component,ngx-web-component --parallel 1
 
 Then, go to the directory and publish:
 
