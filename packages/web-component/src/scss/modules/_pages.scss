@@ -149,6 +149,12 @@ $max-height: 98vh;
         font-style: italic;
         font-size: 95%;
     }
+    &__translation__button {
+        margin-left: 10px;
+        i {
+            font-size: medium;
+        }
+    }
     .paragraph.visually_aligned .sentence &__text,
     .paragraph.visually_aligned .sentence &__word {
         display: table-cell;

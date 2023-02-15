@@ -872,14 +872,6 @@ export class ReadAlongComponent {
         "eng": "Loading...",
         "fra": "Chargement en cours"
       },
-      "add-line": {
-        "eng": "Add line",
-        "fra": "Ajouter une ligne" 
-      },
-      "remove-line": {
-        "eng": "Remove line",
-        "fra": "Suprimer la ligne" 
-      },
       "line-placeholder": {
         "eng": "Type your text here",
         "fra": "Écrivez votre texte ici" 
@@ -1115,11 +1107,11 @@ export class ReadAlongComponent {
        if (this.mode === 'EDIT' && !/translation/.test(props.sentenceData.getAttribute('class'))) {
           if (sentenceID in this.translations && sentenceID in this.translations && this.translations[sentenceID] !== null) {
             return <span class="sentence__translation">
-              <button data-cy="remove-translation-button" onClick={() => this.removeLine(props.sentenceData)}>{this.returnTranslation('remove-line', this.language)}</button>
+              <button data-cy="remove-translation-button" onClick={() => this.removeLine(props.sentenceData)} class="sentence__translation__button remove"><i class="material-icons">remove</i></button>
               <p id={sentenceID + "translation"} data-cy="translation-line" class="sentence__text editable__translation" onInput={(e: any) => {this.updateTranslation(sentenceID, e.currentTarget.innerText)}} contentEditable onKeyDown={(event) => { if(event.key == 'Enter') event.preventDefault();}} data-placeholder={this.returnTranslation('line-placeholder', this.language)}></p>
               </span>
           } else {
-            return <button data-cy="add-translation-button" class="sentence__translation" onClick={() => this.addLine(props.sentenceData)}>{this.returnTranslation('add-line', this.language)}</button>
+            return <button data-cy="add-translation-button" class="sentence__translation sentence__translation__button" onClick={() => this.addLine(props.sentenceData)}><i class="material-icons">add</i></button>
           }
         }
        else {
