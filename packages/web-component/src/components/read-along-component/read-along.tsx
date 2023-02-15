@@ -766,15 +766,6 @@ export class ReadAlongComponent {
     this.hasLoaded += 1
   }
 
-  componentDidRender() {
-    if (this.latestTranslation){
-      // Add focus to the latest translation line that was added
-      let newLine: HTMLElement = this.el.shadowRoot.querySelector(this.latestTranslation)
-      newLine.focus()
-      this.latestTranslation = ""
-    }
-  }
-
   /**
    * Lifecycle hook: after component loads, build the Sprite and parse the files necessary.
    * Then subscribe to the _reading$ Subject in order to update CSS styles when new element
@@ -855,6 +846,13 @@ export class ReadAlongComponent {
     if (!this.displayTranslation && this.parsed_text && this.parsed_text.length > 0) {
       this.toggleTextTranslation();
       this.displayTranslation = true
+    }
+
+    if (this.latestTranslation){
+      // Add focus to the latest translation line that was added
+      let newLine: HTMLElement = this.el.shadowRoot.querySelector(this.latestTranslation)
+      newLine.focus()
+      this.latestTranslation = ""
     }
   }
 
