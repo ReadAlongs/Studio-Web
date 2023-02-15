@@ -1,4 +1,5 @@
 import { HttpClient, HttpEventType } from "@angular/common/http";
+import { ToastrModule } from "ngx-toastr";
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -16,7 +17,7 @@ describe("RasService", () => {
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj("HttpClient", ["get"]);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
     });
     // Inject the http service and test controller for each test
     httpClient = TestBed.inject(HttpClient);
