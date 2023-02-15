@@ -72,7 +72,6 @@
                 <div *ngIf="inputMethod.audio === 'mic'" class="mb-0 mb-md-3">
                     <div class="row">
                         <h2 i18n="Title for record box" class="subtitle">Record your voice here</h2>
-                        <p i18n="Warning for record box">Best suited for short tests.</p>
                     </div>
                     <div class="row text-center">
                       <button class="audioControl" mat-button (click)="startRecording()" [color]="recording ? 'warn' : 'primary'" aria-label="Record button">
@@ -85,7 +84,6 @@
                         Stop
                       </button>
                     </div>
-                  <p *ngIf="!recording && audioControl.value !== null" i18n="playback invitation">Please Play your audio to make sure it is OK, and save it for reuse if it is.</p>
                 </div>
                 <div class="row">
                   <div class="col-12 col-lg-4">

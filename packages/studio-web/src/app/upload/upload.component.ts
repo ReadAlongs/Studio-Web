@@ -175,8 +175,9 @@ export class UploadComponent implements OnInit {
         //console.log("recording output", output)
         if (output) {
           this.toastr.success(
-            $localize`Audio was successfully recorded`,
-            $localize`Yay!`
+            $localize`Audio was successfully recorded. Please listen to your recording to make sure it's OK, and save it for reuse if so.`,
+            $localize`Yay!`,
+            { timeOut: 10000 }
           );
           this.audioControl.setValue(output as Blob);
           // do post output steps
