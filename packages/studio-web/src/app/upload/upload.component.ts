@@ -62,7 +62,7 @@ export class UploadComponent implements OnInit {
     audio: "mic",
     text: "edit",
   };
-  textInput: any;
+  textInput: string = "";
   constructor(
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
@@ -123,10 +123,6 @@ export class UploadComponent implements OnInit {
 
   displayFormatHelp(): void {
     this.dialog.open(TextFormatDialogComponent);
-  }
-
-  handleTextInput(event: any) {
-    this.textInput = event.target.value;
   }
 
   startRecording() {
