@@ -1,11 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ToastrModule } from "ngx-toastr";
 import {
   HttpClientTestingModule,
   HttpTestingController,
 } from "@angular/common/http/testing";
 // add By to query
 import { By } from "@angular/platform-browser";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 import { MaterialModule } from "../material.module";
 import { DemoComponent } from "./demo.component";
@@ -18,7 +20,7 @@ describe("DemoComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, FormsModule, MaterialModule],
+      imports: [HttpClientTestingModule,  BrowserAnimationsModule, FormsModule, MaterialModule, ToastrModule.forRoot()],
       declarations: [DemoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();

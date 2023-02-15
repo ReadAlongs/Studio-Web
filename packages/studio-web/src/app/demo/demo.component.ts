@@ -7,6 +7,8 @@ import { Components } from "@readalongs/web-component/loader";
 import { B64Service } from "../b64.service";
 
 import { compress } from "image-conversion";
+import { RasService, SupportedOutputs } from "../ras.service";
+import { saveAs } from "file-saver";
 
 @Component({
   selector: "app-demo",
@@ -22,8 +24,9 @@ export class DemoComponent implements OnInit {
     subtitle: $localize`Subtitle`,
     pageTitle: $localize`PageTitle`,
   };
-
-  constructor(public titleService: Title, public b64Service: B64Service) {
+  outputFormats = [{"value": "html", "display": $localize`Offline HTML`}, {"value": "eaf", "display": $localize`Elan File`}, {"value": "textgrid", "display": $localize`Praat TextGrid`}, {"value": "srt", "display": $localize`SRT Subtitles`}, {"value": "vtt", "display": $localize`WebVTT Subtitles`}]
+  selectedOutputFormat: SupportedOutputs|string = "html"
+  constructor(public titleService: Title, public b64Service: B64Service, private rasService: RasService) {
     titleService.setTitle(this.slots.pageTitle);
   }
 
@@ -92,35 +95,41 @@ export class DemoComponent implements OnInit {
 
   async download() {
     let ras = this.b64Inputs[1];
-    await this.updateImages(ras);
-    await this.updateTranslations(ras);
-    let b64ras = this.b64Service.xmlToB64(ras);
-    var element = document.createElement("a");
-    let blob = new Blob(
-      [
-        `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
-      <title>${this.slots.pageTitle}</title>
-      <link rel="stylesheet" href="${this.b64Inputs[2][1]}">
-      <script src="${this.b64Inputs[2][0]}"></script>
-    </head>
-    <body>
-        <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
-        <span slot="read-along-header">${this.slots.title}</span>
-        <span slot="read-along-subheader">${this.slots.subtitle}</span>
-        </read-along>
-    </body>
-    </html>`,
-      ],
-      { type: "text/html;charset=utf-8" }
-    );
-    element.href = window.URL.createObjectURL(blob);
-    element.download = "readalong.html";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    if (this.selectedOutputFormat == 'html') {
+      await this.updateImages(ras);
+      await this.updateTranslations(ras);
+      let b64ras = this.b64Service.xmlToB64(ras);
+      var element = document.createElement("a");
+      let blob = new Blob(
+        [
+          `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+        <title>${this.slots.pageTitle}</title>
+        <link rel="stylesheet" href="${this.b64Inputs[2][1]}">
+        <script src="${this.b64Inputs[2][0]}"></script>
+      </head>
+      <body>
+          <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
+          <span slot="read-along-header">${this.slots.title}</span>
+          <span slot="read-along-subheader">${this.slots.subtitle}</span>
+          </read-along>
+      </body>
+      </html>`,
+        ],
+        { type: "text/html;charset=utf-8" }
+      );
+      element.href = window.URL.createObjectURL(blob);
+      element.download = "readalong.html";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    } else {
+      let audio: HTMLAudioElement = new Audio(this.b64Inputs[0])
+      this.rasService.convertRasFormat$({ "dur": audio.duration, "ras": new XMLSerializer().serializeToString(ras.documentElement)}, this.selectedOutputFormat).subscribe(x=>saveAs(x, `readalong.${this.selectedOutputFormat}`))
+      audio.remove()
+    }
   }
 }
