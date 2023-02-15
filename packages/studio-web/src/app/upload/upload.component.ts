@@ -1,7 +1,7 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
 import { Observable, forkJoin, of, zip } from "rxjs";
-import { map, switchMap, take } from "rxjs/operators";
+import { map, switchMap, take, takeWhile, tap } from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
@@ -22,6 +22,7 @@ import {
   AlignmentProgress,
 } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "app-upload",
@@ -30,8 +31,10 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
 })
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
-    map((langs: Array<SupportedLanguage>) =>
-      langs
+    map((langs: Array<SupportedLanguage>|HttpErrorResponse) =>
+    {
+    if (Array.isArray(langs)) {
+      return langs
       .map((lang) => {
         return { id: lang.code, name: lang.names["_"] };
       })
@@ -40,7 +43,12 @@ export class UploadComponent implements OnInit {
         if (a.name > b.name) return 1;
         return 0;
       })
-    )
+    } else {
+      return []
+    }
+  }
+    ) 
+
   );
   loading = false;
   langControl = new FormControl<string>("und", Validators.required);
@@ -249,7 +257,7 @@ export class UploadComponent implements OnInit {
           8000
         ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
-          switchMap((text: string): Observable<ReadAlong> => {
+          switchMap((text: string): Observable<ReadAlong|HttpErrorResponse> => {
             body.input = text;
             this.progressMode = "determinate";
             this.progressValue = 0;
@@ -258,6 +266,10 @@ export class UploadComponent implements OnInit {
         ),
       })
         .pipe(
+          tap((joined_audio_and_ras: any) => {if (joined_audio_and_ras.ras instanceof HttpErrorResponse) {
+            this.loading = false;
+          } }),
+          takeWhile((joined_audio_and_ras: any) => !(joined_audio_and_ras.ras instanceof HttpErrorResponse)),
           switchMap(({ audio, ras }) =>
             // We can't give the arguments types because RxJS is broken somehow,
             // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
