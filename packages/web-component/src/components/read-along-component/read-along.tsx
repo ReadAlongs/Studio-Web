@@ -90,6 +90,13 @@ export class ReadAlongComponent {
   @Prop() mode: ReadAlongMode = "VIEW";
 
   /**
+   * Select whether scrolling between pages should be "smooth" (default nicely
+   * animated, good for fast computers) or "auto" (choppy but much less compute
+   * intensive)
+   */
+  @Prop() scrollBehaviour: "smooth" | "auto" = "smooth";
+
+  /**
    * Show text translation  on at load time
    */
   @Prop() displayTranslation = true
@@ -645,7 +652,7 @@ export class ReadAlongComponent {
     page_container.scrollBy({
       top: this.pageScrolling.match("vertical") != null ? (next_page.offsetTop - page_container.scrollTop) : 0,
       left: this.pageScrolling.match("vertical") != null ? 0 : (next_page.offsetLeft - page_container.scrollLeft),
-      behavior: 'smooth'
+      behavior: this.scrollBehaviour
     });
     next_page.scrollTo(0, 0)//reset to top of the page
   }
@@ -659,7 +666,7 @@ export class ReadAlongComponent {
     sent_container.scrollBy({
       top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
       left: 0,
-      behavior: 'smooth'
+      behavior: this.scrollBehaviour
     })
 
   }
@@ -674,7 +681,7 @@ export class ReadAlongComponent {
     sent_container.scrollTo({
       left: anchor.left - 10, // negative value acceptable
       top: 0,
-      behavior: 'smooth'
+      behavior: this.scrollBehaviour
     })
 
   }
@@ -682,7 +689,7 @@ export class ReadAlongComponent {
   scrollTo(el: HTMLElement): void {
 
     el.scrollIntoView({
-      behavior: 'smooth'
+      behavior: this.scrollBehaviour
     });
   }
 
@@ -732,6 +739,11 @@ export class ReadAlongComponent {
       } else {
         this.language = "eng"
       }
+    }
+
+    // Make sure scroll-behaviour is valid
+    if (this.scrollBehaviour !== "smooth" && this.scrollBehaviour !== "auto") {
+      this.scrollBehaviour = "smooth";
     }
 
     // Parse the text to be displayed
