@@ -49,9 +49,9 @@ export namespace Components {
          */
         "pageScrolling": "horizontal" | "vertical";
         /**
-          * Control the range of the playback rate: narrow (default, 85%-115% range), or medium (75%-125% range)
+          * Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.
          */
-        "playbackRateRange": "narrow" | "medium";
+        "playbackRateRange": number;
         /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
          */
@@ -112,9 +112,9 @@ declare namespace LocalJSX {
          */
         "pageScrolling"?: "horizontal" | "vertical";
         /**
-          * Control the range of the playback rate: narrow (default, 85%-115% range), or medium (75%-125% range)
+          * Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.
          */
-        "playbackRateRange"?: "narrow" | "medium";
+        "playbackRateRange"?: number;
         /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
          */
