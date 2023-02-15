@@ -48,6 +48,7 @@ export class UploadComponent implements OnInit {
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   recording = false;
   playing = false;
+  player: any = null;
   progressMode: ProgressBarMode = "indeterminate";
   progressValue = 0;
 
@@ -146,14 +147,20 @@ export class UploadComponent implements OnInit {
   playRecording() {
     if (!this.playing && this.audioControl.value !== null) {
       let player = new window.Audio();
+      this.player = player
       player.src = URL.createObjectURL(this.audioControl.value);
-      player.onended = () => {
-        this.playing = false;
-      };
+      player.onended = () => this.stopPlayback();
+      player.onerror = () => this.stopPlayback();
       player.load();
       this.playing = true;
       player.play();
     }
+  }
+
+  stopPlayback() {
+    this.playing = false;
+    this.player?.pause();
+    this.player = null;
   }
 
   deleteRecording() {
@@ -165,12 +172,22 @@ export class UploadComponent implements OnInit {
     this.microphoneService
       .stopRecording()
       .then((output) => {
-        this.toastr.success(
-          $localize`Audio was successfully recorded`,
-          $localize`Yay!`
-        );
-        this.audioControl.setValue(output as Blob);
-        // do post output steps
+        //console.log("recording output", output)
+        if (output) {
+          this.toastr.success(
+            $localize`Audio was successfully recorded. Please listen to your recording to make sure it's OK, and save it for reuse if so.`,
+            $localize`Yay!`,
+            { timeOut: 10000 }
+          );
+          this.audioControl.setValue(output as Blob);
+          // do post output steps
+        } else {
+          this.toastr.error(
+            $localize`Please try again, or select a pre-recorded file.`,
+            $localize`Audio not recorded!`
+          )
+        }
+        //console.log("done stopRecording", this.audioControl)
       })
       .catch((errorCase) => {
         this.toastr.error(
