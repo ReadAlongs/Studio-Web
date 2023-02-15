@@ -72,6 +72,8 @@ export class DemoComponent implements OnInit {
       let currentPage = page_nodes[parseInt(i)];
       // Add Image
       if (currentPage && img) {
+        // Remove any images that are there from before
+        currentPage.querySelectorAll('graphic').forEach((e) => e.remove())
         let graphic = doc.createElement("graphic");
         // @ts-ignore
         let blob = await fetch(img).then((r) => r.blob());
