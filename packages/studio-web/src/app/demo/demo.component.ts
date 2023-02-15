@@ -67,25 +67,25 @@ export class DemoComponent implements OnInit {
 
   async updateImages(doc: Document): Promise<boolean> {
     const images = await this.readalong.getImages();
-    if (Object.keys(images).length == 0)
-      return false;
-    else {
-      const page_nodes = doc.querySelectorAll("div[type=page]");
-      for (const [i, img] of Object.entries(images)) {
-        let currentPage = page_nodes[parseInt(i)];
-        if (currentPage && img) {
-          let graphic = doc.createElement("graphic");
-          // @ts-ignore
-          let blob = await fetch(img).then((r) => r.blob());
-          blob = await compress(blob, 0.75);
-          let b64 = await this.b64Service.blobToB64(blob);
-          // @ts-ignore
-          graphic.setAttribute("url", b64);
-          currentPage.appendChild(graphic);
-        }
+    const page_nodes = doc.querySelectorAll("div[type=page]");
+    for (const [i, img] of Object.entries(images)) {
+      let currentPage = page_nodes[parseInt(i)];
+      // Add Image
+      if (currentPage && img) {
+        let graphic = doc.createElement("graphic");
+        // @ts-ignore
+        let blob = await fetch(img).then((r) => r.blob());
+        blob = await compress(blob, 0.75);
+        let b64 = await this.b64Service.blobToB64(blob);
+        // @ts-ignore
+        graphic.setAttribute("url", b64);
+        currentPage.appendChild(graphic);
+      // Remove Images
+      } else if (img === null) {
+        currentPage.querySelectorAll('graphic').forEach((e) => e.remove())
       }
-      return true;
     }
+    return true;
   }
 
   async download() {

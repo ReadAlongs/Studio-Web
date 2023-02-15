@@ -739,7 +739,7 @@ export class ReadAlongComponent {
         if ((/^(https?:[/]|assets)[/]\b/).test(imageURL)) {
           let isAvailable = await isFileAvailable(imageURL)
           if (!isAvailable) {
-            delete this.images[i]
+            this.images[i] = null
           }
         }
       } else {
