@@ -196,6 +196,19 @@ To build the web application in the currently deployed configuration
 To build with each interface language in its own directory, run:
 
     nx build studio-web --configuration=production --localize=en --localize=fr
+    
+This will create a complete website under `dist/packages/studio-web/`
+which you can deploy in whatever fashion you like to your server
+([rsync](https://rsync.samba.org/) has worked well for a few decades
+now).  Note that the production build expects to talk to the
+ReadAlongs API at
+[https://readalong-studio.herokuapp.com/api/v1](https://readalong-studio.herokuapp.com/api/v1/docs),
+so if you have deployed it elsewhere, you must:
+
+- launch it on your deployment with the `ORIGIN` environment variable
+  set to the base URL of your deployed `studio-web` instance
+- modify `packages/studio-web/src/environments/environment.prod.ts` to
+  point to the URL where you have deployed it (and rebuild, obviously)
 
 ## Maintainers
 
