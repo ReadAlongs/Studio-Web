@@ -13,7 +13,7 @@
         "watch": "ng build --watch --configuration development --localize",
         "test": "ng test",
         "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
-        "check-fr-l10n": "bash -c \"diff -w <(cat src/i18n/messages.json | sed 's/:.*//') <(cat src/i18n/messages.fr.json | sed 's/:.*//')\""
+        "check-fr-l10n": "bash -c \"diff -w <(cat src/i18n/messages.json | sed 's/:.*//' | sort) <(cat src/i18n/messages.fr.json | sed 's/:.*//' | sort)\""
     },
     "private": true,
     "devDependencies": {
