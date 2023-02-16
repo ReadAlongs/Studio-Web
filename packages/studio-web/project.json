@@ -59,13 +59,6 @@
           ],
           "outputHashing": "all"
         },
-        "en": {
-          "localize": ["en"]
-        },
-        "fr": {
-          "localize": ["fr"],
-          "deleteOutputPath": false
-        },
         "development": {
           "buildOptimizer": false,
           "optimization": false,
@@ -73,24 +66,29 @@
           "extractLicenses": false,
           "sourceMap": true,
           "namedChunks": true
-        }
+        },
+        "en": { "localize": ["en"] },
+        "fr": { "localize": ["fr"] }
       },
       "defaultConfiguration": "production"
     },
     "serve": {
       "executor": "@angular-builders/custom-webpack:dev-server",
-      "options": {
-        "browserTarget": "studio-web:build:en"
-      },
       "configurations": {
-        "production": {
-          "browserTarget": "studio-web:build:production"
+        "production-en": {
+          "browserTarget": "studio-web:build:production,en"
         },
-        "development": {
-          "browserTarget": "studio-web:build:development"
+        "development-en": {
+          "browserTarget": "studio-web:build:development,en"
+        },
+        "production-fr": {
+          "browserTarget": "studio-web:build:production,fr"
+        },
+        "development-fr": {
+          "browserTarget": "studio-web:build:development,fr"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development-en"
     },
     "extract-i18n": {
       "executor": "@angular-builders/custom-webpack:extract-i18n",

@@ -78,7 +78,12 @@ Then serve Studio-Web by running:
 
     nx serve studio-web
 
-Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
+Ou en français:
+
+    nx serve studio-web --configuration=development-fr
+
+Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Packa
+ge/API repo:
 
     git clone https://github.com/ReadAlongs/Studio.git
     cd Studio
