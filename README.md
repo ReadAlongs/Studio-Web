@@ -205,10 +205,11 @@ ReadAlongs API at
 [https://readalong-studio.herokuapp.com/api/v1](https://readalong-studio.herokuapp.com/api/v1/docs),
 so if you have deployed it elsewhere, you must:
 
-- launch it on your deployment with the `ORIGIN` environment variable
-  set to the base URL of your deployed `studio-web` instance
-- modify `packages/studio-web/src/environments/environment.prod.ts` to
-  point to the URL where you have deployed it (and rebuild, obviously)
+- make sure you set the `ORIGIN` environment variable when deploying
+  the ReadAlongs API to the base URL of your `studio-web` instance
+- modify `packages/studio-web/src/environments/environment.prod.ts` in
+  your `studio-web` instance to point to the URL where you have
+  deployed the ReadAlongs API (and rebuild, obviously)
 
 ## Maintainers
 
