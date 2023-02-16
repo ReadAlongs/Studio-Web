@@ -81,6 +81,13 @@ Then serve Studio-Web by running:
 Ou en français:
 
     nx serve studio-web --configuration=development-fr
+    
+There are separate production and development serving configurations
+for each interface language, so you may for instance also use
+`development-en`, `production-en`, `production-fr` for
+`--configuration` above.  Note that these configurations are *only*
+for the `serve` command.  To build for deployment, see
+[below](#studio-web-2).
 
 Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Packa
 ge/API repo:
@@ -177,6 +184,18 @@ Then, go to the directory and publish:
 
     cd dist/packages/web-component && npm publish --access=public
     cd dist/packages/ngx-web-component && npm publish --access=public
+    
+#### Studio-Web
+
+To build the web application in the currently deployed configuration
+(English interface in the root and French under `/fr`), run:
+
+    nx build studio-web --configuration=production
+    nx build studio-web --configuration=production --localize=fr --deleteOutputPath=false
+
+To build with each interface language in its own directory, run:
+
+    nx build studio-web --configuration=production --localize=en --localize=fr
 
 ## Maintainers
 
