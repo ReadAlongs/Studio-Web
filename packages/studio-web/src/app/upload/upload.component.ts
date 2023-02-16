@@ -3,7 +3,7 @@ import { ToastrService } from "ngx-toastr";
 import { Observable, forkJoin, of, zip } from "rxjs";
 import { map, switchMap, take, takeWhile, tap } from "rxjs/operators";
 
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
@@ -59,7 +59,9 @@ export class UploadComponent implements OnInit {
   player: any = null;
   progressMode: ProgressBarMode = "indeterminate";
   progressValue = 0;
-
+  maxTxtSize = 10 * 1024; // Max 10 KB audio file size
+  maxRasSize = 20 * 1024; // Max 20 KB audio file size
+  @ViewChild('textInputElement') textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl,
@@ -332,6 +334,10 @@ export class UploadComponent implements OnInit {
         { timeOut: 10000 }
       );
     } else if (type === "text") {
+      if ((file.name.split('.').pop() === 'txt' && file.size > this.maxTxtSize) || (file.name.split('.').pop() === 'readalong' && file.size > this.maxRasSize)) {
+        this.toastr.error($localize`File too large`, $localize`Sorry!`);
+        this.textInputElement.nativeElement.value = ""
+      } else {
       this.textControl.setValue(file);
       this.toastr.success(
         $localize`File ` +
@@ -342,4 +348,6 @@ export class UploadComponent implements OnInit {
       );
     }
   }
+}
+
 }
