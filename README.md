@@ -89,8 +89,7 @@ for each interface language, so you may for instance also use
 for the `serve` command.  To build for deployment, see
 [below](#studio-web-2).
 
-Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Packa
-ge/API repo:
+Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
 
     git clone https://github.com/ReadAlongs/Studio.git
     cd Studio
