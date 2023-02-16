@@ -13,7 +13,6 @@
         "watch": "ng build --watch --configuration development --localize",
         "test": "ng test",
         "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
-        "extract-i18n": "ng extract-i18n --format json --output-path src/i18n; echo '' >> src/i18n/messages.json",
         "check-fr-l10n": "bash -c \"diff -w <(cat src/i18n/messages.json | sed 's/:.*//') <(cat src/i18n/messages.fr.json | sed 's/:.*//')\""
     },
     "private": true,

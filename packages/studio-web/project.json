@@ -5,9 +5,9 @@
   "sourceRoot": "packages/studio-web/src",
   "prefix": "app",
   "i18n": {
+    "sourceLocale": "en",
     "locales": {
-      "fr": "packages/studio-web/src/i18n/messages.fr.json",
-      "en": "packages/studio-web/src/i18n/messages.json"
+      "fr": "packages/studio-web/src/i18n/messages.fr.json"
     }
   },
   "targets": {
@@ -93,6 +93,8 @@
     "extract-i18n": {
       "executor": "@angular-builders/custom-webpack:extract-i18n",
       "options": {
+        "format": "json",
+        "outputPath": "packages/studio-web/src/i18n",
         "browserTarget": "studio-web:build"
       }
     },
