@@ -203,7 +203,7 @@ which you can deploy in whatever fashion you like to your server
 now).  Note that the production build expects to talk to the
 ReadAlongs API at
 [https://readalong-studio.herokuapp.com/api/v1](https://readalong-studio.herokuapp.com/api/v1/docs),
-so if you have deployed it elsewhere, you must:
+so if you have deployed the API elsewhere, you must:
 
 - make sure you set the `ORIGIN` environment variable when deploying
   the ReadAlongs API to the base URL of your `studio-web` instance
