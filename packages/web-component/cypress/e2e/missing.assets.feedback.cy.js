@@ -13,7 +13,7 @@ context("Readalong Component with missing assets", () => {
       cy.get("[data-cy=RAS-error]").should(($el) => {
         expect($el.hasClass("fade")).equal(false, "error message box visible")
         //check that message is visible
-        expect($el.text()).contains("the RAS file 'ejfra.ras' could not be loaded", "error message visible")
+        expect($el.text()).contains("the RAS file 'ejfra.readalong' could not be loaded", "error message visible")
       }).should("be.visible")
       cy.get("[data-cy=progress-bar]").should("have.length", 0)
 
@@ -34,7 +34,7 @@ context("Readalong Component with missing assets", () => {
       cy.get("[data-cy=RAS-error]").should(($el) => {
         expect($el.hasClass("fade")).equal(false, "error message box visible")
         //check that message is visible
-        expect($el.text()).contains("Erreur: le fichier RAS 'ej-fra-malformed.ras' n'a pas pu être analysé", "error message visible")
+        expect($el.text()).contains("Erreur: le fichier RAS 'ej-fra-malformed.readalong' n'a pas pu être analysé", "error message visible")
       }).should("be.visible")
       cy.get("[data-cy=progress-bar]").should("have.length", 0)
     });

@@ -242,7 +242,7 @@ export class UploadComponent implements OnInit {
       let input_type;
       if (this.inputMethod.text === "upload" &&
         (this.textControl.value.name.toLowerCase().endsWith(".xml") ||
-          this.textControl.value.name.toLowerCase().endsWith(".ras")))
+          this.textControl.value.name.toLowerCase().endsWith(".readalong")))
         input_type = "application/readalong+xml";
       else
         input_type = "text/plain";
@@ -266,10 +266,10 @@ export class UploadComponent implements OnInit {
         ),
       })
         .pipe(
-          tap((joined_audio_and_ras: any) => {if (joined_audio_and_ras.ras instanceof HttpErrorResponse) {
+          tap((joined_audio_and_ras: any) => {if (joined_audio_and_ras.readalong instanceof HttpErrorResponse) {
             this.loading = false;
           } }),
-          takeWhile((joined_audio_and_ras: any) => !(joined_audio_and_ras.ras instanceof HttpErrorResponse)),
+          takeWhile((joined_audio_and_ras: any) => !(joined_audio_and_ras.readalong instanceof HttpErrorResponse)),
           switchMap(({ audio, ras }) =>
             // We can't give the arguments types because RxJS is broken somehow,
             // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown

@@ -62,7 +62,7 @@ export const text_write_step: any = {
 
 export const text_file_step: any = {
   title: $localize`Use a text file\n`,
-  text: $localize`You can also use text from a plain text file (.txt) or a file in the RAS format (.ras).`,
+  text: $localize`You can also use text from a plain text file (.txt) or a file in the RAS format (.readalong).`,
   attachTo: {
     element: "#text-section",
     on: "bottom",

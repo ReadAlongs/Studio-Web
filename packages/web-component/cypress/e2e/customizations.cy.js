@@ -1,6 +1,6 @@
 context('Testing creator enabled settings', () => {
   beforeEach(() => {
-    cy.intercept(/\.ras/).as('text')
+    cy.intercept(/\.readalong/).as('text')
     cy.intercept(/\.m4a/).as('audio')
   });
 

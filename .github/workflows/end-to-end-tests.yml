@@ -27,3 +27,9 @@ jobs:
             npx nx serve-test-data web-component
           wait-on: 'http://localhost:3333/build/web-component.esm.js'
           command: npx nx test:once web-component
+      - name: Check that i18n and l10n are up to date
+        run: |
+          cd packages/studio-web
+          npm run extract-i18n
+          if git status | grep i18n/messages; then echo The i18n database is out of date.; git diff; npm run check-fr-l10n || echo The fr l10n database is also out of date.; false; else echo The i18n database is up to date.; fi
+          if npm run check-fr-l10n; then echo The fr l10n database is up to date.; else echo The fr l10n database is out of date.; false; fi

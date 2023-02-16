@@ -45,20 +45,21 @@ export class DemoComponent implements OnInit {
     } else {
       const sentence_nodes = doc.querySelectorAll("s:not(.sentence__translation)")
       // represents all translation nodes that have already been added
-      const translation_node_ids = Array.from(doc.querySelectorAll(".editable__translation")).map((t_node) => t_node.id)
+      const translation_node_ids = new Set(Array.from(doc.querySelectorAll(".editable__translation")).map((t_node) => t_node.id))
       sentence_nodes.forEach((sentence: Element) => {
         // Add a translation
-        if (sentence.id in translations && translation_node_ids.indexOf(sentence.id) < 0) {
-          let newSentence = document.createElement('s')
+        if (sentence.id in translations && !translation_node_ids.has(sentence.id)) {
+          // No namespaces!! NO! NO! NO!
+          let newSentence = document.createElementNS(null, 's')
           newSentence.setAttribute('do-not-align', "true")
           newSentence.setAttribute("id", sentence.id)
           newSentence.setAttribute("class", "sentence__translation editable__translation")
           newSentence.setAttribute("xml:lang", "eng")
-          newSentence.innerText = translations[sentence.id]
+          newSentence.append(translations[sentence.id])
           sentence.insertAdjacentElement('afterend', newSentence)
         }
         // Remove a translation
-        if (sentence.id in translations && translations[sentence.id] === null && translation_node_ids.indexOf(sentence.id) > -1) {
+        if (sentence.id in translations && translations[sentence.id] === null && translation_node_ids.has(sentence.id)) {
           let elementToRemove = doc.querySelector(`#${sentence.id}.sentence__translation`)
           elementToRemove?.remove()
         }
@@ -77,7 +78,7 @@ export class DemoComponent implements OnInit {
       if (currentPage && img) {
         // Remove any images that are there from before
         currentPage.querySelectorAll('graphic').forEach((e) => e.remove())
-        let graphic = doc.createElement("graphic");
+        let graphic = doc.createElementNS(null, "graphic");
         // @ts-ignore
         let blob = await fetch(img).then((r) => r.blob());
         blob = await compress(blob, 0.75);
