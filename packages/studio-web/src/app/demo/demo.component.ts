@@ -1,5 +1,4 @@
 import { Observable } from "rxjs";
-
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { Components } from "@readalongs/web-component/loader";
@@ -26,8 +25,14 @@ export class DemoComponent implements OnInit {
   };
   outputFormats = [{"value": "html", "display": $localize`Offline HTML`}, {"value": "eaf", "display": $localize`Elan File`}, {"value": "textgrid", "display": $localize`Praat TextGrid`}, {"value": "srt", "display": $localize`SRT Subtitles`}, {"value": "vtt", "display": $localize`WebVTT Subtitles`}]
   selectedOutputFormat: SupportedOutputs|string = "html"
+  language: "eng" | "fra" = "eng"
   constructor(public titleService: Title, public b64Service: B64Service, private rasService: RasService) {
+    // If we end up translating this to more languages, we should probably move this to its own service
+    if (/\/fr\//.test(window.location.href)) {
+      this.language = 'fra'
+    }
     titleService.setTitle(this.slots.pageTitle);
+
   }
 
   onPageTitleChange(e: Event): void {
