@@ -307,7 +307,7 @@ export class UploadComponent implements OnInit {
                 }
               );
             } else {
-              this.toastr.error(err.message, $localize`Audio processing failed`, {
+              this.toastr.error(err.message, $localize`Audio processing failed.`, {
                 timeOut: 15000,
               });
             }
