@@ -47,7 +47,7 @@ export class RasService {
   baseURL = environment.apiBaseURL;
   constructor(private http: HttpClient) {}
 
-  convertRasFormat$(body: ReadAlongFormatRequest, output_type: SupportedOutputs|string): Observable<any> {
+  convertRasFormat$(body: ReadAlongFormatRequest, output_type: SupportedOutputs|string): Observable<Blob> {
       return this.http.post(this.baseURL + "/convert_alignment/" + output_type, body, {responseType: 'blob'});
   }
 

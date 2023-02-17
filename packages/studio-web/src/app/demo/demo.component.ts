@@ -188,7 +188,7 @@ export class DemoComponent implements OnInit {
           this.selectedOutputFormat
         )
         .subscribe({
-          next: (x: any) => saveAs(x, `readalong.${this.selectedOutputFormat}`),
+          next: (x: Blob) => saveAs(x, `readalong.${this.selectedOutputFormat}`),
           error: (err: HttpErrorResponse) => this.reportRasError(err),
         });
 
