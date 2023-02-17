@@ -37,33 +37,7 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
   styleUrls: ["./upload.component.sass"],
 })
 export class UploadComponent implements OnInit {
-  langs$ = this.rasService.getLangs$().pipe(
-    catchError((err, caught) => {
-      this.toastr.error(
-        err.message,
-        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-        {
-          timeOut: 60000,
-        }
-      );
-      throw err;
-    }),
-    map((langs: Array<SupportedLanguage>) => {
-      if (Array.isArray(langs)) {
-        return langs
-          .map((lang) => {
-            return { id: lang.code, name: lang.names["_"] };
-          })
-          .sort((a, b) => {
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-            return 0;
-          });
-      } else {
-        return [];
-      }
-    })
-  );
+  langs: Array<SupportedLanguage>;
   loading = false;
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
@@ -100,6 +74,10 @@ export class UploadComponent implements OnInit {
         recorderErrorCase.toString(),
         $localize`Whoops, something went wrong while recording!`
       );
+    });
+    this.rasService.getLangs$().subscribe({
+      next: (langs: Array<SupportedLanguage>) => (this.langs = langs),
+      error: (err) => this.reportRasError(err),
     });
   }
 

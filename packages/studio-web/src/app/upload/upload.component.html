@@ -128,8 +128,8 @@
                                 <mat-label i18n="Label for language dropdown">Select Language</mat-label>
                                 <mat-select [formControl]="langControl" required>
                                     <mat-option i18n="Name of undetermined language" value="und">Undetermined - (und)</mat-option>
-                                    <mat-option *ngFor="let lang of langs$ | async" [value]="lang['id']">
-                                        {{lang['name']}} - ({{lang['id']}})
+                                    <mat-option *ngFor="let lang of langs" [value]="lang.code">
+                                        {{lang.names['_']}} - ({{lang.code}})
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
