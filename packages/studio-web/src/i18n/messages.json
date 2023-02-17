@@ -93,7 +93,8 @@
     "7719309746449095739": "File ",
     "1326685349515945581": " processed, but not uploaded. Your audio will stay on your computer.",
     "6899344040225872362": "Great!",
-    "1588348847644481261": "File too large",
+    "7895338145504956239": "File too large. Max size: ",
+    "5997429059663319535": " KB",
     "2722548994886578004": " processed. It will be uploaded through an encrypted connection when you go to the next step."
   }
 }
