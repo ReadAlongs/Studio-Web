@@ -10,7 +10,14 @@ import {
   tap,
 } from "rxjs/operators";
 
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
@@ -49,7 +56,7 @@ export class UploadComponent implements OnInit {
   progressValue = 0;
   maxTxtSizeKB = 10; // Max 10 KB plain text file size
   maxRasSizeKB = 20; // Max 20 KB .readalong XML text size
-  @ViewChild('textInputElement') textInputElement: ElementRef;
+  @ViewChild("textInputElement") textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl,
@@ -91,7 +98,9 @@ export class UploadComponent implements OnInit {
     }
     this.rasService.getLangs$().subscribe({
       next: (langs: Array<SupportedLanguage>) => {
-        this.langs = langs.sort((a, b) => a.names["_"].localeCompare(b.names["_"]))
+        this.langs = langs.sort((a, b) =>
+          a.names["_"].localeCompare(b.names["_"])
+        );
       },
       error: (err) => this.reportRasError(err),
     });
@@ -361,13 +370,16 @@ export class UploadComponent implements OnInit {
         { timeOut: 10000 }
       );
     } else if (type === "text") {
-      let maxSizeKB = file.name.split('.').pop() === 'readalong' ? this.maxRasSizeKB : this.maxTxtSizeKB;
+      let maxSizeKB =
+        file.name.split(".").pop() === "readalong"
+          ? this.maxRasSizeKB
+          : this.maxTxtSizeKB;
       if (file.size > maxSizeKB * 1024) {
         this.toastr.error(
           $localize`File too large. Max size: ` + maxSizeKB + $localize` KB`,
-          $localize`Sorry!`,
+          $localize`Sorry!`
         );
-        this.textInputElement.nativeElement.value = ""
+        this.textInputElement.nativeElement.value = "";
       } else {
         this.textControl.setValue(file);
         this.toastr.success(
@@ -380,5 +392,4 @@ export class UploadComponent implements OnInit {
       }
     }
   }
-
 }
