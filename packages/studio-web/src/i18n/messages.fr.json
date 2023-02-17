@@ -75,7 +75,6 @@
     "6343905986690994985": "Prochaine étape!",
     "4606148917260460531": "Oops, une erreur s'est produite à l'enregistrement",
     "3763839702998678686": "Pas d'audio à télécharger.",
-    "1588348847644481261": "Fichier trop lourd",
     "3790351978262872462": "Désolé!",
     "6558433540988178003": "Pas de texte à télécharger.",
     "2596823344081631983": "Audio enregistré avec succès. Prière d'écouter votre enregistrement pour le valider et de le sauvegarder s'il est bon.",
@@ -94,6 +93,8 @@
     "7719309746449095739": "Fichier ",
     "1326685349515945581": " lu, mais pas téléversé. Votre audio restera sur votre ordinateur.",
     "6899344040225872362": "Bravo!",
+    "7895338145504956239": "Fichier trop lounrd. Poids maximal: ",
+    "5997429059663319535": " Ko",
     "2722548994886578004": " lu. Il sera téléversé à l'aide d'une connexion chiffrée quand vous passerez à la prochaine étape."
   }
 }
