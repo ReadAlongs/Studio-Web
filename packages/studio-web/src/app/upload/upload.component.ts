@@ -281,10 +281,6 @@ export class UploadComponent implements OnInit {
         ),
       })
         .pipe(
-          catchError((err, caught) => {
-            this.loading = false;
-            throw err;
-          }),
           switchMap(({ audio, ras }) =>
             // We can't give the arguments types because RxJS is broken somehow,
             // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
@@ -308,6 +304,7 @@ export class UploadComponent implements OnInit {
             }
           },
           error: (err: Error) => {
+            this.loading = false;
             if (err instanceof HttpErrorResponse) {
               this.reportRasError(err);
             } else {
