@@ -1,11 +1,20 @@
 <section>
-    <div class="container export__desc">
+    <div class="container" *ngIf="langs.length == 0">
+      <h1 i18n="Language error heading" class="title">Server Error</h1>
+      <p i18n="Language error text">
+        Failed to retrieve the list of languages
+        from the server.  Please contact the
+        developers and reload the page once the
+        error is corrected.
+      </p>
+    </div>
+    <div class="container export__desc" *ngIf="langs.length != 0">
         <h2 i18n="Header for upload box" class="subtitle" id="upload-header">Select data to start creating your ReadAlong</h2>
         <p i18n="Upload instructions">In order to make a ReadAlong, we need 3 different things. We need to know <b>which language</b> your readalong is in, and we also need some <b>text</b>, and corresponding
             <b>audio</b>.
         </p>
     </div>
-    <div class="container">
+    <div class="container" *ngIf="langs.length != 0">
         <div class="row g-2 mb-3">
             <div id="text-section" class="col-12 col-md-6 p-3 border bg-light">
                 <div class="d-flex flex-row justify-content-between">
@@ -117,7 +126,6 @@
                 <h1 i18n="Title for language box" class="title">Select your Language</h1>
                 <p i18n="Language selection instructions">If your language isn't supported in the list below, you can try and run it with the "Undetermined" option below. If that's not working very well, have a look at <a href="https://blog.mothertongues.org/g2p-background/" target="_blank" rel="noopener noreferrer"><mat-icon inline style="vertical-align: middle">launch</mat-icon> this blog post series</a> to understand how you might get support for your language, or <a href="#">contact us</a> for more info!
                 </p>
-
                 <div class="mb-3">
                     <label i18n="Label for language selection" for="langSelect" class="form-label">You can use the dropdown below to select a
                             pre-configured mapping for your language.</label>
@@ -128,8 +136,8 @@
                                 <mat-label i18n="Label for language dropdown">Select Language</mat-label>
                                 <mat-select [formControl]="langControl" required>
                                     <mat-option i18n="Name of undetermined language" value="und">Undetermined - (und)</mat-option>
-                                    <mat-option *ngFor="let lang of langs$ | async" [value]="lang['id']">
-                                        {{lang['name']}} - ({{lang['id']}})
+                                    <mat-option *ngFor="let lang of langs" [value]="lang.code">
+                                        {{lang.names['_']}} - ({{lang.code}})
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -143,6 +151,5 @@
                 <mat-progress-bar *ngIf="loading" [mode]="progressMode" [value]="progressValue"></mat-progress-bar>
             </div>
         </div>
-
     </div>
 </section>

@@ -24,34 +24,24 @@ export class FileService {
     )
   }
 
-  readFile$ = (blob: any) =>
-    Observable.create((obs: any) => {
-      if (!(blob instanceof Blob)) {
-        obs.error(new Error("`blob` must be an instance of File or Blob."));
-        return;
-      }
-
-      const reader = new FileReader();
-
+  readFile$(blob: Blob | File): Observable<string> {
+    const reader = new FileReader();
+    return Observable.create((obs: any) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
       reader.onload = () => obs.next(reader.result);
       reader.onloadend = () => obs.complete();
-      return reader.readAsText(blob);
+      reader.readAsText(blob);
     });
-  readFileAsData$ = (blob: any) =>
-    Observable.create((obs: any) => {
-      if (!(blob instanceof Blob)) {
-        obs.error(new Error("`blob` must be an instance of File or Blob."));
-        return;
-      }
-
-      const reader = new FileReader();
-
+  }
+  readFileAsData$(blob: Blob | File): Observable<any> {
+    const reader = new FileReader();
+    return Observable.create((obs: any) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
       reader.onload = () => obs.next(reader.result);
       reader.onloadend = () => obs.complete();
-      return reader.readAsDataURL(blob);
+      reader.readAsDataURL(blob);
     });
+  }
 }
