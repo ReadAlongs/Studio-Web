@@ -29,7 +29,6 @@ import {
   AlignmentProgress,
 } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
-import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "app-upload",
@@ -38,7 +37,17 @@ import { HttpErrorResponse } from "@angular/common/http";
 })
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
-    map((langs: Array<SupportedLanguage> | HttpErrorResponse) => {
+    catchError((err, caught) => {
+      this.toastr.error(
+        err.message,
+        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+        {
+          timeOut: 60000,
+        }
+      );
+      throw err;
+    }),
+    map((langs: Array<SupportedLanguage>) => {
       if (Array.isArray(langs)) {
         return langs
           .map((lang) => {
@@ -307,9 +316,13 @@ export class UploadComponent implements OnInit {
                 }
               );
             } else {
-              this.toastr.error(err.message, $localize`Audio processing failed.`, {
-                timeOut: 15000,
-              });
+              this.toastr.error(
+                err.message,
+                $localize`Audio processing failed.`,
+                {
+                  timeOut: 15000,
+                }
+              );
             }
           },
         });
