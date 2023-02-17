@@ -1,4 +1,4 @@
-<section>
+<section *ngIf="isLoaded">
     <div class="container" *ngIf="langs.length == 0">
       <h1 i18n="Language error heading" class="title">Server Error</h1>
       <p i18n="Language error text">

@@ -44,6 +44,7 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
   styleUrls: ["./upload.component.sass"],
 })
 export class UploadComponent implements OnInit {
+  isLoaded = false;
   langs: Array<SupportedLanguage> = [];
   loading = false;
   langControl = new FormControl<string>("und", Validators.required);
@@ -86,7 +87,7 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  async ngOnInit(): Promise<void> {
+  async ngOnInit() {
     try {
       await this.ssjsService.initialize();
     } catch (err: any) {
@@ -101,8 +102,11 @@ export class UploadComponent implements OnInit {
         this.langs = langs.sort((a, b) =>
           a.names["_"].localeCompare(b.names["_"])
         );
+        this.isLoaded = true;
       },
-      error: (err) => this.reportRasError(err),
+      error: (err) => {
+        this.isLoaded = true;
+      },
     });
   }
 
