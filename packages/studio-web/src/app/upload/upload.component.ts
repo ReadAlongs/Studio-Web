@@ -37,7 +37,7 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
   styleUrls: ["./upload.component.sass"],
 })
 export class UploadComponent implements OnInit {
-  langs: Array<SupportedLanguage>;
+  langs: Array<SupportedLanguage> = [];
   loading = false;
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);

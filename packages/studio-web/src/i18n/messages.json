@@ -49,6 +49,8 @@
     "4832056586737439470": "Example:",
     "6487299681734040440": "This is sentence one in paragraph one on page one.\nThis is sentence two in paragraph one on page one.\n\nThis is sentence one in paragraph two on page one.\nThis is sentence two in paragraph two on page one.\n\n\nThis is sentence one in paragraph one on page two.\n",
     "7819314041543176992": "Close",
+    "8263673404941155539": "Server Error",
+    "5877301925685568064": " Failed to retrieve the list of languages from the server. Please contact the developers and reload the page once the error is corrected. ",
     "928026716351600936": "Select data to start creating your ReadAlong",
     "2201040913045344114": "In order to make a ReadAlong, we need 3 different things. We need to know {$START_BOLD_TEXT}which language{$CLOSE_BOLD_TEXT} your readalong is in, and we also need some {$START_BOLD_TEXT}text{$CLOSE_BOLD_TEXT}, and corresponding {$START_BOLD_TEXT}audio{$CLOSE_BOLD_TEXT}. ",
     "6162693758764653365": "Text",

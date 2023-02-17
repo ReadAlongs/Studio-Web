@@ -49,6 +49,8 @@
     "4832056586737439470": "Par exemple:",
     "6487299681734040440": "Phrase un dans le paragraphe un à la page un.\nPhrase deux dans le paragraphe un à la page un.\n\nPhrase un dans le paragraphe deux à la page un.\nPhrase deux dans le paragraphe deux à la page un.\n\n\nPhrase un dans le paragraphe un à la page deux.\n",
     "7819314041543176992": "Fermer",
+    "8263673404941155539": "Échec de connexion au serveur.",
+    "5877301925685568064": "Le téléchargement de la liste de langues a échoué. Prière de contacter les dévelopeurs et d'actualiser la page lorsque le problème sera corrigé.",
     "928026716351600936": "Sélectionner des données pour commencer votre ReadAlong",
     "2201040913045344114": "Pour créer un ReadAlong, nous avons besoin de trois informations. D'abord, {$START_BOLD_TEXT}en quelle langue{$CLOSE_BOLD_TEXT} sera votre ReadAlong, ensuite {$START_BOLD_TEXT}un texte{$CLOSE_BOLD_TEXT} puis finalement {$START_BOLD_TEXT}un enregistrement audio{$CLOSE_BOLD_TEXT}. ",
     "6162693758764653365": "Texte",
