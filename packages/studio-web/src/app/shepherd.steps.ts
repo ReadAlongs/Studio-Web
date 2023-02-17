@@ -264,7 +264,7 @@ export const readalong_add_image_step: any = {
 
 export const readalong_add_translation_step: any = {
   title: $localize`Edit your ReadAlong\n`,
-  text: $localize`You can add a translation or extra bit of information to each sentence of your ReadAlong by clicking on the + icon here. If you want to remove the translation, click on the - icon after adding your translation.`,
+  text: $localize`You can add a translation or extra bit of information to each sentence of your ReadAlong by clicking on the + icon here. If you later want to remove the translation, click on the − icon after adding your translation.`,
   buttons: [
     {
       classes: "shepherd-button-primary",
@@ -282,7 +282,7 @@ export const readalong_add_translation_step: any = {
 
 export const readalong_export_step: any = {
   title: $localize`Export your ReadAlong\n`,
-  text: $localize`When you're happy with your ReadAlong, you can export it but selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: `,
+  text: $localize`When you're happy with your ReadAlong, you can export it by selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: `,
   attachTo: {
     element: "div.download__buttons",
     on: "bottom"
