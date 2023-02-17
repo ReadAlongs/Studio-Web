@@ -74,3 +74,4 @@ const fontStyle = `
 const css = fonts.map(x => woff2base64(x.font, x.options).woff2).join('\n');
 
 fs.writeFileSync('../../dist/packages/web-component/dist/fonts.b64.css', css + '\n' + fontStyle);
+fs.writeFileSync('../studio-web/src/assets/fonts.b64.css', css + '\n' + fontStyle);
