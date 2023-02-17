@@ -1,7 +1,6 @@
 import { catchError, Observable, of, take } from "rxjs";
-import { ToastrService } from "ngx-toastr";
 
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { DictEntry } from "soundswallower";
 
@@ -46,25 +45,16 @@ export enum SupportedOutputs {
 })
 export class RasService {
   baseURL = environment.apiBaseURL;
-  constructor(private http: HttpClient, private toastr: ToastrService,) {}
+  constructor(private http: HttpClient) {}
 
-  convertRasFormat$(body: ReadAlongFormatRequest, output_type: SupportedOutputs|string): Observable<any|HttpErrorResponse> {
-    return this.http.post(this.baseURL + "/convert_alignment/" + output_type, body, {responseType: 'blob'}).pipe(
-      catchError((err: HttpErrorResponse) => { this.toastr.error(
-        err.message,
-        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-        {
-          timeOut: 60000,
-        }
-      ); return of(err)} ),
-      take(1)
-    );
+  convertRasFormat$(body: ReadAlongFormatRequest, output_type: SupportedOutputs|string): Observable<any> {
+      return this.http.post(this.baseURL + "/convert_alignment/" + output_type, body, {responseType: 'blob'});
   }
 
   assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong> {
       return this.http.post<ReadAlong>(this.baseURL + "/assemble", body);
   }
-  getLangs$(): Observable<Array<SupportedLanguage>|HttpErrorResponse> {
+  getLangs$(): Observable<Array<SupportedLanguage>> {
       return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs");
   }
 }

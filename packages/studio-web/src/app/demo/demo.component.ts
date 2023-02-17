@@ -1,8 +1,10 @@
 import { Observable } from "rxjs";
+import { ToastrService } from "ngx-toastr";
 
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { Components } from "@readalongs/web-component/loader";
+import { HttpErrorResponse } from "@angular/common/http";
 
 import { B64Service } from "../b64.service";
 
@@ -35,7 +37,8 @@ export class DemoComponent implements OnInit {
   constructor(
     public titleService: Title,
     public b64Service: B64Service,
-    private rasService: RasService
+    private rasService: RasService,
+    private toastr: ToastrService
   ) {
     titleService.setTitle(this.slots.pageTitle);
   }
@@ -164,7 +167,19 @@ export class DemoComponent implements OnInit {
           },
           this.selectedOutputFormat
         )
-        .subscribe((x) => saveAs(x, `readalong.${this.selectedOutputFormat}`));
+        .subscribe({
+          next: (x: any) => saveAs(x, `readalong.${this.selectedOutputFormat}`),
+          error: (err: HttpErrorResponse) => {
+            this.toastr.error(
+              err.message,
+              $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+              {
+                timeOut: 60000,
+              }
+            );
+          },
+        });
+
       audio.remove();
     }
   }
