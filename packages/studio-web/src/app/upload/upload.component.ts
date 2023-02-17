@@ -1,7 +1,14 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
 import { Observable, forkJoin, of, zip } from "rxjs";
-import { map, switchMap, take, takeWhile, tap } from "rxjs/operators";
+import {
+  map,
+  catchError,
+  switchMap,
+  take,
+  takeWhile,
+  tap,
+} from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
@@ -257,7 +264,7 @@ export class UploadComponent implements OnInit {
           8000
         ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
-          switchMap((text: string): Observable<ReadAlong|HttpErrorResponse> => {
+          switchMap((text: string): Observable<ReadAlong> => {
             body.input = text;
             this.progressMode = "determinate";
             this.progressValue = 0;
@@ -266,30 +273,47 @@ export class UploadComponent implements OnInit {
         ),
       })
         .pipe(
-          tap((joined_audio_and_ras: any) => {if (joined_audio_and_ras.readalong instanceof HttpErrorResponse) {
+          catchError((err, caught) => {
             this.loading = false;
-          } }),
-          takeWhile((joined_audio_and_ras: any) => !(joined_audio_and_ras.readalong instanceof HttpErrorResponse)),
+            throw err;
+          }),
           switchMap(({ audio, ras }) =>
             // We can't give the arguments types because RxJS is broken somehow,
             // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
             this.ssjsService.align$(audio, ras as ReadAlong)
           )
         )
-        .subscribe((progress) => {
-          if (progress.hypseg !== undefined) {
-            this.loading = false;
-            this.stepChange.emit([
-              "aligned",
-              this.audioControl.value,
-              progress.xml,
-              progress.hypseg,
-            ]);
-          } else {
-            this.progressValue = Math.round(
-              (progress.pos / progress.length) * 100
-            );
-          }
+        .subscribe({
+          next: (progress) => {
+            if (progress.hypseg !== undefined) {
+              this.loading = false;
+              this.stepChange.emit([
+                "aligned",
+                this.audioControl.value,
+                progress.xml,
+                progress.hypseg,
+              ]);
+            } else {
+              this.progressValue = Math.round(
+                (progress.pos / progress.length) * 100
+              );
+            }
+          },
+          error: (err: Error) => {
+            if (err.name == "HttpErrorResponse") {
+              this.toastr.error(
+                err.message,
+                $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+                {
+                  timeOut: 60000,
+                }
+              );
+            } else {
+              this.toastr.error(err.message, $localize`Audio processing failed`, {
+                timeOut: 15000,
+              });
+            }
+          },
         });
     } else {
       if (this.langControl.value === null) {

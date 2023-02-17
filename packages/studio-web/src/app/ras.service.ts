@@ -61,26 +61,10 @@ export class RasService {
     );
   }
 
-  assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong|HttpErrorResponse> {
-    return this.http.post<ReadAlong>(this.baseURL + "/assemble", body).pipe(
-      catchError((err: HttpErrorResponse) => { this.toastr.error(
-        err.message,
-        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-        {
-          timeOut: 60000,
-        }
-      ); return of(err)} )
-    );
+  assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong> {
+      return this.http.post<ReadAlong>(this.baseURL + "/assemble", body);
   }
   getLangs$(): Observable<Array<SupportedLanguage>|HttpErrorResponse> {
-    return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs").pipe(
-      catchError((err: HttpErrorResponse) => { this.toastr.error(
-        err.message,
-        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-        {
-          timeOut: 60000,
-        }
-      ); return of(err)} )
-    );;
+      return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs");
   }
 }
