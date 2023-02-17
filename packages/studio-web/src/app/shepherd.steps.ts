@@ -150,7 +150,7 @@ export const language_step: any = {
 
 export const step_one_final_step: any = {
   title: $localize`That's it!\n`,
-  text: $localize`Once you've done this, you can click the "next step" button here to let Studio build your ReadAlong! (this may take a few seconds)`,
+  text: $localize`Once you've done this, you can click the "next step" button here to let Studio build your ReadAlong! (This may take a few seconds.)`,
   attachTo: {
     element: "#next-step",
     on: "bottom",

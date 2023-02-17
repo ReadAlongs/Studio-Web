@@ -112,8 +112,11 @@ export class AppComponent {
       },
     };
     if (this.upload?.audioControl.value !== null || this.upload?.textControl.value !== null || this.upload?.textInput) {
-      step_one_final_step['text'] = $localize`Once you've done this, you can click the "next step" button here to let Studio build your ReadAlong! (this may take a few seconds)` + ". " + $localize`You already have work saved though, so clicking next will erase it and continue the tour with demonstration data. Cancel the tour if you don't want to do this.`
-      step_one_final_step['buttons'][1]['text'] = $localize`Next` + " " + $localize`(overwrite)`;
+      step_one_final_step['text'] = (
+        $localize`Once you've done this, you can click the "next step" button here to let Studio build your ReadAlong! (This may take a few seconds.)` +
+        $localize` You already started some work, though, so clicking next will erase it and continue the tour with demonstration data. Cancel the tour if you don't want to do this.`
+      )
+      step_one_final_step['buttons'][1]['text'] = $localize`Next` + " " + $localize`(overwrites your data)`;
       step_one_final_step['buttons'][1]['classes'] = "shepherd-button-warning";
     }
     step_one_final_step['buttons'][1]['action'] = () => {
