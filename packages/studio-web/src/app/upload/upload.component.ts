@@ -38,24 +38,21 @@ import { HttpErrorResponse } from "@angular/common/http";
 })
 export class UploadComponent implements OnInit {
   langs$ = this.rasService.getLangs$().pipe(
-    map((langs: Array<SupportedLanguage>|HttpErrorResponse) =>
-    {
-    if (Array.isArray(langs)) {
-      return langs
-      .map((lang) => {
-        return { id: lang.code, name: lang.names["_"] };
-      })
-      .sort((a, b) => {
-        if (a.name < b.name) return -1;
-        if (a.name > b.name) return 1;
-        return 0;
-      })
-    } else {
-      return []
-    }
-  }
-    ) 
-
+    map((langs: Array<SupportedLanguage> | HttpErrorResponse) => {
+      if (Array.isArray(langs)) {
+        return langs
+          .map((lang) => {
+            return { id: lang.code, name: lang.names["_"] };
+          })
+          .sort((a, b) => {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+          });
+      } else {
+        return [];
+      }
+    })
   );
   loading = false;
   langControl = new FormControl<string>("und", Validators.required);
@@ -158,7 +155,7 @@ export class UploadComponent implements OnInit {
   playRecording() {
     if (!this.playing && this.audioControl.value !== null) {
       let player = new window.Audio();
-      this.player = player
+      this.player = player;
       player.src = URL.createObjectURL(this.audioControl.value);
       player.onended = () => this.stopPlayback();
       player.onerror = () => this.stopPlayback();
@@ -196,7 +193,7 @@ export class UploadComponent implements OnInit {
           this.toastr.error(
             $localize`Please try again, or select a pre-recorded file.`,
             $localize`Audio not recorded!`
-          )
+          );
         }
         //console.log("done stopRecording", this.audioControl)
       })
@@ -247,12 +244,13 @@ export class UploadComponent implements OnInit {
       this.progressMode = "query";
       // Determine text type for API request
       let input_type;
-      if (this.inputMethod.text === "upload" &&
+      if (
+        this.inputMethod.text === "upload" &&
         (this.textControl.value.name.toLowerCase().endsWith(".xml") ||
-          this.textControl.value.name.toLowerCase().endsWith(".readalong")))
+          this.textControl.value.name.toLowerCase().endsWith(".readalong"))
+      )
         input_type = "application/readalong+xml";
-      else
-        input_type = "text/plain";
+      else input_type = "text/plain";
       // Create request (text is possibly read from a file later...)
       let body: ReadAlongRequest = {
         text_languages: [this.langControl.value as string, "und"],
