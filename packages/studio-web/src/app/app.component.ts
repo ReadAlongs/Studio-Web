@@ -75,6 +75,10 @@ export class AppComponent {
   }
 
   ngAfterViewInit() {
+
+  }
+
+  startTour(): void {
     this.shepherdService.defaultStepOptions = {
       classes: "",
       scrollTo: true,
@@ -82,6 +86,7 @@ export class AppComponent {
         enabled: true,
       },
     };
+    this.shepherdService.keyboardNavigation = false;
     text_file_step["when"] = {
       show: () => {
         if (this.upload) {
@@ -156,6 +161,7 @@ export class AppComponent {
       language_step,
       step_one_final_step,
     ]);
+    this.shepherdService.start()
   }
 
   openPrivacyDialog(): void {
