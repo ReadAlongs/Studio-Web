@@ -1,6 +1,6 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
-import { Observable, forkJoin, of, zip } from "rxjs";
+import { Observable, forkJoin, of, zip, finalize } from "rxjs";
 import {
   map,
   catchError,
@@ -97,17 +97,16 @@ export class UploadComponent implements OnInit {
       console.log(err);
       return;
     }
-    this.rasService.getLangs$().subscribe({
-      next: (langs: Array<SupportedLanguage>) => {
-        this.langs = langs.sort((a, b) =>
-          a.names["_"].localeCompare(b.names["_"])
-        );
-        this.isLoaded = true;
-      },
-      error: (err) => {
-        this.isLoaded = true;
-      },
-    });
+    this.rasService
+      .getLangs$()
+      .pipe(finalize(() => (this.isLoaded = true)))
+      .subscribe({
+        next: (langs: Array<SupportedLanguage>) => {
+          this.langs = langs.sort((a, b) =>
+            a.names["_"].localeCompare(b.names["_"])
+          );
+        },
+      });
   }
 
   reportRasError(err: HttpErrorResponse) {
