@@ -282,7 +282,16 @@ export const readalong_add_translation_step: any = {
 
 export const readalong_export_step: any = {
   title: $localize`Export your ReadAlong`,
-  text: $localize`When you're happy with your ReadAlong, you can export it by selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: `,
+  text: (
+    $localize`When you're happy with your ReadAlong, you can export it by selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: ` +
+    "<ul><li>" +
+    $localize`Offline HTML: your ReadAlongs in a single-file HTML document that requires no web access to work` +
+    "</li><li>" +
+    $localize`Elan and Praat files: export formats used by documentary linguists` +
+    "</li><li>" +
+    $localize`SRT and WebVTT subtitles: export formats used to add subtitle to videos` +
+    "</li></ul>"
+  ),
   attachTo: {
     element: "div.download__buttons",
     on: "bottom"
