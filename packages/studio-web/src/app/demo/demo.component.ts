@@ -51,6 +51,26 @@ export class DemoComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  reportRasError(err: HttpErrorResponse) {
+    if (err.status == 422) {
+      this.toastr.error(
+        err.message,
+        $localize`ReadAlong format conversion failed.`,
+        {
+          timeOut: 15000,
+        }
+      );
+    } else {
+      this.toastr.error(
+        err.message,
+        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+        {
+          timeOut: 60000,
+        }
+      );
+    }
+  }
+
   async updateTranslations(doc: Document): Promise<boolean> {
     const translations: any = await this.readalong.getTranslations();
     if (Object.keys(translations).length == 0) {
@@ -169,15 +189,7 @@ export class DemoComponent implements OnInit {
         )
         .subscribe({
           next: (x: any) => saveAs(x, `readalong.${this.selectedOutputFormat}`),
-          error: (err: HttpErrorResponse) => {
-            this.toastr.error(
-              err.message,
-              $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-              {
-                timeOut: 60000,
-              }
-            );
-          },
+          error: (err: HttpErrorResponse) => this.reportRasError(err),
         });
 
       audio.remove();

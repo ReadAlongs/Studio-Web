@@ -14,6 +14,7 @@ import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
+import { HttpErrorResponse } from "@angular/common/http";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
@@ -108,6 +109,28 @@ export class UploadComponent implements OnInit {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  reportRasError(err: HttpErrorResponse) {
+    if (err.status == 422) {
+      this.toastr.error(err.message, $localize`Text processing failed.`, {
+        timeOut: 15000,
+      });
+    } else {
+      this.toastr.error(
+        err.message,
+        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+        {
+          timeOut: 60000,
+        }
+      );
+    }
+  }
+
+  reportAudioError(err: Error) {
+    this.toastr.error(err.message, $localize`Audio processing failed.`, {
+      timeOut: 15000,
+    });
   }
 
   downloadRecording() {
@@ -307,22 +330,10 @@ export class UploadComponent implements OnInit {
             }
           },
           error: (err: Error) => {
-            if (err.name == "HttpErrorResponse") {
-              this.toastr.error(
-                err.message,
-                $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-                {
-                  timeOut: 60000,
-                }
-              );
+            if (err instanceof HttpErrorResponse) {
+              this.reportRasError(err);
             } else {
-              this.toastr.error(
-                err.message,
-                $localize`Audio processing failed.`,
-                {
-                  timeOut: 15000,
-                }
-              );
+              this.reportAudioError(err);
             }
           },
         });
