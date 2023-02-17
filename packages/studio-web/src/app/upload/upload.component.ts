@@ -77,24 +77,24 @@ export class UploadComponent implements OnInit {
         $localize`Whoops, something went wrong while recording!`
       );
     });
-    this.rasService.getLangs$().subscribe({
-      next: (langs: Array<SupportedLanguage>) => {
-        this.langs = langs.sort((a, b) => {
-          if (a.names['_'] < b.names['_']) return -1;
-          if (a.names['_'] > b.names['_']) return 1;
-          return 0;
-        });
-      },
-      error: (err) => this.reportRasError(err),
-    });
   }
 
   async ngOnInit(): Promise<void> {
     try {
       await this.ssjsService.initialize();
-    } catch (err) {
+    } catch (err: any) {
+      this.toastr.error(err.message, $localize`Failed to load the aligner.`, {
+        timeOut: 60000,
+      });
       console.log(err);
+      return;
     }
+    this.rasService.getLangs$().subscribe({
+      next: (langs: Array<SupportedLanguage>) => {
+        this.langs = langs.sort((a, b) => a.names["_"].localeCompare(b.names["_"]))
+      },
+      error: (err) => this.reportRasError(err),
+    });
   }
 
   reportRasError(err: HttpErrorResponse) {
