@@ -25,10 +25,10 @@ export class DemoComponent implements OnInit {
   };
   outputFormats = [{"value": "html", "display": $localize`Offline HTML`}, {"value": "eaf", "display": $localize`Elan File`}, {"value": "textgrid", "display": $localize`Praat TextGrid`}, {"value": "srt", "display": $localize`SRT Subtitles`}, {"value": "vtt", "display": $localize`WebVTT Subtitles`}]
   selectedOutputFormat: SupportedOutputs|string = "html"
-  language: "eng" | "fra" = "eng"
+  language: "eng" | "fra" = "eng";
   constructor(public titleService: Title, public b64Service: B64Service, private rasService: RasService) {
-    // If we end up translating this to more languages, we should probably move this to its own service
-    if (/\/fr\//.test(window.location.href)) {
+    // If we do more languages, this should be a lookup table
+    if ($localize.locale == "fr") {
       this.language = 'fra'
     }
     titleService.setTitle(this.slots.pageTitle);
