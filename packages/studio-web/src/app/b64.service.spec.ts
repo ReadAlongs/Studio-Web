@@ -1,4 +1,5 @@
 import { HttpClient, HttpEventType } from "@angular/common/http";
+import { ToastrModule } from "ngx-toastr";
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -13,7 +14,7 @@ describe("B64Service", () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
+    TestBed.configureTestingModule({ imports: [HttpClientTestingModule, ToastrModule.forRoot()] });
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(B64Service);
