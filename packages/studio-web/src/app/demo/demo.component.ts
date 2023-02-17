@@ -1,8 +1,10 @@
 import { Observable } from "rxjs";
+import { ToastrService } from "ngx-toastr";
 
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { Components } from "@readalongs/web-component/loader";
+import { HttpErrorResponse } from "@angular/common/http";
 
 import { B64Service } from "../b64.service";
 
@@ -24,9 +26,20 @@ export class DemoComponent implements OnInit {
     subtitle: $localize`Subtitle`,
     pageTitle: $localize`PageTitle`,
   };
-  outputFormats = [{"value": "html", "display": $localize`Offline HTML`}, {"value": "eaf", "display": $localize`Elan File`}, {"value": "textgrid", "display": $localize`Praat TextGrid`}, {"value": "srt", "display": $localize`SRT Subtitles`}, {"value": "vtt", "display": $localize`WebVTT Subtitles`}]
-  selectedOutputFormat: SupportedOutputs|string = "html"
-  constructor(public titleService: Title, public b64Service: B64Service, private rasService: RasService) {
+  outputFormats = [
+    { value: "html", display: $localize`Offline HTML` },
+    { value: "eaf", display: $localize`Elan File` },
+    { value: "textgrid", display: $localize`Praat TextGrid` },
+    { value: "srt", display: $localize`SRT Subtitles` },
+    { value: "vtt", display: $localize`WebVTT Subtitles` },
+  ];
+  selectedOutputFormat: SupportedOutputs | string = "html";
+  constructor(
+    public titleService: Title,
+    public b64Service: B64Service,
+    private rasService: RasService,
+    private toastr: ToastrService
+  ) {
     titleService.setTitle(this.slots.pageTitle);
   }
 
@@ -38,34 +51,71 @@ export class DemoComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  reportRasError(err: HttpErrorResponse) {
+    if (err.status == 422) {
+      this.toastr.error(
+        err.message,
+        $localize`ReadAlong format conversion failed.`,
+        {
+          timeOut: 15000,
+        }
+      );
+    } else {
+      this.toastr.error(
+        err.message,
+        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+        {
+          timeOut: 60000,
+        }
+      );
+    }
+  }
+
   async updateTranslations(doc: Document): Promise<boolean> {
     const translations: any = await this.readalong.getTranslations();
     if (Object.keys(translations).length == 0) {
       return false;
     } else {
-      const sentence_nodes = doc.querySelectorAll("s:not(.sentence__translation)")
+      const sentence_nodes = doc.querySelectorAll(
+        "s:not(.sentence__translation)"
+      );
       // represents all translation nodes that have already been added
-      const translation_node_ids = new Set(Array.from(doc.querySelectorAll(".editable__translation")).map((t_node) => t_node.id))
+      const translation_node_ids = new Set(
+        Array.from(doc.querySelectorAll(".editable__translation")).map(
+          (t_node) => t_node.id
+        )
+      );
       sentence_nodes.forEach((sentence: Element) => {
         // Add a translation
-        if (sentence.id in translations && !translation_node_ids.has(sentence.id)) {
+        if (
+          sentence.id in translations &&
+          !translation_node_ids.has(sentence.id)
+        ) {
           // No namespaces!! NO! NO! NO!
-          let newSentence = document.createElementNS(null, 's')
-          newSentence.setAttribute('do-not-align', "true")
-          newSentence.setAttribute("id", sentence.id)
-          newSentence.setAttribute("class", "sentence__translation editable__translation")
-          newSentence.setAttribute("xml:lang", "eng")
-          newSentence.append(translations[sentence.id])
-          sentence.insertAdjacentElement('afterend', newSentence)
+          let newSentence = document.createElementNS(null, "s");
+          newSentence.setAttribute("do-not-align", "true");
+          newSentence.setAttribute("id", sentence.id);
+          newSentence.setAttribute(
+            "class",
+            "sentence__translation editable__translation"
+          );
+          newSentence.setAttribute("xml:lang", "eng");
+          newSentence.append(translations[sentence.id]);
+          sentence.insertAdjacentElement("afterend", newSentence);
         }
         // Remove a translation
-        if (sentence.id in translations && translations[sentence.id] === null && translation_node_ids.has(sentence.id)) {
-          let elementToRemove = doc.querySelector(`#${sentence.id}.sentence__translation`)
-          elementToRemove?.remove()
+        if (
+          sentence.id in translations &&
+          translations[sentence.id] === null &&
+          translation_node_ids.has(sentence.id)
+        ) {
+          let elementToRemove = doc.querySelector(
+            `#${sentence.id}.sentence__translation`
+          );
+          elementToRemove?.remove();
         }
-
-      })
-      return true
+      });
+      return true;
     }
   }
 
@@ -77,7 +127,7 @@ export class DemoComponent implements OnInit {
       // Add Image
       if (currentPage && img) {
         // Remove any images that are there from before
-        currentPage.querySelectorAll('graphic').forEach((e) => e.remove())
+        currentPage.querySelectorAll("graphic").forEach((e) => e.remove());
         let graphic = doc.createElementNS(null, "graphic");
         // @ts-ignore
         let blob = await fetch(img).then((r) => r.blob());
@@ -86,9 +136,9 @@ export class DemoComponent implements OnInit {
         // @ts-ignore
         graphic.setAttribute("url", b64);
         currentPage.appendChild(graphic);
-      // Remove Images
+        // Remove Images
       } else if (img === null) {
-        currentPage.querySelectorAll('graphic').forEach((e) => e.remove())
+        currentPage.querySelectorAll("graphic").forEach((e) => e.remove());
       }
     }
     return true;
@@ -96,7 +146,7 @@ export class DemoComponent implements OnInit {
 
   async download() {
     let ras = this.b64Inputs[1];
-    if (this.selectedOutputFormat == 'html') {
+    if (this.selectedOutputFormat == "html") {
       await this.updateImages(ras);
       await this.updateTranslations(ras);
       let b64ras = this.b64Service.xmlToB64(ras);
@@ -128,9 +178,21 @@ export class DemoComponent implements OnInit {
       element.click();
       document.body.removeChild(element);
     } else {
-      let audio: HTMLAudioElement = new Audio(this.b64Inputs[0])
-      this.rasService.convertRasFormat$({ "dur": audio.duration, "ras": new XMLSerializer().serializeToString(ras.documentElement)}, this.selectedOutputFormat).subscribe(x=>saveAs(x, `readalong.${this.selectedOutputFormat}`))
-      audio.remove()
+      let audio: HTMLAudioElement = new Audio(this.b64Inputs[0]);
+      this.rasService
+        .convertRasFormat$(
+          {
+            dur: audio.duration,
+            ras: new XMLSerializer().serializeToString(ras.documentElement),
+          },
+          this.selectedOutputFormat
+        )
+        .subscribe({
+          next: (x: Blob) => saveAs(x, `readalong.${this.selectedOutputFormat}`),
+          error: (err: HttpErrorResponse) => this.reportRasError(err),
+        });
+
+      audio.remove();
     }
   }
 }

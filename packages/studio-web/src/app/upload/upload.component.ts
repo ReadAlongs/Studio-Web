@@ -1,12 +1,20 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
 import { Observable, forkJoin, of, zip } from "rxjs";
-import { map, switchMap, take, takeWhile, tap } from "rxjs/operators";
+import {
+  map,
+  catchError,
+  switchMap,
+  take,
+  takeWhile,
+  tap,
+} from "rxjs/operators";
 
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
+import { HttpErrorResponse } from "@angular/common/http";
 
 import { AudioService } from "../audio.service";
 import { FileService } from "../file.service";
@@ -22,7 +30,6 @@ import {
   AlignmentProgress,
 } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
-import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "app-upload",
@@ -30,26 +37,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   styleUrls: ["./upload.component.sass"],
 })
 export class UploadComponent implements OnInit {
-  langs$ = this.rasService.getLangs$().pipe(
-    map((langs: Array<SupportedLanguage>|HttpErrorResponse) =>
-    {
-    if (Array.isArray(langs)) {
-      return langs
-      .map((lang) => {
-        return { id: lang.code, name: lang.names["_"] };
-      })
-      .sort((a, b) => {
-        if (a.name < b.name) return -1;
-        if (a.name > b.name) return 1;
-        return 0;
-      })
-    } else {
-      return []
-    }
-  }
-    ) 
-
-  );
+  langs: Array<SupportedLanguage> = [];
   loading = false;
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
@@ -87,6 +75,16 @@ export class UploadComponent implements OnInit {
         $localize`Whoops, something went wrong while recording!`
       );
     });
+    this.rasService.getLangs$().subscribe({
+      next: (langs: Array<SupportedLanguage>) => {
+        this.langs = langs.sort((a, b) => {
+          if (a.names['_'] < b.names['_']) return -1;
+          if (a.names['_'] > b.names['_']) return 1;
+          return 0;
+        });
+      },
+      error: (err) => this.reportRasError(err),
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -95,6 +93,28 @@ export class UploadComponent implements OnInit {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  reportRasError(err: HttpErrorResponse) {
+    if (err.status == 422) {
+      this.toastr.error(err.message, $localize`Text processing failed.`, {
+        timeOut: 15000,
+      });
+    } else {
+      this.toastr.error(
+        err.message,
+        $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
+        {
+          timeOut: 60000,
+        }
+      );
+    }
+  }
+
+  reportAudioError(err: Error) {
+    this.toastr.error(err.message, $localize`Audio processing failed.`, {
+      timeOut: 15000,
+    });
   }
 
   downloadRecording() {
@@ -151,7 +171,7 @@ export class UploadComponent implements OnInit {
   playRecording() {
     if (!this.playing && this.audioControl.value !== null) {
       let player = new window.Audio();
-      this.player = player
+      this.player = player;
       player.src = URL.createObjectURL(this.audioControl.value);
       player.onended = () => this.stopPlayback();
       player.onerror = () => this.stopPlayback();
@@ -189,7 +209,7 @@ export class UploadComponent implements OnInit {
           this.toastr.error(
             $localize`Please try again, or select a pre-recorded file.`,
             $localize`Audio not recorded!`
-          )
+          );
         }
         //console.log("done stopRecording", this.audioControl)
       })
@@ -240,12 +260,13 @@ export class UploadComponent implements OnInit {
       this.progressMode = "query";
       // Determine text type for API request
       let input_type;
-      if (this.inputMethod.text === "upload" &&
+      if (
+        this.inputMethod.text === "upload" &&
         (this.textControl.value.name.toLowerCase().endsWith(".xml") ||
-          this.textControl.value.name.toLowerCase().endsWith(".readalong")))
+          this.textControl.value.name.toLowerCase().endsWith(".readalong"))
+      )
         input_type = "application/readalong+xml";
-      else
-        input_type = "text/plain";
+      else input_type = "text/plain";
       // Create request (text is possibly read from a file later...)
       let body: ReadAlongRequest = {
         text_languages: [this.langControl.value as string, "und"],
@@ -257,7 +278,7 @@ export class UploadComponent implements OnInit {
           8000
         ),
         ras: this.fileService.readFile$(this.textControl.value).pipe(
-          switchMap((text: string): Observable<ReadAlong|HttpErrorResponse> => {
+          switchMap((text: string): Observable<ReadAlong> => {
             body.input = text;
             this.progressMode = "determinate";
             this.progressValue = 0;
@@ -266,30 +287,36 @@ export class UploadComponent implements OnInit {
         ),
       })
         .pipe(
-          tap((joined_audio_and_ras: any) => {if (joined_audio_and_ras.readalong instanceof HttpErrorResponse) {
-            this.loading = false;
-          } }),
-          takeWhile((joined_audio_and_ras: any) => !(joined_audio_and_ras.readalong instanceof HttpErrorResponse)),
           switchMap(({ audio, ras }) =>
             // We can't give the arguments types because RxJS is broken somehow,
             // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
             this.ssjsService.align$(audio, ras as ReadAlong)
           )
         )
-        .subscribe((progress) => {
-          if (progress.hypseg !== undefined) {
+        .subscribe({
+          next: (progress) => {
+            if (progress.hypseg !== undefined) {
+              this.loading = false;
+              this.stepChange.emit([
+                "aligned",
+                this.audioControl.value,
+                progress.xml,
+                progress.hypseg,
+              ]);
+            } else {
+              this.progressValue = Math.round(
+                (progress.pos / progress.length) * 100
+              );
+            }
+          },
+          error: (err: Error) => {
             this.loading = false;
-            this.stepChange.emit([
-              "aligned",
-              this.audioControl.value,
-              progress.xml,
-              progress.hypseg,
-            ]);
-          } else {
-            this.progressValue = Math.round(
-              (progress.pos / progress.length) * 100
-            );
-          }
+            if (err instanceof HttpErrorResponse) {
+              this.reportRasError(err);
+            } else {
+              this.reportAudioError(err);
+            }
+          },
         });
     } else {
       if (this.langControl.value === null) {
