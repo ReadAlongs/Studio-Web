@@ -34,12 +34,17 @@ export class DemoComponent implements OnInit {
     { value: "vtt", display: $localize`WebVTT Subtitles` },
   ];
   selectedOutputFormat: SupportedOutputs | string = "html";
+  language: "eng" | "fra" = "eng";
   constructor(
     public titleService: Title,
     public b64Service: B64Service,
     private rasService: RasService,
     private toastr: ToastrService
   ) {
+    // If we do more languages, this should be a lookup table
+    if ($localize.locale == "fr") {
+      this.language = "fra";
+    }
     titleService.setTitle(this.slots.pageTitle);
   }
 
@@ -188,7 +193,8 @@ export class DemoComponent implements OnInit {
           this.selectedOutputFormat
         )
         .subscribe({
-          next: (x: Blob) => saveAs(x, `readalong.${this.selectedOutputFormat}`),
+          next: (x: Blob) =>
+            saveAs(x, `readalong.${this.selectedOutputFormat}`),
           error: (err: HttpErrorResponse) => this.reportRasError(err),
         });
 

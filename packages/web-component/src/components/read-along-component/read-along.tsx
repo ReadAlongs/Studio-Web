@@ -921,18 +921,51 @@ export class ReadAlongComponent {
       },
       "alignment-error": {
         "eng": "Error: No alignments were found.",
-        "fra": "Erreur: aucun alignement n'a été trouvé."
+        "fra": "Erreur: aucun alignement n'a été trouvé.",
       },
       "loading": {
         "eng": "Loading...",
-        "fra": "Chargement en cours"
+        "fra": "Chargement en cours",
       },
       "line-placeholder": {
         "eng": "Type your text here",
-        "fra": "Écrivez votre texte ici" 
-      }
+        "fra": "Écrivez votre texte ici",
+      },
+      "upload-image": {
+        "eng": "Upload an image for this page",
+        "fra": "Télécharger une image pour cette page",
+      },
+      "choose-file": {
+        "eng": "Choose a file",
+        "fra": "Choisir un fichier",
+      },
+      "play-tooltip": {
+        "eng": "Play audio recording",
+        "fra": "Écouter l'enregistrement",
+      },
+      "rewind-tooltip": {
+        "eng": "Rewind audio recording",
+        "fra": "Relire dès le début",
+      },
+      "stop-tooltip": {
+        "eng": "Stop audio recording",
+        "fra": "Arrêter la lecture",
+      },
+      "theme-tooltip": {
+        "eng": "Change theme",
+        "fra": "Changer de thême visuel",
+      },
+      "full-screen-tooltip": {
+        "eng": "Full screen mode",
+        "fra": "Mode plein écran",
+      },
+      "translation-tooltip": {
+        "eng": "Toggle translations",
+        "fra": "Afficher ou cacher les traductions",
+      },
+
     }
-    if (translations[word] && translations[word][lang])
+      if (translations[word] && translations[word][lang])
       return translations[word][lang]
     return word;
   }
@@ -1029,9 +1062,9 @@ export class ReadAlongComponent {
     return (<div class={"image__container page__col__image theme--" + this.theme}>
       <div class='drop-area'>
         <form class="my-form">
-          <p class={"theme--" + this.theme}>Upload an image for this page with the file dialog below</p>
+          <p class={"theme--" + this.theme}>{this.returnTranslation('upload-image', this.language)}</p>
           <input type="file" class='fileElem' id={"fileElem--" + props.pageID} accept="image/*" onChange={($event: any) => this.handleFiles($event.target.files[0], props.pageIndex)} />
-          <label class="button" htmlFor={"fileElem--" + props.pageID}>Select some files</label>
+          <label class="button" htmlFor={"fileElem--" + props.pageID}>{this.returnTranslation('choose-file', this.language)}</label>
         </form>
       </div>
 
@@ -1216,7 +1249,7 @@ export class ReadAlongComponent {
    */
 
   PlayControl = (): Element => <button data-cy="play-button" disabled={this.hasLoaded < 2} aria-label="Play"
-    title="Play audio recording"
+    title={this.returnTranslation('play-tooltip', this.language)}
     onClick={() => {
       this.playing ? this.pause() : this.play()
     }}
@@ -1225,14 +1258,14 @@ export class ReadAlongComponent {
   </button>
 
   ReplayControl = (): Element => <button data-cy="replay-button" disabled={this.hasLoaded < 2} aria-label="Rewind"
-    title="Replay audio recording"
+    title={this.returnTranslation('rewind-tooltip', this.language)}
     onClick={() => this.goBack(5)}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">replay_5</i>
   </button>
 
   StopControl = (): Element => <button data-cy="stop-button" disabled={this.hasLoaded < 2} aria-label="Stop"
-    title="Stop audio recording"
+    title={this.returnTranslation('stop-tooltip', this.language)}
     onClick={() => this.stop()}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons">stop</i>
@@ -1256,19 +1289,19 @@ export class ReadAlongComponent {
   </div>
 
   StyleControl = (): Element => <button aria-label="Change theme" onClick={() => this.changeTheme()}
-    title="Change theme"
+    title={this.returnTranslation('theme-tooltip', this.language)}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">style</i>
   </button>
 
   FullScreenControl = (): Element => <button aria-label="Full screen mode" onClick={() => this.toggleFullscreen()}
-    title="Full screen mode"
+    title={this.returnTranslation('full-screen-tooltip', this.language)}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons" aria-label="Full screen mode">{this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</i>
   </button>
 
   TextTranslationDisplayControl = (): Element => <button data-cy="translation-toggle" aria-label="Toggle Translation"
-    title="Toggle translation"
+    title={this.returnTranslation('translation-tooltip', this.language)}
     onClick={() => this.toggleTextTranslation()}
     class={"control-panel__control ripple theme--" + this.theme + " background--" + this.theme}>
     <i class="material-icons-outlined">subtitles</i>

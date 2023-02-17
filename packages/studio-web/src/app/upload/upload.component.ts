@@ -10,7 +10,7 @@ import {
   tap,
 } from "rxjs/operators";
 
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
@@ -47,7 +47,9 @@ export class UploadComponent implements OnInit {
   player: any = null;
   progressMode: ProgressBarMode = "indeterminate";
   progressValue = 0;
-
+  maxTxtSizeKB = 10; // Max 10 KB plain text file size
+  maxRasSizeKB = 20; // Max 20 KB .readalong XML text size
+  @ViewChild('textInputElement') textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl,
@@ -359,14 +361,24 @@ export class UploadComponent implements OnInit {
         { timeOut: 10000 }
       );
     } else if (type === "text") {
-      this.textControl.setValue(file);
-      this.toastr.success(
-        $localize`File ` +
-          file.name +
-          $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
-        $localize`Great!`,
-        { timeOut: 10000 }
-      );
+      let maxSizeKB = file.name.split('.').pop() === 'readalong' ? this.maxRasSizeKB : this.maxTxtSizeKB;
+      if (file.size > maxSizeKB * 1024) {
+        this.toastr.error(
+          $localize`File too large. Max size: ` + maxSizeKB + $localize` KB`,
+          $localize`Sorry!`,
+        );
+        this.textInputElement.nativeElement.value = ""
+      } else {
+        this.textControl.setValue(file);
+        this.toastr.success(
+          $localize`File ` +
+            file.name +
+            $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
+          $localize`Great!`,
+          { timeOut: 10000 }
+        );
+      }
     }
   }
+
 }
