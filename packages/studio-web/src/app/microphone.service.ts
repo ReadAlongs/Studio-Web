@@ -1,4 +1,3 @@
-// -*- typescript-indent-level: 2 -*-
 import { EventEmitter, Injectable } from "@angular/core";
 
 @Injectable({

@@ -1,4 +1,3 @@
-/* -*- typescript-indent-level: 2 -*- */
 import { Observable, of, from } from "rxjs";
 import soundswallower_factory, {
   Decoder,
