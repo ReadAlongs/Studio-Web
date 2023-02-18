@@ -7,7 +7,7 @@
             </div>
             <div class="col-3 download__buttons">
                 <mat-form-field appearance="fill">
-                    <mat-label>Output Format</mat-label>
+                    <mat-label i18n="Output format">Output Format</mat-label>
                     <mat-select [(ngModel)]="selectedOutputFormat">
                         <mat-option *ngFor="let format of outputFormats" [value]="format.value">
                             {{format.display}}
