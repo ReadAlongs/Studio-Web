@@ -27,7 +27,7 @@ jobs:
           start: npm run test-servers
           wait-on: npm run wait-for-test-server
       - run: cd ./packages/web-component && npm version patch
-      - run: nx build web-component && nx prepublish web-component && nx build ngx-web-component
+      - run: nx build web-component && nx prepublish web-component && nx bundle web-component && nx build ngx-web-component
       - run: |
           cd dist/packages/web-component && npm publish
           cd dist/packages/ngx-web-component && npm publish
