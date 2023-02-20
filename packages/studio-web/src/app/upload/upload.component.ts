@@ -78,14 +78,7 @@ export class UploadComponent implements OnInit {
     private ssjsService: SoundswallowerService,
     private microphoneService: MicrophoneService,
     private dialog: MatDialog
-  ) {
-    this.microphoneService.recorderError.subscribe((recorderErrorCase) => {
-      this.toastr.error(
-        recorderErrorCase.toString(),
-        $localize`Whoops, something went wrong while recording!`
-      );
-    });
-  }
+  ) {}
 
   async ngOnInit() {
     forkJoin({
@@ -176,19 +169,23 @@ export class UploadComponent implements OnInit {
     this.dialog.open(TextFormatDialogComponent);
   }
 
-  startRecording() {
-    this.recording = true;
-    this.microphoneService.startRecording();
+  async startRecording() {
+    try {
+      await this.microphoneService.startRecording();
+      this.recording = true;
+    } catch (err: any) {
+      this.toastr.error(err.toString(), $localize`Could not start recording!`);
+    }
   }
 
   pauseRecording() {
-    this.recording = false;
     this.microphoneService.pause();
+    this.recording = false;
   }
 
   resumeRecording() {
-    this.recording = true;
     this.microphoneService.resume();
+    this.recording = true;
   }
 
   playRecording() {
@@ -214,36 +211,25 @@ export class UploadComponent implements OnInit {
     this.audioControl.setValue(null);
   }
 
-  stopRecording() {
+  async stopRecording() {
     this.recording = false;
-    this.microphoneService
-      .stopRecording()
-      .then((output) => {
-        //console.log("recording output", output)
-        if (output) {
-          this.toastr.success(
-            $localize`Audio was successfully recorded. Please listen to your recording to make sure it's OK, and save it for reuse if so.`,
-            $localize`Yay!`,
-            { timeOut: 10000 }
-          );
-          this.audioControl.setValue(output as Blob);
-          // do post output steps
-        } else {
-          this.toastr.error(
-            $localize`Please try again, or select a pre-recorded file.`,
-            $localize`Audio not recorded!`
-          );
-        }
-        //console.log("done stopRecording", this.audioControl)
-      })
-      .catch((errorCase) => {
-        this.toastr.error(
-          $localize`Please try again, or select a pre-recorded file.`,
-          $localize`Audio not recorded!`
-        );
-        console.log(errorCase);
-        // Handle Error
-      });
+    try {
+      let output = await this.microphoneService.stopRecording();
+      // possibly check for zero-length output and throw here
+      this.toastr.success(
+        $localize`Audio was successfully recorded. Please listen to your recording to make sure it's OK, and save it for reuse if so.`,
+        $localize`Yay!`,
+        { timeOut: 10000 }
+      );
+      this.audioControl.setValue(output);
+      // do any post output steps
+    } catch (err: any) {
+      this.toastr.error(
+        $localize`Please try again, or select a pre-recorded file.`,
+        $localize`Audio not recorded!`
+      );
+      console.log(err);
+    }
   }
 
   toggleAudioInput(event: any) {
