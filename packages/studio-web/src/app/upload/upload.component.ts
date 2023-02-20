@@ -1,6 +1,6 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
-import { Observable, forkJoin, of, zip } from "rxjs";
+import { Observable, forkJoin, of, zip, finalize } from "rxjs";
 import {
   map,
   catchError,
@@ -10,7 +10,14 @@ import {
   tap,
 } from "rxjs/operators";
 
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
@@ -37,6 +44,7 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
   styleUrls: ["./upload.component.sass"],
 })
 export class UploadComponent implements OnInit {
+  isLoaded = false;
   langs: Array<SupportedLanguage> = [];
   loading = false;
   langControl = new FormControl<string>("und", Validators.required);
@@ -49,7 +57,7 @@ export class UploadComponent implements OnInit {
   progressValue = 0;
   maxTxtSizeKB = 10; // Max 10 KB plain text file size
   maxRasSizeKB = 20; // Max 20 KB .readalong XML text size
-  @ViewChild('textInputElement') textInputElement: ElementRef;
+  @ViewChild("textInputElement") textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl,
@@ -77,24 +85,37 @@ export class UploadComponent implements OnInit {
         $localize`Whoops, something went wrong while recording!`
       );
     });
-    this.rasService.getLangs$().subscribe({
-      next: (langs: Array<SupportedLanguage>) => {
-        this.langs = langs.sort((a, b) => {
-          if (a.names['_'] < b.names['_']) return -1;
-          if (a.names['_'] > b.names['_']) return 1;
-          return 0;
-        });
-      },
-      error: (err) => this.reportRasError(err),
-    });
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      await this.ssjsService.initialize();
-    } catch (err) {
-      console.log(err);
-    }
+  async ngOnInit() {
+    forkJoin({
+      langs: this.rasService.getLangs$(),
+      _: this.ssjsService.waitForInit$(),
+    })
+      .pipe(finalize(() => (this.isLoaded = true)))
+      .subscribe({
+        next: ({
+          langs,
+          _,
+        }: {
+          langs: Array<SupportedLanguage>;
+          _: void;
+        }) => {
+          this.langs = langs
+            .filter((lang) => lang.code != "und")
+            .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
+        },
+        error: (err) => {
+          this.toastr.error(
+            err.message,
+            $localize`Failed to load the aligner.`,
+            {
+              timeOut: 60000,
+            }
+          );
+          console.log(err);
+        }
+      });
   }
 
   reportRasError(err: HttpErrorResponse) {
@@ -361,13 +382,16 @@ export class UploadComponent implements OnInit {
         { timeOut: 10000 }
       );
     } else if (type === "text") {
-      let maxSizeKB = file.name.split('.').pop() === 'readalong' ? this.maxRasSizeKB : this.maxTxtSizeKB;
+      let maxSizeKB =
+        file.name.split(".").pop() === "readalong"
+          ? this.maxRasSizeKB
+          : this.maxTxtSizeKB;
       if (file.size > maxSizeKB * 1024) {
         this.toastr.error(
           $localize`File too large. Max size: ` + maxSizeKB + $localize` KB`,
-          $localize`Sorry!`,
+          $localize`Sorry!`
         );
-        this.textInputElement.nativeElement.value = ""
+        this.textInputElement.nativeElement.value = "";
       } else {
         this.textControl.setValue(file);
         this.toastr.success(
@@ -380,5 +404,4 @@ export class UploadComponent implements OnInit {
       }
     }
   }
-
 }
