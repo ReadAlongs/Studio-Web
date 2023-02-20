@@ -169,13 +169,16 @@
               <mat-icon class="mat-icon-lg">mic</mat-icon>
               <span
                 i18n="Audio re-record button"
-                *ngIf="audioControl.value !== null"
+                *ngIf="audioControl.value !== null && !this.recording"
                 >Re-Record</span
               >
               <span
                 i18n="Audio record button"
-                *ngIf="audioControl.value === null"
+                *ngIf="audioControl.value === null && !this.recording"
                 >Record</span
+              >
+              <span i18n="Audio recording button" *ngIf="this.recording"
+                >Recording</span
               >
             </button>
             <button
