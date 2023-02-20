@@ -33,6 +33,9 @@ export class MicrophoneService {
     return new Promise((resolve, reject) => {
       this.recorderEnded.subscribe(
         (blob) => {
+          // Note: This works because a completely silent recording will get
+          // compressed to a very small file.  The number is arbitrary, but
+          // should at least catch the case of an input that is all zeros.
           if (blob.size < 2000) {
             reject("Recorder didn't hear anything");
           } else {
