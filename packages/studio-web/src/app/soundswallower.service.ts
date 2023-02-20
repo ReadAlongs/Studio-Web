@@ -1,4 +1,4 @@
-import { Observable, of, from } from "rxjs";
+import { Observable, of, from, BehaviorSubject } from "rxjs";
 import soundswallower_factory, {
   Decoder,
   DictEntry,
@@ -22,18 +22,23 @@ export interface AlignmentProgress {
   providedIn: "root",
 })
 export class SoundswallowerService {
+  modelLoaded$ = new BehaviorSubject(false);
   constructor() {}
 
-  waitForInit$(): Observable<void> {
-    if (soundswallower === undefined)
-      return from(
-        soundswallower_factory().then((module) => {
-          soundswallower = module;
-          const preload = new soundswallower.Decoder();
-          return preload.initialize();
-        })
-      );
-    else return of();
+  _loadModel(): void {
+    const preload = new soundswallower.Decoder();
+    preload.initialize().then(() => this.modelLoaded$.next(true));
+  }
+
+  preload(): void {
+    if (soundswallower === undefined) {
+      soundswallower_factory().then((module) => {
+        soundswallower = module;
+        this._loadModel();
+      });
+    } else {
+      this._loadModel();
+    }
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {

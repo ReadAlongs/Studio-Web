@@ -116,6 +116,8 @@
     "3533349926767927338": "Please enter text to align.",
     "7881212750036563398": "No text",
     "3578398528078428417": "Please select a text file.",
+    "4603453641249002294": "Sorry, the alignment model isn't loaded yet. Please wait a while and try again if you're on a slow connection. If the problem persists, please contact us.",
+    "3861272198542491849": "No model loaded",
     "7051563249389544165": "Please select a language.",
     "5845021075215482602": "No language",
     "7528020111424948593": "Please (re-)record some audio or select an audio file.",

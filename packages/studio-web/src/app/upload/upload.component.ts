@@ -82,16 +82,14 @@ export class UploadComponent implements OnDestroy, OnInit {
   ) {}
 
   async ngOnInit() {
-    forkJoin({
-      langs: this.rasService.getLangs$(),
-      _: this.ssjsService.waitForInit$(),
-    })
+    this.rasService
+      .getLangs$()
       .pipe(
         finalize(() => (this.isLoaded = true)),
         takeUntil(this.unsubscribe$)
       )
       .subscribe({
-        next: ({ langs, _ }: { langs: Array<SupportedLanguage>; _: void }) => {
+        next: (langs: Array<SupportedLanguage>) => {
           this.langs = langs
             .filter((lang) => lang.code != "und")
             .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
@@ -274,7 +272,13 @@ export class UploadComponent implements OnDestroy, OnInit {
         );
       }
     }
-    if (this.uploadFormGroup.valid && this.audioControl.value !== null) {
+    if (!this.ssjsService.modelLoaded$.value) {
+      this.toastr.error(
+        $localize`Sorry, the alignment model isn't loaded yet. Please wait a while and try again if you're on a slow connection. If the problem persists, please contact us.`,
+        $localize`No model loaded`,
+        { timeOut: 15000 }
+      );
+    } else if (this.uploadFormGroup.valid && this.audioControl.value !== null) {
       // Show progress bar
       this.loading = true;
       this.progressMode = "query";
