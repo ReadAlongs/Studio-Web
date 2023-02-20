@@ -23,7 +23,6 @@ export class FileService {
         return of(err);
       }),
       map((blob) => {
-        console.log(blob);
         return blob;
       }),
       take(1)

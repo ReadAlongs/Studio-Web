@@ -1,7 +1,7 @@
-import { Observable } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { Components } from "@readalongs/web-component/loader";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -17,7 +17,7 @@ import { saveAs } from "file-saver";
   templateUrl: "./demo.component.html",
   styleUrls: ["./demo.component.sass"],
 })
-export class DemoComponent implements OnInit {
+export class DemoComponent implements OnDestroy, OnInit {
   @Input() b64Inputs: [string, Document, [string, string]];
   @Input() render$: Observable<boolean>;
   @ViewChild("readalong") readalong!: Components.ReadAlong;
@@ -35,6 +35,7 @@ export class DemoComponent implements OnInit {
   ];
   selectedOutputFormat: SupportedOutputs | string = "html";
   language: "eng" | "fra" = "eng";
+  unsubscribe$ = new Subject<void>();
   constructor(
     public titleService: Title,
     public b64Service: B64Service,
@@ -55,6 +56,11 @@ export class DemoComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
   reportRasError(err: HttpErrorResponse) {
     if (err.status == 422) {
@@ -192,6 +198,7 @@ export class DemoComponent implements OnInit {
           },
           this.selectedOutputFormat
         )
+        .pipe(takeUntil(this.unsubscribe$))
         .subscribe({
           next: (x: Blob) =>
             saveAs(x, `readalong.${this.selectedOutputFormat}`),
