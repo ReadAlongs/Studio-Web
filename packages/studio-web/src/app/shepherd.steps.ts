@@ -227,7 +227,7 @@ export const readalong_change_title_step: any = {
   text: $localize`You can edit the text here to add a Title or Subtitle to your ReadAlong.`,
   attachTo: {
     element: "input",
-    on: "bottom"
+    on: "bottom",
   },
   buttons: [
     {
@@ -282,7 +282,7 @@ export const readalong_add_translation_step: any = {
 
 export const readalong_export_step: any = {
   title: $localize`Export your ReadAlong`,
-  text: (
+  text:
     $localize`When you're happy with your ReadAlong, you can export it by selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: ` +
     "<ul><li>" +
     $localize`<b>Offline HTML</b>: your ReadAlongs in a single-file HTML document that requires no web access to work` +
@@ -290,11 +290,10 @@ export const readalong_export_step: any = {
     $localize`<b>Elan and Praat files</b>: export formats used by documentary linguists` +
     "</li><li>" +
     $localize`<b>SRT and WebVTT subtitles</b>: export formats used to add subtitles to videos` +
-    "</li></ul>"
-  ),
+    "</li></ul>",
   attachTo: {
     element: "div.download__buttons",
-    on: "bottom"
+    on: "bottom",
   },
   buttons: [
     {
@@ -313,18 +312,17 @@ export const readalong_export_step: any = {
 
 export const readalong_go_back_step: any = {
   title: $localize`Edit your ReadAlong inputs`,
-  text: (
+  text:
     $localize`If you'd like to change your audio or text you can always go back to Step 1 and change things or make a new ReadAlong. ` +
     $localize`But be careful, going back to the previous step will mean you will lose all of your translations and images.` +
     "<br/><br/>" +
     $localize`Warning: Using the browser's back button will leave the app and might also erase all your text and audio data, so it should be avoided. ` +
-    $localize`Instead, use the "Step 1" button to go back and change your text or audio.`
-  ),
+    $localize`Instead, use the "Step 1" button to go back and change your text or audio.`,
   attachTo: {
     // TODO: find an anchor that doesn't depend on Angular innards
     // We want this as undet the "Step 1" icon but we can't add any id to that since it's generated
     element: "div.mat-horizontal-stepper-header-container",
-    on: "botton-start"
+    on: "botton-start",
   },
   buttons: [
     {

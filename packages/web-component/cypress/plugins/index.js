@@ -13,4 +13,4 @@
  */
 module.exports = () => {
   // this export is REQUIRED or else Cypress will crash :/
-}
+};

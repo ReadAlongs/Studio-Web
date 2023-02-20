@@ -10,10 +10,7 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
@@ -21,16 +18,9 @@
       "@readalongs/ngx-web-component": [
         "packages/ngx-web-component/src/index.ts"
       ],
-      "@readalongs/web-component": [
-        "dist/packages/web-component"
-      ],
-      "@readalongs/web-component/loader": [
-        "dist/packages/web-component/loader"
-      ]
+      "@readalongs/web-component": ["dist/packages/web-component"],
+      "@readalongs/web-component/loader": ["dist/packages/web-component/loader"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

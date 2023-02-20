@@ -20,7 +20,13 @@ describe("DemoComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,  BrowserAnimationsModule, FormsModule, MaterialModule, ToastrModule.forRoot()],
+      imports: [
+        HttpClientTestingModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        MaterialModule,
+        ToastrModule.forRoot(),
+      ],
       declarations: [DemoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();

@@ -12,9 +12,7 @@
   "targets": {
     "test": {
       "executor": "@nxext/stencil:test",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "projectType": "library",
         "tsConfig": "packages/web-component/tsconfig.lib.json",
@@ -24,9 +22,7 @@
     },
     "build": {
       "executor": "@nxext/stencil:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "projectType": "library",
         "tsConfig": "packages/web-component/tsconfig.lib.json",
@@ -42,9 +38,7 @@
     },
     "serve": {
       "executor": "@nxext/stencil:serve",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "projectType": "library",
         "tsConfig": "packages/web-component/tsconfig.lib.json",
@@ -54,9 +48,7 @@
     },
     "e2e": {
       "executor": "@nxext/stencil:e2e",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "projectType": "library",
         "tsConfig": "packages/web-component/tsconfig.lib.json",
@@ -66,9 +58,7 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": "packages/web-component/**/*.{ts,tsx}"
       }

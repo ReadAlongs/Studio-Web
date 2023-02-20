@@ -1,53 +1,52 @@
 @viewport {
-    width: device-width;
+  width: device-width;
 }
 
 button {
-    border: 0;
-    cursor: pointer;
+  border: 0;
+  cursor: pointer;
 }
 
 html {
-    background-color: $color-background;
-    box-sizing: border-box;
-    height: 100%;
+  background-color: $color-background;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 * {
-
-    &:before,
-    &:after {
-        box-sizing: inherit;
-    }
+  &:before,
+  &:after {
+    box-sizing: inherit;
+  }
 }
 
 body {
-    -webkit-font-smoothing: antialiased;
-    color: $color-text;
-    font-family: $font-family-default;
-    min-height: 100%;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  color: $color-text;
+  font-family: $font-family-default;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  text-rendering: optimizeLegibility;
 }
 
 a {
-    background: transparent;
-    color: $color-link;
-    text-decoration: none;
-    transition: color .2s;
-    outline: none;
+  background: transparent;
+  color: $color-link;
+  text-decoration: none;
+  transition: color 0.2s;
+  outline: none;
 
-    &:active,
-    &:focus {
-        outline: none;
-    }
+  &:active,
+  &:focus {
+    outline: none;
+  }
 }
 
 img {
-    height: 90%;
-    max-width: 90%;
-    object-fit: cover;
+  height: 90%;
+  max-width: 90%;
+  object-fit: cover;
 }
 
 h1,
@@ -56,9 +55,9 @@ h3,
 h4,
 h5,
 h6 {
-    // font-family: $font-family-display;
-    font-family: $font-family-accent;
-    font-weight: normal;
+  // font-family: $font-family-display;
+  font-family: $font-family-accent;
+  font-weight: normal;
 }
 
 p,
@@ -67,126 +66,114 @@ mat-tab-label,
 span,
 button,
 a {
-    font-family: $font-family-display;
+  font-family: $font-family-display;
 }
 
 /* Scrollbar */
-@each $theme,
-$value in $ui-themes {
+@each $theme, $value in $ui-themes {
+  /* Width */
+  .theme--#{$theme}::-webkit-scrollbar {
+    width: em(8);
+    height: em(8);
+  }
 
-    /* Width */
-    .theme--#{$theme}::-webkit-scrollbar {
-        width: em(8);
-        height: em(8);
-    }
+  /* Track */
+  .theme--#{$theme}::-webkit-scrollbar-track {
+    // box-shadow: inset 0 0 em(5) map-get($value, primary);
+    background: map-get($value, primary);
 
-    /* Track */
-    .theme--#{$theme}::-webkit-scrollbar-track {
-        // box-shadow: inset 0 0 em(5) map-get($value, primary);
-        background: map-get($value, primary);
+    // @extend %border--strong--left;
+    // @extend %border--strong--right;
+  }
 
-        // @extend %border--strong--left;
-        // @extend %border--strong--right;
-  
-    }
-
-    /* Handle */
-    .theme--#{$theme}::-webkit-scrollbar-thumb {
-        background: map-get($value, text);
-        border-radius: em(5);
-        height: em(10);
-        width: em(10);
-
-
-    }
-
-
-
+  /* Handle */
+  .theme--#{$theme}::-webkit-scrollbar-thumb {
+    background: map-get($value, text);
+    border-radius: em(5);
+    height: em(10);
+    width: em(10);
+  }
 }
 
 .bg-img {
-    /* The image used */
-    background-image: url("../assets/img/bg.jpg");
-    /* Full height */
-    height: 100vh;
-    overflow: overlay;
-    overflow-x: hidden;
-    /* Center and scale the image nicely */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 100%;
+  /* The image used */
+  background-image: url("../assets/img/bg.jpg");
+  /* Full height */
+  height: 100vh;
+  overflow: overlay;
+  overflow-x: hidden;
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100%;
 }
 
 .shadow-box {
-    box-shadow: 0 0.3125rem 1rem 0 rgba(0, 0, 0, 0.24);
-    padding: 25px;
-    background: rgba(255, 255, 255, .94);
-    border-radius: 5px;
+  box-shadow: 0 0.3125rem 1rem 0 rgba(0, 0, 0, 0.24);
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 5px;
 }
 
-
-@each $name,
-$value in $font-sizes {
-    .font-#{$name} {
-        font-size: em($value);
-    }
+@each $name, $value in $font-sizes {
+  .font-#{$name} {
+    font-size: em($value);
+  }
 }
 
 .faded {
-    opacity: .2;
-    color: black;
+  opacity: 0.2;
+  color: black;
 }
 
 table {
-    table-layout: fixed;
+  table-layout: fixed;
 }
 
 .center {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .container {
-    max-width: em(map-get($breakpoints, xlarge));
+  max-width: em(map-get($breakpoints, xlarge));
 }
 
-@each $theme,
-$value in $ui-themes {
-    .background--#{$theme} {
-        background: map-get($value, primary)
-    }
+@each $theme, $value in $ui-themes {
+  .background--#{$theme} {
+    background: map-get($value, primary);
+  }
 
-    .stop-color--#{$theme} {
-        fill: map-get($value, primary)
-    }
+  .stop-color--#{$theme} {
+    fill: map-get($value, primary);
+  }
 
-    .color--#{$theme} {
-        color: map-get($value, text)
-    }
-
+  .color--#{$theme} {
+    color: map-get($value, text);
+  }
 }
 
 .abs {
-    position: absolute;
+  position: absolute;
 }
 
 // larger margins/padding top/bottom/left/right
 $space: 0;
 
 @while $space <=50 {
-    .top-#{$space} {
-        top: em($space);
-    }
+  .top-#{$space} {
+    top: em($space);
+  }
 
-    .left-#{$space} {
-        left: em($space);
-    }
+  .left-#{$space} {
+    left: em($space);
+  }
 
-    .right-#{$space} {
-        right: em($space);
-    }
+  .right-#{$space} {
+    right: em($space);
+  }
 
-    $space: $space+5;
+  $space: $space + 5;
 }

@@ -9,7 +9,7 @@
 // $fix-mqs - {boolean}
 // @source  - http://jakearchibald.github.com/sass-ie/
 
-$fix-mqs:                     false !default;
+$fix-mqs: false !default;
 
 // $old-ie
 //
@@ -18,7 +18,7 @@ $fix-mqs:                     false !default;
 // $old-ie - {boolean}
 // @source  - http://jakearchibald.github.com/sass-ie/
 
-$old-ie:                      false !default;
+$old-ie: false !default;
 
 // $breakpoints
 //
@@ -29,11 +29,12 @@ $old-ie:                      false !default;
 // $breakpoints - {map}
 
 $breakpoints: (
-  xsmall:                     null,
-  small:                      480,
-  medium:                     910, // This is usually 768, but it works better with the nav bar at 910, so everything else should follow suit
-  large:                      1024,
-  xlarge:                     1280,
+  xsmall: null,
+  small: 480,
+  medium: 910,
+  // This is usually 768, but it works better with the nav bar at 910, so everything else should follow suit
+  large: 1024,
+  xlarge: 1280,
 );
 
 // $zindex
@@ -44,16 +45,16 @@ $breakpoints: (
 // @source - http://www.sitepoint.com/using-sass-maps/
 
 $zindex: (
-  modal:                      1000,
-  overlay:                    900,
-  dropdown:                   800,
-  nav:                        700,
-  ui-button:                  650,
-  header:                     600,
-  footer:                     500,
-  pseduo:                     400,
-  default:                    1,
-  bottomless-pit:             -10000
+  modal: 1000,
+  overlay: 900,
+  dropdown: 800,
+  nav: 700,
+  ui-button: 650,
+  header: 600,
+  footer: 500,
+  pseduo: 400,
+  default: 1,
+  bottomless-pit: -10000,
 );
 
 $page-size: 55;

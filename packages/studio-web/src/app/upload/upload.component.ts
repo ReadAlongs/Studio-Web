@@ -87,13 +87,7 @@ export class UploadComponent implements OnInit {
     })
       .pipe(finalize(() => (this.isLoaded = true)))
       .subscribe({
-        next: ({
-          langs,
-          _,
-        }: {
-          langs: Array<SupportedLanguage>;
-          _: void;
-        }) => {
+        next: ({ langs, _ }: { langs: Array<SupportedLanguage>; _: void }) => {
           this.langs = langs
             .filter((lang) => lang.code != "und")
             .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
@@ -107,7 +101,7 @@ export class UploadComponent implements OnInit {
             }
           );
           console.log(err);
-        }
+        },
       });
   }
 

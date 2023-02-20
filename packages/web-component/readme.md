@@ -18,28 +18,28 @@ you make to `/src` will be automatically shown in the browser.
 
 ## Properties
 
-| Property             | Attribute             | Description                                                                                            | Type                         | Default        |
-| -------------------- | --------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------- | -------------- |
-| `audio`              | `audio`               | URL of the audio file                                                                                  | `string`                     | `undefined`    |
-| `cssUrl`             | `css-url`             | Optional custom Stylesheet to override defaults                                                        | `string`                     | `undefined`    |
-| `displayTranslation` | `display-translation` | Show text translation on at load time                                                                  | `boolean`                    | `true`         |
-| `href`               | `href`                | URL of the aligned text as readalong XML                                                               | `string`                     | `undefined`    |
-| `language`           | `language`            | Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French           | `"eng" \| "fra"`             | `'eng'`        |
-| `mode`               | `mode`                | Choose mode of ReadAlong - either view (default) or edit                                               | `"EDIT" \| "VIEW"`           | `"VIEW"`       |
-| `pageScrolling`      | `page-scrolling`      | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                         | `"horizontal" \| "vertical"` | `"horizontal"` |
-| `playbackRateRange`  | `playback-rate-range` | Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.                                       | `number`                     | `15` |
+| Property             | Attribute             | Description                                                                                                                                                     | Type                         | Default        |
+| -------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | -------------- |
+| `audio`              | `audio`               | URL of the audio file                                                                                                                                           | `string`                     | `undefined`    |
+| `cssUrl`             | `css-url`             | Optional custom Stylesheet to override defaults                                                                                                                 | `string`                     | `undefined`    |
+| `displayTranslation` | `display-translation` | Show text translation on at load time                                                                                                                           | `boolean`                    | `true`         |
+| `href`               | `href`                | URL of the aligned text as readalong XML                                                                                                                        | `string`                     | `undefined`    |
+| `language`           | `language`            | Language of the interface. In 639-3 code Options are - "eng" for English - "fra" for French                                                                     | `"eng" \| "fra"`             | `'eng'`        |
+| `mode`               | `mode`                | Choose mode of ReadAlong - either view (default) or edit                                                                                                        | `"EDIT" \| "VIEW"`           | `"VIEW"`       |
+| `pageScrolling`      | `page-scrolling`      | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                                                                                  | `"horizontal" \| "vertical"` | `"horizontal"` |
+| `playbackRateRange`  | `playback-rate-range` | Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.                                               | `number`                     | `15`           |
 | `scrollBehaviour`    | `scroll-behaviour`    | Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive) | `"auto" \| "smooth"`         | `"smooth"`     |
-| `svgOverlay`         | `svg-overlay`         | Overlay This is an SVG overlay to place over the progress bar                                          | `string`                     | `undefined`    |
-| `theme`              | `theme`               | Theme to use: ['light', 'dark'] defaults to 'dark'                                                     | `string`                     | `'light'`      |
-| `useAssetsFolder`    | `use-assets-folder`   | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility | `boolean`                    | `true`         |
+| `svgOverlay`         | `svg-overlay`         | Overlay This is an SVG overlay to place over the progress bar                                                                                                   | `string`                     | `undefined`    |
+| `theme`              | `theme`               | Theme to use: ['light', 'dark'] defaults to 'dark'                                                                                                              | `string`                     | `'light'`      |
+| `useAssetsFolder`    | `use-assets-folder`   | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility                                                          | `boolean`                    | `true`         |
 
 #### IMAGES
 
 You have three options:
 
-* put images in "assets/" and provide relative link
-* provide a full path
-* put it in a custom relative folder and make sure to add `use-assets-folder="false"` attribute to the read-long
+- put images in "assets/" and provide relative link
+- provide a full path
+- put it in a custom relative folder and make sure to add `use-assets-folder="false"` attribute to the read-long
   component
 
 Note that images are normally inserted in a read-along by specifying them in the `config.json` file provided to `readalongs align`, which will then attempt to generate and populate the assets folder automatically.
@@ -50,18 +50,28 @@ See the [readalongs CLI user guide](https://readalong-studio.readthedocs.io/en/l
 You can either modify the `/src/index.html` or after running `npm start` you can copy out the `www/build` folder and add
 the following script import in your own `index.html` page:
 
-```html 
-  <script type="module" src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/web-component.esm.js"></script>
-  <script nomodule src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/read-along.js"></script>
+```html
+<script
+  type="module"
+  src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/web-component.esm.js"
+></script>
+<script
+  nomodule
+  src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/read-along.js"
+></script>
 ```
 
 Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>`
 elements with arguments for where to find your text, alignments and audio file. These files can be generated
-using _________ service located here: ____________.
+using \_\_\_ service located here: \_\_\_.
 
 ```html
-<read-along href="assets/s2.readalong" audio="assets/s2.wav"
-            css-url="assets/custom.css" use-assets-folder="true"></read-along>
+<read-along
+  href="assets/s2.readalong"
+  audio="assets/s2.wav"
+  css-url="assets/custom.css"
+  use-assets-folder="true"
+></read-along>
 ```
 
 ## Loading as a single file
@@ -91,8 +101,8 @@ $ui-themes: (
     accent: $white,
     text: $white,
     text--secondary: $white,
-    text--accent: $black
-  )
+    text--accent: $black,
+  ),
 );
 ```
 
@@ -102,21 +112,20 @@ Slots allow you to add custom html into specific "slots" within the web componen
 header to the `<read-along></read-along` component, you would write:
 
 ```html
-
 <read-along>
   <span slot="read-along-header">Hello World!</span>
 </read-along>
 ```
 
-| Slot                    | Description           | Suggested Element |
-| ----------------------- | --------------------- | ----------------- |
-| `read-along-header`     | The read along header | `span`              |
-| `read-along-subheader`  | Subheader (ie authors)| `span`              |
+| Slot                   | Description            | Suggested Element |
+| ---------------------- | ---------------------- | ----------------- |
+| `read-along-header`    | The read along header  | `span`            |
+| `read-along-subheader` | Subheader (ie authors) | `span`            |
 
 ## Page layout
 
 By default, the pages are two column layout with image on the left and text on the left. You force any page to one
-column layout by setting the class of the page to ```one-column-layout-page```
+column layout by setting the class of the page to `one-column-layout-page`
 
 ```xml
 
@@ -126,7 +135,7 @@ column layout by setting the class of the page to ```one-column-layout-page```
 ```
 
 The default layout is auto adjust without restrictions. To force a 40-60 split between the image and text use
-the ```two-column-layout-page``` class for the page.
+the `two-column-layout-page` class for the page.
 
 ```xml
 
@@ -134,14 +143,15 @@ the ```two-column-layout-page``` class for the page.
   ...
 </div>
 ```
+
 ### Hide page number
 
-You can hide the page number for any page by specifying the class ```hide-page-counter```.
+You can hide the page number for any page by specifying the class `hide-page-counter`.
 
 ## Assets folder
 
-By defaults the image assets will be resolved to ```.\assets\``` relative to the index.html file. You can
-override this behaviour by using this attribute on the component ```use-assets-folder="false"```. The web component will
+By defaults the image assets will be resolved to `.\assets\` relative to the index.html file. You can
+override this behaviour by using this attribute on the component `use-assets-folder="false"`. The web component will
 not longer resolve url to the **assets** folder when this attribute is present.
 
 ## CSS customization
@@ -164,22 +174,22 @@ and modify only the UI. Use the web inspector of your browser to find the classe
 
 Here is a list of classes you want to override:
 
-* .sentence__word.theme--light
-* .sentence__word.theme--light.reading
-* .sentence__text.theme--light
-* .sentence__translation
-* .sentence
-* .paragraph
-* .page__container.theme--light (to set page background)
+- .sentence\_\_word.theme--light
+- .sentence\_\_word.theme--light.reading
+- .sentence\_\_text.theme--light
+- .sentence\_\_translation
+- .sentence
+- .paragraph
+- .page\_\_container.theme--light (to set page background)
 
 ## XML customizations
 
 You can add classes to the xml tags in the text XML file. When coupled with the custom css, it will produce most of the
-visual effect you want in your read along. e.g. ``` <s class="sentence__translation ">```
+visual effect you want in your read along. e.g. ` <s class="sentence__translation ">`
 
 ### Built-in translation class
 
-The default css class provided for translations should be added to the XML ```<s>``` tag. Here is a sample:
+The default css class provided for translations should be added to the XML `<s>` tag. Here is a sample:
 
 ```xml
 
@@ -196,17 +206,17 @@ The default css class provided for translations should be added to the XML ```<s
 The default style:
 
 ```css
-     .sentence__translation {
-        color: #777;
-        font-style: italic;
-        font-size: 95%;
-      }
+.sentence__translation {
+  color: #777;
+  font-style: italic;
+  font-size: 95%;
+}
 ```
 
 ## Visual alignment
 
-You can force the visual alignment of sentences within a paragraph by adding ``` class="visually_aligned"``` to
-the ```<p>``` tag of xml. Here is a sample
+You can force the visual alignment of sentences within a paragraph by adding ` class="visually_aligned"` to
+the `<p>` tag of xml. Here is a sample
 
 ```xml
 
@@ -241,7 +251,7 @@ If you are on a Windows machine, the command above will not work if you do not h
 Run each of the following in a separate command prompt:
 
     npm run start
-    
+
     npm run serve-test-data
 
 Then you can run test **interactively** using the following command:

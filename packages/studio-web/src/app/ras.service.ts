@@ -30,14 +30,14 @@ export interface ReadAlongFormatRequest {
 
 export interface SupportedLanguage {
   code: string;
-  names: {[code: string]: string};
+  names: { [code: string]: string };
 }
 
 export enum SupportedOutputs {
   eaf,
   textgrid,
   srt,
-  vtt
+  vtt,
 }
 
 @Injectable({
@@ -47,14 +47,21 @@ export class RasService {
   baseURL = environment.apiBaseURL;
   constructor(private http: HttpClient) {}
 
-  convertRasFormat$(body: ReadAlongFormatRequest, output_type: SupportedOutputs|string): Observable<Blob> {
-      return this.http.post(this.baseURL + "/convert_alignment/" + output_type, body, {responseType: 'blob'});
+  convertRasFormat$(
+    body: ReadAlongFormatRequest,
+    output_type: SupportedOutputs | string
+  ): Observable<Blob> {
+    return this.http.post(
+      this.baseURL + "/convert_alignment/" + output_type,
+      body,
+      { responseType: "blob" }
+    );
   }
 
   assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong> {
-      return this.http.post<ReadAlong>(this.baseURL + "/assemble", body);
+    return this.http.post<ReadAlong>(this.baseURL + "/assemble", body);
   }
   getLangs$(): Observable<Array<SupportedLanguage>> {
-      return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs");
+    return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs");
   }
 }

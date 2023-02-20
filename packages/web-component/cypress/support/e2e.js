@@ -4,4 +4,4 @@
  * See: https://on.cypress.io/configuration for more details
  */
 
-import './commands'
+import "./commands";
