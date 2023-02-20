@@ -227,10 +227,18 @@ export class UploadComponent implements OnDestroy, OnInit {
       this.audioControl.setValue(output);
       // do any post output steps
     } catch (err: any) {
-      this.toastr.error(
-        $localize`Please try again, or select a pre-recorded file.`,
-        $localize`Audio not recorded!`
-      );
+      if (err === "Recorder didn't hear anything") {
+        this.toastr.error(
+          $localize`We couldn't record anything, is your microphone blocked or disconnected? If the problem persists please try with a headset or other microphone.`,
+          $localize`Audio not recorded!`
+        );
+      } else {
+        this.toastr.error(
+          $localize`Please try again, or select a pre-recorded file.`,
+          $localize`Audio not recorded!`
+        );
+      }
+
       console.log(err);
     }
   }
