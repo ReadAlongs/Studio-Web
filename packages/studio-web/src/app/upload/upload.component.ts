@@ -102,9 +102,9 @@ export class UploadComponent implements OnInit {
       .pipe(finalize(() => (this.isLoaded = true)))
       .subscribe({
         next: (langs: Array<SupportedLanguage>) => {
-          this.langs = langs.sort((a, b) =>
-            a.names["_"].localeCompare(b.names["_"])
-          );
+          this.langs = langs
+            .filter((lang) => lang.code != "und")
+            .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
         },
       });
   }
