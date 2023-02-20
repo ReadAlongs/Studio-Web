@@ -9,7 +9,6 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent, PrivacyDialog } from "./app.component";
-import { ConfigComponent } from "./config/config.component";
 import { DemoComponent } from "./demo/demo.component";
 import { MaterialModule } from "./material.module";
 import { UploadComponent } from "./upload/upload.component";
@@ -22,7 +21,6 @@ defineCustomElements();
 @NgModule({
   declarations: [
     AppComponent,
-    ConfigComponent,
     DemoComponent,
     UploadComponent,
     PrivacyDialog,
