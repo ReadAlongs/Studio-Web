@@ -33,7 +33,11 @@ export class MicrophoneService {
     return new Promise((resolve, reject) => {
       this.recorderEnded.subscribe(
         (blob) => {
-          resolve(blob);
+          if (blob.size < 2000) {
+            reject("Recorder didn't hear anything");
+          } else {
+            resolve(blob);
+          }
         },
         (_) => {
           reject("Recorder timed out");
