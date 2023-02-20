@@ -1,19 +1,19 @@
 // -*- typescript-indent-level: 2 -*-
 import { ToastrService } from "ngx-toastr";
-import { Observable, forkJoin, of, zip, finalize } from "rxjs";
 import {
-  map,
-  catchError,
+  Observable,
+  Subject,
+  forkJoin,
+  finalize,
   switchMap,
-  take,
-  takeWhile,
-  tap,
-} from "rxjs/operators";
+  takeUntil,
+} from "rxjs";
 
 import {
   Component,
   ElementRef,
   EventEmitter,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -43,7 +43,7 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
   templateUrl: "./upload.component.html",
   styleUrls: ["./upload.component.sass"],
 })
-export class UploadComponent implements OnInit {
+export class UploadComponent implements OnDestroy, OnInit {
   isLoaded = false;
   langs: Array<SupportedLanguage> = [];
   loading = false;
@@ -69,6 +69,7 @@ export class UploadComponent implements OnInit {
     text: "edit",
   };
   textInput: string = "";
+  unsubscribe$ = new Subject<void>();
   constructor(
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
@@ -85,7 +86,10 @@ export class UploadComponent implements OnInit {
       langs: this.rasService.getLangs$(),
       _: this.ssjsService.waitForInit$(),
     })
-      .pipe(finalize(() => (this.isLoaded = true)))
+      .pipe(
+        finalize(() => (this.isLoaded = true)),
+        takeUntil(this.unsubscribe$)
+      )
       .subscribe({
         next: ({ langs, _ }: { langs: Array<SupportedLanguage>; _: void }) => {
           this.langs = langs
@@ -103,6 +107,11 @@ export class UploadComponent implements OnInit {
           console.log(err);
         },
       });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   reportRasError(err: HttpErrorResponse) {
@@ -294,7 +303,8 @@ export class UploadComponent implements OnInit {
             // We can't give the arguments types because RxJS is broken somehow,
             // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
             this.ssjsService.align$(audio, ras as ReadAlong)
-          )
+          ),
+          takeUntil(this.unsubscribe$)
         )
         .subscribe({
           next: (progress) => {

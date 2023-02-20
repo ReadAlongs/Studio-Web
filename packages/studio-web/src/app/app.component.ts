@@ -1,10 +1,9 @@
 import { ShepherdService } from "./shepherd.service";
 import { ToastrService } from "ngx-toastr";
-import { forkJoin, of, BehaviorSubject, Subject, take } from "rxjs";
-import { map } from "rxjs/operators";
+import { forkJoin, of, BehaviorSubject, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
-import { Component, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatStepper } from "@angular/material/stepper";
@@ -40,7 +39,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.sass"],
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy, OnInit {
   firstFormGroup: any;
   title = "readalong-studio";
   alignment = new Subject<string>();
@@ -51,6 +50,7 @@ export class AppComponent {
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
+  unsubscribe$ = new Subject<void>();
   constructor(
     private b64Service: B64Service,
     private fileService: FileService,
@@ -64,6 +64,11 @@ export class AppComponent {
       $localize`Warning`,
       { timeOut: 10000 }
     );
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   selectionChange(event: StepperSelectionEvent) {
@@ -124,6 +129,7 @@ export class AppComponent {
     step_one_final_step["buttons"][1]["action"] = () => {
       this.fileService
         .returnFileFromPath$("assets/hello-world.mp3")
+        .pipe(takeUntil(this.unsubscribe$))
         .subscribe((audioFile) => {
           if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
             this.upload.textInput = "Hello world!";
@@ -211,10 +217,12 @@ export class AppComponent {
         this.fileService.readFileAsData$(event[1]),
         of(aligned_xml),
         this.b64Service.getBundle$(),
-      ]).subscribe((x: any) => {
-        this.b64Inputs$.next(x);
-        this.stepper.next();
-      });
+      ])
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((x: any) => {
+          this.b64Inputs$.next(x);
+          this.stepper.next();
+        });
     }
   }
 }
