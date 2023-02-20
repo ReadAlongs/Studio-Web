@@ -9,20 +9,26 @@ import { ToastrService } from "ngx-toastr";
 export class FileService {
   constructor(private http: HttpClient, private toastr: ToastrService) {}
 
-  returnFileFromPath$ = (url: string, responseType: string = 'blob') => {
+  returnFileFromPath$ = (url: string, responseType: string = "blob") => {
     const httpOptions: Object = { responseType };
     return this.http.get<any>(url, httpOptions).pipe(
-      catchError((err: HttpErrorResponse) => { this.toastr.error(
-        err.message,
-        $localize`Hmm, the file is unreachable. Please try again later.`,
-        {
-          timeOut: 10000,
-        }
-      ); return of(err)} ),
-      map((blob) => {console.log(blob); return blob}),
+      catchError((err: HttpErrorResponse) => {
+        this.toastr.error(
+          err.message,
+          $localize`Hmm, the file is unreachable. Please try again later.`,
+          {
+            timeOut: 10000,
+          }
+        );
+        return of(err);
+      }),
+      map((blob) => {
+        console.log(blob);
+        return blob;
+      }),
       take(1)
-    )
-  }
+    );
+  };
 
   readFile$(blob: Blob | File): Observable<string> {
     const reader = new FileReader();

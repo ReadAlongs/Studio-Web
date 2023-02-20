@@ -74,9 +74,7 @@ export class AppComponent {
     }
   }
 
-  ngAfterViewInit() {
-
-  }
+  ngAfterViewInit() {}
 
   startTour(): void {
     this.shepherdService.defaultStepOptions = {
@@ -111,50 +109,74 @@ export class AppComponent {
         }
       },
     };
-    if (this.upload?.audioControl.value !== null || this.upload?.textControl.value !== null || this.upload?.textInput) {
-      step_one_final_step['text'] = (
+    if (
+      this.upload?.audioControl.value !== null ||
+      this.upload?.textControl.value !== null ||
+      this.upload?.textInput
+    ) {
+      step_one_final_step["text"] =
         $localize`Once you've done this, you can click the "next step" button here to let Studio build your ReadAlong! (This may take a few seconds.)` +
-        $localize` You already started some work, though, so clicking next will erase it and continue the tour with demonstration data. Cancel the tour if you don't want to do this.`
-      )
-      step_one_final_step['buttons'][1]['text'] = $localize`Next` + " " + $localize`(overwrites your data)`;
-      step_one_final_step['buttons'][1]['classes'] = "shepherd-button-warning";
+        $localize` You already started some work, though, so clicking next will erase it and continue the tour with demonstration data. Cancel the tour if you don't want to do this.`;
+      step_one_final_step["buttons"][1]["text"] =
+        $localize`Next` + " " + $localize`(overwrites your data)`;
+      step_one_final_step["buttons"][1]["classes"] = "shepherd-button-warning";
     }
-    step_one_final_step['buttons'][1]['action'] = () => {
-      this.fileService.returnFileFromPath$('assets/hello-world.mp3').subscribe((audioFile) => {
-        if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
-          this.upload.textInput = "Hello world!"
-          this.upload.inputMethod.text = "edit"
-          this.upload.audioControl.setValue(audioFile);
-          this.upload?.nextStep()
-          this.stepper.animationDone.pipe(take(1)).subscribe(() => {
-            // We can only attach to the shadow dom once it's been created, so unfortunately we need to define the steps like this.
-            readalong_play_step["attachTo"] = {
-              element: document.querySelector('#readalong')?.shadowRoot?.querySelector('div.control-panel__buttons--left'),
-              on: "top"
-            };
-            readalong_play_word_step["attachTo"] = {
-              element: document.querySelector('#readalong')?.shadowRoot?.querySelector('#t0b0d0p0s0w0'),
-              on: "bottom"
-            };
-            readalong_add_image_step["attachTo"] = {
-              element: document.querySelector('#readalong')?.shadowRoot?.querySelector('div.drop-area'),
-              on: "bottom"
-            };
-            readalong_add_translation_step["attachTo"] = {
-              element: document.querySelector('#readalong')?.shadowRoot?.querySelector('div.sentence'),
-              on: "bottom"
-            };
-            this.shepherdService.next(); 
-            // Strangely, adding steps actually removes all previous steps so we need to start the tour again here.
-            this.shepherdService.addSteps([step_two_intro_step, readalong_play_step, readalong_play_word_step, readalong_change_title_step, readalong_add_image_step, readalong_add_translation_step, readalong_export_step, readalong_go_back_step]); 
-            this.shepherdService.start()
-          })
-        } else {
-          this.shepherdService.cancel()
-        }
-      }
-      )
-    }
+    step_one_final_step["buttons"][1]["action"] = () => {
+      this.fileService
+        .returnFileFromPath$("assets/hello-world.mp3")
+        .subscribe((audioFile) => {
+          if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
+            this.upload.textInput = "Hello world!";
+            this.upload.inputMethod.text = "edit";
+            this.upload.audioControl.setValue(audioFile);
+            this.upload?.nextStep();
+            this.stepper.animationDone.pipe(take(1)).subscribe(() => {
+              // We can only attach to the shadow dom once it's been created, so unfortunately we need to define the steps like this.
+              readalong_play_step["attachTo"] = {
+                element: document
+                  .querySelector("#readalong")
+                  ?.shadowRoot?.querySelector(
+                    "div.control-panel__buttons--left"
+                  ),
+                on: "top",
+              };
+              readalong_play_word_step["attachTo"] = {
+                element: document
+                  .querySelector("#readalong")
+                  ?.shadowRoot?.querySelector("#t0b0d0p0s0w0"),
+                on: "bottom",
+              };
+              readalong_add_image_step["attachTo"] = {
+                element: document
+                  .querySelector("#readalong")
+                  ?.shadowRoot?.querySelector("div.drop-area"),
+                on: "bottom",
+              };
+              readalong_add_translation_step["attachTo"] = {
+                element: document
+                  .querySelector("#readalong")
+                  ?.shadowRoot?.querySelector("div.sentence"),
+                on: "bottom",
+              };
+              this.shepherdService.next();
+              // Strangely, adding steps actually removes all previous steps so we need to start the tour again here.
+              this.shepherdService.addSteps([
+                step_two_intro_step,
+                readalong_play_step,
+                readalong_play_word_step,
+                readalong_change_title_step,
+                readalong_add_image_step,
+                readalong_add_translation_step,
+                readalong_export_step,
+                readalong_go_back_step,
+              ]);
+              this.shepherdService.start();
+            });
+          } else {
+            this.shepherdService.cancel();
+          }
+        });
+    };
     this.shepherdService.modal = true;
     this.shepherdService.confirmCancel = false;
     // Add initial steps for part one of the tour, other steps are added later
@@ -169,7 +191,7 @@ export class AppComponent {
       language_step,
       step_one_final_step,
     ]);
-    this.shepherdService.start()
+    this.shepherdService.start();
   }
 
   openPrivacyDialog(): void {

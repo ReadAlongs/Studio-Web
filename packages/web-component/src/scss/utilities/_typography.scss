@@ -5,15 +5,15 @@
 // Base font size in used in _mixins.scss
 //
 // $base-font-size - {number}
-$base-font-size:              16;
+$base-font-size: 16;
 
-$font-sizes : (
-    xs: $base-font-size * .5,
-    sm: $base-font-size * .75,
-    md: $base-font-size,
-    lg: $base-font-size * 1.25,
-    xl: $base-font-size * 1.5,
-    xxl: $base-font-size * 2
+$font-sizes: (
+  xs: $base-font-size * 0.5,
+  sm: $base-font-size * 0.75,
+  md: $base-font-size,
+  lg: $base-font-size * 1.25,
+  xl: $base-font-size * 1.5,
+  xxl: $base-font-size * 2,
 );
 
 // $default-text-font-size
@@ -29,21 +29,21 @@ $default-text-font-size: map-get($font-sizes, md);
 //
 // $base-line-height - {number}
 
-$base-line-height:            24;
+$base-line-height: 24;
 
 // Font-weights
 
 // view height/width
 $size: 100;
 @while $size <= 900 {
-    .font-weight--#{$size} {
-        font-weight: $size;
-    }
-    $size: $size + 100;
+  .font-weight--#{$size} {
+    font-weight: $size;
+  }
+  $size: $size + 100;
 }
 
 .shadowed {
-    text-shadow: 0.3px 0.2px black;
+  text-shadow: 0.3px 0.2px black;
 }
 
 // Font Stacks
@@ -74,7 +74,7 @@ $google-fonts-url: "./fonts/fonts.css";
 //
 // $font-family-sans-fallback - {list}
 
-$font-family-sans-fallback:   'Arial', sans-serif;
+$font-family-sans-fallback: "Arial", sans-serif;
 
 // $font-family-sans
 //
@@ -83,7 +83,7 @@ $font-family-sans-fallback:   'Arial', sans-serif;
 // $font-family-sans - {list}
 // @requires - `$font-family-sans-fallback`
 
-$font-family-sans:            'Helvetica Neue', 'Helvetica', $font-family-sans-fallback;
+$font-family-sans: "Helvetica Neue", "Helvetica", $font-family-sans-fallback;
 
 // $font-family-serif
 //
@@ -91,7 +91,7 @@ $font-family-sans:            'Helvetica Neue', 'Helvetica', $font-family-sans-f
 //
 // $font-family-serif - {list}
 
-$font-family-serif:           'Georgia', 'Cambria', 'Times New Roman', 'Times', serif;
+$font-family-serif: "Georgia", "Cambria", "Times New Roman", "Times", serif;
 
 // $font-family-monospace
 //
@@ -99,11 +99,12 @@ $font-family-serif:           'Georgia', 'Cambria', 'Times New Roman', 'Times', 
 //
 // $font-family-monospace - {list}
 
-$font-family-monospace:       'Inconsolata', 'Menlo', 'Consolas', 'Bitstream Vera Sans Mono', 'Courier', monospace;
+$font-family-monospace: "Inconsolata", "Menlo", "Consolas",
+  "Bitstream Vera Sans Mono", "Courier", monospace;
 
-$font-family-education:       'Fredoka One', 'Roboto', sans-serif;
-$font-family-serious:         'Lato', sans-serif;
-$font-family-serious-accent:  'Karla', sans-serif;
+$font-family-education: "Fredoka One", "Roboto", sans-serif;
+$font-family-serious: "Lato", sans-serif;
+$font-family-serious-accent: "Karla", sans-serif;
 
 // $font-family-display
 //
@@ -111,9 +112,9 @@ $font-family-serious-accent:  'Karla', sans-serif;
 //
 // $font-family-display - {list}
 
-$font-family-display:         $font-family-serious;
+$font-family-display: $font-family-serious;
 
-$font-family-accent:          $font-family-serious-accent;
+$font-family-accent: $font-family-serious-accent;
 
 // $font-family-default
 //
@@ -122,4 +123,4 @@ $font-family-accent:          $font-family-serious-accent;
 // $font-family-default - {string}
 // @requires - `$font-family-sans`
 
-$font-family-default:         $font-family-serious;
+$font-family-default: $font-family-serious;

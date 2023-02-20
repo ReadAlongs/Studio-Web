@@ -6,9 +6,9 @@ Interactive story telling embeddable into any website!
 
 This mono repo combines four packages:
 
- - A [stencil web component](packages/web-component/) for visualizing read alongs,
- - An [Angular Library](packages/ngx-web-component/) that wraps the stencil web component,
- - A [demo web application](packages/angular-demo/) to show how to use the angular library in an Angular web application.
+- A [stencil web component](packages/web-component/) for visualizing read alongs,
+- An [Angular Library](packages/ngx-web-component/) that wraps the stencil web component,
+- A [demo web application](packages/angular-demo/) to show how to use the angular library in an Angular web application.
 - The [Studio-Web](packages/studio-web/) application for creating ReadAlongs
 
 ## Table of Contents
@@ -81,12 +81,12 @@ Then serve Studio-Web by running:
 Ou en français:
 
     nx serve studio-web --configuration=development-fr
-    
+
 There are separate production and development serving configurations
 for each interface language, so you may for instance also use
 `development-en`, `production-en`, `production-fr` for
-`--configuration` above.  Note that these configurations are *only*
-for the `serve` command.  To build for deployment, see
+`--configuration` above. Note that these configurations are _only_
+for the `serve` command. To build for deployment, see
 [below](#studio-web-2).
 
 Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
@@ -116,15 +116,15 @@ providing them to the application as needed.
 However, `web-component` requires a build in order to have the .js files generated and available
 to serve or import. In the instructions above, we actually show two methods you can use:
 
- - `nx build web-component --watch` will only build that component, in production mode, and
-   rebuild it any time you change that component's source code.
+- `nx build web-component --watch` will only build that component, in production mode, and
+  rebuild it any time you change that component's source code.
 
- - `nx serve web-component` goes further, serving that component, which also requires building
-   it. It also watches source code for changes.  However, it produces a development build, which
-   may be different from the production build.
+- `nx serve web-component` goes further, serving that component, which also requires building
+  it. It also watches source code for changes. However, it produces a development build, which
+  may be different from the production build.
 
-   In this case, the web-component is being served on port 3333, but the Studio-Web app
-   just ignores that and uses the copy provided by `nx serve studio-web` instead.
+  In this case, the web-component is being served on port 3333, but the Studio-Web app
+  just ignores that and uses the copy provided by `nx serve studio-web` instead.
 
 ### Testing
 
@@ -183,7 +183,7 @@ Then, go to the directory and publish:
 
     cd dist/packages/web-component && npm publish --access=public
     cd dist/packages/ngx-web-component && npm publish --access=public
-    
+
 #### Studio-Web
 
 To build the web application in the currently deployed configuration
@@ -195,11 +195,11 @@ To build the web application in the currently deployed configuration
 To build with each interface language in its own directory, run:
 
     nx build studio-web --configuration=production --localize=en --localize=fr
-    
+
 This will create a complete website under `dist/packages/studio-web/`
 which you can deploy in whatever fashion you like to your server
 ([rsync](https://rsync.samba.org/) has worked well for a few decades
-now).  Note that the production build expects to talk to the
+now). Note that the production build expects to talk to the
 ReadAlongs API at
 [https://readalong-studio.herokuapp.com/api/v1](https://readalong-studio.herokuapp.com/api/v1/docs),
 so if you have deployed the API elsewhere, you must:
@@ -212,10 +212,10 @@ so if you have deployed the API elsewhere, you must:
 
 ## Maintainers
 
- - [@roedoejet](https://github.com/roedoejet)
- - [@joanise](https://github.com/joanise)
- - [@dhdaines](https://github.com/dhdaines)
- - [@deltork](https://github.com/deltork)
+- [@roedoejet](https://github.com/roedoejet)
+- [@joanise](https://github.com/joanise)
+- [@dhdaines](https://github.com/dhdaines)
+- [@deltork](https://github.com/deltork)
 
 ## Contributing
 

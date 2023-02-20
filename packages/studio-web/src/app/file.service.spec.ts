@@ -13,12 +13,13 @@ describe("FileService", () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [HttpClientTestingModule, ToastrModule.forRoot()],});
-        // Inject the http service and test controller for each test
-        httpClient = TestBed.inject(HttpClient);
-        httpTestingController = TestBed.inject(HttpTestingController);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
+    });
+    // Inject the http service and test controller for each test
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(FileService);
-
   });
 
   it("should be created", () => {

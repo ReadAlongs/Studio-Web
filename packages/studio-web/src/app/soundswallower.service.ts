@@ -26,13 +26,14 @@ export class SoundswallowerService {
 
   waitForInit$(): Observable<void> {
     if (soundswallower === undefined)
-      return from(soundswallower_factory().then((module) => {
-        soundswallower = module;
-        const preload = new soundswallower.Decoder();
-        return preload.initialize();
-      }));
-    else
-      return of();
+      return from(
+        soundswallower_factory().then((module) => {
+          soundswallower = module;
+          const preload = new soundswallower.Decoder();
+          return preload.initialize();
+        })
+      );
+    else return of();
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {

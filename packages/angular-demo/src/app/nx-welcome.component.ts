@@ -1,12 +1,11 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from "@angular/core";
 
 /* eslint-disable */
 
 @Component({
-  selector: 'app-nx-welcome',
+  selector: "app-nx-welcome",
   template: `
-
-     <!--
+    <!--
      * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      This is a starter component and can be deleted.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -17,9 +16,9 @@ import { Component, ViewEncapsulation } from '@angular/core';
       html {
         -webkit-text-size-adjust: 100%;
         font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-          'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
-          'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-          'Noto Color Emoji';
+          "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+          "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+          "Noto Color Emoji";
         line-height: 1.5;
         tab-size: 4;
         scroll-behavior: smooth;
@@ -54,7 +53,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
       }
       pre {
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          'Liberation Mono', 'Courier New', monospace;
+          "Liberation Mono", "Courier New", monospace;
       }
       svg {
         display: block;
@@ -70,7 +69,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
         border-radius: 0.25rem;
         color: rgba(229, 231, 235, 1);
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          'Liberation Mono', 'Courier New', monospace;
+          "Liberation Mono", "Courier New", monospace;
         overflow: scroll;
         padding: 0.5rem 0.75rem;
       }
@@ -477,7 +476,12 @@ import { Component, ViewEncapsulation } from '@angular/core';
         <div id="middle-content">
           <div id="learning-materials" class="rounded shadow">
             <h2>Learning materials</h2>
-            <a href="https://nx.dev/getting-started/intro?utm_source=nx-project" target="_blank" rel="noreferrer" class="list-item-link">
+            <a
+              href="https://nx.dev/getting-started/intro?utm_source=nx-project"
+              target="_blank"
+              rel="noreferrer"
+              class="list-item-link"
+            >
               <svg
                 fill="none"
                 stroke="currentColor"
@@ -509,7 +513,12 @@ import { Component, ViewEncapsulation } from '@angular/core';
                 />
               </svg>
             </a>
-            <a href="https://blog.nrwl.io/?utm_source=nx-project" target="_blank" rel="noreferrer" class="list-item-link">
+            <a
+              href="https://blog.nrwl.io/?utm_source=nx-project"
+              target="_blank"
+              rel="noreferrer"
+              class="list-item-link"
+            >
               <svg
                 fill="none"
                 stroke="currentColor"
@@ -541,7 +550,12 @@ import { Component, ViewEncapsulation } from '@angular/core';
                 />
               </svg>
             </a>
-            <a href="https://www.youtube.com/c/Nrwl_io/videos?utm_source=nx-project&sub_confirmation=1" target="_blank" rel="noreferrer" class="list-item-link">
+            <a
+              href="https://www.youtube.com/c/Nrwl_io/videos?utm_source=nx-project&sub_confirmation=1"
+              target="_blank"
+              rel="noreferrer"
+              class="list-item-link"
+            >
               <svg
                 role="img"
                 viewBox="0 0 24 24"
@@ -571,7 +585,12 @@ import { Component, ViewEncapsulation } from '@angular/core';
                 />
               </svg>
             </a>
-            <a href="https://nx.dev/angular-tutorial/1-code-generation?utm_source=nx-project" target="_blank" rel="noreferrer" class="list-item-link">
+            <a
+              href="https://nx.dev/angular-tutorial/1-code-generation?utm_source=nx-project"
+              target="_blank"
+              rel="noreferrer"
+              class="list-item-link"
+            >
               <svg
                 fill="none"
                 stroke="currentColor"
@@ -603,7 +622,12 @@ import { Component, ViewEncapsulation } from '@angular/core';
                 />
               </svg>
             </a>
-            <a href="https://nxplaybook.com/?utm_source=nx-project" target="_blank" rel="noreferrer" class="list-item-link">
+            <a
+              href="https://nxplaybook.com/?utm_source=nx-project"
+              target="_blank"
+              rel="noreferrer"
+              class="list-item-link"
+            >
               <svg
                 fill="none"
                 stroke="currentColor"
@@ -641,7 +665,13 @@ import { Component, ViewEncapsulation } from '@angular/core';
             </a>
           </div>
           <div id="other-links">
-            <a id="nx-console" class="button-pill rounded shadow" href="https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console&utm_source=nx-project" target="_blank" rel="noreferrer">
+            <a
+              id="nx-console"
+              class="button-pill rounded shadow"
+              href="https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console&utm_source=nx-project"
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg
                 fill="currentColor"
                 role="img"
@@ -676,9 +706,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
                 </svg>
                 <h2>
                   NxCloud
-                  <span>
-                    Enable faster CI & better DX
-                  </span>
+                  <span> Enable faster CI & better DX </span>
                 </h2>
               </div>
               <p>
@@ -686,9 +714,21 @@ import { Component, ViewEncapsulation } from '@angular/core';
                 running:
               </p>
               <pre>nx connect-to-nx-cloud</pre>
-              <a href="https://nx.app/?utm_source=nx-project" target="_blank" rel="noreferrer"> What is Nx Cloud? </a>
+              <a
+                href="https://nx.app/?utm_source=nx-project"
+                target="_blank"
+                rel="noreferrer"
+              >
+                What is Nx Cloud?
+              </a>
             </div>
-            <a id="nx-repo" class="button-pill rounded shadow" href="https://github.com/nrwl/nx?utm_source=nx-project" target="_blank" rel="noreferrer">
+            <a
+              id="nx-repo"
+              class="button-pill rounded shadow"
+              href="https://github.com/nrwl/nx?utm_source=nx-project"
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg
                 fill="currentColor"
                 role="img"
@@ -799,12 +839,8 @@ nx affected:e2e</pre>
         </p>
       </div>
     </div>
-  
-`,
-  styles: [
-  ],
-  encapsulation: ViewEncapsulation.None
+  `,
+  styles: [],
+  encapsulation: ViewEncapsulation.None,
 })
-export class NxWelcomeComponent {
-
-}
+export class NxWelcomeComponent {}

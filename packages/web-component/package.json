@@ -1,51 +1,51 @@
 {
-    "name": "@readalongs/web-component",
-    "version": "0.2.1",
-    "description": "ReadAlong Web Component",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.js",
-    "es2015": "dist/esm/index.js",
-    "es2017": "dist/esm/index.js",
-    "types": "dist/types/components.d.ts",
-    "collection": "dist/collection/collection-manifest.json",
-    "collection:main": "dist/collection/index.js",
-    "unpkg": "dist/bundle.js",
-    "private": false,
-    "files": [
-        "dist/"
-    ],
-    "scripts": {
-        "build": "stencil build --docs",
-        "bundle": "webpack --config webpack.config.js",
-        "cy:run": "cypress run",
-        "start": "stencil build --dev --watch --serve",
-        "prepublish": "node b64Fonts.js",
-        "test": "npm run test-servers & npm run wait-for-test-server && npm run test:once",
-        "test-servers": "bash ./bin/run-test-servers",
-        "test:once": "cypress run",
-        "test:open": "cypress open",
-        "serve-test-data": "sirv --dev --cors --port 5000 test-data/",
-        "generate": "stencil generate",
-        "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
-    },
-    "dependencies": {
-        "howler": "^2.2.3",
-        "rxjs": "^6.6.7"
-    },
-    "devDependencies": {
-        "@stencil/angular-output-target": "^0.4.0",
-        "@stencil/core": "^2.17.3",
-        "@stencil/sass": "^1.5.2",
-        "@stencil/webpack": "0.0.6",
-        "@types/jest": "^26.0.24",
-        "cypress": "^12.3.0",
-        "jest-cli": "^27.5.1",
-        "sirv-cli": "^1.0.14",
-        "wait-on": "^6.0.1",
-        "webpack": "^5.73.0",
-        "webpack-cli": "^4.10.0",
-        "woff2base64": "^2.0.0"
-    },
-    "license": "MIT",
-    "gitHead": "0a6670c1d1b0aac11d5fab2d18f233585a6b867e"
+  "name": "@readalongs/web-component",
+  "version": "0.2.1",
+  "description": "ReadAlong Web Component",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.js",
+  "es2015": "dist/esm/index.js",
+  "es2017": "dist/esm/index.js",
+  "types": "dist/types/components.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
+  "unpkg": "dist/bundle.js",
+  "private": false,
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "stencil build --docs",
+    "bundle": "webpack --config webpack.config.js",
+    "cy:run": "cypress run",
+    "start": "stencil build --dev --watch --serve",
+    "prepublish": "node b64Fonts.js",
+    "test": "npm run test-servers & npm run wait-for-test-server && npm run test:once",
+    "test-servers": "bash ./bin/run-test-servers",
+    "test:once": "cypress run",
+    "test:open": "cypress open",
+    "serve-test-data": "sirv --dev --cors --port 5000 test-data/",
+    "generate": "stencil generate",
+    "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
+  },
+  "dependencies": {
+    "howler": "^2.2.3",
+    "rxjs": "^6.6.7"
+  },
+  "devDependencies": {
+    "@stencil/angular-output-target": "^0.4.0",
+    "@stencil/core": "^2.17.3",
+    "@stencil/sass": "^1.5.2",
+    "@stencil/webpack": "0.0.6",
+    "@types/jest": "^26.0.24",
+    "cypress": "^12.3.0",
+    "jest-cli": "^27.5.1",
+    "sirv-cli": "^1.0.14",
+    "wait-on": "^6.0.1",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0",
+    "woff2base64": "^2.0.0"
+  },
+  "license": "MIT",
+  "gitHead": "0a6670c1d1b0aac11d5fab2d18f233585a6b867e"
 }

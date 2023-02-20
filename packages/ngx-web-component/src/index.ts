@@ -1,3 +1,2 @@
-
-        export * from './lib/ngx-web-component.module';
-        export * from './generated/directives/proxies';
+export * from "./lib/ngx-web-component.module";
+export * from "./generated/directives/proxies";
