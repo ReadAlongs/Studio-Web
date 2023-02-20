@@ -88,24 +88,33 @@ export class UploadComponent implements OnInit {
   }
 
   async ngOnInit() {
-    try {
-      await this.ssjsService.initialize();
-    } catch (err: any) {
-      this.toastr.error(err.message, $localize`Failed to load the aligner.`, {
-        timeOut: 60000,
-      });
-      console.log(err);
-      return;
-    }
-    this.rasService
-      .getLangs$()
+    forkJoin({
+      langs: this.rasService.getLangs$(),
+      _: this.ssjsService.waitForInit$(),
+    })
       .pipe(finalize(() => (this.isLoaded = true)))
       .subscribe({
-        next: (langs: Array<SupportedLanguage>) => {
+        next: ({
+          langs,
+          _,
+        }: {
+          langs: Array<SupportedLanguage>;
+          _: void;
+        }) => {
           this.langs = langs
             .filter((lang) => lang.code != "und")
             .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
         },
+        error: (err) => {
+          this.toastr.error(
+            err.message,
+            $localize`Failed to load the aligner.`,
+            {
+              timeOut: 60000,
+            }
+          );
+          console.log(err);
+        }
       });
   }
 

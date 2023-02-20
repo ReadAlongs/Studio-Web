@@ -1,5 +1,5 @@
 /* -*- typescript-indent-level: 2 -*- */
-import { Observable } from "rxjs";
+import { Observable, of, from } from "rxjs";
 import soundswallower_factory, {
   Decoder,
   DictEntry,
@@ -25,9 +25,11 @@ export interface AlignmentProgress {
 export class SoundswallowerService {
   constructor() {}
 
-  async initialize() {
+  waitForInit$(): Observable<void> {
     if (soundswallower === undefined)
-      soundswallower = await soundswallower_factory();
+      return from(soundswallower_factory().then((module) => {soundswallower = module}));
+    else
+      return of();
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
