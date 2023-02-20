@@ -57,7 +57,7 @@ the following script import in your own `index.html` page:
 
 Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>`
 elements with arguments for where to find your text, alignments and audio file. These files can be generated
-using _________ service located here: ____________.
+using \_\_\_ service located here: \_\_\_.
 
 ```html
 <read-along href="assets/s2.readalong" audio="assets/s2.wav"
