@@ -27,7 +27,11 @@ export class SoundswallowerService {
 
   waitForInit$(): Observable<void> {
     if (soundswallower === undefined)
-      return from(soundswallower_factory().then((module) => {soundswallower = module}));
+      return from(soundswallower_factory().then((module) => {
+        soundswallower = module;
+        const preload = new soundswallower.Decoder();
+        return preload.initialize();
+      }));
     else
       return of();
   }
