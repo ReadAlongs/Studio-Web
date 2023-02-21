@@ -2,7 +2,6 @@ import { Observable, Subject, takeUntil } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
 import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { Title } from "@angular/platform-browser";
 import { Components } from "@readalongs/web-component/loader";
 import { HttpErrorResponse } from "@angular/common/http";
 
@@ -24,7 +23,6 @@ export class DemoComponent implements OnDestroy, OnInit {
   slots: any = {
     title: $localize`Title`,
     subtitle: $localize`Subtitle`,
-    pageTitle: $localize`PageTitle`,
   };
   outputFormats = [
     { value: "html", display: $localize`Offline HTML` },
@@ -37,7 +35,6 @@ export class DemoComponent implements OnDestroy, OnInit {
   language: "eng" | "fra" = "eng";
   unsubscribe$ = new Subject<void>();
   constructor(
-    public titleService: Title,
     public b64Service: B64Service,
     private rasService: RasService,
     private toastr: ToastrService
@@ -46,13 +43,6 @@ export class DemoComponent implements OnDestroy, OnInit {
     if ($localize.locale == "fr") {
       this.language = "fra";
     }
-    titleService.setTitle(this.slots.pageTitle);
-  }
-
-  onPageTitleChange(e: Event): void {
-    const titleValue: string = (<HTMLTextAreaElement>e.target).value;
-    this.slots.pageTitle = titleValue;
-    this.titleService.setTitle(titleValue);
   }
 
   ngOnInit(): void {}
@@ -169,7 +159,7 @@ export class DemoComponent implements OnDestroy, OnInit {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
-        <title>${this.slots.pageTitle}</title>
+        <title>${this.slots.title}</title>
         <link rel="stylesheet" href="${this.b64Inputs[2][1]}">
         <script src="${this.b64Inputs[2][0]}"></script>
       </head>
