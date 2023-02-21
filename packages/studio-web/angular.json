@@ -21,7 +21,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/readalong-studio",
             "index": "src/index.html",
@@ -38,9 +38,6 @@
                 "output": "./model"
               }
             ],
-            "customWebpackConfig": {
-              "path": "./custom-webpack.config.js"
-            },
             "styles": ["src/styles.sass"],
             "stylePreprocessorOptions": {
               "includePaths": ["./node_modules"]
@@ -84,7 +81,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
               "browserTarget": "readalong-studio:build:production"
@@ -99,13 +96,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-builders/custom-webpack:extract-i18n",
+          "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
             "browserTarget": "readalong-studio:build"
           }
         },
         "test": {
-          "builder": "@angular-builders/custom-webpack:karma",
+          "builder": "@angular-devkig/build-angular:karma",
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
@@ -121,9 +118,6 @@
                 "output": "./model"
               }
             ],
-            "customWebpackConfig": {
-              "path": "./custom-webpack.config.js"
-            },
             "styles": ["src/styles.sass"]
           }
         }

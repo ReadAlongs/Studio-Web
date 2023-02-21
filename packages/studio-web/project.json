@@ -12,7 +12,7 @@
   },
   "targets": {
     "build": {
-      "executor": "@angular-builders/custom-webpack:browser",
+      "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/studio-web",
@@ -21,9 +21,6 @@
         "i18nMissingTranslation": "warning",
         "polyfills": ["packages/studio-web/src/polyfills.ts"],
         "tsConfig": "packages/studio-web/tsconfig.app.json",
-        "customWebpackConfig": {
-          "path": "packages/studio-web/custom-webpack.config.js"
-        },
         "assets": [
           "packages/studio-web/src/favicon.ico",
           "packages/studio-web/src/assets",
@@ -73,7 +70,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-builders/custom-webpack:dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production-en": {
           "browserTarget": "studio-web:build:production,en"
@@ -91,7 +88,7 @@
       "defaultConfiguration": "development-en"
     },
     "extract-i18n": {
-      "executor": "@angular-builders/custom-webpack:extract-i18n",
+      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "format": "json",
         "outputPath": "packages/studio-web/src/i18n",
