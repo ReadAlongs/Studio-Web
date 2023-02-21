@@ -64,6 +64,11 @@ export class AppComponent implements OnDestroy, OnInit {
       $localize`Warning`,
       { timeOut: 10000 }
     );
+    // User Browser's default messaging to warn the user when they're about to leave the page
+    window.addEventListener("beforeunload", (e) => {
+      if (this.formIsDirty()) (e || window.event).returnValue = true;
+      return true;
+    });
   }
 
   ngOnDestroy(): void {
@@ -80,6 +85,14 @@ export class AppComponent implements OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {}
+
+  formIsDirty() {
+    return (
+      this.upload?.audioControl.value !== null ||
+      this.upload?.textControl.value !== null ||
+      this.upload?.textInput
+    );
+  }
 
   startTour(): void {
     this.shepherdService.defaultStepOptions = {
@@ -114,11 +127,7 @@ export class AppComponent implements OnDestroy, OnInit {
         }
       },
     };
-    if (
-      this.upload?.audioControl.value !== null ||
-      this.upload?.textControl.value !== null ||
-      this.upload?.textInput
-    ) {
+    if (this.formIsDirty()) {
       step_one_final_step["text"] =
         $localize`Once you've done this, you can click the "next step" button here to let Studio build your ReadAlong! (This may take a few seconds.)` +
         $localize` You already started some work, though, so clicking next will erase it and continue the tour with demonstration data. Cancel the tour if you don't want to do this.`;
