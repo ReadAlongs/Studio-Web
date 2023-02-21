@@ -1,5 +1,6 @@
 {
   "name": "angular-demo",
+  "type": "module",
   "dependencies": {
     "@angular/animations": "~15.1.0",
     "@angular/cdk": "~15.1.2",
