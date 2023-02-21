@@ -39,7 +39,7 @@
               }
             ],
             "customWebpackConfig": {
-              "path": "./custom-webpack.config.js"
+              "path": "./custom-webpack.config.cjs"
             },
             "styles": ["src/styles.sass"],
             "stylePreprocessorOptions": {
@@ -122,7 +122,7 @@
               }
             ],
             "customWebpackConfig": {
-              "path": "./custom-webpack.config.js"
+              "path": "./custom-webpack.config.cjs"
             },
             "styles": ["src/styles.sass"]
           }
