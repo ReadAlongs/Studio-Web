@@ -4,7 +4,7 @@ import soundswallower_factory, {
   DictEntry,
   Segment,
   SoundSwallowerModule,
-} from "soundswallower/jsonly";
+} from "soundswallower";
 import { ReadAlong } from "./ras.service";
 
 import { Injectable } from "@angular/core";
