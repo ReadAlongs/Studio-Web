@@ -25,20 +25,20 @@ export class SoundswallowerService {
   modelLoaded$ = new BehaviorSubject(false);
   constructor() {}
 
-  _loadModel(): void {
+  async preload$(): Promise<void> {
     const preload = new soundswallower.Decoder();
-    preload.initialize().then(() => this.modelLoaded$.next(true));
+    return preload.initialize().finally(() => preload.delete());
   }
 
-  preload(): void {
-    if (soundswallower === undefined) {
-      soundswallower_factory().then((module) => {
-        soundswallower = module;
-        this._loadModel();
-      });
-    } else {
-      this._loadModel();
-    }
+  loadModule$(): Observable<void> {
+    if (soundswallower === undefined)
+      return from(
+        soundswallower_factory().then((module) => {
+          soundswallower = module;
+          return this.preload$();
+        })
+      );
+    else return from(this.preload$());
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {

@@ -55,6 +55,7 @@ export class AppComponent implements OnDestroy, OnInit {
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
   unsubscribe$ = new Subject<void>();
+  fatalError: string;
   constructor(
     private b64Service: B64Service,
     private fileService: FileService,
@@ -115,7 +116,24 @@ export class AppComponent implements OnDestroy, OnInit {
       return true;
     });
     // Preload SoundSwallower Model
-    this.ssjsService.preload();
+    this.ssjsService
+      .loadModule$()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        error: (err) => {
+          this.toastr.error(
+            err.message,
+            $localize`Failed to load the aligner.`,
+            {
+              timeOut: 60000,
+            }
+          );
+          this.fatalError = err.toString();
+          // FIXME... must be a better way to pass this message to the sub-component?
+          this.upload!.fatalError = "aligner";
+          console.log(err);
+        },
+      });
   }
 
   ngOnDestroy(): void {

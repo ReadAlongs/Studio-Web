@@ -70,6 +70,7 @@ export class UploadComponent implements OnDestroy, OnInit {
     text: "edit",
   };
   textInput: string = "";
+  public fatalError: "aligner" | "langs" | "none";
   unsubscribe$ = new Subject<void>();
   constructor(
     private _formBuilder: FormBuilder,
@@ -86,7 +87,7 @@ export class UploadComponent implements OnDestroy, OnInit {
     this.rasService
       .getLangs$()
       .pipe(
-        finalize(() => (this.isLoaded = true)),
+        finalize(() => (this.fatalError = "none")),
         takeUntil(this.unsubscribe$)
       )
       .subscribe({
