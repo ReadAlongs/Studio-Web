@@ -15,7 +15,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "importHelpers": true,
     "esModuleInterop": true,
     "target": "ES2022",

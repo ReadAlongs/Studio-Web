@@ -139,12 +139,29 @@ export class UploadComponent implements OnDestroy, OnInit {
   downloadRecording() {
     if (this.audioControl.value !== null) {
       let blob = new Blob([this.audioControl.value], {
-        type: "audio/mpeg",
+        type: this.audioControl.value.type,
       });
+      let ext;
+      switch (blob.type) {
+        case "audio/mpeg":
+          ext = ".mp3";
+          break;
+        case "audio/wav":
+          ext = ".wav";
+          break;
+        case "audio/webm":
+          ext = ".webm";
+          break;
+        case "audio/m4a":
+          ext = ".m4a";
+          break;
+        default:
+          ext = ".wav";
+      }
       var url = window.URL.createObjectURL(blob);
       var a = document.createElement("a");
       a.href = url;
-      a.download = "ras-audio-" + Date.now() + ".mp3";
+      a.download = "ras-audio-" + Date.now() + ext;
       a.click();
       a.remove();
     } else {
