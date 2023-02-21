@@ -1,17 +1,15 @@
 import { Injectable } from "@angular/core";
 import Shepherd from "shepherd.js";
-// Shepherd types have useless namespaces that break with "nodenext"
-// resolution so we can't use them
-const ShepherdIsBroken: any = Shepherd;
 import { elementIsHidden } from "./utils/dom";
 import { makeButton } from "./utils/buttons";
+import Step from "shepherd.js/src/types/step";
 @Injectable({
   providedIn: "root",
 })
 export class ShepherdService {
   confirmCancel = false;
   confirmCancelMessage?: string;
-  defaultStepOptions: any = {}; // Should be Shepherd.Step.StepOptions?
+  defaultStepOptions: Step.StepOptions = {};
   errorTitle = null;
   isActive = false;
   keyboardNavigation = true;
@@ -19,7 +17,7 @@ export class ShepherdService {
   modal = false;
   requiredElements = [];
   tourName = undefined;
-  tourObject: any; // Should be Shepherd.Tour?
+  tourObject: Shepherd.Tour;
 
   constructor() {}
 
@@ -86,8 +84,7 @@ export class ShepherdService {
    * Take a set of steps and create a tour object based on the current configuration
    * @param steps An array of steps
    */
-  addSteps(steps: Array<any>) {
-    // Should be Shepherd.StepOptions?
+  addSteps(steps: Array<Step.StepOptions>) {
     this._initialize();
     const tour = this.tourObject;
 
@@ -149,7 +146,7 @@ export class ShepherdService {
    * Initializes the tour, creates a new Shepherd.Tour. sets options, and binds events
    */
   private _initialize() {
-    const tourObject = new ShepherdIsBroken.Tour({
+    const tourObject = new Shepherd.Tour({
       confirmCancel: this.confirmCancel,
       confirmCancelMessage: this.confirmCancelMessage,
       defaultStepOptions: this.defaultStepOptions,
