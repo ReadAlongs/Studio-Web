@@ -9,7 +9,10 @@ import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatStepper } from "@angular/material/stepper";
 
 import { B64Service } from "./b64.service";
-import { createAlignedXML } from "./soundswallower.service";
+import {
+  createAlignedXML,
+  SoundswallowerService,
+} from "./soundswallower.service";
 import { FileService } from "./file.service";
 import {
   audio_file_step,
@@ -56,7 +59,8 @@ export class AppComponent implements OnDestroy, OnInit {
     private fileService: FileService,
     private toastr: ToastrService,
     private dialog: MatDialog,
-    public shepherdService: ShepherdService
+    public shepherdService: ShepherdService,
+    private ssjsService: SoundswallowerService
   ) {}
   ngOnInit(): void {
     this.toastr.warning(
@@ -69,6 +73,7 @@ export class AppComponent implements OnDestroy, OnInit {
       if (this.formIsDirty()) (e || window.event).returnValue = true;
       return true;
     });
+    this.ssjsService.preload();
   }
 
   ngOnDestroy(): void {
