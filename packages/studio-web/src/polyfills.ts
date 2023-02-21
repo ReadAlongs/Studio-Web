@@ -17,6 +17,8 @@
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */
+import AudioRecorder from "audio-recorder-polyfill";
+window.MediaRecorder = AudioRecorder;
 
 /**
  * By default, zone.js will patch all possible macroTask and DomEvents
@@ -50,5 +52,4 @@ import "zone.js"; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
-// ng add @angular/localize doesn't work for some stupid reason, so we have to add this
 import "@angular/localize/init";
