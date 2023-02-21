@@ -22,7 +22,7 @@
         "polyfills": ["packages/studio-web/src/polyfills.ts"],
         "tsConfig": "packages/studio-web/tsconfig.app.json",
         "customWebpackConfig": {
-          "path": "packages/studio-web/custom-webpack.config.js"
+          "path": "packages/studio-web/custom-webpack.config.cjs"
         },
         "assets": [
           "packages/studio-web/src/favicon.ico",

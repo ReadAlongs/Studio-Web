@@ -53,15 +53,15 @@ export class MicrophoneService {
 
   private addListeners() {
     if (this.recorder === null) throw "Recorder was not created";
-    this.recorder.ondataavailable = (event: BlobEvent) => {
+    this.recorder.addEventListener("dataavailable", (event: BlobEvent) => {
       this.chunks.push(event.data);
-    };
-    this.recorder.onstop = (event: Event) => {
-      const blob = new Blob(this.chunks, { type: "audio/webm" });
+    });
+    this.recorder.addEventListener("stop", (event: Event) => {
+      const blob = new Blob(this.chunks, { type: "audio/mpeg" });
       this.chunks = [];
       this.recorderEnded.emit(blob);
       this.clear();
-    };
+    });
   }
 
   private clear() {

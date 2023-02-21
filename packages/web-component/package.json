@@ -29,6 +29,7 @@
     "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
   },
   "dependencies": {
+    "audio-recorder-polyfill": "^0.4.1",
     "howler": "^2.2.3",
     "rxjs": "^6.6.7"
   },
