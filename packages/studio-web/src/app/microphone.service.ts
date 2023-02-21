@@ -57,7 +57,7 @@ export class MicrophoneService {
       this.chunks.push(event.data);
     });
     this.recorder.addEventListener("stop", (event: Event) => {
-      const blob = new Blob(this.chunks, { type: "audio/webm" });
+      const blob = new Blob(this.chunks, { type: "audio/mpeg" });
       this.chunks = [];
       this.recorderEnded.emit(blob);
       this.clear();
