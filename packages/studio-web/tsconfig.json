@@ -17,6 +17,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "target": "ES2022",
     "module": "es2020",
     "lib": ["es2020", "dom"],

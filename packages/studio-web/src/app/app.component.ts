@@ -4,8 +4,10 @@ import { forkJoin, of, BehaviorSubject, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { environment } from "../environments/environment";
 import { FormGroup } from "@angular/forms";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
 
 import { B64Service } from "./b64.service";
@@ -59,10 +61,50 @@ export class AppComponent implements OnDestroy, OnInit {
     private fileService: FileService,
     private toastr: ToastrService,
     private dialog: MatDialog,
+    private meta: Meta,
     public shepherdService: ShepherdService,
     private ssjsService: SoundswallowerService
   ) {}
   ngOnInit(): void {
+    // Set Meta Tags for search engines and social media
+    // We don't have to set charset or viewport for example since Angular already adds them
+    let homepage = environment.packageJson.homepage;
+    if ($localize.locale == "fr") {
+      homepage = homepage + "/fr";
+    }
+    this.meta.addTags(
+      [
+        // Search Engine Tags
+        {
+          name: "title",
+          content: $localize`ReadAlong-Studio for Interactive Storytelling`,
+        },
+        {
+          name: "description",
+          content: $localize`Create your own offline compatible interactive multimedia stories that highlight words as they are spoken.`,
+        },
+        { name: "robots", content: "index,follow" },
+        // Social Media Tags
+        {
+          name: "og:title",
+          content: $localize`ReadAlong-Studio for Interactive Storytelling`,
+        },
+        {
+          name: "og:description",
+          content: $localize`Create your own offline compatible interactive multimedia stories that highlight words as they are spoken.`,
+        },
+        { name: "og:image", content: homepage + "/assets/demo.png" },
+        { name: "og:url", content: homepage },
+        { name: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:image:alt",
+          content: $localize`Interactive ReadAlong that highlights text as it is spoken`,
+        },
+      ],
+      true
+    );
+
     this.toastr.warning(
       $localize`This app has not been officially released and should not be expected to work properly yet.`,
       $localize`Warning`,
@@ -73,6 +115,7 @@ export class AppComponent implements OnDestroy, OnInit {
       if (this.formIsDirty()) (e || window.event).returnValue = true;
       return true;
     });
+    // Preload SoundSwallower Model
     this.ssjsService.preload();
   }
 
