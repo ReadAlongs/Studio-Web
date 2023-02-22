@@ -107,7 +107,7 @@ export class UploadComponent implements OnDestroy, OnInit {
 
   reportRasError(err: HttpErrorResponse) {
     if (err.status == 422) {
-      this.toastr.error(err.message, $localize`Text processing failed.`, {
+      this.toastr.error(err.error.detail, $localize`Text processing failed.`, {
         timeOut: 15000,
       });
     } else {
