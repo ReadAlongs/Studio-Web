@@ -258,7 +258,8 @@ export class AppComponent implements OnDestroy, OnInit {
 
   openPrivacyDialog(): void {
     this.dialog.open(PrivacyDialog, {
-      width: "250px",
+      width: "50vw",
+      maxHeight: "90vh",
     });
   }
 
@@ -292,7 +293,7 @@ export class PrivacyDialog {
     window.localStorage.getItem("plausible_ignore") === "true";
   constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
   ngOnInit() {
-    this.dialogRef.updateSize("50%");
+    this.dialogRef.updateSize("100%");
   }
 
   toggleAnalytics() {
