@@ -3,7 +3,7 @@
   "translations": {
     "8428348909593474745": "Étape 1",
     "6766123079913371250": "Échec d'initialisation de l'outil d'alignement",
-    "6740994357857818162": " Ceci pourrait resulter d'un navigateur incompatible.  Prière de contacter les développeurs. ",
+    "4897469724355690929": " Ceci pourrait resulter d'un navigateur incompatible.  Prière de contacter les développeurs et de leur envoyer le texte complet du message d'erreur ci-dessous: ",
     "7458890725604973091": " Bienvenue au Studio ReadAlong ",
     "3614618598824071164": " Cet outil vous aidera à créer une page interactive de lecture accompagnée, sur laquelle les mots sont surlignés lorsqu'ils sont lus à voix haute. Jetez un coup d'œil à {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} cet exemple en cri de l'Est{$CLOSE_LINK} pour mieux comprendre le concept. ",
     "11480612528390167": " Avant de commencer à en faire vous-même, veuillez lire notre {$START_LINK}politique de vie privée et de souveraineté des données{$CLOSE_LINK}, faites une visite guidée en cliquant sur le bouton « Visite guidée » puis suivez les étapes ci-dessous. ",

@@ -3,7 +3,7 @@
   "translations": {
     "8428348909593474745": "Step 1",
     "6766123079913371250": "Aligner Error",
-    "6740994357857818162": " Failed to initialize the aligner. This may be the result of an incompatible browser. Please contact the developers. ",
+    "4897469724355690929": " Failed to initialize the aligner. This may be the result of an incompatible browser. Please contact the developers and send them a complete copy of the error message below: ",
     "7458890725604973091": " Welcome to ReadAlong Studio ",
     "3614618598824071164": " This is a tool to help you make your own interactive 'readalong' that highlights words as they are spoken. Have a look at {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} this example in East Cree{$CLOSE_LINK} to get a better idea of what these are. ",
     "11480612528390167": " To get started making your own, read our {$START_LINK}privacy and data sovereignty policy{$CLOSE_LINK}, then take a tour by clicking on the tour button below, and follow the steps below. ",
