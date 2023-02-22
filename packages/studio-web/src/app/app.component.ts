@@ -292,7 +292,7 @@ export class PrivacyDialog {
     window.localStorage.getItem("plausible_ignore") === "true";
   constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
   ngOnInit() {
-    this.dialogRef.updateSize("400px");
+    this.dialogRef.updateSize("50%");
   }
 
   toggleAnalytics() {
