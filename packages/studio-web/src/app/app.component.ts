@@ -288,8 +288,20 @@ export class AppComponent implements OnDestroy, OnInit {
   templateUrl: "privacy-dialog.html",
 })
 export class PrivacyDialog {
+  analyticsExcluded =
+    window.localStorage.getItem("plausible_ignore") === "true";
   constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
   ngOnInit() {
     this.dialogRef.updateSize("400px");
+  }
+
+  toggleAnalytics() {
+    if (this.analyticsExcluded) {
+      window.localStorage.removeItem("plausible_ignore");
+    } else {
+      window.localStorage.setItem("plausible_ignore", "true");
+    }
+    this.analyticsExcluded =
+      window.localStorage.getItem("plausible_ignore") === "true";
   }
 }
