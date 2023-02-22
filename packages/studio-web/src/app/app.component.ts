@@ -6,6 +6,7 @@ import { Segment } from "soundswallower";
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
 
 import { B64Service } from "./b64.service";
@@ -59,10 +60,50 @@ export class AppComponent implements OnDestroy, OnInit {
     private fileService: FileService,
     private toastr: ToastrService,
     private dialog: MatDialog,
+    private meta: Meta,
     public shepherdService: ShepherdService,
     private ssjsService: SoundswallowerService
   ) {}
   ngOnInit(): void {
+    // Set Meta Tags for search engines and social media
+    // We don't have to set charset or viewport for example since Angular already adds them
+    this.meta.addTags(
+      [
+        // Search Engine Tags
+        {
+          name: "title",
+          content: $localize`ReadAlong-Studio for Interactive Storytelling`,
+        },
+        {
+          name: "description",
+          content: $localize`Create your own offline compatible interactive multimedia stories that highlight words as they are spoken.`,
+        },
+        { name: "robots", content: "index,follow" },
+        // Social Media Tags
+        {
+          name: "og:title",
+          content: $localize`ReadAlong-Studio for Interactive Storytelling`,
+        },
+        {
+          name: "og:description",
+          content: $localize`Create your own offline compatible interactive multimedia stories that highlight words as they are spoken.`,
+        },
+        // These will break if we add routing!
+        {
+          name: "og:image",
+          content: new URL("/assets/demo.png", window.location.href).href,
+        },
+        { name: "og:url", content: window.location.href },
+        { name: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:image:alt",
+          content: $localize`Interactive ReadAlong that highlights text as it is spoken`,
+        },
+      ],
+      true
+    );
+
     this.toastr.warning(
       $localize`This app has not been officially released and should not be expected to work properly yet.`,
       $localize`Warning`,
@@ -73,6 +114,7 @@ export class AppComponent implements OnDestroy, OnInit {
       if (this.formIsDirty()) (e || window.event).returnValue = true;
       return true;
     });
+    // Preload SoundSwallower Model
     this.ssjsService.preload();
   }
 
@@ -216,7 +258,8 @@ export class AppComponent implements OnDestroy, OnInit {
 
   openPrivacyDialog(): void {
     this.dialog.open(PrivacyDialog, {
-      width: "250px",
+      width: "50vw",
+      maxHeight: "90vh",
     });
   }
 
@@ -246,8 +289,20 @@ export class AppComponent implements OnDestroy, OnInit {
   templateUrl: "privacy-dialog.html",
 })
 export class PrivacyDialog {
+  analyticsExcluded =
+    window.localStorage.getItem("plausible_ignore") === "true";
   constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
   ngOnInit() {
-    this.dialogRef.updateSize("400px");
+    this.dialogRef.updateSize("100%");
+  }
+
+  toggleAnalytics() {
+    if (this.analyticsExcluded) {
+      window.localStorage.removeItem("plausible_ignore");
+    } else {
+      window.localStorage.setItem("plausible_ignore", "true");
+    }
+    this.analyticsExcluded =
+      window.localStorage.getItem("plausible_ignore") === "true";
   }
 }

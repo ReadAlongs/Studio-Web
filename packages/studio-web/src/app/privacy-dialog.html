@@ -1,5 +1,5 @@
 <h1 i18n="Title for privacy dialog" mat-dialog-title>Privacy Policy</h1>
-<div i18n="Text for privacy dialog" mat-dialog-content>
+<div style="max-height: none" i18n="Text for privacy dialog" mat-dialog-content>
   We have built this tool with the top goal of respecting your privacy and data
   sovereignty. The audio that you use on this site
   <b>does not get uploaded anywhere</b>. It will stay on your computer. The text
@@ -8,13 +8,53 @@
   purpose. Using this site means that you agree for your data to be used in this
   way.
 </div>
-<div mat-dialog-actions>
-  <button
-    i18n="OK button"
-    style="margin: 0 auto"
-    mat-raised-button
-    mat-dialog-close
-  >
-    I agree
-  </button>
+<div style="max-height: none" i18n="Text for analytics" mat-dialog-content>
+  Almost every website you visit will collect data about you using Web Analytics
+  tools which can come with a variety of privacy concerns. We have opted to use
+  <a target="_blank" href="https://plausible.io">Plausible Analytics</a>, which
+  incurs a cost for us but ensures that the data gathered about your visit here
+  is not sold and respects your privacy. We use this data to determine how many
+  people access the site, which devices they use, and other metrics used to make
+  improvements to the site. For a full list of what is collected, please view
+  <a target="_blank" href="https://plausible.io/data-policy"
+    >Plausible's data policy</a
+  >. For a less jargon-y example of the kind of data we see, you can visit this
+  <a target="_blank" href="https://plausible.io/plausible.io"
+    >demonstration site here</a
+  >. In any case, you can opt out entirely by clicking the "Opt Out" button
+  below (you can always opt back in later).
+</div>
+
+<div mat-dialog-actions style="display: flex; justify-content: space-evenly">
+  <div>
+    <button
+      color="accent"
+      *ngIf="analyticsExcluded"
+      (click)="toggleAnalytics()"
+      i18n="Opt In Button"
+      mat-raised-button
+    >
+      Opt in to Analytics
+    </button>
+    <button
+      color="warn"
+      *ngIf="!analyticsExcluded"
+      (click)="toggleAnalytics()"
+      i18n="Opt Out Button"
+      mat-raised-button
+    >
+      Opt out of Analytics
+    </button>
+  </div>
+  <div>
+    <button
+      color="primary"
+      i18n="OK button"
+      style="margin: 0 auto"
+      mat-raised-button
+      mat-dialog-close
+    >
+      I agree
+    </button>
+  </div>
 </div>
