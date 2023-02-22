@@ -2,6 +2,8 @@
   "locale": "en",
   "translations": {
     "8428348909593474745": "Step 1",
+    "6766123079913371250": "Aligner Error",
+    "6740994357857818162": " Failed to initialize the aligner. This may be the result of an incompatible browser. Please contact the developers. ",
     "7458890725604973091": " Welcome to ReadAlong Studio ",
     "3614618598824071164": " This is a tool to help you make your own interactive 'readalong' that highlights words as they are spoken. Have a look at {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} this example in East Cree{$CLOSE_LINK} to get a better idea of what these are. ",
     "11480612528390167": " To get started making your own, read our {$START_LINK}privacy and data sovereignty policy{$CLOSE_LINK}, then take a tour by clicking on the tour button below, and follow the steps below. ",
@@ -105,7 +107,6 @@
     "487077452159084336": "Select Language",
     "5423524275918558339": "Undetermined - (und)",
     "939318510937943024": " Go to the next step! ",
-    "3167046319187712923": "Failed to load the aligner.",
     "9193890791359394027": "Text processing failed.",
     "6071928720301938306": "Audio processing failed.",
     "3763839702998678686": "No audio to download.",
