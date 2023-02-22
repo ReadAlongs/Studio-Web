@@ -50,6 +50,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   langControl = new FormControl<string>("und", Validators.required);
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
+  starting_to_record = false;
   recording = false;
   playing = false;
   player: any = null;
@@ -189,10 +190,13 @@ export class UploadComponent implements OnDestroy, OnInit {
 
   async startRecording() {
     try {
+      this.starting_to_record = true;
       await this.microphoneService.startRecording();
       this.recording = true;
     } catch (err: any) {
       this.toastr.error(err.toString(), $localize`Could not start recording!`);
+    } finally {
+      this.starting_to_record = false;
     }
   }
 
