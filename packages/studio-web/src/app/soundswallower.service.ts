@@ -25,11 +25,11 @@ export class SoundswallowerService {
   modelLoaded = false;
   constructor() {}
 
-  async preload$(): Promise<void> {
-    const preload = new soundswallower.Decoder();
-    return preload.initialize().finally(() => {
+  async preload(): Promise<void> {
+    const scratch = new soundswallower.Decoder();
+    return scratch.initialize().finally(() => {
       this.modelLoaded = true;
-      preload.delete();
+      scratch.delete();
     });
   }
 
@@ -38,10 +38,10 @@ export class SoundswallowerService {
       return from(
         soundswallower_factory().then((module) => {
           soundswallower = module;
-          return this.preload$();
+          return this.preload();
         })
       );
-    else return from(this.preload$());
+    else return from(this.preload());
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
