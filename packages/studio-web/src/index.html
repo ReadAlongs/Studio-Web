@@ -39,6 +39,16 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <script>
+      var host = window.location.host;
+      if (!/localhost/.test(host)) {
+        var plausibleScript = document.createElement("script");
+        plausibleScript.src = "https://plausible.io/js/plausible.js";
+        plausibleScript.setAttribute("defer", "");
+        plausibleScript.setAttribute("data-domain", host);
+        document.head.appendChild(plausibleScript);
+      }
+    </script>
   </head>
 
   <body class="mat-typography">
