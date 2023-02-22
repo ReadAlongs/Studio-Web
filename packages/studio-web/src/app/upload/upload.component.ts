@@ -86,9 +86,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   async ngOnInit() {
     this.rasService
       .getLangs$()
-      .pipe(
-        takeUntil(this.unsubscribe$)
-      )
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (langs: Array<SupportedLanguage>) => {
           this.langs = langs
@@ -287,7 +285,7 @@ export class UploadComponent implements OnDestroy, OnInit {
         );
       }
     }
-    if (!this.ssjsService.modelLoaded$.value) {
+    if (!this.ssjsService.modelLoaded) {
       this.toastr.error(
         $localize`Sorry, the alignment model isn't loaded yet. Please wait a while and try again if you're on a slow connection. If the problem persists, please contact us.`,
         $localize`No model loaded`,

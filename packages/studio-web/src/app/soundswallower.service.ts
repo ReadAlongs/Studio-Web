@@ -22,12 +22,15 @@ export interface AlignmentProgress {
   providedIn: "root",
 })
 export class SoundswallowerService {
-  modelLoaded$ = new BehaviorSubject(false);
+  modelLoaded = false;
   constructor() {}
 
   async preload$(): Promise<void> {
     const preload = new soundswallower.Decoder();
-    return preload.initialize().finally(() => preload.delete());
+    return preload.initialize().finally(() => {
+      this.modelLoaded = true;
+      preload.delete();
+    });
   }
 
   loadModule$(): Observable<void> {
