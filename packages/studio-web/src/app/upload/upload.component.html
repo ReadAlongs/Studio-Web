@@ -1,5 +1,5 @@
 <section>
-  <div class="container" *ngIf="fatalError !== 'aligner'">
+  <div class="container" *ngIf="fatalError && fatalError !== 'aligner'">
     <h1 i18n="Language error heading" class="title">Server Error</h1>
     <p i18n="Language error text">
       Failed to retrieve the list of languages from the server. Please contact
