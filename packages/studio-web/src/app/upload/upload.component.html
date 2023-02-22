@@ -165,6 +165,7 @@
               (click)="startRecording()"
               [color]="recording ? 'warn' : 'primary'"
               aria-label="Record button"
+              [disabled]="starting_to_record"
             >
               <mat-icon class="mat-icon-lg">mic</mat-icon>
               <span
