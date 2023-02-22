@@ -70,7 +70,7 @@ export class UploadComponent implements OnDestroy, OnInit {
     text: "edit",
   };
   textInput: string = "";
-  public fatalError: "aligner" | "langs" | "none";
+  public fatalError: string;
   unsubscribe$ = new Subject<void>();
   constructor(
     private _formBuilder: FormBuilder,
