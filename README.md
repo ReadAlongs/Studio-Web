@@ -209,6 +209,7 @@ so if you have deployed the API elsewhere, you must:
 - modify `packages/studio-web/src/environments/environment.prod.ts` in
   your `studio-web` instance to point to the URL where you have
   deployed the ReadAlongs API (and rebuild, obviously)
+- note that the meta tags and default [Plausible Analytics](https://plausible.io/sites) are set up to inspect the location of the site. Your meta tags will be set to `window.location.href` and your analytics ID will be set to `window.location.host` by default.
 
 ## Maintainers
 
