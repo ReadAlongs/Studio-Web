@@ -87,7 +87,6 @@ export class UploadComponent implements OnDestroy, OnInit {
     this.rasService
       .getLangs$()
       .pipe(
-        finalize(() => (this.fatalError = "none")),
         takeUntil(this.unsubscribe$)
       )
       .subscribe({
@@ -97,13 +96,7 @@ export class UploadComponent implements OnDestroy, OnInit {
             .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
         },
         error: (err) => {
-          this.toastr.error(
-            err.message,
-            $localize`Failed to load the aligner.`,
-            {
-              timeOut: 60000,
-            }
-          );
+          this.fatalError = err.message;
           console.log(err);
         },
       });

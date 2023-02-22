@@ -115,20 +115,13 @@ export class AppComponent implements OnDestroy, OnInit {
       if (this.formIsDirty()) (e || window.event).returnValue = true;
       return true;
     });
-    // Preload SoundSwallower Model
+    // Catch and report a catastrophic failure as soon as possible
     this.ssjsService
       .loadModule$()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         error: (err) => {
-          this.toastr.error(
-            err.message,
-            $localize`Failed to load the aligner.`,
-            {
-              timeOut: 60000,
-            }
-          );
-          this.fatalError = err.toString();
+          this.fatalError = `${navigator.userAgent}\n${err.stack}`;
           // FIXME... must be a better way to pass this message to the sub-component?
           this.upload!.fatalError = "aligner";
           console.log(err);
