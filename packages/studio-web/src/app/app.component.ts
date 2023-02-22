@@ -4,7 +4,6 @@ import { forkJoin, of, BehaviorSubject, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { environment } from "../environments/environment";
 import { FormGroup } from "@angular/forms";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Meta } from "@angular/platform-browser";
@@ -68,10 +67,6 @@ export class AppComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     // Set Meta Tags for search engines and social media
     // We don't have to set charset or viewport for example since Angular already adds them
-    let homepage = environment.packageJson.homepage;
-    if ($localize.locale == "fr") {
-      homepage = homepage + "/fr";
-    }
     this.meta.addTags(
       [
         // Search Engine Tags
@@ -93,8 +88,12 @@ export class AppComponent implements OnDestroy, OnInit {
           name: "og:description",
           content: $localize`Create your own offline compatible interactive multimedia stories that highlight words as they are spoken.`,
         },
-        { name: "og:image", content: homepage + "/assets/demo.png" },
-        { name: "og:url", content: homepage },
+        // These will break if we add routing!
+        {
+          name: "og:image",
+          content: new URL("/assets/demo.png", window.location.href).href,
+        },
+        { name: "og:url", content: window.location.href },
         { name: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
         {
