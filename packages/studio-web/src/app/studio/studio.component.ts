@@ -126,6 +126,7 @@ export class StudioComponent implements OnDestroy, OnInit {
           this.router.navigate(["error"], {
             relativeTo: this.route,
             queryParams: { msg: "aligner" },
+            skipLocationChange: true,
           });
           console.log(err);
         },

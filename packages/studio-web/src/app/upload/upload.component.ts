@@ -99,6 +99,7 @@ export class UploadComponent implements OnDestroy, OnInit {
           this.router.navigate(["error"], {
             relativeTo: this.route,
             queryParams: { msg: err.message },
+            skipLocationChange: true,
           });
           console.log(err);
         },
