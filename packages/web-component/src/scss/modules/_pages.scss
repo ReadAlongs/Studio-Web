@@ -177,7 +177,7 @@ $max-height: 98vh;
   margin: 0 auto;
   max-height: $max-height;
   height: $max-height;
-  overflow-y: hidden;
+  overflow-y: auto;
   overflow-x: hidden;
   padding: em(5);
   position: relative;
