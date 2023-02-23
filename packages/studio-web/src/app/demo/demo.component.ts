@@ -147,11 +147,9 @@ export class DemoComponent implements OnDestroy, OnInit {
 
   registerDownloadEvent() {
     const win = window;
-    if (win === (win as any).plausible) {
-      (win as any).plausible("Download", {
-        props: { fileType: this.selectedOutputFormat },
-      });
-    }
+    (win as any).plausible("Download", {
+      props: { fileType: this.selectedOutputFormat },
+    });
   }
 
   async download() {
