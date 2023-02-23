@@ -61,7 +61,6 @@ export class StudioComponent implements OnDestroy, OnInit {
     private router: Router,
     private b64Service: B64Service,
     private fileService: FileService,
-    private toastr: ToastrService,
     private dialog: MatDialog,
     private meta: Meta,
     public shepherdService: ShepherdService,
@@ -107,11 +106,6 @@ export class StudioComponent implements OnDestroy, OnInit {
       true
     );
 
-    this.toastr.warning(
-      $localize`This app has not been officially released and should not be expected to work properly yet.`,
-      $localize`Warning`,
-      { timeOut: 10000 }
-    );
     // User Browser's default messaging to warn the user when they're about to leave the page
     window.addEventListener("beforeunload", (e) => {
       if (this.formIsDirty()) (e || window.event).returnValue = true;
