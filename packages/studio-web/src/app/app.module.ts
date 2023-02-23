@@ -8,13 +8,16 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatToolbarModule } from "@angular/material/toolbar";
 
 import { AppRoutingModule } from "./app-routing.module";
-import { AppComponent, PrivacyDialog } from "./app.component";
+import { AppComponent } from "./app.component";
 import { DemoComponent } from "./demo/demo.component";
 import { MaterialModule } from "./material.module";
 import { UploadComponent } from "./upload/upload.component";
 import { TextFormatDialogComponent } from "./text-format-dialog/text-format-dialog.component";
 import { NgxRAWebComponentModule } from "@readalongs/ngx-web-component";
 import { defineCustomElements } from "@readalongs/web-component/loader";
+import { StudioComponent, PrivacyDialog } from "./studio/studio.component";
+import { Missing404Component } from "./missing404/missing404.component";
+import { FatalErrorComponent } from "./fatal-error/fatal-error.component";
 
 defineCustomElements();
 
@@ -25,6 +28,9 @@ defineCustomElements();
     UploadComponent,
     PrivacyDialog,
     TextFormatDialogComponent,
+    StudioComponent,
+    Missing404Component,
+    FatalErrorComponent,
     // ShepherdComponent
   ],
   imports: [
