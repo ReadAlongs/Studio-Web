@@ -18,6 +18,7 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
@@ -71,7 +72,9 @@ export class UploadComponent implements OnDestroy, OnInit {
   };
   textInput: string = "";
   unsubscribe$ = new Subject<void>();
+  private route: ActivatedRoute;
   constructor(
+    private router: Router,
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
     private rasService: RasService,
@@ -85,10 +88,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   async ngOnInit() {
     this.rasService
       .getLangs$()
-      .pipe(
-        finalize(() => (this.isLoaded = true)),
-        takeUntil(this.unsubscribe$)
-      )
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (langs: Array<SupportedLanguage>) => {
           this.langs = langs
@@ -96,13 +96,11 @@ export class UploadComponent implements OnDestroy, OnInit {
             .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
         },
         error: (err) => {
-          this.toastr.error(
-            err.message,
-            $localize`Failed to load the aligner.`,
-            {
-              timeOut: 60000,
-            }
-          );
+          this.router.navigate(["error"], {
+            relativeTo: this.route,
+            queryParams: { msg: err.message },
+            skipLocationChange: true,
+          });
           console.log(err);
         },
       });
@@ -115,7 +113,7 @@ export class UploadComponent implements OnDestroy, OnInit {
 
   reportRasError(err: HttpErrorResponse) {
     if (err.status == 422) {
-      this.toastr.error(err.message, $localize`Text processing failed.`, {
+      this.toastr.error(err.error.detail, $localize`Text processing failed.`, {
         timeOut: 15000,
       });
     } else {
@@ -293,7 +291,7 @@ export class UploadComponent implements OnDestroy, OnInit {
         );
       }
     }
-    if (!this.ssjsService.modelLoaded$.value) {
+    if (!this.ssjsService.modelLoaded) {
       this.toastr.error(
         $localize`Sorry, the alignment model isn't loaded yet. Please wait a while and try again if you're on a slow connection. If the problem persists, please contact us.`,
         $localize`No model loaded`,

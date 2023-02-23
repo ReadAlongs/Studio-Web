@@ -22,23 +22,26 @@ export interface AlignmentProgress {
   providedIn: "root",
 })
 export class SoundswallowerService {
-  modelLoaded$ = new BehaviorSubject(false);
+  modelLoaded = false;
   constructor() {}
 
-  _loadModel(): void {
-    const preload = new soundswallower.Decoder();
-    preload.initialize().then(() => this.modelLoaded$.next(true));
+  async preload(): Promise<void> {
+    const scratch = new soundswallower.Decoder();
+    return scratch.initialize().finally(() => {
+      this.modelLoaded = true;
+      scratch.delete();
+    });
   }
 
-  preload(): void {
-    if (soundswallower === undefined) {
-      soundswallower_factory().then((module) => {
-        soundswallower = module;
-        this._loadModel();
-      });
-    } else {
-      this._loadModel();
-    }
+  loadModule$(): Observable<void> {
+    if (soundswallower === undefined)
+      return from(
+        soundswallower_factory().then((module) => {
+          soundswallower = module;
+          return this.preload();
+        })
+      );
+    else return from(this.preload());
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {

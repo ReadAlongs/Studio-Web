@@ -1,0 +1,88 @@
+@color-primary: #30a9de;
+@color-secondary: #30a9de;
+@color-tertiary: #30a9de;
+@color-primary-light: #6aafe6;
+@color-primary-dark: #8ec0e4;
+@Distance: 1000px;
+body {
+  overflow: hidden;
+}
+
+html,
+body {
+  position: relative;
+  background: #d4dfe6;
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #274c5e;
+}
+
+.container {
+  max-width: 100vw;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.main {
+  justify-content: center;
+}
+
+.MainDescription {
+  max-width: 50%;
+  font-size: 1.2rem;
+  font-weight: lighter;
+}
+
+.MainGraphic {
+  position: relative;
+}
+
+.shuttle {
+  width: 5rem;
+  height: 5rem;
+  margin: 10rem;
+  transition: easeInOutQuint();
+  animation: CogAnimation 30s linear infinite;
+}
+
+.astronaut {
+  width: 15rem;
+  height: 15rem;
+  transition: easeInOutQuint();
+  animation: CogAnimation2 25s linear infinite;
+}
+
+.world {
+  width: 10rem;
+  height: 10rem;
+  transition: easeInOutQuint();
+}
+
+@keyframes CogAnimation {
+  0% {
+    transform: rotate(-360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes CogAnimation2 {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.error__container {
+  max-width: fit-content;
+  text-align: center;
+}
