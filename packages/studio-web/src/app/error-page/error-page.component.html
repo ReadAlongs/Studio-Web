@@ -323,12 +323,20 @@
       <g></g>
     </svg>
   </div>
-  <div class="error__container" *ngIf="msg !== null">
+  <div class="error__container" *ngIf="msg === 'aligner'">
     <h1 i18n="Language error heading" class="title">Aligner Error</h1>
     <p i18n="Aligner error text">
       Failed to initialize the aligner. This may be the result of an
       incompatible browser. Please contact the developers and send them a
       complete copy of the error message below:
+    </p>
+  </div>
+
+  <div class="error__container" *ngIf="msg !== 'aligner' && msg !== null">
+    <h1 i18n="Language error heading" class="title">Server Error</h1>
+    <p i18n="Language error text">
+      Failed to retrieve the list of languages from the server. Please contact
+      the developers and reload the page once the error is corrected.
     </p>
     <pre>{{ msg }}</pre>
   </div>
