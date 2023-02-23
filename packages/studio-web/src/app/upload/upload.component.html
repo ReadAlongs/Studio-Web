@@ -1,13 +1,5 @@
 <section>
-  <div class="container" *ngIf="fatalError && fatalError !== 'aligner'">
-    <h1 i18n="Language error heading" class="title">Server Error</h1>
-    <p i18n="Language error text">
-      Failed to retrieve the list of languages from the server. Please contact
-      the developers and reload the page once the error is corrected.
-    </p>
-    <pre>{{ fatalError }}</pre>
-  </div>
-  <div class="container export__desc" *ngIf="!fatalError">
+  <div class="container export__desc">
     <h2 i18n="Header for upload box" class="subtitle" id="upload-header">
       Select data to start creating your ReadAlong
     </h2>
@@ -17,7 +9,7 @@
       <b>text</b>, and corresponding <b>audio</b>.
     </p>
   </div>
-  <div class="container" *ngIf="!fatalError">
+  <div class="container">
     <div class="row g-2 mb-3">
       <div id="text-section" class="col-12 col-md-6 p-3 border bg-light">
         <div class="d-flex flex-row justify-content-between">

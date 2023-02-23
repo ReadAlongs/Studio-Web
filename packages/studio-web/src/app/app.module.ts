@@ -16,8 +16,7 @@ import { TextFormatDialogComponent } from "./text-format-dialog/text-format-dial
 import { NgxRAWebComponentModule } from "@readalongs/ngx-web-component";
 import { defineCustomElements } from "@readalongs/web-component/loader";
 import { StudioComponent, PrivacyDialog } from "./studio/studio.component";
-import { Missing404Component } from "./missing404/missing404.component";
-import { FatalErrorComponent } from "./fatal-error/fatal-error.component";
+import { ErrorPageComponent } from "./error-page/error-page.component";
 
 defineCustomElements();
 
@@ -29,8 +28,7 @@ defineCustomElements();
     PrivacyDialog,
     TextFormatDialogComponent,
     StudioComponent,
-    Missing404Component,
-    FatalErrorComponent,
+    ErrorPageComponent,
     // ShepherdComponent
   ],
   imports: [
