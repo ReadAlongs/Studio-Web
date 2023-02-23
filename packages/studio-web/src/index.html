@@ -49,6 +49,16 @@
         document.head.appendChild(plausibleScript);
       }
     </script>
+    <script>
+      var host = window.location.host;
+      if (!/localhost/.test(host)) {
+        window.plausible =
+          window.plausible ||
+          function () {
+            (window.plausible.q = window.plausible.q || []).push(arguments);
+          };
+      }
+    </script>
   </head>
 
   <body class="mat-typography">

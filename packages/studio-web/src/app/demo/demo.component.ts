@@ -145,6 +145,15 @@ export class DemoComponent implements OnDestroy, OnInit {
     return true;
   }
 
+  registerDownloadEvent() {
+    const win = window;
+    if (win === (win as any).plausible) {
+      (win as any).plausible("Download", {
+        props: { fileType: this.selectedOutputFormat },
+      });
+    }
+  }
+
   async download() {
     let ras = this.b64Inputs[1];
     if (this.selectedOutputFormat == "html") {
@@ -178,6 +187,7 @@ export class DemoComponent implements OnDestroy, OnInit {
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
+      this.registerDownloadEvent();
     } else {
       let audio: HTMLAudioElement = new Audio(this.b64Inputs[0]);
       this.rasService
@@ -196,6 +206,7 @@ export class DemoComponent implements OnDestroy, OnInit {
         });
 
       audio.remove();
+      this.registerDownloadEvent();
     }
   }
 }
