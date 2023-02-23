@@ -24,7 +24,9 @@
           </mat-select>
         </mat-form-field>
         <button
-          class="download"
+          class="download plausible-event-name=Download+{{
+            selectedOutputFormat
+          }}"
           color="primary"
           (click)="download()"
           mat-mini-fab
