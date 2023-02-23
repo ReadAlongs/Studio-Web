@@ -4,6 +4,7 @@ import { forkJoin, of, BehaviorSubject, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import { FormGroup } from "@angular/forms";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Meta } from "@angular/platform-browser";
@@ -55,8 +56,9 @@ export class StudioComponent implements OnDestroy, OnInit {
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
   unsubscribe$ = new Subject<void>();
-  fatalError: string;
+  private route: ActivatedRoute;
   constructor(
+    private router: Router,
     private b64Service: B64Service,
     private fileService: FileService,
     private toastr: ToastrService,
@@ -121,9 +123,10 @@ export class StudioComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         error: (err) => {
-          this.fatalError = `${navigator.userAgent}\n${err.stack}`;
-          // FIXME... must be a better way to pass this message to the sub-component?
-          this.upload!.fatalError = "aligner";
+          this.router.navigate(["error"], {
+            relativeTo: this.route,
+            queryParams: { msg: err.message },
+          });
           console.log(err);
         },
       });

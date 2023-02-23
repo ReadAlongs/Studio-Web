@@ -18,6 +18,7 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
@@ -70,9 +71,10 @@ export class UploadComponent implements OnDestroy, OnInit {
     text: "edit",
   };
   textInput: string = "";
-  public fatalError: string;
   unsubscribe$ = new Subject<void>();
+  private route: ActivatedRoute;
   constructor(
+    private router: Router,
     private _formBuilder: FormBuilder,
     private toastr: ToastrService,
     private rasService: RasService,
@@ -94,7 +96,10 @@ export class UploadComponent implements OnDestroy, OnInit {
             .sort((a, b) => a.names["_"].localeCompare(b.names["_"]));
         },
         error: (err) => {
-          this.fatalError = err.message;
+          this.router.navigate(["error"], {
+            relativeTo: this.route,
+            queryParams: { msg: err.message },
+          });
           console.log(err);
         },
       });

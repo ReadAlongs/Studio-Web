@@ -10,16 +10,7 @@
   >
     <section>
       <div class="container mb-2">
-        <div *ngIf="fatalError">
-          <h1 i18n="Language error heading" class="title">Aligner Error</h1>
-          <p i18n="Aligner error text">
-            Failed to initialize the aligner. This may be the result of an
-            incompatible browser. Please contact the developers and send them a
-            complete copy of the error message below:
-          </p>
-          <pre>{{ fatalError }}</pre>
-        </div>
-        <div *ngIf="!fatalError">
+        <div>
           <h1 i18n="Welcome message for app" id="welcome-header">
             Welcome to ReadAlong Studio
           </h1>

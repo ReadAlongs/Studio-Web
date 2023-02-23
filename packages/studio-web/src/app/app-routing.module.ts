@@ -1,8 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { StudioComponent } from "./studio/studio.component";
-import { Missing404Component } from "./missing404/missing404.component";
-import { FatalErrorComponent } from "./fatal-error/fatal-error.component";
+import { ErrorPageComponent } from "./error-page/error-page.component";
 
 const routes: Routes = [
   {
@@ -11,11 +10,11 @@ const routes: Routes = [
   },
   {
     path: "error",
-    component: FatalErrorComponent,
+    component: ErrorPageComponent,
   },
   {
     path: "**",
-    component: Missing404Component,
+    component: ErrorPageComponent,
   },
 ];
 
