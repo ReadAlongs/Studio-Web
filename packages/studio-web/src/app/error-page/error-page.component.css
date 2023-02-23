@@ -83,6 +83,6 @@ body {
 }
 
 .error__container {
-  max-width: 50vw;
+  max-width: fit-content;
   text-align: center;
 }
