@@ -175,9 +175,7 @@ $max-height: 98vh;
 .read-along-container {
   max-width: 75em;
   margin: 0 auto;
-  max-height: $max-height;
-  height: $max-height;
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
   padding: em(5);
   position: relative;
