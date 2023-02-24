@@ -56,7 +56,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   recording = false;
   playing = false;
   player: any = null;
-  projectHomePage = environment.projectHomePage;
+  documentationURL = environment.packageJson.documentationURL;
   progressMode: ProgressBarMode = "indeterminate";
   progressValue = 0;
   maxTxtSizeKB = 10; // Max 10 KB plain text file size
