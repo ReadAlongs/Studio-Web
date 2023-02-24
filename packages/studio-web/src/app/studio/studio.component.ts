@@ -1,5 +1,4 @@
 import { ShepherdService } from "../shepherd.service";
-import { ToastrService } from "ngx-toastr";
 import { forkJoin, of, BehaviorSubject, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
@@ -9,6 +8,7 @@ import { FormGroup } from "@angular/forms";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
+import { Title } from "@angular/platform-browser";
 
 import { B64Service } from "../b64.service";
 import {
@@ -58,10 +58,10 @@ export class StudioComponent implements OnDestroy, OnInit {
   unsubscribe$ = new Subject<void>();
   private route: ActivatedRoute;
   constructor(
+    private titleService: Title,
     private router: Router,
     private b64Service: B64Service,
     private fileService: FileService,
-    private toastr: ToastrService,
     private dialog: MatDialog,
     private meta: Meta,
     public shepherdService: ShepherdService,
@@ -70,6 +70,9 @@ export class StudioComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     // Set Meta Tags for search engines and social media
     // We don't have to set charset or viewport for example since Angular already adds them
+    this.titleService.setTitle(
+      $localize`ReadAlong-Studio for Interactive Storytelling`
+    );
     this.meta.addTags(
       [
         // Search Engine Tags
@@ -107,11 +110,6 @@ export class StudioComponent implements OnDestroy, OnInit {
       true
     );
 
-    this.toastr.warning(
-      $localize`This app has not been officially released and should not be expected to work properly yet.`,
-      $localize`Warning`,
-      { timeOut: 10000 }
-    );
     // User Browser's default messaging to warn the user when they're about to leave the page
     window.addEventListener("beforeunload", (e) => {
       if (this.formIsDirty()) (e || window.event).returnValue = true;
