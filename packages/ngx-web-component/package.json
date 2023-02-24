@@ -1,7 +1,7 @@
 {
   "name": "@readalongs/ngx-web-component",
   "type": "module",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "peerDependencies": {
     "@angular/animations": "~15.1.0",
     "@angular/common": "~15.1.0",
