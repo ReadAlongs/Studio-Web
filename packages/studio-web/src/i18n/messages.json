@@ -102,7 +102,7 @@
     "6710230498600005462": "{$START_TAG_MAT_ICON}play_circle{$CLOSE_TAG_MAT_ICON} Play ",
     "5050307465636924350": "{$START_TAG_MAT_ICON}delete{$CLOSE_TAG_MAT_ICON} Delete ",
     "3662704049012244015": " Select the language of your text and audio ",
-    "3393994987064054443": " If your language isn't supported in the list below, you can try and run it with the \"Undetermined\" option below. If that's not working very well, have a look at {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} this blog post series{$CLOSE_LINK} to understand how you might get support for your language, or {$START_LINK_1}contact us{$CLOSE_LINK} for more info! ",
+    "3780982441340800892": " If your language isn't supported in the list below, you can try and run it with the \"Undetermined\" option below. If that's not working very well, have a look at {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} this blog post series{$CLOSE_LINK} to understand how you might get support for your language, or consult the {$START_LINK_1}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} project page{$CLOSE_LINK} for more info! ",
     "7797047079884673368": "You can use the dropdown below to select a pre-configured mapping for your language.",
     "487077452159084336": "Select Language",
     "5423524275918558339": "Undetermined - (und)",
