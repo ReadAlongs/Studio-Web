@@ -6,6 +6,7 @@ import packageJson from "../../package.json";
 export const environment = {
   production: false,
   apiBaseURL: "http://localhost:8000/api/v1",
+  projectHomePage: "https://readalongs.github.io/ICLDC-Docs",
   packageJson: packageJson,
 };
 
