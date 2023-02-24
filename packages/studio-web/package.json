@@ -1,6 +1,8 @@
 {
   "name": "readalong-studio",
   "homepage": "https://readalong-studio.mothertongues.org",
+  "contact": "mailto:readalong.studio@gmail.com",
+  "documentationURL": "https://readalongs.github.io/ICLDC-Docs",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
