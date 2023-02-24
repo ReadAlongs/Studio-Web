@@ -134,7 +134,7 @@
             i18n="Instructions for uploading audio"
             for="updateAudio"
             class="form-label"
-            >Use pre-recorded audio from an mp3, wav, or webm file.</label
+            >Use pre-recorded audio from an MP3 or WAV file.</label
           >
           <input
             (change)="onFileSelected('audio', $event)"
@@ -142,7 +142,7 @@
             name="audio"
             type="file"
             id="updateAudio"
-            accept=".mp3,.wav,.webm"
+            accept=".mp3,.wav,.webm,.m4a"
           />
         </div>
         <div *ngIf="inputMethod.audio === 'mic'" class="mb-0 mb-md-3">
