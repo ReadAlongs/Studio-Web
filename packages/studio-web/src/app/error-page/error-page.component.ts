@@ -11,7 +11,7 @@ import { environment } from "../../environments/environment";
 export class ErrorPageComponent implements OnInit {
   msg: string | null = null;
   errorType: string | null = null;
-  documentationURL = environment.packageJson.documentationURL;
+  contactLink = environment.packageJson.contact;
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
