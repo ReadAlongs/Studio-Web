@@ -155,6 +155,16 @@ export class ReadAlongComponent {
     RAS: LOADING,
   };
   alignment_failed: boolean = false;
+  isScrolling: boolean = false;
+  scrollTimer = null;
+
+  handleScrollEvent() {
+    this.isScrolling = true;
+    if (this.scrollTimer) clearTimeout(this.scrollTimer);
+    this.scrollTimer = setTimeout(() => {
+      this.isScrolling = false;
+    }, 125);
+  }
 
   /************
    *  LISTENERS  *
@@ -728,11 +738,27 @@ export class ReadAlongComponent {
     let sent_container = ReadAlongComponent._getSentenceContainerOfWord(el); //get the direct parent sentence container
 
     let anchor = el.parentElement.getBoundingClientRect();
-    sent_container.scrollBy({
-      top: sent_container.getBoundingClientRect().height - anchor.height, // negative value acceptable
-      left: 0,
-      behavior: this.scrollBehaviour,
-    });
+
+    let intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        let [entry] = entries;
+        if (entry.isIntersecting) {
+          intersectionObserver.unobserve(el);
+        } else {
+          sent_container.scrollTo({
+            top: sent_container.getBoundingClientRect().height - anchor.height, // negative value
+            // acceptable
+            left: 0,
+            behavior: this.scrollBehaviour,
+          });
+        }
+      },
+      {
+        root: sent_container,
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+    intersectionObserver.observe(el);
   }
 
   //scrolling within the visually aligned paragraph
@@ -896,33 +922,42 @@ export class ReadAlongComponent {
                 .parentElement.id;
 
             if (current_page !== this.current_page) {
-              if (this.current_page !== undefined) {
+              if (this.current_page !== undefined && !this.isScrolling) {
                 this.scrollToPage(current_page);
               }
               this.current_page = current_page;
             }
+            const leftEdge =
+              Math.ceil(
+                this.el.shadowRoot
+                  .querySelector(".pages__container")
+                  .getBoundingClientRect().left
+              ) + 1;
+            const pageLeftEdge = Math.ceil(
+              this.el.shadowRoot
+                .querySelector("#" + this.current_page)
+                .getBoundingClientRect().left
+            );
 
             //if the user has scrolled away from the from the current page bring them page
             if (
               query_el.getBoundingClientRect().left < 0 ||
-              this.el.shadowRoot
-                .querySelector("#" + current_page)
-                .getBoundingClientRect().left !== 0
+              pageLeftEdge !== leftEdge
             ) {
-              this.scrollToPage(current_page);
+              if (!this.isScrolling) this.scrollToPage(current_page);
             }
 
             // scroll vertically (through paragraph) if needed
             if (this.inPageContentOverflow(query_el)) {
               if (this.autoScroll) {
                 query_el.scrollIntoView(false);
-                this.scrollByHeight(query_el);
+                if (!this.isScrolling) this.scrollByHeight(query_el);
               }
             } // scroll horizontal (through paragraph) if needed
             if (this.inParagraphContentOverflow(query_el)) {
               if (this.autoScroll) {
                 query_el.scrollIntoView(false);
-                this.scrollByWidth(query_el);
+                if (!this.isScrolling) this.scrollByWidth(query_el);
               }
             }
           }
@@ -1746,9 +1781,16 @@ export class ReadAlongComponent {
         )}
 
         <div
+          onScroll={() => {
+            this.handleScrollEvent();
+          }}
           data-cy="text-container"
           class={
-            "pages__container theme--" + this.theme + " " + this.pageScrolling
+            "pages__container" +
+            " theme--" +
+            this.theme +
+            " " +
+            this.pageScrolling
           }
         >
           {this.showGuide ? <this.Guide /> : null}
