@@ -93,10 +93,14 @@ export class SoundswallowerService {
             }
           }
           decoder.stop();
+          const hypseg = decoder.get_alignment();
+          console.log(`hypseg is ${hypseg}`);
+          if (hypseg.w === undefined || hypseg.w.length == 0)
+            throw new Error("No alignment found");
           subscriber.next({
             pos: pos,
             length: channel_data.length,
-            hypseg: decoder.get_alignment(),
+            hypseg: hypseg,
             xml: xml,
           });
           subscriber.complete();
