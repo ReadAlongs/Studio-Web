@@ -354,10 +354,21 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         ),
       })
         .pipe(
-          switchMap(({ audio, ras }) =>
-            // We can't give the arguments types because RxJS is broken somehow,
-            // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
-            this.ssjsService.align$(audio, ras as ReadAlong)
+          switchMap(
+            ({ audio, ras }: { audio: AudioBuffer; ras: ReadAlong }) => {
+              if (ras.log !== null) {
+                const fallbackRx = /Could not g2p.*\n/g;
+                const matches = ras.log.match(fallbackRx);
+                if (matches) {
+                  this.toastr.warning(
+                    matches.join("\n"),
+                    $localize`Possible text processing issues.`,
+                    { timeOut: 15000 }
+                  );
+                }
+              }
+              return this.ssjsService.align$(audio, ras as ReadAlong);
+            }
           ),
           takeUntil(this.unsubscribe$)
         )

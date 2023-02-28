@@ -14,6 +14,7 @@ export interface ReadAlong {
   parsed: string | null;
   tokenized: string | null;
   g2ped: string | null;
+  log: string | null;
 }
 
 export interface ReadAlongRequest {
