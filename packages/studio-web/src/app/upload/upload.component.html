@@ -1,0 +1,324 @@
+<section>
+  <div class="container export__desc">
+    <h2 i18n="Header for upload box" class="subtitle" id="upload-header">
+      Select data to start creating your ReadAlong
+    </h2>
+    <p i18n="Upload instructions">
+      In order to make a ReadAlong, we need 3 different things. We need to know
+      <b>which language</b> your readalong is in, and we also need some
+      <b>text</b>, and corresponding <b>audio</b>.
+    </p>
+  </div>
+  <div class="container">
+    <div class="row g-2 mb-3">
+      <div id="text-section" class="col-12 col-md-6 p-3 border bg-light">
+        <div class="d-flex flex-row justify-content-between">
+          <div class="p-0">
+            <h1 i18n="Title for text box" class="title">Text</h1>
+          </div>
+          <div class="p-0">
+            <mat-button-toggle-group
+              appearance="legacy"
+              (change)="toggleTextInput($event)"
+              name="inputMethod"
+              aria-label="Input Method"
+              [value]="inputMethod.text"
+            >
+              <mat-button-toggle i18n="Label for text Write toggle" value="edit"
+                >Write</mat-button-toggle
+              >
+              <mat-button-toggle
+                i18n="Lable for text File toggle"
+                value="upload"
+                >File</mat-button-toggle
+              >
+            </mat-button-toggle-group>
+          </div>
+        </div>
+        <div *ngIf="inputMethod.text === 'upload'">
+          <div class="row">
+            <div class="mt-4 mb-3">
+              <!-- <div class="container"> -->
+              <label
+                i18n="Instructions for uploading text"
+                for="updateText"
+                class="form-label"
+                >Select a plain text file (.txt) or a ReadAlong Studio temporary
+                file (.readalong)</label
+              >
+              <input
+                #textInputElement
+                (change)="onFileSelected('text', $event)"
+                class="form-control"
+                name="text"
+                type="file"
+                id="updateText"
+                accept=".txt,.xml,.readalong"
+              />
+              <!-- </div> -->
+            </div>
+          </div>
+        </div>
+        <div *ngIf="inputMethod.text === 'edit'">
+          <div class="d-flex flex-row justify-content-between p-0">
+            <span class="p-0"
+              ><h2 i18n="Title for text writing box" class="subtitle">
+                Write or paste your text here
+              </h2></span
+            >
+            <span class="p-0 align-right" align="right">
+              <button
+                i18n="Text format help button"
+                mat-button
+                (click)="displayFormatHelp()"
+                aria-label="Text format help button"
+                class="pr-0"
+              >
+                <mat-icon class="mat-icon-lg">help_outline</mat-icon> Format
+              </button>
+              <button
+                i18n="Text download button"
+                mat-button
+                [disabled]="!textInput"
+                (click)="downloadText()"
+                aria-label="Text download button"
+                class="pr-0"
+              >
+                <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
+              </button>
+            </span>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-12 p-0 b-0">
+              <textarea
+                [(ngModel)]="textInput"
+                id="textInput"
+                class="border rounded b-0 p-0 bg-light"
+                matInput
+                i18n-placeholder="Example input text"
+                placeholder="Ex. Hello my name is..."
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div id="audio-section" class="col-12 col-md-6 p-3 border bg-light">
+        <!-- <div class="container"> -->
+        <div class="d-flex flex-row justify-content-between p-0">
+          <div class="p-0">
+            <h1 i18n="Title for audio box" class="title">Audio</h1>
+          </div>
+          <div class="p-0">
+            <mat-button-toggle-group
+              appearance="legacy"
+              (change)="toggleAudioInput($event)"
+              name="inputMethod"
+              aria-label="Input Method"
+              [value]="inputMethod.audio"
+            >
+              <mat-button-toggle i18n="Audio record button" value="mic"
+                >Record</mat-button-toggle
+              >
+              <mat-button-toggle i18n="Audio upload button" value="upload"
+                >File</mat-button-toggle
+              >
+            </mat-button-toggle-group>
+          </div>
+        </div>
+
+        <div *ngIf="inputMethod.audio === 'upload'" class="row mb-3">
+          <h2 i18n="Title for upload box" class="subtitle">
+            Select an audio file
+          </h2>
+          <label
+            i18n="Instructions for uploading audio"
+            for="updateAudio"
+            class="form-label"
+            >Use pre-recorded audio from an MP3 or WAV file.</label
+          >
+          <input
+            (change)="onFileSelected('audio', $event)"
+            class="form-control"
+            name="audio"
+            type="file"
+            id="updateAudio"
+            accept=".mp3,.wav,.webm,.m4a"
+          />
+        </div>
+        <div *ngIf="inputMethod.audio === 'mic'" class="mb-0 mb-md-3">
+          <div class="row">
+            <h2 i18n="Title for record box" class="subtitle">
+              Record your voice here
+            </h2>
+          </div>
+          <div class="row text-center">
+            <button
+              class="audioControl"
+              mat-button
+              (click)="startRecording()"
+              [color]="recording ? 'warn' : 'primary'"
+              aria-label="Record button"
+              [disabled]="starting_to_record"
+            >
+              <mat-icon class="mat-icon-lg">mic</mat-icon>
+              <span
+                i18n="Audio re-record button"
+                *ngIf="audioControl.value !== null && !this.recording"
+                >Delete and re-record</span
+              >
+              <span
+                i18n="Audio record button"
+                *ngIf="audioControl.value === null && !this.recording"
+                >Record</span
+              >
+              <span i18n="Audio recording button" *ngIf="this.recording"
+                >Recording</span
+              >
+            </button>
+            <button
+              i18n="Audio stop button"
+              class="audioControl"
+              (click)="stopRecording()"
+              *ngIf="recording"
+              mat-button
+              color="primary"
+              aria-label="Stop button"
+            >
+              <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
+              Stop
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-xl-4">
+            <button
+              i18n="Audio play button"
+              class="audioControl"
+              (click)="playRecording()"
+              *ngIf="!recording && audioControl.value !== null && !playing"
+              mat-button
+              color="primary"
+              aria-label="Play button"
+            >
+              <mat-icon class="mat-icon-lg">play_circle</mat-icon>
+              Play
+            </button>
+            <button
+              i18n="Audio stop button"
+              class="audioControl"
+              color="warn"
+              (click)="stopPlayback()"
+              *ngIf="!recording && audioControl.value !== null && playing"
+              mat-button
+              aria-label="Stop button"
+            >
+              <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
+              Stop
+            </button>
+          </div>
+          <div class="col-12 col-xl-4">
+            <button
+              i18n="Audio download button"
+              class="audioControl"
+              color="primary"
+              (click)="downloadRecording()"
+              *ngIf="!recording && audioControl.value !== null"
+              mat-button
+              color="primary"
+              aria-label="Audio save button"
+            >
+              <mat-icon class="mat-icon-lg">save</mat-icon>
+              Save a copy
+            </button>
+          </div>
+          <div class="col-12 col-xl-4">
+            <button
+              i18n="Audio delete button"
+              class="audioControl"
+              (click)="deleteRecording()"
+              *ngIf="!recording && audioControl.value !== null"
+              mat-button
+              color="warn"
+              aria-label="Delete button"
+            >
+              <mat-icon class="mat-icon-lg">delete</mat-icon>
+              Delete
+            </button>
+          </div>
+        </div>
+        <!-- </div> -->
+      </div>
+    </div>
+    <div class="row g-2">
+      <div id="language-section" class="col-12 p-3 border bg-light">
+        <h1 i18n="Title for language box" class="title">
+          Select the language of your text and audio
+        </h1>
+        <p i18n="Language selection instructions">
+          If your language isn't supported in the list below, you can try and
+          run it with the "Undetermined" option below. If that's not working
+          very well, have a look at
+          <a
+            href="https://blog.mothertongues.org/g2p-background/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><mat-icon inline style="vertical-align: middle">launch</mat-icon>
+            this blog post series</a
+          >
+          to understand how you might get support for your language, or
+          <a href="{{ contactLink }}"
+            ><mat-icon inline style="vertical-align: middle">mail</mat-icon>
+            contact us</a
+          >
+          for more info!
+        </p>
+        <div class="mb-3">
+          <label
+            i18n="Label for language selection"
+            for="langSelect"
+            class="form-label"
+            >You can use the dropdown below to select a pre-configured mapping
+            for your language.</label
+          >
+          <br />
+          <div class="row">
+            <div class="col-5">
+              <mat-form-field appearance="fill">
+                <mat-label i18n="Label for language dropdown"
+                  >Select Language</mat-label
+                >
+                <mat-select [formControl]="langControl" required>
+                  <mat-option i18n="Name of undetermined language" value="und"
+                    >Undetermined - (und)</mat-option
+                  >
+                  <mat-option *ngFor="let lang of langs" [value]="lang.code">
+                    {{ lang.names["_"] }} - ({{ lang.code }})
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-2">
+        <button
+          i18n="Next button"
+          id="next-step"
+          class="mt-4 plausible-event-name=CreateReadalong"
+          [disabled]="loading"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          (click)="nextStep()"
+        >
+          Go to the next step!
+        </button>
+        <mat-progress-bar
+          *ngIf="loading"
+          [mode]="progressMode"
+          [value]="progressValue"
+        ></mat-progress-bar>
+      </div>
+    </div>
+  </div>
+</section>

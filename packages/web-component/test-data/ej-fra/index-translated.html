@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Insert Title Here</title>
+    <!-- Import fonts. Material Icons are needed by the web component -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato%7CMaterial+Icons%7CMaterial+Icons+Outlined"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
+    <read-along
+      use-assets-folder="false"
+      href="ej-fra-translated.readalong"
+      audio="ej-fra.m4a"
+      language="fra"
+    >
+      <span slot="read-along-header">With Translation</span>
+    </read-along>
+  </body>
+
+  <!-- The last step needed is to import the package -->
+  <script
+    type="module"
+    src="//127.0.0.1:3333/build/web-component.esm.js"
+  ></script>
+</html>

@@ -1,0 +1,123 @@
+%themed-bg {
+  &.theme {
+    @each $theme, $value in $ui-themes {
+      &--#{$theme} {
+        background-color: map-deep-get($ui-themes, $theme, primary);
+      }
+    }
+  }
+}
+
+%basic-text {
+  line-height: 1.5;
+  border-radius: em(5);
+  position: relative;
+  padding: em(1);
+  font-size: em($default-text-font-size);
+}
+
+%themed-text {
+  &.theme {
+    @each $theme, $value in $ui-themes {
+      &--#{$theme} {
+        color: map-deep-get($ui-themes, $theme, text);
+      }
+    }
+  }
+  &--strong {
+    &.theme {
+      @each $theme, $value in $ui-themes {
+        &--#{$theme} {
+          @include word-button-colors(
+            map-deep-get($ui-themes, $theme, secondary),
+            map-deep-get($ui-themes, $theme, text--secondary)
+          );
+        }
+      }
+    }
+  }
+  &--stronger {
+    &.theme {
+      @each $theme, $value in $ui-themes {
+        &--#{$theme} {
+          @include word-button-colors(
+            map-deep-get($ui-themes, $theme, accent),
+            map-deep-get($ui-themes, $theme, text--accent)
+          );
+        }
+      }
+    }
+  }
+}
+
+%border--dotted {
+  &.theme {
+    @each $theme, $value in $ui-themes {
+      &--#{$theme} {
+        border: em(0.75) dotted map-deep-get($ui-themes, $theme, secondary);
+      }
+    }
+  }
+}
+
+%border--strong {
+  &.theme {
+    @each $theme, $value in $ui-themes {
+      &--#{$theme} {
+        border: em(0.75) solid map-deep-get($ui-themes, $theme, secondary);
+      }
+    }
+  }
+  &--left {
+    &.theme {
+      @each $theme, $value in $ui-themes {
+        &--#{$theme} {
+          border-left: em(0.75)
+            solid
+            map-deep-get($ui-themes, $theme, secondary);
+        }
+      }
+    }
+  }
+  &--right {
+    &.theme {
+      @each $theme, $value in $ui-themes {
+        &--#{$theme} {
+          border-right: em(0.75)
+            solid
+            map-deep-get($ui-themes, $theme, secondary);
+        }
+      }
+    }
+  }
+  &--top {
+    &.theme {
+      @each $theme, $value in $ui-themes {
+        &--#{$theme} {
+          border-top: em(0.75)
+            solid
+            map-deep-get($ui-themes, $theme, secondary);
+        }
+      }
+    }
+  }
+  &--bottom {
+    &.theme {
+      @each $theme, $value in $ui-themes {
+        &--#{$theme} {
+          border-bottom: em(0.75)
+            solid
+            map-deep-get($ui-themes, $theme, secondary);
+        }
+      }
+    }
+  }
+}
+
+%hover-shared {
+  cursor: pointer;
+}
+
+// &:hover {
+//     @extend %hover-shared;
+// }

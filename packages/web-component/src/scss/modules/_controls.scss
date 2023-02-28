@@ -1,0 +1,67 @@
+.control-panel {
+  @extend %border--strong--bottom;
+  @extend %border--strong--left;
+  @extend %border--strong--right;
+  border-radius: 0 0 em(5) em(5);
+  position: relative;
+  min-width: 100%;
+  display: inline-flex;
+  // margin: em(25) auto;
+
+  &__buttons {
+    &--left {
+      width: 25%;
+      float: left;
+      margin-top: em(5);
+      padding: em(5);
+    }
+
+    &--center {
+      width: 25%;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    &--right {
+      width: 25%;
+      text-align: right;
+      float: right;
+      margin-top: em(5);
+      margin-right: em(5);
+    }
+    &__header {
+      margin: em(5);
+    }
+  }
+
+  &__control {
+    border-radius: em(5);
+    margin: em(8) auto;
+    &:focus {
+      outline: none;
+    }
+
+    // margin: em(5);
+  }
+}
+
+.settings {
+  margin-left: 0;
+  margin-right: 0;
+  text-align: center;
+
+  &__divider {
+  }
+
+  &__option {
+    &__container {
+    }
+
+    &__header {
+      margin-bottom: em(8);
+    }
+
+    &__setting {
+    }
+  }
+}

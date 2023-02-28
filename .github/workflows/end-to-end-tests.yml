@@ -1,15 +1,34 @@
 name: End-to-end tests
 on: [push]
 jobs:
-  cypress-run:
-    runs-on: ubuntu-20.04
+  test-suites:
+    runs-on: ubuntu-latest
+    # Stop the occasional rogue instance before the 6h GitHub limit
+    timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
         with:
-          start: npm run test-servers
-          wait-on: npm run wait-for-test-server
+          node-version: 18
+      - name: Install everything
+        run: npm install
+      - name: Ng test for studio-web
+        run: |
+          npx nx build web-component
+          npx nx test:once studio-web
+      - name: Cypress run for web-component
+        uses: cypress-io/github-action@v5
+        with:
+          install: false
+          start: |
+            npx nx serve web-component
+            npx nx serve-test-data web-component
+          wait-on: "http://localhost:3333/build/web-component.esm.js"
+          command: npx nx test:once web-component
+      - name: Check that i18n and l10n are up to date
+        run: |
+          npx nx extract-i18n studio-web
+          if diff -w <(git show HEAD:packages/studio-web/src/i18n/messages.json | sort) <(sort < packages/studio-web/src/i18n/messages.json); then echo OK: The i18n database is up to date.; else echo ERROR: The i18n database is out of date.; npx nx check-fr-l10n studio-web || echo ERROR: The fr l10n database is also out of date.; false; fi
+          if npx nx check-fr-l10n studio-web; then echo OK: The fr l10n database is up to date.; else echo ERROR: The fr l10n database is out of date.; false; fi
