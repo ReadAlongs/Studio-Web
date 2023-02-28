@@ -61,5 +61,7 @@
     "standardized-audio-context": "^25.3.38",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
-  }
+  },
+  "singleFileBundleVersion": "1.0.0",
+  "singleFileBundleTimestamp": "2023-02-28+12-46-32"
 }
