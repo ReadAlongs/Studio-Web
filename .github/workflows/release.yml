@@ -27,10 +27,11 @@ jobs:
           start: npm run test-servers
           wait-on: npm run wait-for-test-server
       - run: cd ./packages/web-component && npm version patch
+      - run: cd ./packages/ngx-web-component && npm version patch
       - run: nx build web-component && nx prepublish web-component && nx bundle web-component && nx build ngx-web-component
       - run: |
-          cd dist/packages/web-component && npm publish
-          cd dist/packages/ngx-web-component && npm publish
+          cd dist/packages/web-component && npm publish --access=public
+          cd dist/packages/ngx-web-component && npm publish --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Determine tag
@@ -53,7 +54,7 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
       - name: Commit bumped version and merge with main
         run: |
-          git add package.json packages/*/package.json
+          git add package.json packages/*/package.json packages/studio-web/src/assets/bundle.js packages/studio-web/src/assets/fonts.b64.css
           git commit -m "chore: commit version"
           git fetch --unshallow
           git push origin release
