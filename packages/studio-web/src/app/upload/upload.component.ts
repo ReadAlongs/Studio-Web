@@ -129,6 +129,28 @@ export class UploadComponent implements OnDestroy, OnInit {
     }
   }
 
+  reportSoundSwallowerError(err: Error) {
+    if (err.message === "No alignment found") {
+      this.toastr.error(
+        $localize`Please listen to your audio to make sure it is clear and corresponds
+to the text.`,
+        $localize`Alignment failed.`,
+        {
+          timeOut: 15000,
+        }
+      );
+    } else {
+      this.toastr.error(
+        $localize`Your text may contain unpronounceable characters or numbers.
+Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+        $localize`Alignment failed.`,
+        {
+          timeOut: 15000,
+        }
+      );
+    }
+  }
+
   reportAudioError(err: Error) {
     this.toastr.error(err.message, $localize`Audio processing failed.`, {
       timeOut: 15000,
@@ -359,6 +381,8 @@ export class UploadComponent implements OnDestroy, OnInit {
             this.loading = false;
             if (err instanceof HttpErrorResponse) {
               this.reportRasError(err);
+            } else if (err.message.includes("align")) {
+              this.reportSoundSwallowerError(err);
             } else {
               this.reportAudioError(err);
             }
