@@ -267,4 +267,5 @@ export const ASSEMBLE_MOCK: ReadAlong = {
   parsed: null,
   tokenized: null,
   g2ped: null,
+  log: null,
 };
