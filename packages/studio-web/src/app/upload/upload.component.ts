@@ -357,7 +357,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           switchMap(
             ({ audio, ras }: { audio: AudioBuffer; ras: ReadAlong }) => {
               if (ras.log !== null) {
-                const fallbackRx = /Could not g2p.*\n/g;
+                const fallbackRx = /^.*g2p.*$/gim;
                 const matches = ras.log.match(fallbackRx);
                 if (matches) {
                   this.toastr.warning(
