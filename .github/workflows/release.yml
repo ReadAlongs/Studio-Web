@@ -34,6 +34,9 @@ jobs:
       - run: npx nx build web-component && npx nx prepublish web-component && npx nx bundle web-component && npx nx build ngx-web-component
       - run: |
           cd dist/packages/web-component && npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: |
           cd dist/packages/ngx-web-component && npm publish --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
