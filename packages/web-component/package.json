@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "stencil build --docs",
-    "bundle": "webpack --config webpack.config.js",
+    "bundle": "webpack --config webpack.config.js; packageVersion=$(npm view @readalongs/web-component version); timestamp=$(date \"+%Y-%m-%d+%H-%M-%S\") && cd ../studio-web && npm pkg set singleFileBundleVersion=\"${packageVersion}\" && npm pkg set singleFileBundleTimestamp=\"${timestamp}\"",
     "cy:run": "cypress run",
     "start": "stencil build --dev --watch --serve",
     "prepublish": "node b64Fonts.js",
