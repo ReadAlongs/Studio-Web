@@ -14,18 +14,21 @@ jobs:
       - uses: actions/checkout@v2
       - uses: fregante/setup-git-user@v1
       # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16.x"
+          node-version: 18
           registry-url: "https://registry.npmjs.org"
-          scope: "@roedoejet"
+          scope: "@readalongs"
       - run: npm install
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
+      - name: Cypress run for web-component
+        uses: cypress-io/github-action@v5
         with:
-          working-directory: ./packages/web-component
-          start: npm run test-servers
-          wait-on: npm run wait-for-test-server
+          install: false
+          start: |
+            npx nx serve web-component
+            npx nx serve-test-data web-component
+          wait-on: "http://localhost:3333/build/web-component.esm.js"
+          command: npx nx test:once web-component
       - run: cd ./packages/web-component && npm version patch
       - run: cd ./packages/ngx-web-component && npm version patch
       - run: nx build web-component && nx prepublish web-component && nx bundle web-component && nx build ngx-web-component
