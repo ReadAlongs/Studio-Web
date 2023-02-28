@@ -136,7 +136,7 @@ export class UploadComponent implements OnDestroy, OnInit {
 to the text.`,
         $localize`Alignment failed.`,
         {
-          timeOut: 15000,
+          timeOut: 30000,
         }
       );
     } else {
@@ -145,7 +145,7 @@ to the text.`,
 Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
         $localize`Alignment failed.`,
         {
-          timeOut: 15000,
+          timeOut: 30000,
         }
       );
     }
@@ -354,10 +354,21 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         ),
       })
         .pipe(
-          switchMap(({ audio, ras }) =>
-            // We can't give the arguments types because RxJS is broken somehow,
-            // see https://stackoverflow.com/questions/66615681/rxjs-switchmap-mergemap-resulting-in-obserableunknown
-            this.ssjsService.align$(audio, ras as ReadAlong)
+          switchMap(
+            ({ audio, ras }: { audio: AudioBuffer; ras: ReadAlong }) => {
+              if (ras.log !== null) {
+                const fallbackRx = /^.*g2p.*$/gim;
+                const matches = ras.log.match(fallbackRx);
+                if (matches) {
+                  this.toastr.warning(
+                    matches.join("\n"),
+                    $localize`Possible text processing issues.`,
+                    { timeOut: 30000 }
+                  );
+                }
+              }
+              return this.ssjsService.align$(audio, ras as ReadAlong);
+            }
           ),
           takeUntil(this.unsubscribe$)
         )
