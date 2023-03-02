@@ -1126,7 +1126,7 @@ export class ReadAlongComponent {
       "add-translation": {
         eng: "Add a translation, transliteration or gloss",
         fra: "Ajouter une traduction",
-        spa: "Agregue una traducción",
+        spa: "Añada una traducción",
       },
     };
     if (translations[word] && translations[word][lang])
