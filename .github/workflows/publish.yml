@@ -31,6 +31,7 @@ jobs:
         run: |
           npx nx build studio-web --configuration=production
           npx nx build studio-web --configuration=production --localize=fr --deleteOutputPath=false
+          npx nx build studio-web --configuration=production --localize=es --deleteOutputPath=false
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.2.3
         with:

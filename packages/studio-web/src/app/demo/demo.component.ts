@@ -33,7 +33,7 @@ export class DemoComponent implements OnDestroy, OnInit {
     { value: "vtt", display: $localize`WebVTT Subtitles` },
   ];
   selectedOutputFormat: SupportedOutputs | string = "html";
-  language: "eng" | "fra" = "eng";
+  language: "eng" | "fra" | "spa" = "eng";
   unsubscribe$ = new Subject<void>();
   constructor(
     public b64Service: B64Service,
@@ -43,6 +43,8 @@ export class DemoComponent implements OnDestroy, OnInit {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
       this.language = "fra";
+    } else if ($localize.locale == "es") {
+      this.language = "spa";
     }
   }
 

@@ -821,6 +821,8 @@ export class ReadAlongComponent {
     if (this.language.length < 3) {
       if (this.language.match("fr") != null) {
         this.language = "fra";
+      } else if (this.language.match("es") !== null) {
+        this.language = "spa";
       } else {
         this.language = "eng";
       }
@@ -1019,10 +1021,12 @@ export class ReadAlongComponent {
       speed: {
         eng: "Playback Speed",
         fra: "Vitesse de Lecture",
+        spa: "Velocidad de reproducción",
       },
       "re-align": {
         eng: "Re-align with audio",
         fra: "Réaligner avec l'audio",
+        spa: "Re-alinear con audio",
       },
       "loading-error": {
         eng:
@@ -1037,6 +1041,12 @@ export class ReadAlongComponent {
           " '" +
           path +
           "' n'a pas pu être chargé.",
+        spa:
+          "Error: el fichero " +
+          assetType +
+          " '" +
+          path +
+          "' no se pudo cargar.",
       },
       "parse-error": {
         eng:
@@ -1051,50 +1061,72 @@ export class ReadAlongComponent {
           " '" +
           path +
           "' n'a pas pu être analysé.",
+        spa:
+          "Error: el fichero " +
+          assetType +
+          " '" +
+          path +
+          "' no se pudo analizar.",
       },
       "alignment-error": {
         eng: "Error: No alignments were found.",
         fra: "Erreur: aucun alignement n'a été trouvé.",
+        spa: "Error: No se encontró ningún alineamiento.",
       },
       loading: {
         eng: "Loading...",
         fra: "Chargement en cours",
+        spa: "Cargando...",
       },
       "line-placeholder": {
         eng: "Type your text here",
         fra: "Écrivez votre texte ici",
+        spa: "Escriba su texto aquí",
       },
       "upload-image": {
         eng: "Upload an image for this page",
         fra: "Télécharger une image pour cette page",
+        spa: "Cargue una imagen para esta página",
       },
       "choose-file": {
         eng: "Choose a file",
         fra: "Choisir un fichier",
+        spa: "Seleccione un fichero",
       },
       "play-tooltip": {
         eng: "Play audio recording",
         fra: "Écouter l'enregistrement",
+        spa: "Déle play a su grabación de audio",
       },
       "rewind-tooltip": {
         eng: "Rewind audio recording",
         fra: "Relire dès le début",
+        spa: "Rebobine (rewind) su grabación de audio",
       },
       "stop-tooltip": {
         eng: "Stop audio recording",
         fra: "Arrêter la lecture",
+        spa: "Pare la grabación",
       },
       "theme-tooltip": {
         eng: "Change theme",
         fra: "Changer de thême visuel",
+        spa: "Cambie la paleta de colores",
       },
       "full-screen-tooltip": {
         eng: "Full screen mode",
         fra: "Mode plein écran",
+        spa: "Modo pantalla completa",
       },
       "translation-tooltip": {
         eng: "Toggle translations",
         fra: "Afficher ou cacher les traductions",
+        spa: "Active o desactive las traducciones",
+      },
+      "add-translation": {
+        eng: "Add a translation, transliteration or gloss",
+        fra: "Ajouter une traduction",
+        spa: "Agregue una traducción",
       },
     };
     if (translations[word] && translations[word][lang])
@@ -1480,7 +1512,10 @@ export class ReadAlongComponent {
             } else {
               return (
                 <button
-                  title="Add a translation, transliteration or gloss"
+                  title={this.returnTranslation(
+                    "add-translation",
+                    this.language
+                  )}
                   aria-label="Add translation"
                   data-cy="add-translation-button"
                   class="sentence__translation sentence__translation__button"

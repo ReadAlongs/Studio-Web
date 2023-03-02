@@ -7,7 +7,8 @@
   "i18n": {
     "sourceLocale": "en",
     "locales": {
-      "fr": "packages/studio-web/src/i18n/messages.fr.json"
+      "fr": "packages/studio-web/src/i18n/messages.fr.json",
+      "es": "packages/studio-web/src/i18n/messages.es.json"
     }
   },
   "targets": {
@@ -68,7 +69,8 @@
           "namedChunks": true
         },
         "en": { "localize": ["en"] },
-        "fr": { "localize": ["fr"] }
+        "fr": { "localize": ["fr"] },
+        "es": { "localize": ["es"] }
       },
       "defaultConfiguration": "production"
     },
@@ -86,6 +88,12 @@
         },
         "development-fr": {
           "browserTarget": "studio-web:build:development,fr"
+        },
+        "production-es": {
+          "browserTarget": "studio-web:build:production,es"
+        },
+        "development-es": {
+          "browserTarget": "studio-web:build:development,es"
         }
       },
       "defaultConfiguration": "development-en"
