@@ -1,6 +1,6 @@
 {
   "web.component.speed": "Velocidad de reproducción",
-  "web.component.re-align": "Re-alinear con audio",
+  "web.component.re-align": "Re-alinear con el audio",
   "web.component.loading-error": "Error: el fichero <ASSET_TYPE> no se pudo cargar.",
   "web.component.parse-error": "Error: el fichero <ASSET_TYPE> no se pudo analizar.",
   "web.component.alignment-error": "Error: No se encontró ningún alineamiento.",
@@ -9,10 +9,10 @@
   "web.component.upload-image": "Cargue una imagen para esta página",
   "web.component.choose-file": "Seleccione un fichero",
   "web.component.play-tooltip": "Déle play a su grabación de audio",
-  "web.component.rewind-tooltip": "Rebobine (rewind) su grabación de audio",
-  "web.component.stop-tooltip": "Pare la grabación",
-  "web.component.theme-tooltip": "Cambie el tema",
+  "web.component.rewind-tooltip": "Rebobine (rewind) 5 segundos",
+  "web.component.stop-tooltip": "Pare la reproducción de audio",
+  "web.component.theme-tooltip": "Cambie la paleta de colores",
   "web.component.full-screen-tooltip": "Modo pantalla completa",
-  "web.component.translation-tooltip": "Alterne entre las traducciones",
-  "web.component.add-translation": "Añada una traducción"
+  "web.component.translation-tooltip": "Active o desactive las traducciones",
+  "web.component.add-translation": "Añada una traducción, transliteración o glosa"
 }

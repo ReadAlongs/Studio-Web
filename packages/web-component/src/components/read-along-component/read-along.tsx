@@ -1026,7 +1026,7 @@ export class ReadAlongComponent {
       "re-align": {
         eng: "Re-align with audio",
         fra: "Réaligner avec l'audio",
-        spa: "Re-alinear con audio",
+        spa: "Re-alinear con el audio",
       },
       "loading-error": {
         eng:
@@ -1085,7 +1085,7 @@ export class ReadAlongComponent {
       },
       "upload-image": {
         eng: "Upload an image for this page",
-        fra: "Télécharger une image pour cette page",
+        fra: "Téléverser une image pour cette page",
         spa: "Cargue una imagen para esta página",
       },
       "choose-file": {
@@ -1099,14 +1099,14 @@ export class ReadAlongComponent {
         spa: "Déle play a su grabación de audio",
       },
       "rewind-tooltip": {
-        eng: "Rewind audio recording",
-        fra: "Relire dès le début",
-        spa: "Rebobine (rewind) su grabación de audio",
+        eng: "Rewind 5 seconds",
+        fra: "Reculer de 5 secondes",
+        spa: "Rebobine (rewind) 5 segundos",
       },
       "stop-tooltip": {
-        eng: "Stop audio recording",
+        eng: "Stop audio playback",
         fra: "Arrêter la lecture",
-        spa: "Pare la grabación",
+        spa: "Pare la reproducción de audio",
       },
       "theme-tooltip": {
         eng: "Change theme",
@@ -1125,13 +1125,18 @@ export class ReadAlongComponent {
       },
       "add-translation": {
         eng: "Add a translation, transliteration or gloss",
-        fra: "Ajouter une traduction",
-        spa: "Añada una traducción",
+        fra: "Ajouter une traduction, une translitération ou une glose",
+        spa: "Añada una traducción, transliteración o glosa",
       },
     };
-    if (translations[word] && translations[word][lang])
-      return translations[word][lang];
-    return word;
+    if (translations[word]) {
+      if (translations[word][lang]) return translations[word][lang];
+      // Fallback to English if the language is unknown
+      else return translations[word]["eng"];
+    } else {
+      // Last fallback, just return the key if we can't find it
+      return word;
+    }
   }
 
   /**********
