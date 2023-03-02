@@ -1,0 +1,18 @@
+{
+  "web.component.speed": "Playback Speed",
+  "web.component.re-align": "Re-align with audio",
+  "web.component.loading-error": "Error: the <ASSET_TYPE> file could not be loaded.",
+  "web.component.parse-error": "Error: the <ASSET_TYPE> file could not be parsed.",
+  "web.component.alignment-error": "Error: No alignments were found.",
+  "web.component.loading": "Loading...",
+  "web.component.line-placeholder": "Type your text here",
+  "web.component.upload-image": "Upload an image for this page",
+  "web.component.choose-file": "Choose a file",
+  "web.component.play-tooltip": "Play audio recording",
+  "web.component.rewind-tooltip": "Rewind audio recording",
+  "web.component.stop-tooltip": "Stop audio recording",
+  "web.component.theme-tooltip": "Change theme",
+  "web.component.full-screen-tooltip": "Full screen mode",
+  "web.component.translation-tooltip": "Toggle translations",
+  "web.component.add-translation": "Add a translation, transliteration or gloss"
+}

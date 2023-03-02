@@ -10,7 +10,7 @@ export interface Alignment {
 }
 
 export type ReadAlongMode = "VIEW" | "EDIT";
-export type InterfaceLanguage = "eng" | "fra"; //iso 639-3 code
+export type InterfaceLanguage = "eng" | "fra" | "spa"; //iso 639-3 code
 export type Translation = {
   [lang in InterfaceLanguage]: string;
 };

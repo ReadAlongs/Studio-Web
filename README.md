@@ -84,7 +84,7 @@ Ou en français:
 
 There are separate production and development serving configurations
 for each interface language, so you may for instance also use
-`development-en`, `production-en`, `production-fr` for
+`development-en`, `production-en`,`development-es`, `production-es`, `production-fr`, etc for
 `--configuration` above. Note that these configurations are _only_
 for the `serve` command. To build for deployment, see
 [below](#studio-web-2).
@@ -187,14 +187,15 @@ Then, go to the directory and publish:
 #### Studio-Web
 
 To build the web application in the currently deployed configuration
-(English interface in the root and French under `/fr`), run:
+(English interface in the root and French under `/fr`, and Spanish under `/es`), run:
 
     nx build studio-web --configuration=production
     nx build studio-web --configuration=production --localize=fr --deleteOutputPath=false
+    nx build studio-web --configuration=production --localize=es --deleteOutputPath=false
 
 To build with each interface language in its own directory, run:
 
-    nx build studio-web --configuration=production --localize=en --localize=fr
+    nx build studio-web --configuration=production --localize=en --localize=fr --localize=es
 
 This will create a complete website under `dist/packages/studio-web/`
 which you can deploy in whatever fashion you like to your server

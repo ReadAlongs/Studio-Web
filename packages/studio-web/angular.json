@@ -16,7 +16,8 @@
       "i18n": {
         "sourceLocale": "en",
         "locales": {
-          "fr": "src/i18n/messages.fr.json"
+          "fr": "src/i18n/messages.fr.json",
+          "es": "src/i18n/messages.es.json"
         }
       },
       "architect": {
@@ -79,6 +80,10 @@
             "fr": {
               "localize": ["fr"],
               "deleteOutputPath": false
+            },
+            "es": {
+              "localize": ["es"],
+              "deleteOutputPath": false
             }
           },
           "defaultConfiguration": "production"
@@ -94,6 +99,9 @@
             },
             "fr": {
               "browserTarget": "readalong-studio:build:development,fr"
+            },
+            "es": {
+              "browserTarget": "readalong-studio:build:development,es"
             }
           },
           "defaultConfiguration": "development"
