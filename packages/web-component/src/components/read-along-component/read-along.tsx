@@ -1007,17 +1007,21 @@ export class ReadAlongComponent {
 
   /**
    * Helper function for getI18nString()
+   * @param key  the key of the string to lookup
+   * @returns the requested string found i18n/messages.{this.language}.json
    */
-  getRawI18nString(word: string): string {
+  getRawI18nString(key: string): string {
     if (
       this.i18nStrings[this.language] &&
-      this.i18nStrings[this.language][word]
+      this.i18nStrings[this.language][key]
     ) {
-      return this.i18nStrings[this.language][word];
-    } else if (this.i18nStrings.eng[word]) {
-      return this.i18nStrings.eng[word];
+      return this.i18nStrings[this.language][key];
+    } else if (this.i18nStrings.eng[key]) {
+      // Fallback to English if the string does not exist for this.language
+      return this.i18nStrings.eng[key];
     } else {
-      return word;
+      // Last fallback in case it's not found anywhere, because we never want to just fail
+      return key;
     }
   }
 
@@ -1026,12 +1030,17 @@ export class ReadAlongComponent {
    * To add a new term, add a new key to each messages.*.json file in ../../i18n
    * and give the translations as values.
    *
-   * @param word short name for the text to fetch
+   * Subsitution semantics: given substitution = { "STR1": "value1", "STR2": "value2" },
+   * the text "foo <STR1> bar <STR2> baz" will replaced by "foo value1 bar value2 baz".
+   *
+   * @param key  short name for the text to fetch
+   * @param substitutions  optional list of subtitutions to perform
+   * @returns  the string in language this.language for key
    */
-  getI18nString(word: string, substitutions: any = {}): string {
-    let result: string = this.getRawI18nString(word);
-    for (const [key, value] of Object.entries(substitutions)) {
-      result = result.replace(`<${key}>`, value as string);
+  getI18nString(key: string, substitutions: any = {}): string {
+    let result: string = this.getRawI18nString(key);
+    for (const [sub_key, value] of Object.entries(substitutions)) {
+      result = result.replace("<" + sub_key + ">", value as string);
     }
     return result;
   }
