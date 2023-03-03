@@ -87,13 +87,15 @@
           "browserTarget": "studio-web:build:production,fr"
         },
         "development-fr": {
-          "browserTarget": "studio-web:build:development,fr"
+          "browserTarget": "studio-web:build:development,fr",
+          "port": 4201
         },
         "production-es": {
           "browserTarget": "studio-web:build:production,es"
         },
         "development-es": {
-          "browserTarget": "studio-web:build:development,es"
+          "browserTarget": "studio-web:build:development,es",
+          "port": 4202
         }
       },
       "defaultConfiguration": "development-en"

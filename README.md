@@ -74,17 +74,17 @@ To run Studio-Web, you first have to build the web-component:
 
     nx build web-component --watch
 
-Then serve Studio-Web by running:
+Then serve Studio-Web by running (on port 4200 by default, use `--port=nnnn` to override):
 
     nx serve studio-web
 
-Ou en français:
+Ou en français (sur le port 4201 par défaut):
 
     nx serve studio-web --configuration=development-fr
 
 There are separate production and development serving configurations
 for each interface language, so you may for instance also use
-`development-en`, `production-en`,`development-es`, `production-es`, `production-fr`, etc for
+`development-en`, `production-en`, `development-es`, `production-es`, `production-fr`, etc for
 `--configuration` above. Note that these configurations are _only_
 for the `serve` command. To build for deployment, see
 [below](#studio-web-2).
