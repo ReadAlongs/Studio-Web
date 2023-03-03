@@ -37,7 +37,7 @@ export namespace Components {
          */
         "href": string;
         /**
-          * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
+          * Language  of the interface. In 639-3 code. Options are "eng" (English), "fra" (French) or "spa" (Spanish)
          */
         "language": InterfaceLanguage;
         /**
@@ -100,7 +100,7 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
-          * Language  of the interface. In 639-3 code Options are - "eng" for English - "fra" for French
+          * Language  of the interface. In 639-3 code. Options are "eng" (English), "fra" (French) or "spa" (Spanish)
          */
         "language"?: InterfaceLanguage;
         /**
