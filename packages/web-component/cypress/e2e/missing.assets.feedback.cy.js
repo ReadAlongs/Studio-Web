@@ -20,7 +20,7 @@ context("Readalong Component with missing assets", () => {
           );
           //check that message is visible
           expect($el.text()).contains(
-            "the RAS file 'ejfra.readalong' could not be loaded",
+            'the RAS file "ejfra.readalong" could not be loaded',
             "error message visible"
           );
         })
@@ -50,7 +50,7 @@ context("Readalong Component with missing assets", () => {
           );
           //check that message is visible
           expect($el.text()).contains(
-            "Erreur: le fichier RAS 'ej-fra-malformed.readalong' n'a pas pu être analysé",
+            'Erreur: le fichier RAS "ej-fra-malformed.readalong" n\'a pas pu être analysé',
             "error message visible"
           );
         })
@@ -70,7 +70,7 @@ context("Readalong Component with missing assets", () => {
           expect($el.hasClass("fade")).equal(false);
           //check that message is visible
           expect($el.text()).contains(
-            "Error: the AUDIO file 'ejfra.m4a' could not be loaded"
+            'Error: the AUDIO file "ejfra.m4a" could not be loaded'
           );
         })
         .should("be.visible");
