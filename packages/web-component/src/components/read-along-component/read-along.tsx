@@ -1006,13 +1006,9 @@ export class ReadAlongComponent {
    **********/
 
   /**
-   * Any text used in the Web Component should be at least bilingual in English and French.
-   * To add a new term, add a new key to each messages.*.json file in ../../i18n
-   * and give the translations as values.
-   *
-   * @param word short name for the text to fetch
+   * Helper function for getI18nString()
    */
-  getI18nString(word: string): string {
+  getRawI18nString(word: string): string {
     if (
       this.i18nStrings[this.language] &&
       this.i18nStrings[this.language][word]
@@ -1023,6 +1019,21 @@ export class ReadAlongComponent {
     } else {
       return word;
     }
+  }
+
+  /**
+   * Any text used in the Web Component should be at least bilingual in English and French.
+   * To add a new term, add a new key to each messages.*.json file in ../../i18n
+   * and give the translations as values.
+   *
+   * @param word short name for the text to fetch
+   */
+  getI18nString(word: string, substitutions: any = {}): string {
+    let result: string = this.getRawI18nString(word);
+    for (const [key, value] of Object.entries(substitutions)) {
+      result = result.replace(`<${key}>`, value as string);
+    }
+    return result;
   }
 
   /**********
@@ -1668,13 +1679,10 @@ export class ReadAlongComponent {
             let path = this.getPathFromAssetType(assetType);
             return (
               <this.ErrorMessage
-                msg={
-                  this.getI18nString("file-error-prefix") +
-                  assetType +
-                  this.getI18nString("file-error-infix") +
-                  path +
-                  this.getI18nString("parse-error-suffix")
-                }
+                msg={this.getI18nString("parse-error", {
+                  FILETYPE: assetType,
+                  FILENAME: path,
+                })}
                 data_cy={assetType + "-error"}
               />
             );
@@ -1683,13 +1691,10 @@ export class ReadAlongComponent {
             let path = this.getPathFromAssetType(assetType);
             return (
               <this.ErrorMessage
-                msg={
-                  this.getI18nString("file-error-prefix") +
-                  assetType +
-                  this.getI18nString("file-error-infix") +
-                  path +
-                  this.getI18nString("loading-error-suffix")
-                }
+                msg={this.getI18nString("loading-error", {
+                  FILETYPE: assetType,
+                  FILENAME: path,
+                })}
                 data_cy={assetType + "-error"}
               />
             );
