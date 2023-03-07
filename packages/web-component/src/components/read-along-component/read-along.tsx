@@ -23,8 +23,10 @@ import {
   Page,
   InterfaceLanguage,
   ReadAlongMode,
-  Translation,
 } from "../../index.d";
+import { web_component as eng_strings } from "../../i18n/messages.eng.json";
+import { web_component as fra_strings } from "../../i18n/messages.fra.json";
+import { web_component as spa_strings } from "../../i18n/messages.spa.json";
 
 const LOADING = 0;
 const LOADED = 1;
@@ -76,12 +78,15 @@ export class ReadAlongComponent {
   @Prop({ mutable: true, reflect: true }) theme: string = "light";
 
   /**
-   * Language  of the interface. In 639-3 code
-   * Options are
-   * - "eng" for English
-   * - "fra" for French
+   * Language  of the interface. In 639-3 code.
+   * Options are "eng" (English), "fra" (French) or "spa" (Spanish)
    */
   @Prop({ mutable: true, reflect: true }) language: InterfaceLanguage = "eng";
+
+  /**
+   * i18n strings dicts
+   */
+  i18nStrings = { eng: eng_strings, fra: fra_strings, spa: spa_strings };
 
   /**
    * Optional custom Stylesheet to override defaults
@@ -1001,137 +1006,43 @@ export class ReadAlongComponent {
    **********/
 
   /**
+   * Helper function for getI18nString()
+   * @param key  the key of the string to lookup
+   * @returns the requested string found i18n/messages.{this.language}.json
+   */
+  getRawI18nString(key: string): string {
+    if (
+      this.i18nStrings[this.language] &&
+      this.i18nStrings[this.language][key]
+    ) {
+      return this.i18nStrings[this.language][key];
+    } else if (this.i18nStrings.eng[key]) {
+      // Fallback to English if the string does not exist for this.language
+      return this.i18nStrings.eng[key];
+    } else {
+      // Last fallback in case it's not found anywhere, because we never want to just fail
+      return key;
+    }
+  }
+
+  /**
    * Any text used in the Web Component should be at least bilingual in English and French.
-   * To add a new term, add a new key to the translations object. Then add 'eng' and 'fr' keys
+   * To add a new term, add a new key to each messages.*.json file in ../../i18n
    * and give the translations as values.
    *
-   * @param word short name for the text to fetch
-   * @param lang language code
-   * @param path (optional) the path/file/href the error message applies to
-   * @param assetType (optional) type of assert the error message applies to
+   * Subsitution semantics: given substitution = { "STR1": "value1", "STR2": "value2" },
+   * the text "foo <STR1> bar <STR2> baz" will replaced by "foo value1 bar value2 baz".
+   *
+   * @param key  short name for the text to fetch
+   * @param substitutions  optional list of subtitutions to perform
+   * @returns  the string in language this.language for key
    */
-  returnTranslation(
-    word: string,
-    lang?: InterfaceLanguage,
-    path?: string,
-    assetType?: string
-  ): string {
-    if (lang === undefined) lang = this.language;
-    let translations: { [message: string]: Translation } = {
-      speed: {
-        eng: "Playback Speed",
-        fra: "Vitesse de Lecture",
-        spa: "Velocidad de reproducción",
-      },
-      "re-align": {
-        eng: "Re-align with audio",
-        fra: "Réaligner avec l'audio",
-        spa: "Re-alinear con audio",
-      },
-      "loading-error": {
-        eng:
-          "Error: the " +
-          assetType +
-          " file '" +
-          path +
-          "' could not be loaded.",
-        fra:
-          "Erreur: le fichier " +
-          assetType +
-          " '" +
-          path +
-          "' n'a pas pu être chargé.",
-        spa:
-          "Error: el fichero " +
-          assetType +
-          " '" +
-          path +
-          "' no se pudo cargar.",
-      },
-      "parse-error": {
-        eng:
-          "Error: the " +
-          assetType +
-          " file '" +
-          path +
-          "' could not be parsed.",
-        fra:
-          "Erreur: le fichier " +
-          assetType +
-          " '" +
-          path +
-          "' n'a pas pu être analysé.",
-        spa:
-          "Error: el fichero " +
-          assetType +
-          " '" +
-          path +
-          "' no se pudo analizar.",
-      },
-      "alignment-error": {
-        eng: "Error: No alignments were found.",
-        fra: "Erreur: aucun alignement n'a été trouvé.",
-        spa: "Error: No se encontró ningún alineamiento.",
-      },
-      loading: {
-        eng: "Loading...",
-        fra: "Chargement en cours",
-        spa: "Cargando...",
-      },
-      "line-placeholder": {
-        eng: "Type your text here",
-        fra: "Écrivez votre texte ici",
-        spa: "Escriba su texto aquí",
-      },
-      "upload-image": {
-        eng: "Upload an image for this page",
-        fra: "Télécharger une image pour cette page",
-        spa: "Cargue una imagen para esta página",
-      },
-      "choose-file": {
-        eng: "Choose a file",
-        fra: "Choisir un fichier",
-        spa: "Seleccione un fichero",
-      },
-      "play-tooltip": {
-        eng: "Play audio recording",
-        fra: "Écouter l'enregistrement",
-        spa: "Déle play a su grabación de audio",
-      },
-      "rewind-tooltip": {
-        eng: "Rewind audio recording",
-        fra: "Relire dès le début",
-        spa: "Rebobine (rewind) su grabación de audio",
-      },
-      "stop-tooltip": {
-        eng: "Stop audio recording",
-        fra: "Arrêter la lecture",
-        spa: "Pare la grabación",
-      },
-      "theme-tooltip": {
-        eng: "Change theme",
-        fra: "Changer de thême visuel",
-        spa: "Cambie la paleta de colores",
-      },
-      "full-screen-tooltip": {
-        eng: "Full screen mode",
-        fra: "Mode plein écran",
-        spa: "Modo pantalla completa",
-      },
-      "translation-tooltip": {
-        eng: "Toggle translations",
-        fra: "Afficher ou cacher les traductions",
-        spa: "Active o desactive las traducciones",
-      },
-      "add-translation": {
-        eng: "Add a translation, transliteration or gloss",
-        fra: "Ajouter une traduction",
-        spa: "Añada una traducción",
-      },
-    };
-    if (translations[word] && translations[word][lang])
-      return translations[word][lang];
-    return word;
+  getI18nString(key: string, substitutions: any = {}): string {
+    let result: string = this.getRawI18nString(key);
+    for (const [sub_key, value] of Object.entries(substitutions)) {
+      result = result.replace("<" + sub_key + ">", value as string);
+    }
+    return result;
   }
 
   /**********
@@ -1186,7 +1097,7 @@ export class ReadAlongComponent {
       onClick={() => this.hideGuideAndScroll()}
     >
       <span class={"scroll-guide__text theme--" + this.theme}>
-        {this.returnTranslation("re-align", this.language)}
+        {this.getI18nString("re-align")}
       </span>
     </button>
   );
@@ -1242,7 +1153,7 @@ export class ReadAlongComponent {
         <div class="drop-area">
           <form class="my-form">
             <p class={"theme--" + this.theme}>
-              {this.returnTranslation("upload-image", this.language)}
+              {this.getI18nString("upload-image")}
             </p>
             <input
               type="file"
@@ -1254,7 +1165,7 @@ export class ReadAlongComponent {
               }
             />
             <label class="button" htmlFor={"fileElem--" + props.pageID}>
-              {this.returnTranslation("choose-file", this.language)}
+              {this.getI18nString("choose-file")}
             </label>
           </form>
         </div>
@@ -1271,7 +1182,8 @@ export class ReadAlongComponent {
    */
   PageCount = (props: { pgCount: number; currentPage: number }): Element => (
     <div class={"page__counter color--" + this.theme}>
-      Page <span data-cy="page-count__current">{props.currentPage}</span>
+      {this.getI18nString("page")}{" "}
+      <span data-cy="page-count__current">{props.currentPage}</span>
       {" / "}
       <span data-cy="page-count__total">{props.pgCount}</span>
     </div>
@@ -1502,20 +1414,14 @@ export class ReadAlongComponent {
                     onKeyDown={(event) => {
                       if (event.key == "Enter") event.preventDefault();
                     }}
-                    data-placeholder={this.returnTranslation(
-                      "line-placeholder",
-                      this.language
-                    )}
+                    data-placeholder={this.getI18nString("line-placeholder")}
                   ></p>
                 </span>
               );
             } else {
               return (
                 <button
-                  title={this.returnTranslation(
-                    "add-translation",
-                    this.language
-                  )}
+                  title={this.getI18nString("add-translation")}
                   aria-label="Add translation"
                   data-cy="add-translation-button"
                   class="sentence__translation sentence__translation__button"
@@ -1609,7 +1515,7 @@ export class ReadAlongComponent {
       data-cy="play-button"
       disabled={this.hasLoaded < 2}
       aria-label="Play"
-      title={this.returnTranslation("play-tooltip", this.language)}
+      title={this.getI18nString("play-tooltip")}
       onClick={() => {
         this.playing ? this.pause() : this.play();
       }}
@@ -1629,7 +1535,7 @@ export class ReadAlongComponent {
       data-cy="replay-button"
       disabled={this.hasLoaded < 2}
       aria-label="Rewind"
-      title={this.returnTranslation("rewind-tooltip", this.language)}
+      title={this.getI18nString("rewind-tooltip")}
       onClick={() => this.goBack(5)}
       class={
         "control-panel__control ripple theme--" +
@@ -1647,7 +1553,7 @@ export class ReadAlongComponent {
       data-cy="stop-button"
       disabled={this.hasLoaded < 2}
       aria-label="Stop"
-      title={this.returnTranslation("stop-tooltip", this.language)}
+      title={this.getI18nString("stop-tooltip")}
       onClick={() => this.stop()}
       class={
         "control-panel__control ripple theme--" +
@@ -1663,7 +1569,7 @@ export class ReadAlongComponent {
   PlaybackSpeedControl = (): Element => (
     <div>
       <h5 class={"control-panel__buttons__header color--" + this.theme}>
-        {this.returnTranslation("speed", this.language)}
+        {this.getI18nString("speed")}
       </h5>
       <input
         type="range"
@@ -1684,7 +1590,7 @@ export class ReadAlongComponent {
     <button
       aria-label="Change theme"
       onClick={() => this.changeTheme()}
-      title={this.returnTranslation("theme-tooltip", this.language)}
+      title={this.getI18nString("theme-tooltip")}
       class={
         "control-panel__control ripple theme--" +
         this.theme +
@@ -1700,7 +1606,7 @@ export class ReadAlongComponent {
     <button
       aria-label="Full screen mode"
       onClick={() => this.toggleFullscreen()}
-      title={this.returnTranslation("full-screen-tooltip", this.language)}
+      title={this.getI18nString("full-screen-tooltip")}
       class={
         "control-panel__control ripple theme--" +
         this.theme +
@@ -1718,7 +1624,7 @@ export class ReadAlongComponent {
     <button
       data-cy="translation-toggle"
       aria-label="Toggle Translation"
-      title={this.returnTranslation("translation-tooltip", this.language)}
+      title={this.getI18nString("translation-tooltip")}
       onClick={() => this.toggleTextTranslation()}
       class={
         "control-panel__control ripple theme--" +
@@ -1782,12 +1688,10 @@ export class ReadAlongComponent {
             let path = this.getPathFromAssetType(assetType);
             return (
               <this.ErrorMessage
-                msg={this.returnTranslation(
-                  "parse-error",
-                  this.language,
-                  path,
-                  assetType
-                )}
+                msg={this.getI18nString("parse-error", {
+                  FILETYPE: assetType,
+                  FILENAME: path,
+                })}
                 data_cy={assetType + "-error"}
               />
             );
@@ -1796,12 +1700,10 @@ export class ReadAlongComponent {
             let path = this.getPathFromAssetType(assetType);
             return (
               <this.ErrorMessage
-                msg={this.returnTranslation(
-                  "loading-error",
-                  this.language,
-                  path,
-                  assetType
-                )}
+                msg={this.getI18nString("loading-error", {
+                  FILETYPE: assetType,
+                  FILENAME: path,
+                })}
                 data_cy={assetType + "-error"}
               />
             );
@@ -1810,7 +1712,7 @@ export class ReadAlongComponent {
 
         {this.alignment_failed && this.assetsStatus.RAS === LOADED && (
           <this.ErrorMessage
-            msg={this.returnTranslation("alignment-error", this.language)}
+            msg={this.getI18nString("alignment-error")}
             data_cy="alignment-error"
           />
         )}

@@ -1,0 +1,21 @@
+{
+  "web_component": {
+    "page": "Page",
+    "speed": "Vitesse de Lecture",
+    "re-align": "Réaligner avec l'audio",
+    "loading-error": "Erreur: le fichier <FILETYPE> \"<FILENAME>\" n'a pas pu être chargé.",
+    "parse-error": "Erreur: le fichier <FILETYPE> \"<FILENAME>\" n'a pas pu être analysé.",
+    "alignment-error": "Erreur: aucun alignement n'a été trouvé.",
+    "loading": "Chargement en cours",
+    "line-placeholder": "Écrivez votre texte ici",
+    "upload-image": "Téléverser charger une image pour cette page",
+    "choose-file": "Choisir un fichier",
+    "play-tooltip": "Écouter l'enregistrement",
+    "rewind-tooltip": "Reculer de 5 secondes",
+    "stop-tooltip": "Arrêter la lecture",
+    "theme-tooltip": "Changer de thême visuel",
+    "full-screen-tooltip": "Mode plein écran",
+    "translation-tooltip": "Afficher ou cacher les traductions",
+    "add-translation": "Ajouter une traduction, une translitération ou une glose"
+  }
+}
