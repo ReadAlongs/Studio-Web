@@ -36,7 +36,6 @@ a {
   text-decoration: none;
   transition: color 0.2s;
   outline: none;
-
   &:active,
   &:focus {
     outline: none;
@@ -65,27 +64,26 @@ mat-chip,
 mat-tab-label,
 span,
 button,
+div,
 a {
   font-family: $font-family-display;
 }
 
 /* Scrollbar */
+
 @each $theme, $value in $ui-themes {
   /* Width */
   .theme--#{$theme}::-webkit-scrollbar {
     width: em(8);
     height: em(8);
   }
-
   /* Track */
   .theme--#{$theme}::-webkit-scrollbar-track {
     // box-shadow: inset 0 0 em(5) map-get($value, primary);
     background: map-get($value, primary);
-
     // @extend %border--strong--left;
     // @extend %border--strong--right;
   }
-
   /* Handle */
   .theme--#{$theme}::-webkit-scrollbar-thumb {
     background: map-get($value, text);
@@ -145,11 +143,9 @@ table {
   .background--#{$theme} {
     background: map-get($value, primary);
   }
-
   .stop-color--#{$theme} {
     fill: map-get($value, primary);
   }
-
   .color--#{$theme} {
     color: map-get($value, text);
   }
@@ -161,19 +157,15 @@ table {
 
 // larger margins/padding top/bottom/left/right
 $space: 0;
-
 @while $space <=50 {
   .top-#{$space} {
     top: em($space);
   }
-
   .left-#{$space} {
     left: em($space);
   }
-
   .right-#{$space} {
     right: em($space);
   }
-
   $space: $space + 5;
 }

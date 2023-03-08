@@ -167,17 +167,13 @@ To publish the web component, first you must belong to the [@readalongs organiza
     nx build web-component
     nx build ngx-web-component
 
-Run the prepublish step for web-component:
-
-    nx prepublish web-component
-
 Run the bundler for single-file html exports:
 
     nx bundle web-component
 
 Alternatively run together as:
 
-    nx run-many --targets=build,prepublish,bundle --projects=web-component,ngx-web-component --parallel 1
+    nx run-many --targets=build,bundle --projects=web-component,ngx-web-component --parallel 1
 
 Then, go to the directory and publish:
 

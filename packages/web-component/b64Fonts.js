@@ -28,26 +28,13 @@ const fonts = [
   },
   {
     font: {
-      "Lato.woff2": fs.readFileSync(
-        "src/scss/fonts/S6uyw4BMUTPHjxAwXiWtFCfQ7A.woff2"
+      "BCSans-Regular.woff2": fs.readFileSync(
+        "src/scss/fonts/BCSans-Regular.woff2"
       ),
     },
     options: {
-      fontFamily: "Lato",
+      fontFamily: "BCSans",
       style: "normal",
-      weight: 400,
-    },
-  },
-  {
-    font: {
-      "LatoExt.woff2": fs.readFileSync(
-        "src/scss/fonts/S6uyw4BMUTPHjx4wXiWtFCc.woff2"
-      ),
-    },
-    options: {
-      fontFamily: "Lato",
-      style: "normal",
-      weight: 400,
     },
   },
 ];
@@ -87,7 +74,6 @@ const fontStyle = `
 `;
 
 const css = fonts.map((x) => woff2base64(x.font, x.options).woff2).join("\n");
-
 fs.writeFileSync(
   "../../dist/packages/web-component/dist/fonts.b64.css",
   css + "\n" + fontStyle
