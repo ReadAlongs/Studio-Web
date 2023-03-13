@@ -1060,10 +1060,13 @@ export class ReadAlongComponent {
    * @param substitutions  optional list of subtitutions to perform
    * @returns  the string in language this.language for key
    */
-  getI18nString(key: string, substitutions: any = {}): string {
+  getI18nString(
+    key: string,
+    substitutions: { readonly [index: string]: string } = {}
+  ): string {
     let result: string = this.getRawI18nString(key);
     for (const [sub_key, value] of Object.entries(substitutions)) {
-      result = result.replace("<" + sub_key + ">", value as string);
+      result = result.replace("<" + sub_key + ">", value);
     }
     return result;
   }
