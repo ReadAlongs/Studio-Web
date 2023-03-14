@@ -22,7 +22,6 @@ jobs:
         run: |
           npx nx build web-component
           # create the bundles required for studio-web
-          npx nx prepublish web-component
           npx nx bundle web-component
       - name: Test
         run: |

@@ -42,6 +42,7 @@ interface ASSETS_STATUS {
   tag: "read-along",
   styleUrl: "../../scss/styles.scss",
   shadow: true,
+  assetsDirs: ["assets"],
 })
 export class ReadAlongComponent {
   @Element() el: HTMLElement;
@@ -887,6 +888,28 @@ export class ReadAlongComponent {
    * is being read
    */
   componentDidLoad() {
+    const bcSansFontCssUrl =
+      "https://unpkg.com/@bcgov/bc-sans@1.0.1/css/BCSans.css";
+    const iconsFontCssUrl =
+      "https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined&display=swap";
+    let iconElement = document.querySelector(`link[href="${iconsFontCssUrl}"]`);
+    let fontElement = document.querySelector(
+      `link[href="${bcSansFontCssUrl}"]`
+    );
+
+    // Only inject the element if it's not yet present
+    if (!iconElement) {
+      iconElement = document.createElement("link");
+      iconElement.setAttribute("rel", "stylesheet");
+      iconElement.setAttribute("href", iconsFontCssUrl);
+      document.head.appendChild(iconElement);
+    }
+    if (!fontElement) {
+      fontElement = document.createElement("link");
+      fontElement.setAttribute("rel", "stylesheet");
+      fontElement.setAttribute("href", bcSansFontCssUrl);
+      document.head.appendChild(fontElement);
+    }
     this.processed_alignment = extractAlignment(this.parsed_text);
     this.alignment_failed = Object.keys(this.processed_alignment).length == 0;
     // load basic Howl

@@ -31,7 +31,7 @@ jobs:
           command: npx nx test:once web-component
       - run: cd ./packages/web-component && npm version patch
       - run: cd ./packages/ngx-web-component && npm version patch
-      - run: npx nx build web-component && npx nx prepublish web-component && npx nx bundle web-component && npx nx build ngx-web-component
+      - run: npx nx build web-component && npx nx bundle web-component && npx nx build ngx-web-component
       - run: |
           cd dist/packages/web-component && npm publish --access=public
         env:
