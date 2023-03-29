@@ -34,7 +34,7 @@
     "jest-preset-angular": "~12.2.3",
     "lerna": "^5.6.2",
     "ng-packagr": "^15.2.2",
-    "nx": "15.4.5",
+    "nx": "^15.4.5",
     "postcss-preset-env": "^7.8.3",
     "prettier": "^2.8.7",
     "pretty-quick": "^3.1.3",
