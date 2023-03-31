@@ -1594,7 +1594,10 @@ export class ReadAlongComponent {
 
   PlaybackSpeedControl = (): Element => (
     <div>
-      <h5 class={"control-panel__buttons__header color--" + this.theme}>
+      <h5
+        class={"control-panel__buttons__header color--" + this.theme}
+        id="speed-slider-label"
+      >
         {this.getI18nString("speed")}
       </h5>
       <input
@@ -1604,6 +1607,7 @@ export class ReadAlongComponent {
         value={this.playback_rate * 100}
         class="slider control-panel__control"
         id="myRange"
+        aria-labelledby="speed-slider-label"
         onInput={(v) => {
           console.log("v", v);
           this.changePlayback(v);
