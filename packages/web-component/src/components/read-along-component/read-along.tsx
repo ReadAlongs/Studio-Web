@@ -1665,7 +1665,7 @@ export class ReadAlongComponent {
 
   ErrorMessage = (props: { msg: string; data_cy: string }): Element => (
     <p data-cy={props.data_cy} class="alert status-error">
-      <span class="material-icons">error_outline_outlined</span> {props.msg}
+      <span class="material-icons">error_outline</span> {props.msg}
     </p>
   );
 
