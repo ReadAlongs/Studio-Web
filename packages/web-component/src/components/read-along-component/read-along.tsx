@@ -15,6 +15,7 @@ import {
 import {
   parseRAS,
   Sprite,
+  extractPages,
   extractAlignment,
   isFileAvailable,
 } from "../../utils/utils";
@@ -850,9 +851,11 @@ export class ReadAlongComponent {
       this.playbackRateRange = 15;
     }
 
-    // Parse the text to be displayed
     // TODO: if parseRAS has an error, we need ERROR_PARSING
-    this.parsed_text = await parseRAS(this.href);
+    // Parse the text to be displayed
+    const text = this.el.querySelector("text");
+    if (text) this.parsed_text = extractPages(text);
+    else this.parsed_text = await parseRAS(this.href);
     if (this.parsed_text === null) {
       this.parsed_text = [];
       this.assetsStatus.RAS = ERROR_LOADING;
@@ -1374,7 +1377,10 @@ export class ReadAlongComponent {
                   }
                 />
               );
-            } else if (child.nodeName === "w") {
+            } else if (child.nodeName === "w" || child.nodeName === "W") {
+              /* It may be uppercase for embedded markup, because in
+                   that case it has been parsed as "HTML".  See
+                   https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName */
               return (
                 <this.Word
                   text={child.textContent}
