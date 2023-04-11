@@ -853,7 +853,7 @@ export class ReadAlongComponent {
 
     // TODO: if parseRAS has an error, we need ERROR_PARSING
     // Parse the text to be displayed
-    const text = this.el.querySelector("text");
+    const text = this.el.querySelector("read-along > text");
     if (text) this.parsed_text = extractPages(text);
     else this.parsed_text = await parseRAS(this.href);
     if (this.parsed_text === null) {
