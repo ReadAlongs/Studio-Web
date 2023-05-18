@@ -115,16 +115,22 @@ export class UploadComponent implements OnDestroy, OnInit {
 
   reportRasError(err: HttpErrorResponse) {
     if (err.status == 422) {
+      if (err.error.detail.includes("is empty")) {
+        this.toastr.error(
+          $localize`Your text may contain unpronounceable characters or numbers.
+Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+          $localize`Pronunciation mapping issues.`,
+          { timeOut: 30000 }
+        );
+      }
       this.toastr.error(err.error.detail, $localize`Text processing failed.`, {
-        timeOut: 15000,
+        timeOut: 30000,
       });
     } else {
       this.toastr.error(
         err.message,
         $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-        {
-          timeOut: 60000,
-        }
+        { timeOut: 60000 }
       );
     }
   }
@@ -135,18 +141,14 @@ export class UploadComponent implements OnDestroy, OnInit {
         $localize`Please listen to your audio to make sure it is clear and corresponds
 to the text.`,
         $localize`Alignment failed.`,
-        {
-          timeOut: 30000,
-        }
+        { timeOut: 30000 }
       );
     } else {
       this.toastr.error(
         $localize`Your text may contain unpronounceable characters or numbers.
 Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
         $localize`Alignment failed.`,
-        {
-          timeOut: 30000,
-        }
+        { timeOut: 30000 }
       );
     }
   }
