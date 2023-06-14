@@ -3,10 +3,15 @@ import { ToastrService } from "ngx-toastr";
 import {
   Observable,
   Subject,
+  catchError,
   forkJoin,
-  finalize,
+  retry,
+  of,
   switchMap,
+  map,
+  tap,
   takeUntil,
+  throwError,
 } from "rxjs";
 
 import {
@@ -34,10 +39,7 @@ import {
   ReadAlongRequest,
   SupportedLanguage,
 } from "../ras.service";
-import {
-  SoundswallowerService,
-  AlignmentProgress,
-} from "../soundswallower.service";
+import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
 @Component({
@@ -135,18 +137,25 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     }
   }
 
-  reportSoundSwallowerError(err: Error) {
-    if (err.message === "No alignment found") {
-      this.toastr.error(
-        $localize`Please listen to your audio to make sure it is clear and corresponds
-to the text.`,
+  reportUnpronounceableError(err: Error) {
+    this.toastr.error(
+      $localize`Your text may contain unpronounceable characters or numbers.
+Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+      $localize`Alignment failed.`,
+      { timeOut: 30000 }
+    );
+  }
+
+  reportDifficultAlignment(err: Error, mode: BeamDefaults) {
+    if (mode === BeamDefaults.strict) {
+      this.toastr.warning(
+        $localize`Hmm, this is harder than usual, please wait while we try again.`,
         $localize`Alignment failed.`,
-        { timeOut: 30000 }
+        { timeOut: 5000 }
       );
     } else {
       this.toastr.error(
-        $localize`Your text may contain unpronounceable characters or numbers.
-Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+        $localize`This is really difficult. We'll try one last time, but it might take a long time and produce poor results. Please make sure your text matches your audio and that there is as little background noise as possible.`,
         $localize`Alignment failed.`,
         { timeOut: 30000 }
       );
@@ -372,6 +381,32 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               return this.ssjsService.align$(audio, ras as ReadAlong);
             }
           ),
+          catchError((err: Error) => {
+            // Catch all errors. If error message is "No alignment found" then gradually loosen the beam defaults.
+            // and then throw an error so that retry will get triggered. If it's any other type of error, just return
+            // an observable of it so that it bypasses retry.
+            if (err.message === "No alignment found") {
+              if (this.ssjsService.mode === BeamDefaults.strict) {
+                this.reportDifficultAlignment(err, this.ssjsService.mode);
+                this.ssjsService.mode = BeamDefaults.moderate;
+              } else if (this.ssjsService.mode === BeamDefaults.moderate) {
+                this.reportDifficultAlignment(err, this.ssjsService.mode);
+                this.ssjsService.mode = BeamDefaults.loose;
+              }
+              return throwError(() => err);
+            } else {
+              return of(err);
+            }
+          }),
+          retry(2),
+          // Here, we want to intercept the observable from the catchError operator above and throw a new error of it
+          map((possibleError) => {
+            if (possibleError instanceof Error) {
+              throw new Error(possibleError.message);
+            } else {
+              return possibleError;
+            }
+          }),
           takeUntil(this.unsubscribe$)
         )
         .subscribe({
@@ -395,7 +430,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
             if (err instanceof HttpErrorResponse) {
               this.reportRasError(err);
             } else if (err.message.includes("align")) {
-              this.reportSoundSwallowerError(err);
+              this.reportUnpronounceableError(err);
             } else {
               this.reportAudioError(err);
             }
