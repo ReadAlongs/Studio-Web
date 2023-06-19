@@ -165,6 +165,24 @@ above (or just `nx build web-component`) if you have not already done so, and th
 
     nx test:once studio-web
 
+### Internationalization (i18n) and localization (l10n)
+
+`studio-web` is localized in French and Spanish. When you add new strings that need localizing,
+you can extract them with
+
+    nx extract-i18n studio-web
+
+This will update `packages/studio-web/src/i18n/messages.json` with the English strings. Add or
+correct their translations in `messages.es.json` and `messages.fr.json`, and then
+run these checks to confirm all the required strings are there:
+
+    nx check-es-l10n studio-web
+    nx check-fr-l10n studio-web
+
+or
+
+    nx run-many --targets=check-es-l10n,check-fr-l10n --projects=studio-web
+
 ### Build & Publish
 
 #### Web Component & Angular Wrapper
