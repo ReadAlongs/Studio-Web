@@ -4,12 +4,12 @@ import {
   Observable,
   Subject,
   catchError,
+  finalize,
   forkJoin,
   retry,
   of,
   switchMap,
   map,
-  tap,
   takeUntil,
   throwError,
 } from "rxjs";
@@ -407,7 +407,8 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               return possibleError;
             }
           }),
-          takeUntil(this.unsubscribe$)
+          takeUntil(this.unsubscribe$),
+          finalize(() => (this.ssjsService.mode = BeamDefaults.strict))
         )
         .subscribe({
           next: (progress) => {
