@@ -100,6 +100,23 @@
       },
       "defaultConfiguration": "development-en"
     },
+    "serve-es": {
+      "executor": "@angular-builders/custom-webpack:dev-server",
+      "options": {
+        "browserTarget": "studio-web:build:development,es",
+        "port": 4202
+      }
+    },
+    "serve-fr": {
+      "executor": "@angular-builders/custom-webpack:dev-server",
+      "options": {
+        "browserTarget": "studio-web:build:development,fr",
+        "port": 4201
+      }
+    },
+    "serve-web-api": {
+      "command": "bash -c \"cd ../Studio/readalongs && PRODUCTION= DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload\""
+    },
     "extract-i18n": {
       "executor": "@angular-builders/custom-webpack:extract-i18n",
       "options": {
@@ -107,6 +124,12 @@
         "outputPath": "packages/studio-web/src/i18n",
         "browserTarget": "studio-web:build"
       }
+    },
+    "check-fr-l10n": {
+      "command": "bash -c \"diff -w <(cat packages/studio-web/src/i18n/messages.json | sed 's/:.*//' | sort) <(cat packages/studio-web/src/i18n/messages.fr.json | sed 's/:.*//' | sort)\""
+    },
+    "check-es-l10n": {
+      "command": "bash -c \"diff -w <(cat packages/studio-web/src/i18n/messages.json | sed 's/:.*//' | sort) <(cat packages/studio-web/src/i18n/messages.es.json | sed 's/:.*//' | sort)\""
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

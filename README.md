@@ -90,11 +90,15 @@ Ou en français (sur le port 4201 par défaut):
     nx serve studio-web --configuration=development-fr
 
 There are separate production and development serving configurations
-for each interface language, so you may for instance also use
+for each interface language defined in `packages/studio-web/project.json`, so you may for instance also use
 `development-en`, `production-en`, `development-es`, `production-es`, `production-fr`, etc for
 `--configuration` above. Note that these configurations are _only_
 for the `serve` command. To build for deployment, see
 [below](#studio-web-2).
+
+We have also defined targets `serve-fr` and `serve-es` in `project.json` so that you can launch the dev configs for all three supported languages at once with:
+
+    nx run-many --targets=serve,serve-fr,serve-es --projects=studio-web
 
 Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
 

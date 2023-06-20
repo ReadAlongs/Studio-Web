@@ -6,20 +6,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "helpme": "echo This project is part of a monorepo managed using nx. Run the targets in project.json using npx nx target studio-web at the root of the monorepo.",
     "ng": "ng",
-    "start": "ng serve",
-    "start-fr": "ng serve --configuration=fr --port=5200",
-    "start-es": "ng serve --configuration=es --port=5200",
-    "serve-web-api": "cd ../../../Studio/readalongs && PRODUCTION= DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload",
-    "build": "ng build --configuration development --localize",
-    "build:prod": "ng build --configuration production --localize",
-    "build:prod:ghpages": "ng build --configuration production && ng build --configuration production,fr && ng build --configuration production,es",
-    "watch": "ng build --watch --configuration development --localize",
-    "test": "ng test",
-    "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
-    "extract-i18n": "ng extract-i18n --format json --output-path src/i18n; echo '' >> src/i18n/messages.json",
-    "check-fr-l10n": "bash -c \"diff -w <(cat src/i18n/messages.json | sed 's/:.*//' | sort) <(cat src/i18n/messages.fr.json | sed 's/:.*//' | sort)\"",
-    "check-es-l10n": "bash -c \"diff -w <(cat src/i18n/messages.json | sed 's/:.*//' | sort) <(cat src/i18n/messages.es.json | sed 's/:.*//' | sort)\""
+    "test:ng": "ng test",
+    "test:once": "ng test --watch=false --browsers ChromeHeadlessCI"
   },
   "private": true,
   "devDependencies": {
