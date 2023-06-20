@@ -24,6 +24,8 @@ import {
   step_two_intro_step,
   intro_step,
   language_step,
+  specific_language_step,
+  generic_language_step,
   readalong_play_step,
   readalong_play_word_step,
   readalong_add_image_step,
@@ -264,6 +266,8 @@ export class StudioComponent implements OnDestroy, OnInit {
       audio_record_step,
       audio_file_step,
       language_step,
+      generic_language_step,
+      specific_language_step,
       step_one_final_step,
     ]);
     this.shepherdService.start();

@@ -128,7 +128,7 @@ export const audio_file_step: any = {
 
 export const language_step: any = {
   title: $localize`Select your language`,
-  text: $localize`Then, select the language of your ReadAlong. We support over 30 different languages, but if your language is not here, you can try using the Undetermined (und) option. If that doesn't work very well, you can always add your own language. This requires some understanding of your language's writing system. Feel free to reach out to us or visit our <a href="https://blog.mothertongues.org/g2p-background/" target="_blank" rel="noopener noreferrer">blog posts</a> for more information.`,
+  text: $localize`Then, optionally, you can select the language of your ReadAlong.`,
   attachTo: {
     element: "#language-section",
     on: "bottom",
@@ -146,6 +146,63 @@ export const language_step: any = {
     },
   ],
   id: "language",
+};
+
+export const generic_language_step: any = {
+  title: $localize`Select your language`,
+  text: $localize`For most users, the default settings here are appropriate, and you don't need to do anything else - just keep this option selected!`,
+  attachTo: {
+    element: "#generic-language",
+    on: "bottom",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+  id: "generic-language",
+};
+
+export const specific_language_step: any = {
+  title: $localize`Select your language`,
+  text: $localize`However, if your results aren't good enough with the default settings you can choose your language from this list. If it's not supported already, have a look at
+  <a
+    href="https://blog.mothertongues.org/g2p-background/"
+    target="_blank"
+    rel="noopener noreferrer"
+    ><mat-icon inline style="vertical-align: middle">launch</mat-icon>
+    this blog post series</a
+  >
+  to understand how you might get support for your language, or
+  <a href="{{ contactLink }}"
+    ><mat-icon inline style="vertical-align: middle">mail</mat-icon>
+    contact us</a
+  >
+  for more info!`,
+  attachTo: {
+    element: "#specific-language",
+    on: "bottom",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+  id: "specific-language",
 };
 
 export const step_one_final_step: any = {

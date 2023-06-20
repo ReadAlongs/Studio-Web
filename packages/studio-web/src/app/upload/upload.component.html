@@ -4,9 +4,8 @@
       Select data to start creating your ReadAlong
     </h2>
     <p i18n="Upload instructions">
-      In order to make a ReadAlong, we need 3 different things. We need to know
-      <b>which language</b> your readalong is in, and we also need some
-      <b>text</b>, and corresponding <b>audio</b>.
+      In order to make a ReadAlong, we just need some <b>text</b>, and
+      corresponding <b>audio</b>.
     </p>
   </div>
   <div class="container">
@@ -252,12 +251,12 @@
     <div class="row g-2">
       <div id="language-section" class="col-12 p-3 border bg-light">
         <h1 i18n="Title for language box" class="title">
-          Select the language of your text and audio
+          Optional: Change language settings
         </h1>
         <p i18n="Language selection instructions">
-          If your language isn't supported in the list below, you can try and
-          run it with the "Undetermined" option below. If that's not working
-          very well, have a look at
+          Most of the time, you should just use the default selected below. You
+          can also select a specific language if it is supported for improved
+          results. If your language is not supported, have a look at
           <a
             href="https://blog.mothertongues.org/g2p-background/"
             target="_blank"
@@ -272,25 +271,57 @@
           >
           for more info!
         </p>
-        <div class="mb-3">
-          <label
+        <div class="mb-3 container">
+          <!-- <label
             i18n="Label for language selection"
             for="langSelect"
             class="form-label"
             >You can use the dropdown below to select a pre-configured mapping
             for your language.</label
-          >
+          > -->
           <br />
-          <div class="row">
-            <div class="col-5">
+          <div
+            id="generic-language"
+            class="row d-flex flex-row justify-content-center mt-1"
+          >
+            <mat-radio-group
+              name="langMode"
+              aria-label="Language Model"
+              [value]="langMode"
+            ></mat-radio-group>
+            <mat-radio-button
+              [checked]="langMode === 'generic'"
+              (change)="toggleLangMode($event)"
+              color="primary"
+              i18n="generic language radio"
+              value="generic"
+              name="langMode"
+              >Default (should work with most languages)</mat-radio-button
+            >
+          </div>
+          <div
+            id="specific-language"
+            class="row d-flex flex-row justify-content-start mt-3"
+          >
+            <mat-radio-button
+              class="col-md-3 justify-content-start"
+              (change)="toggleLangMode($event)"
+              color="primary"
+              i18n="specific language radio"
+              value="specific"
+              name="langMode"
+              >Select a specific language</mat-radio-button
+            >
+            <div class="col-md-9">
               <mat-form-field appearance="fill">
                 <mat-label i18n="Label for language dropdown"
                   >Select Language</mat-label
                 >
-                <mat-select [formControl]="langControl" required>
-                  <mat-option i18n="Name of undetermined language" value="und"
-                    >Undetermined - (und)</mat-option
-                  >
+                <mat-select
+                  [formControl]="langControl"
+                  required
+                  [disabled]="langMode !== 'specific'"
+                >
                   <mat-option *ngFor="let lang of langs" [value]="lang.code">
                     {{ lang.names["_"] }} - ({{ lang.code }})
                   </mat-option>

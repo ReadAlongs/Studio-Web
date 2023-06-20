@@ -42,6 +42,11 @@ import {
 import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
+export enum langMode {
+  generic = "generic",
+  specific = "specific",
+}
+
 @Component({
   selector: "app-upload",
   templateUrl: "./upload.component.html",
@@ -51,7 +56,11 @@ export class UploadComponent implements OnDestroy, OnInit {
   isLoaded = false;
   langs: Array<SupportedLanguage> = [];
   loading = false;
-  langControl = new FormControl<string>("und", Validators.required);
+  langMode = langMode.generic;
+  langControl = new FormControl<string>(
+    { value: "und", disabled: this.langMode !== "specific" },
+    Validators.required
+  );
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   starting_to_record = false;
@@ -299,11 +308,28 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     this.inputMethod.audio = event.value;
   }
 
+  toggleLangMode(event: any) {
+    if (event.value === "generic") {
+      this.langControl.setValue("und");
+    } else {
+      this.langControl.setValue("");
+    }
+    this.langMode = event.value;
+  }
+
   toggleTextInput(event: any) {
     this.inputMethod.text = event.value;
   }
 
   nextStep() {
+    if (this.langControl.value === "") {
+      this.toastr.error(
+        $localize`Please select a language or choose the default option`,
+        $localize`No language selected`,
+        { timeOut: 15000 }
+      );
+      return;
+    }
     if (this.inputMethod.text === "edit") {
       if (this.textInput) {
         let inputText = new Blob([this.textInput], {
