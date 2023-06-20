@@ -114,7 +114,7 @@ If your Studio sandbox is in a sibling directory to this sandbox, and you Python
 
 Alternatively run together as:
 
-    nx run-many --targets=serve-test-data,serve-web-api,serve --projects=web-component,studio-web --parallel 5
+    nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
 
 Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ every time there is a change to `main`.
 
