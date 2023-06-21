@@ -282,10 +282,6 @@ export const readalong_play_word_step: any = {
 export const readalong_change_title_step: any = {
   title: $localize`Edit your ReadAlong`,
   text: $localize`You can edit the text here to add a Title or Subtitle to your ReadAlong.`,
-  attachTo: {
-    element: "input",
-    on: "bottom",
-  },
   buttons: [
     {
       classes: "shepherd-button-primary",

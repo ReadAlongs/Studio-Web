@@ -1700,12 +1700,14 @@ export class ReadAlongComponent {
   render(): Element {
     return (
       <div id="read-along-container" class="read-along-container">
-        <h1 class="slot__header">
-          <slot name="read-along-header" />
-        </h1>
-        <h3 class="slot__subheader">
-          <slot name="read-along-subheader" />
-        </h3>
+        <div id="title__slot__container">
+          <h1 class="slot__header">
+            <slot name="read-along-header" />
+          </h1>
+          <h3 class="slot__subheader">
+            <slot name="read-along-subheader" />
+          </h3>
+        </div>
 
         {Object.entries(this.assetsStatus).map((asset) => {
           let assetType = asset[0];

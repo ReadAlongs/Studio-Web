@@ -235,6 +235,12 @@ export class StudioComponent implements OnDestroy, OnInit {
                   ?.shadowRoot?.querySelector("div.sentence"),
                 on: "bottom",
               };
+              readalong_change_title_step["attachTo"] = {
+                element: document
+                  .querySelector("#readalong")
+                  ?.shadowRoot?.querySelector("#title__slot__container"),
+                on: "bottom",
+              };
               this.shepherdService.next();
               // Strangely, adding steps actually removes all previous steps so we need to start the tour again here.
               this.shepherdService.addSteps([
