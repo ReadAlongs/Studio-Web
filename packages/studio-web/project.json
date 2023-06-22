@@ -125,6 +125,10 @@
         "browserTarget": "studio-web:build"
       }
     },
+    "check-l10n": {
+      "executor": "nx:noop",
+      "dependsOn": ["check-fr-l10n", "check-es-l10n"]
+    },
     "check-fr-l10n": {
       "command": "bash -c \"diff -w <(cat packages/studio-web/src/i18n/messages.json | sed 's/:.*//' | sort) <(cat packages/studio-web/src/i18n/messages.fr.json | sed 's/:.*//' | sort)\""
     },
