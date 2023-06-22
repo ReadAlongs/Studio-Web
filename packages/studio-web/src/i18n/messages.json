@@ -36,7 +36,7 @@
     "5481197392701906162": "Select your language",
     "6215852496756629103": "Then, optionally, you can select the language of your ReadAlong.",
     "5598621379448184205": "For most users, the default settings here are appropriate, and you don't need to do anything else - just keep this option selected!",
-    "7491756172995349153": "However, if your results aren't good enough with the default settings you can choose your language from this list. If it's not supported already, have a look at\n  <a href=\"https://blog.mothertongues.org/g2p-background/\" target=\"_blank\" rel=\"noopener noreferrer\" >\n    this blog post series</a\n  >\n  to understand how you might get support for your language, or\n  <a href=\"{{ contactLink }}\"\n    >\n    contact us</a\n  >\n  for more info!",
+    "5575150718042215136": "However, if your results aren't good enough with the default settings you can choose your language from this list. If it's not supported already, have a look at\n  <a href=\"https://blog.mothertongues.org/g2p-background/\" target=\"_blank\" rel=\"noopener noreferrer\" >\n    this blog post series</a\n  >\n  to understand how you might get support for your language, or\n  <a href=\"{$PH}\"\n    >\n    contact us</a\n  >\n  for more info!",
     "6462395282000827572": "That's it!",
     "6491013634569415627": "Once you've done this, you can click the \"next step\" button here to let Studio build your ReadAlong! (This may take a few seconds.)",
     "8307846086620775727": "Tadaa!",

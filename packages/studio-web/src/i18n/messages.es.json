@@ -36,7 +36,7 @@
     "5481197392701906162": "Seleccionar su idioma",
     "6215852496756629103": "Luego, opcionalmente, puede seleccionar el idioma de su ReadAlong.",
     "5598621379448184205": "En la mayoría de los casos, la opción predeterminada está bien, ¡simplemente deje esta opción seleccionada!",
-    "7491756172995349153": "Por otro lado, si sus resultados no son adecuados con la opción predeterminada, puede elegir un idioma de esta lista. Si no puede encontrar el suyo, siempre puede agregarlo. Comience leyendo nuestra <a href=\"https://blog.mothertongues.org/g2p-background/\" target=\"_blank\" rel=\"noopener noreferrer\">serie de entradas de blog (en inglés)</a> para aprender cómo agregar su idioma, o <a href=\"{{ contactLink }}\">contáctenos</a> para obtener más información.",
+    "5575150718042215136": "Por otro lado, si sus resultados no son adecuados con la opción predeterminada, puede elegir un idioma de esta lista. Si no puede encontrar el suyo, siempre puede agregarlo. Comience leyendo nuestra <a href=\"https://blog.mothertongues.org/g2p-background/\" target=\"_blank\" rel=\"noopener noreferrer\">serie de entradas de blog (en inglés)</a> para aprender cómo agregar su idioma, o <a href=\"{$PH}\">contáctenos</a> para obtener más información.",
     "6462395282000827572": "¡Eso es todo!",
     "6491013634569415627": "Una vez que haya hecho esto, puede hacer click en el botón \"Próximo\" aquí para que el Studio cree su ReadAlong. (Esto puede llevar varios segundos.)",
     "8307846086620775727": "¡Listo!",
