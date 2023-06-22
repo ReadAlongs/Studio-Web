@@ -173,16 +173,12 @@ export const generic_language_step: any = {
 export const specific_language_step: any = {
   title: $localize`Select your language`,
   text: $localize`However, if your results aren't good enough with the default settings you can choose your language from this list. If it's not supported already, have a look at
-  <a
-    href="https://blog.mothertongues.org/g2p-background/"
-    target="_blank"
-    rel="noopener noreferrer"
-    ><mat-icon inline style="vertical-align: middle">launch</mat-icon>
+  <a href="https://blog.mothertongues.org/g2p-background/" target="_blank" rel="noopener noreferrer" >
     this blog post series</a
   >
   to understand how you might get support for your language, or
   <a href="{{ contactLink }}"
-    ><mat-icon inline style="vertical-align: middle">mail</mat-icon>
+    >
     contact us</a
   >
   for more info!`,
