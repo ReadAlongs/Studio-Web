@@ -1,3 +1,5 @@
+import { environment } from "../environments/environment";
+
 export const intro_step: any = {
   title: $localize`Welcome to ReadAlong Studio`,
   text: $localize`Creating a ReadAlong is easy!\
@@ -177,7 +179,7 @@ export const specific_language_step: any = {
     this blog post series</a
   >
   to understand how you might get support for your language, or
-  <a href="{{ contactLink }}"
+  <a href="${environment.packageJson.contact}"
     >
     contact us</a
   >
