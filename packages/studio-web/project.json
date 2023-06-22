@@ -88,14 +88,14 @@
         },
         "development-fr": {
           "browserTarget": "studio-web:build:development,fr",
-          "port": 4201
+          "port": 4203
         },
         "production-es": {
           "browserTarget": "studio-web:build:production,es"
         },
         "development-es": {
           "browserTarget": "studio-web:build:development,es",
-          "port": 4202
+          "port": 4204
         }
       },
       "defaultConfiguration": "development-en"
@@ -104,14 +104,14 @@
       "executor": "@angular-builders/custom-webpack:dev-server",
       "options": {
         "browserTarget": "studio-web:build:development,es",
-        "port": 4202
+        "port": 4204
       }
     },
     "serve-fr": {
       "executor": "@angular-builders/custom-webpack:dev-server",
       "options": {
         "browserTarget": "studio-web:build:development,fr",
-        "port": 4201
+        "port": 4203
       }
     },
     "serve-web-api": {
