@@ -88,14 +88,14 @@
         },
         "development-fr": {
           "browserTarget": "studio-web:build:development,fr",
-          "port": 4201
+          "port": 4203
         },
         "production-es": {
           "browserTarget": "studio-web:build:production,es"
         },
         "development-es": {
           "browserTarget": "studio-web:build:development,es",
-          "port": 4202
+          "port": 4204
         }
       },
       "defaultConfiguration": "development-en"
@@ -104,14 +104,14 @@
       "executor": "@angular-builders/custom-webpack:dev-server",
       "options": {
         "browserTarget": "studio-web:build:development,es",
-        "port": 4202
+        "port": 4204
       }
     },
     "serve-fr": {
       "executor": "@angular-builders/custom-webpack:dev-server",
       "options": {
         "browserTarget": "studio-web:build:development,fr",
-        "port": 4201
+        "port": 4203
       }
     },
     "serve-web-api": {
@@ -124,6 +124,10 @@
         "outputPath": "packages/studio-web/src/i18n",
         "browserTarget": "studio-web:build"
       }
+    },
+    "check-l10n": {
+      "executor": "nx:noop",
+      "dependsOn": ["check-fr-l10n", "check-es-l10n"]
     },
     "check-fr-l10n": {
       "command": "bash -c \"diff -w <(cat packages/studio-web/src/i18n/messages.json | sed 's/:.*//' | sort) <(cat packages/studio-web/src/i18n/messages.fr.json | sed 's/:.*//' | sort)\""

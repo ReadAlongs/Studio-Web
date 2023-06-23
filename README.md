@@ -81,7 +81,7 @@ Then serve Studio-Web by running (on port 4200 by default, use `--port=nnnn` to 
 
     npx nx serve studio-web
 
-Ou en français (sur le port 4201 par défaut):
+Ou en français:
 
     npx nx serve studio-web --configuration=development-fr
 
