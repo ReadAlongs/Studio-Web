@@ -421,7 +421,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               }
               return throwError(() => err);
             } else {
-              return of(err);
+              return throwError(() => err);
             }
           }),
           retry(2),
