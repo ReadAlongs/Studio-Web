@@ -1,0 +1,39 @@
+# .github/workflows/preview.yml
+name: Deploy PR previews
+concurrency: preview-${{ github.ref }}
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+      - name: Install
+        run: |
+          # The default config is for the monorepo, while this is for standalone
+          npm install
+      - name: Build web-component
+        run: |
+          npx nx build web-component
+          # create the bundles required for studio-web
+          npx nx bundle web-component
+      - name: Build
+        run: |
+          npx nx build studio-web --base-href=/pr-preview/pr-${{github.event.number}}/ --configuration=production
+          npx nx build studio-web --base-href=/pr-preview/pr-${{github.event.number}}/ --configuration=production --localize=fr --deleteOutputPath=false
+          npx nx build studio-web --base-href=/pr-preview/pr-${{github.event.number}}/ --configuration=production --localize=es --deleteOutputPath=false
+      - name: Publish Deploy Preview 🛫
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: dist/packages/studio-web
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          action: auto
