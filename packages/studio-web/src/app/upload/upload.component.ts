@@ -427,8 +427,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           retry(2),
           // Here, we want to intercept the observable from the catchError operator above and throw a new error of it
           map((possibleError) => {
-            if (possibleError instanceof Error) {
-              throw new Error(possibleError.message);
+            if (
+              possibleError instanceof Error ||
+              possibleError instanceof HttpErrorResponse
+            ) {
+              throw possibleError;
             } else {
               return possibleError;
             }
