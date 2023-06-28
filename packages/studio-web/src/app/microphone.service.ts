@@ -7,14 +7,15 @@ export class MicrophoneService {
   private chunks: Array<Blob> = [];
   private recorder: MediaRecorder | null = null;
   private recorderEnded = new EventEmitter<Blob>();
+  private stream: MediaStream | null = null;
 
   async startRecording() {
     if (this.recorder !== null && this.recorder.state == "paused") {
       this.resume();
       return;
     }
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    this.recorder = new MediaRecorder(stream);
+    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    this.recorder = new MediaRecorder(this.stream);
     this.addListeners();
     this.recorder.start();
   }
@@ -48,6 +49,14 @@ export class MicrophoneService {
       );
       if (this.recorder === null) reject("Recorder was not created");
       else this.recorder.stop();
+      this.recorder = null;
+      if (this.stream === null) reject("Stream was not created");
+      else {
+        for (const track of this.stream.getTracks()) {
+          track.stop();
+        }
+      }
+      this.stream = null;
     });
   }
 
