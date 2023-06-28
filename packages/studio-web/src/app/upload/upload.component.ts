@@ -231,6 +231,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   async startRecording() {
+    if (this.recording)
+      // Not sure why the button stays clickable, but oh well
+      return;
     try {
       this.starting_to_record = true;
       await this.microphoneService.startRecording();
