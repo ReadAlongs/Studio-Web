@@ -57,6 +57,7 @@ $max-height: 98vh;
       img {
         max-height: $page-size + 0vh;
         max-width: 95%;
+        object-fit: contain;
       }
     }
     &__img-placeholder {
