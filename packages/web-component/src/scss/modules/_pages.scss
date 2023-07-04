@@ -47,7 +47,6 @@ $max-height: 98vh;
   &__col {
     &__image {
       grid-area: image;
-      float: left;
       max-height: 100%;
       text-align: center;
       margin: 5%;
@@ -56,9 +55,8 @@ $max-height: 98vh;
       position: relative;
       @extend %themed-bg;
       img {
-        height: 100%;
+        max-height: $page-size + 0vh;
         max-width: 95%;
-        object-fit: contain;
       }
     }
     &__img-placeholder {
