@@ -11,8 +11,8 @@ import { Segment } from "soundswallower";
   providedIn: "root",
 })
 export class B64Service {
-  JS_BUNDLE_URL = "/assets/bundle.js";
-  FONTS_BUNDLE_URL = "/assets/fonts.b64.css";
+  JS_BUNDLE_URL = "assets/bundle.js";
+  FONTS_BUNDLE_URL = "assets/fonts.b64.css";
   constructor(private http: HttpClient, private fileService: FileService) {}
   getBundle$(): Observable<any[]> {
     return forkJoin([

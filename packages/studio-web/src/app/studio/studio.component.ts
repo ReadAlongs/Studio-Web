@@ -99,7 +99,7 @@ export class StudioComponent implements OnDestroy, OnInit {
         // These will break if we add routing!
         {
           name: "og:image",
-          content: new URL("/assets/demo.png", window.location.href).href,
+          content: new URL("assets/demo.png", window.location.href).href,
         },
         { name: "og:url", content: window.location.href },
         { name: "og:type", content: "website" },
