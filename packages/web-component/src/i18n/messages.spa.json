@@ -12,7 +12,7 @@
     "choose-file": "Seleccione un fichero",
     "play-tooltip": "Reproducir/pausar grabación de audio",
     "rewind-tooltip": "Rebobine (rewind) 5 segundos",
-    "stop-tooltip": "Pare la grabación de audio",
+    "stop-tooltip": "Pare la reproducción de audio",
     "theme-tooltip": "Cambie la paleta de colores",
     "full-screen-tooltip": "Modo pantalla completa",
     "translation-tooltip": "Active o desactive las traducciones",
