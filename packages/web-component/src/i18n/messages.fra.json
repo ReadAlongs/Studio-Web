@@ -10,7 +10,7 @@
     "line-placeholder": "Écrivez votre texte ici",
     "upload-image": "Téléverser charger une image pour cette page",
     "choose-file": "Choisir un fichier",
-    "play-tooltip": "Écouter l'enregistrement",
+    "play-tooltip": "Écouter/mettre en pause l'enregistrement",
     "rewind-tooltip": "Reculer de 5 secondes",
     "stop-tooltip": "Arrêter la lecture",
     "theme-tooltip": "Changer de thême visuel",

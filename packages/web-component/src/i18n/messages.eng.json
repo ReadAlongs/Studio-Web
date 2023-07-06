@@ -10,7 +10,7 @@
     "line-placeholder": "Type your text here",
     "upload-image": "Upload an image for this page",
     "choose-file": "Choose a file",
-    "play-tooltip": "Play audio recording",
+    "play-tooltip": "Play/pause audio recording",
     "rewind-tooltip": "Rewind 5 seconds",
     "stop-tooltip": "Stop audio playback",
     "theme-tooltip": "Change theme",
