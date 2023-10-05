@@ -15,7 +15,7 @@ export function zip(arrays): Array<any[]> {
 }
 
 /**
- * Return sentences from readalong XML file
+ * Return pages from readalong XML file
  * @param {string} - the path to the readalong file
  */
 export async function parseRAS(path: string): Promise<Array<Page>> {
@@ -27,6 +27,14 @@ export async function parseRAS(path: string): Promise<Array<Page>> {
   let xmlDocument = await response.text();
   let parser = new DOMParser();
   let xml = parser.parseFromString(xmlDocument, "text/xml");
+  return extractPages(xml);
+}
+
+/**
+ * Return pages from parsed XML
+ * @param {xml} - the parsed XML (could be an element)
+ */
+export function extractPages(xml: Document | Element): Array<Page> {
   let parsed_pages = Array.from(xml.querySelectorAll("div[type=page]")).map(
     (page) => {
       let img = page.querySelector("graphic[url]");
