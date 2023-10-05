@@ -185,9 +185,15 @@ or
 
 ### Build & Publish
 
-#### Web Component & Angular Wrapper
+#### Web Component & Angular Wrapper - via a PR
 
-To publish the web component, first you must belong to the [@readalongs organization](https://www.npmjs.com/org/readalongs) on NPM. Then, bump the version number in both `packages/web-component/package.json` and `packages/ngx-web-component/package.json` and build both the web component and angular wrapper:
+The publication of the web component and its angular wrapper has been automated in the `release.yml` workflow. To trigger it, submit a pull request to the `release` branch and get it reviewed. Publication will happen when the PR is merged.
+
+#### Web Component & Angular Wrapper - manually
+
+WARNING: only use this process if the release workflow is broken.
+
+To publish the web component, first you must belong to the [@readalongs organization](https://www.npmjs.com/org/readalongs) on NPM. Then, bump the version number in both `packages/web-component/package.json` and `packages/ngx-web-component/package.json`, run `npm install` to reflect that bump in `package-lock.json`, and build both the web component and angular wrapper:
 
     npx nx build web-component
     npx nx build ngx-web-component
@@ -204,6 +210,8 @@ Then, go to the directory and publish:
 
     cd dist/packages/web-component && npm publish --access=public
     cd dist/packages/ngx-web-component && npm publish --access=public
+
+Then you also have to make sure to tag the repo with the new version and create a matching GitHub release.
 
 #### Studio-Web
 
