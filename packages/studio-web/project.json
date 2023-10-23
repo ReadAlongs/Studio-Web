@@ -7,7 +7,8 @@
   "i18n": {
     "sourceLocale": "en",
     "locales": {
-      "fr": "packages/studio-web/src/i18n/messages.fr.json"
+      "fr": "packages/studio-web/src/i18n/messages.fr.json",
+      "es": "packages/studio-web/src/i18n/messages.es.json"
     }
   },
   "targets": {
@@ -68,7 +69,8 @@
           "namedChunks": true
         },
         "en": { "localize": ["en"] },
-        "fr": { "localize": ["fr"] }
+        "fr": { "localize": ["fr"] },
+        "es": { "localize": ["es"] }
       },
       "defaultConfiguration": "production"
     },
@@ -85,10 +87,35 @@
           "browserTarget": "studio-web:build:production,fr"
         },
         "development-fr": {
-          "browserTarget": "studio-web:build:development,fr"
+          "browserTarget": "studio-web:build:development,fr",
+          "port": 4203
+        },
+        "production-es": {
+          "browserTarget": "studio-web:build:production,es"
+        },
+        "development-es": {
+          "browserTarget": "studio-web:build:development,es",
+          "port": 4204
         }
       },
       "defaultConfiguration": "development-en"
+    },
+    "serve-es": {
+      "executor": "@angular-builders/custom-webpack:dev-server",
+      "options": {
+        "browserTarget": "studio-web:build:development,es",
+        "port": 4204
+      }
+    },
+    "serve-fr": {
+      "executor": "@angular-builders/custom-webpack:dev-server",
+      "options": {
+        "browserTarget": "studio-web:build:development,fr",
+        "port": 4203
+      }
+    },
+    "serve-web-api": {
+      "command": "bash -c \"cd ../Studio/readalongs && PRODUCTION= DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload\""
     },
     "extract-i18n": {
       "executor": "@angular-builders/custom-webpack:extract-i18n",
@@ -97,6 +124,16 @@
         "outputPath": "packages/studio-web/src/i18n",
         "browserTarget": "studio-web:build"
       }
+    },
+    "check-l10n": {
+      "executor": "nx:noop",
+      "dependsOn": ["check-fr-l10n", "check-es-l10n"]
+    },
+    "check-fr-l10n": {
+      "command": "bash -c \"diff -w <(cat packages/studio-web/src/i18n/messages.json | sed 's/:.*//' | sort) <(cat packages/studio-web/src/i18n/messages.fr.json | sed 's/:.*//' | sort)\""
+    },
+    "check-es-l10n": {
+      "command": "bash -c \"diff -w <(cat packages/studio-web/src/i18n/messages.json | sed 's/:.*//' | sort) <(cat packages/studio-web/src/i18n/messages.es.json | sed 's/:.*//' | sort)\""
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

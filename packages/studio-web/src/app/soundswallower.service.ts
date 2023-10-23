@@ -1,7 +1,5 @@
-import { Observable, of, from, BehaviorSubject } from "rxjs";
+import { Observable, from } from "rxjs";
 import soundswallower_factory, {
-  Decoder,
-  DictEntry,
   Segment,
   SoundSwallowerModule,
 } from "soundswallower";
@@ -18,11 +16,41 @@ export interface AlignmentProgress {
   hypseg?: Segment;
 }
 
+export interface BeamSettings {
+  beam: number;
+  pbeam: number;
+  wbeam: number;
+}
+
+export enum BeamDefaults {
+  strict = "strict",
+  moderate = "moderate",
+  loose = "loose",
+}
+
 @Injectable({
   providedIn: "root",
 })
 export class SoundswallowerService {
   modelLoaded = false;
+  mode = BeamDefaults.strict;
+  beamParams: { [key in BeamDefaults]: BeamSettings } = {
+    strict: {
+      beam: 1e-100,
+      pbeam: 1e-100,
+      wbeam: 1e-80,
+    },
+    moderate: {
+      beam: 1e-200,
+      pbeam: 1e-200,
+      wbeam: 1e-160,
+    },
+    loose: {
+      beam: 0,
+      pbeam: 0,
+      wbeam: 0,
+    },
+  };
   constructor() {}
 
   async preload(): Promise<void> {
@@ -52,9 +80,9 @@ export class SoundswallowerService {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
         loglevel: "INFO",
-        beam: 1e-100,
-        wbeam: 1e-100,
-        pbeam: 1e-80,
+        beam: this.beamParams[this.mode]["beam"],
+        wbeam: this.beamParams[this.mode]["wbeam"],
+        pbeam: this.beamParams[this.mode]["pbeam"],
         samprate: audio.sampleRate,
       });
       decoder.unset_config("dict");

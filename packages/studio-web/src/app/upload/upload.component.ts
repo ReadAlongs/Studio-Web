@@ -3,10 +3,15 @@ import { ToastrService } from "ngx-toastr";
 import {
   Observable,
   Subject,
-  forkJoin,
+  catchError,
   finalize,
+  forkJoin,
+  retry,
+  of,
   switchMap,
+  map,
   takeUntil,
+  throwError,
 } from "rxjs";
 
 import {
@@ -34,11 +39,13 @@ import {
   ReadAlongRequest,
   SupportedLanguage,
 } from "../ras.service";
-import {
-  SoundswallowerService,
-  AlignmentProgress,
-} from "../soundswallower.service";
+import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
+
+export enum langMode {
+  generic = "generic",
+  specific = "specific",
+}
 
 @Component({
   selector: "app-upload",
@@ -49,7 +56,11 @@ export class UploadComponent implements OnDestroy, OnInit {
   isLoaded = false;
   langs: Array<SupportedLanguage> = [];
   loading = false;
-  langControl = new FormControl<string>("und", Validators.required);
+  langMode = langMode.generic;
+  langControl = new FormControl<string>(
+    { value: "und", disabled: this.langMode !== "specific" },
+    Validators.required
+  );
   textControl = new FormControl<any>(null, Validators.required);
   audioControl = new FormControl<File | Blob | null>(null, Validators.required);
   starting_to_record = false;
@@ -115,38 +126,47 @@ export class UploadComponent implements OnDestroy, OnInit {
 
   reportRasError(err: HttpErrorResponse) {
     if (err.status == 422) {
+      if (err.error.detail.includes("is empty")) {
+        this.toastr.error(
+          $localize`Your text may contain unpronounceable characters or numbers.
+Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+          $localize`Pronunciation mapping issues.`,
+          { timeOut: 30000 }
+        );
+      }
       this.toastr.error(err.error.detail, $localize`Text processing failed.`, {
-        timeOut: 15000,
+        timeOut: 30000,
       });
     } else {
       this.toastr.error(
         err.message,
         $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-        {
-          timeOut: 60000,
-        }
+        { timeOut: 60000 }
       );
     }
   }
 
-  reportSoundSwallowerError(err: Error) {
-    if (err.message === "No alignment found") {
-      this.toastr.error(
-        $localize`Please listen to your audio to make sure it is clear and corresponds
-to the text.`,
+  reportUnpronounceableError(err: Error) {
+    this.toastr.error(
+      $localize`Your text may contain unpronounceable characters or numbers.
+Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+      $localize`Alignment failed.`,
+      { timeOut: 30000 }
+    );
+  }
+
+  reportDifficultAlignment(err: Error, mode: BeamDefaults) {
+    if (mode === BeamDefaults.strict) {
+      this.toastr.warning(
+        $localize`Hmm, this is harder than usual, please wait while we try again.`,
         $localize`Alignment failed.`,
-        {
-          timeOut: 30000,
-        }
+        { timeOut: 5000 }
       );
     } else {
       this.toastr.error(
-        $localize`Your text may contain unpronounceable characters or numbers.
-Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+        $localize`This is really difficult. We'll try one last time, but it might take a long time and produce poor results. Please make sure your text matches your audio and that there is as little background noise as possible.`,
         $localize`Alignment failed.`,
-        {
-          timeOut: 30000,
-        }
+        { timeOut: 30000 }
       );
     }
   }
@@ -211,6 +231,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   async startRecording() {
+    if (this.recording)
+      // Not sure why the button stays clickable, but oh well
+      return;
     try {
       this.starting_to_record = true;
       await this.microphoneService.startRecording();
@@ -288,11 +311,28 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     this.inputMethod.audio = event.value;
   }
 
+  toggleLangMode(event: any) {
+    if (event.value === "generic") {
+      this.langControl.setValue("und");
+    } else {
+      this.langControl.setValue("");
+    }
+    this.langMode = event.value;
+  }
+
   toggleTextInput(event: any) {
     this.inputMethod.text = event.value;
   }
 
   nextStep() {
+    if (this.langControl.value === "") {
+      this.toastr.error(
+        $localize`Please select a language or choose the default option`,
+        $localize`No language selected`,
+        { timeOut: 15000 }
+      );
+      return;
+    }
     if (this.inputMethod.text === "edit") {
       if (this.textInput) {
         let inputText = new Blob([this.textInput], {
@@ -370,7 +410,37 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               return this.ssjsService.align$(audio, ras as ReadAlong);
             }
           ),
-          takeUntil(this.unsubscribe$)
+          catchError((err: Error) => {
+            // Catch all errors. If error message is "No alignment found" then gradually loosen the beam defaults.
+            // and then throw an error so that retry will get triggered. If it's any other type of error, just return
+            // an observable of it so that it bypasses retry.
+            if (err.message === "No alignment found") {
+              if (this.ssjsService.mode === BeamDefaults.strict) {
+                this.reportDifficultAlignment(err, this.ssjsService.mode);
+                this.ssjsService.mode = BeamDefaults.moderate;
+              } else if (this.ssjsService.mode === BeamDefaults.moderate) {
+                this.reportDifficultAlignment(err, this.ssjsService.mode);
+                this.ssjsService.mode = BeamDefaults.loose;
+              }
+              return throwError(() => err);
+            } else {
+              return of(err);
+            }
+          }),
+          retry(2),
+          // Here, we want to intercept the observable from the catchError operator above and throw a new error of it
+          map((possibleError) => {
+            if (
+              possibleError instanceof Error ||
+              possibleError instanceof HttpErrorResponse
+            ) {
+              throw possibleError;
+            } else {
+              return possibleError;
+            }
+          }),
+          takeUntil(this.unsubscribe$),
+          finalize(() => (this.ssjsService.mode = BeamDefaults.strict))
         )
         .subscribe({
           next: (progress) => {
@@ -393,7 +463,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
             if (err instanceof HttpErrorResponse) {
               this.reportRasError(err);
             } else if (err.message.includes("align")) {
-              this.reportSoundSwallowerError(err);
+              this.reportUnpronounceableError(err);
             } else {
               this.reportAudioError(err);
             }

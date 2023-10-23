@@ -1,5 +1,12 @@
 # ReadAlongs Web App Suite
 
+[![Publish Status](https://github.com/readalongs/Web-Component/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Web-Component/actions)
+[![Test Status](https://github.com/readalongs/Web-Component/actions/workflows/end-to-end-tests.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Web-Component/actions)
+[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Web-Component)](https://github.com/ReadAlongs/Web-Component/blob/main/LICENSE)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/ReadAlongs/Web-Component)
+[![web-component release](https://img.shields.io/npm/v/@readalongs/web-component)](https://www.npmjs.com/package/@readalongs/web-component)
+[![ngx-web-component release](https://img.shields.io/npm/v/@readalongs/ngx-web-component)](https://www.npmjs.com/package/@readalongs/ngx-web-component)
+
 Interactive story telling embeddable into any website!
 
 <!-- TODO: put an animated GIF here, showing it off! -->
@@ -43,11 +50,7 @@ Clone the repo:
 
 ### Installing dependencies
 
-First, make sure Nx is installed:
-
-    npm install -g nx
-
-Then,
+Use `npm` to install all dependencies:
 
     cd Web-Component
     npm install
@@ -58,36 +61,40 @@ Then,
 
 If you are only developing the web-component you can run the following to start serving the test-data:
 
-    nx serve-test-data web-component
+    npx nx serve-test-data web-component
 
 Then, in another terminal, run the following to serve the web-component:
 
-    nx serve web-component
+    npx nx serve web-component
 
 Alternatively run together as:
 
-    nx run-many --targets=serve-test-data,serve --projects=web-component
+    npx nx run-many --targets=serve-test-data,serve --projects=web-component
 
 #### Studio-Web
 
 To run Studio-Web, you first have to build the web-component:
 
-    nx build web-component --watch
+    npx nx build web-component --watch
 
-Then serve Studio-Web by running:
+Then serve Studio-Web by running (on port 4200 by default, use `--port=nnnn` to override):
 
-    nx serve studio-web
+    npx nx serve studio-web
 
 Ou en français:
 
-    nx serve studio-web --configuration=development-fr
+    npx nx serve studio-web --configuration=development-fr
 
 There are separate production and development serving configurations
-for each interface language, so you may for instance also use
-`development-en`, `production-en`, `production-fr` for
+for each interface language defined in `packages/studio-web/project.json`, so you may for instance also use
+`development-en`, `production-en`, `development-es`, `production-es`, `production-fr`, etc for
 `--configuration` above. Note that these configurations are _only_
 for the `serve` command. To build for deployment, see
 [below](#studio-web-2).
+
+We have also defined targets `serve-fr` and `serve-es` in `project.json` so that you can launch the dev configs for all three supported languages at once with:
+
+    npx nx run-many --targets=serve,serve-fr,serve-es --projects=studio-web
 
 Note that you will need to also spin-up the ReadAlong-Studio API in order to have Studio-Web work properly. To do that, first clone the Python Package/API repo:
 
@@ -99,32 +106,32 @@ then run:
 
     DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload
 
-If your Studio sandbox is in a sibling directory to this sandbox, and you Python environment is active, `nx serve-web-api studio-web` will run that command for you.
+If your Studio sandbox is in a sibling directory to this sandbox, and you Python environment is active, `npx nx serve-web-api studio-web` will run that command for you.
 
 Alternatively run together as:
 
-    nx run-many --targets=serve-test-data,serve-web-api,serve --projects=web-component,studio-web --parallel 5
+    npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
 
 Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ every time there is a change to `main`.
 
 #### Understanding where the components come from when you run locally
 
-When you run `nx serve studio-web`, that process is actually serving all the files needed
+When you run `npx nx serve studio-web`, that process is actually serving all the files needed
 by the Studio-Web application, and it's able to import `web-component` and `ngx-web-component`,
 providing them to the application as needed.
 
 However, `web-component` requires a build in order to have the .js files generated and available
 to serve or import. In the instructions above, we actually show two methods you can use:
 
-- `nx build web-component --watch` will only build that component, in production mode, and
+- `npx nx build web-component --watch` will only build that component, in production mode, and
   rebuild it any time you change that component's source code.
 
-- `nx serve web-component` goes further, serving that component, which also requires building
+- `npx nx serve web-component` goes further, serving that component, which also requires building
   it. It also watches source code for changes. However, it produces a development build, which
   may be different from the production build.
 
   In this case, the web-component is being served on port 3333, but the Studio-Web app
-  just ignores that and uses the copy provided by `nx serve studio-web` instead.
+  just ignores that and uses the copy provided by `npx nx serve studio-web` instead.
 
 ### Testing
 
@@ -137,64 +144,87 @@ it launches on a different port, you will have to kill the currently
 running process using that port, whose PID you can find with `fuser -n
 tcp 3333`):
 
-    nx serve web-component
+    npx nx serve web-component
 
 Make sure this command is serving the test data on port 5000:
 
-    nx serve-test-data web-component
+    npx nx serve-test-data web-component
 
 Then run:
 
-    nx test:once web-component
+    npx nx test:once web-component
 
 Alternatively run together as:
 
-    nx run-many --targets=serve-test-data,serve,test:once --projects=web-component
+    npx nx run-many --targets=serve-test-data,serve,test:once --projects=web-component
 
 #### Studio-Web
 
 To run the unit tests for Studio-Web, first build `web-component` in one of the ways listed
-above (or just `nx build web-component`) if you have not already done so, and then run:
+above (or just `npx nx build web-component`) if you have not already done so, and then run:
 
-    nx test:once studio-web
+    npx nx test:once studio-web
+
+### Internationalization (i18n) and localization (l10n)
+
+`studio-web` is localized in French and Spanish. When you add new strings that need localizing,
+you can extract them with
+
+    npx nx extract-i18n studio-web
+
+This will update `packages/studio-web/src/i18n/messages.json` with the English strings. Add or
+correct their translations in `messages.es.json` and `messages.fr.json`, and then
+run these checks to confirm all the required strings are there:
+
+    npx nx check-es-l10n studio-web
+    npx nx check-fr-l10n studio-web
+
+or
+
+    npx nx run-many --targets=check-es-l10n,check-fr-l10n --projects=studio-web
 
 ### Build & Publish
 
-#### Web Component & Angular Wrapper
+#### Web Component & Angular Wrapper - via a PR
 
-To publish the web component, first you must belong to the [@readalongs organization](https://www.npmjs.com/org/readalongs) on NPM. Then, bump the version number in both `packages/web-component/package.json` and `packages/ngx-web-component/package.json` and build both the web component and angular wrapper:
+The publication of the web component and its angular wrapper has been automated in the `release.yml` workflow. To trigger it, submit a pull request to the `release` branch and get it reviewed. Publication will happen when the PR is merged.
 
-    nx build web-component
-    nx build ngx-web-component
+#### Web Component & Angular Wrapper - manually
 
-Run the prepublish step for web-component:
+WARNING: only use this process if the release workflow is broken.
 
-    nx prepublish web-component
+To publish the web component, first you must belong to the [@readalongs organization](https://www.npmjs.com/org/readalongs) on NPM. Then, bump the version number in both `packages/web-component/package.json` and `packages/ngx-web-component/package.json`, run `npm install` to reflect that bump in `package-lock.json`, and build both the web component and angular wrapper:
+
+    npx nx build web-component
+    npx nx build ngx-web-component
 
 Run the bundler for single-file html exports:
 
-    nx bundle web-component
+    npx nx bundle web-component
 
 Alternatively run together as:
 
-    nx run-many --targets=build,prepublish,bundle --projects=web-component,ngx-web-component --parallel 1
+    npx nx run-many --targets=build,bundle --projects=web-component,ngx-web-component --parallel 1
 
 Then, go to the directory and publish:
 
     cd dist/packages/web-component && npm publish --access=public
     cd dist/packages/ngx-web-component && npm publish --access=public
 
+Then you also have to make sure to tag the repo with the new version and create a matching GitHub release.
+
 #### Studio-Web
 
 To build the web application in the currently deployed configuration
-(English interface in the root and French under `/fr`), run:
+(English interface in the root and French under `/fr`, and Spanish under `/es`), run:
 
-    nx build studio-web --configuration=production
-    nx build studio-web --configuration=production --localize=fr --deleteOutputPath=false
+    npx nx build studio-web --configuration=production
+    npx nx build studio-web --configuration=production --localize=fr --deleteOutputPath=false
+    npx nx build studio-web --configuration=production --localize=es --deleteOutputPath=false
 
 To build with each interface language in its own directory, run:
 
-    nx build studio-web --configuration=production --localize=en --localize=fr
+    npx nx build studio-web --configuration=production --localize=en --localize=fr --localize=es
 
 This will create a complete website under `dist/packages/studio-web/`
 which you can deploy in whatever fashion you like to your server
