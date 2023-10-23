@@ -54,6 +54,6 @@
     "tslib": "^2.3.0",
     "zone.js": "^0.11.8"
   },
-  "singleFileBundleVersion": "1.0.2",
-  "singleFileBundleTimestamp": "2023-07-05+09-42-10"
+  "singleFileBundleVersion": "1.1.0",
+  "singleFileBundleTimestamp": "2023-10-23+21-05-11"
 }
