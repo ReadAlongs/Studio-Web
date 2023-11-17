@@ -70,8 +70,8 @@ export class UploadComponent implements OnDestroy, OnInit {
   contactLink = environment.packageJson.contact;
   progressMode: ProgressBarMode = "indeterminate";
   progressValue = 0;
-  maxTxtSizeKB = 10; // Max 10 KB plain text file size
-  maxRasSizeKB = 20; // Max 20 KB .readalong XML text size
+  maxTxtSizeKB = 30; // Max 30 KB plain text file size
+  maxRasSizeKB = 60; // Max 60 KB .readalong XML text size
   @ViewChild("textInputElement") textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
