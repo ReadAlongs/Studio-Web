@@ -7,9 +7,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Use Node.js 18
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Install everything
@@ -19,7 +19,7 @@ jobs:
           npx nx build web-component
           npx nx test:once studio-web
       - name: Cypress run for web-component
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           install: false
           start: |
