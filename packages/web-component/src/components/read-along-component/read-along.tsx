@@ -132,6 +132,11 @@ export class ReadAlongComponent {
    */
   @Prop() playbackRateRange: number = 15;
 
+  /**
+   * Auto Pause at end of every page
+   */
+  @Prop() autoPauseAtEndOfPage? = false;
+
   /************
    *  STATES  *
    ************/
@@ -172,7 +177,9 @@ export class ReadAlongComponent {
       this.isScrolling = false;
     }, 125);
   }
-
+  isAutoPaused: boolean = false;
+  endOfPageTags: { [key: string]: number } = {};
+  finalTaggedWord: string;
   /************
    *  LISTENERS  *
    ************/
@@ -877,6 +884,15 @@ export class ReadAlongComponent {
         } else {
           this.images[i] = null;
         }
+        //load the ids for the end of the page
+        if ("paragraphs" in page) {
+          const paragraphs = (page as Page).paragraphs;
+          const sentence =
+            paragraphs[paragraphs.length - 1].querySelector("s:last-of-type");
+          const word = sentence.querySelector("w:last-of-type");
+          this.endOfPageTags[word.id] = parseFloat(word.getAttribute("dur"));
+          this.finalTaggedWord = word.id;
+        }
       }
       // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
 
@@ -938,6 +954,20 @@ export class ReadAlongComponent {
         .subscribe((el_tag) => {
           // Only highlight when playing
           if (this.playing) {
+            //if auto pause is active and not on last word of the read along pause the audio
+            if (
+              this.autoPauseAtEndOfPage &&
+              el_tag in this.endOfPageTags &&
+              this.finalTaggedWord !== el_tag
+            ) {
+              //wait for the audio of the last word
+              if (!this.isAutoPaused)
+                setTimeout(
+                  () => this.pause(),
+                  this.endOfPageTags[el_tag] * 800
+                );
+              this.isAutoPaused = !this.isAutoPaused;
+            }
             // Turn tag to query
             let query = this.tagToQuery(el_tag);
             // select the element with that tag
