@@ -4,3 +4,4 @@ node_modules
 packages/ngx-web-component/**/generated
 dist
 www
+.python-version

@@ -11,6 +11,14 @@ import { compress } from "image-conversion";
 import { RasService, SupportedOutputs } from "../ras.service";
 import { saveAs } from "file-saver";
 import { environment } from "../../environments/environment";
+import { UploadService } from "../upload.service";
+import JSZip from "jszip";
+import mime from "mime";
+
+interface Image {
+  path: string;
+  blob: Blob;
+}
 
 @Component({
   selector: "app-demo",
@@ -27,6 +35,7 @@ export class DemoComponent implements OnDestroy, OnInit {
   };
   outputFormats = [
     { value: "html", display: $localize`Offline HTML` },
+    { value: "zip", display: $localize`Web Bundle` },
     { value: "eaf", display: $localize`Elan File` },
     { value: "textgrid", display: $localize`Praat TextGrid` },
     { value: "srt", display: $localize`SRT Subtitles` },
@@ -35,10 +44,30 @@ export class DemoComponent implements OnDestroy, OnInit {
   selectedOutputFormat: SupportedOutputs | string = "html";
   language: "eng" | "fra" | "spa" = "eng";
   unsubscribe$ = new Subject<void>();
+  xmlSerializer = new XMLSerializer();
+  readmeFile = new Blob(
+    [
+      `
+    Web Development Guide
+
+    This bundle has everything you need to host your ReadAlong on your own server.
+    Your audio, (optional) image, and alignment (.readalong) assets are stored in the assets folder.
+    The plain text used to create your ReadAlong is also stored here along with an example index.html file.
+    Your index.html file demonstrates the snippet and imports needed to host the ReadAlong on your server.
+    Please host all assets on your server, include the font and package imports defined in the index.html
+    in your website's imports, and include the corresponding <readalong> snippet everywhere you would like
+    your ReadAlong to be displayed.
+    `,
+    ],
+    {
+      type: "text/plain",
+    }
+  );
   constructor(
     public b64Service: B64Service,
     private rasService: RasService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private uploadService: UploadService
   ) {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
@@ -123,9 +152,13 @@ export class DemoComponent implements OnDestroy, OnInit {
     }
   }
 
-  async updateImages(doc: Document): Promise<boolean> {
+  async updateImages(
+    doc: Document,
+    b64Embed = true
+  ): Promise<boolean | Image[]> {
     const images = await this.readalong.getImages();
     const page_nodes = doc.querySelectorAll("div[type=page]");
+    const imageBlobs: Image[] = [];
     for (const [i, img] of Object.entries(images)) {
       let currentPage = page_nodes[parseInt(i)];
       // Add Image
@@ -136,16 +169,29 @@ export class DemoComponent implements OnDestroy, OnInit {
         // @ts-ignore
         let blob = await fetch(img).then((r) => r.blob());
         blob = await compress(blob, 0.75);
-        let b64 = await this.b64Service.blobToB64(blob);
-        // @ts-ignore
-        graphic.setAttribute("url", b64);
+        // Either embed the images directly
+        if (b64Embed) {
+          let b64 = await this.b64Service.blobToB64(blob);
+          // @ts-ignore
+          graphic.setAttribute("url", b64);
+          // or return a list of blobs and use the filename here
+        } else {
+          const extension = mime.getExtension(blob.type);
+          const path = `image-${i}.${extension}`;
+          imageBlobs.push({ blob: blob, path: path });
+          graphic.setAttribute("url", `${path}`);
+        }
         currentPage.appendChild(graphic);
         // Remove Images
       } else if (img === null) {
         currentPage.querySelectorAll("graphic").forEach((e) => e.remove());
       }
     }
-    return true;
+    if (b64Embed) {
+      return true;
+    } else {
+      return imageBlobs;
+    }
   }
 
   registerDownloadEvent() {
@@ -189,6 +235,74 @@ export class DemoComponent implements OnDestroy, OnInit {
       element.click();
       document.body.removeChild(element);
       this.registerDownloadEvent();
+    } else if (this.selectedOutputFormat === "zip") {
+      let zipFile = new JSZip();
+      const assetsFolder = zipFile.folder("assets");
+      const basename = "output";
+      // - add audio file
+      if (this.uploadService.$currentAudio.value !== null) {
+        // Recorded audio is always mp3
+        let audioExtension = "mp3";
+        // If the audio is a file, just pull the extension
+        if (this.uploadService.$currentAudio.value instanceof File) {
+          const file_parts =
+            this.uploadService.$currentAudio.value.name.split(".");
+          audioExtension = file_parts[file_parts.length - 1];
+        }
+        assetsFolder?.file(
+          `${basename}.${audioExtension}`,
+          this.uploadService.$currentAudio.value
+        );
+      }
+      // - add images
+      // @ts-ignore
+      const images: Image[] = await this.updateImages(ras, false);
+      for (let image of images) {
+        assetsFolder?.file(image.path, image.blob);
+      }
+      // - add plain text file
+      if (this.uploadService.$currentText.value !== null) {
+        zipFile.file(`${basename}.txt`, this.uploadService.$currentText.value);
+      }
+      // - add .readalong file
+      this.updateTranslations(ras);
+
+      const xmlString = this.xmlSerializer.serializeToString(
+        ras.documentElement
+      );
+      const rasFile = new Blob([xmlString], { type: "application/xml" });
+      assetsFolder?.file(`${basename}.readalong`, rasFile);
+      // - add index.html file
+      const sampleHtml = `
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>${this.slots.title}</title>
+                <!-- Import fonts. Material Icons are needed by the web component -->
+                <link href="https://fonts.googleapis.com/css?family=Lato%7CMaterial+Icons%7CMaterial+Icons+Outlined" rel="stylesheet">
+            </head>
+
+            <body>
+                <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
+                <read-along href="assets/${basename}.readalong" audio="assets/${basename}.mp3" theme="light" language="en">
+                    <span slot='read-along-header'>${this.slots.title}</span>
+                    <span slot='read-along-subheader'>${this.slots.subtitle}</span>
+                </read-along>
+            </body>
+
+            <!-- The last step needed is to import the package -->
+            <script type="module" src='https://unpkg.com/@readalongs/web-component@^1.0.0/dist/web-component/web-component.esm.js'></script>
+        </html>
+        `;
+      const indexHtmlFile = new Blob([sampleHtml], { type: "text/html" });
+      zipFile.file("index.html", indexHtmlFile);
+      // - add plain text readme
+      zipFile.file("README.txt", this.readmeFile);
+      // - write zip
+      zipFile
+        .generateAsync({ type: "blob" })
+        .then((content) => saveAs(content, `${basename}.zip`));
     } else {
       let audio: HTMLAudioElement = new Audio(this.b64Inputs[0]);
       this.rasService

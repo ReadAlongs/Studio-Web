@@ -78,7 +78,7 @@
               <button
                 i18n="Text download button"
                 mat-button
-                [disabled]="!textInput"
+                [disabled]="!(textInput | async)"
                 (click)="downloadText()"
                 aria-label="Text download button"
                 class="pr-0"
@@ -90,7 +90,8 @@
           <div class="row">
             <mat-form-field class="col-12 p-0 b-0">
               <textarea
-                [(ngModel)]="textInput"
+                [ngModel]="textInput | async"
+                (ngModelChange)="textInput.next($event)"
                 id="textInput"
                 class="border rounded b-0 p-0 bg-light"
                 matInput
