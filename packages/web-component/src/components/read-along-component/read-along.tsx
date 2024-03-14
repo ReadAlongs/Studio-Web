@@ -884,14 +884,16 @@ export class ReadAlongComponent {
         } else {
           this.images[i] = null;
         }
-        //load the ids for the end of the page
+        //get the ids for the last word on each the page
         if ("paragraphs" in page) {
-          const paragraphs = (page as Page).paragraphs;
-          const sentence =
-            paragraphs[paragraphs.length - 1].querySelector("s:last-of-type");
-          const word = sentence.querySelector("w:last-of-type");
-          this.endOfPageTags[word.id] = parseFloat(word.getAttribute("dur"));
-          this.finalTaggedWord = word.id;
+          try {
+            const paragraphs = (page as Page).paragraphs;
+            const sentence =
+              paragraphs[paragraphs.length - 1].querySelector("s:last-of-type");
+            const word = sentence.querySelector("w:last-of-type");
+            this.endOfPageTags[word.id] = parseFloat(word.getAttribute("dur"));
+            this.finalTaggedWord = word.id;
+          } catch (err) {}
         }
       }
       // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
@@ -964,7 +966,7 @@ export class ReadAlongComponent {
               if (!this.isAutoPaused)
                 setTimeout(
                   () => this.pause(),
-                  this.endOfPageTags[el_tag] * 800
+                  this.endOfPageTags[el_tag] * 1000 - 150
                 );
               this.isAutoPaused = !this.isAutoPaused;
             }
