@@ -1,8 +1,13 @@
 /* -*- typescript-indent-level: 2 -*- */
 import { TestBed } from "@angular/core/testing";
-import { last, of, lastValueFrom, concat } from "rxjs";
 import { SoundswallowerService } from "./soundswallower.service";
-import { AudioService } from "./audio.service";
+import { ToastrModule } from "ngx-toastr";
+import { FileService } from "./file.service";
+import { HttpClient } from "@angular/common/http";
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from "@angular/common/http/testing";
 
 const b64audio = `data:audio/wave;base64,UklGRiSAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQCAAAAzAGIAVgBdAGIAXwBv
 AG8AYwBaAGMAZwBZAGUAcQBxAIYAiwCBAHUAeAB7AG4AegB6AHsAewCDAI0AhQCUAJ0AkwCXAJoA
@@ -583,12 +588,19 @@ AFwAWQBbAGEAagBvAHAAcABkAGIAaABhAGcAagBwAGkAVwBfAA==`;
 
 describe("SoundswallowerService", () => {
   let service: SoundswallowerService;
-  let audioService: AudioService;
-
+  let fileService: FileService;
+  let httpClientSpy: jasmine.SpyObj<HttpClient>;
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    httpClientSpy = jasmine.createSpyObj("HttpClient", ["get"]);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
+    });
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(SoundswallowerService);
-    audioService = TestBed.inject(AudioService);
+    fileService = TestBed.inject(FileService);
   });
 
   it("should be created", () => {
@@ -598,7 +610,7 @@ describe("SoundswallowerService", () => {
   /* All of these are commented out, because Karma cannot serve
    * arbitrary binary files, or if it can, there is ZERO DOCUMENTATION
    * telling you how to do that. */
-  
+
   // it("should be initialized", async () => {
   //   const done = await lastValueFrom(concat(service.waitForInit$(),
   //                                           of(true)));

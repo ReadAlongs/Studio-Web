@@ -1,13 +1,25 @@
-import { Observable, catchError, map, of, take } from "rxjs";
+import { Observable, catchError, from, map, of, take } from "rxjs";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ToastrService } from "ngx-toastr";
+import { AudioContext, AudioBuffer } from "standardized-audio-context";
 
 @Injectable({
   providedIn: "root",
 })
 export class FileService {
   constructor(private http: HttpClient, private toastr: ToastrService) {}
+
+  loadAudioBufferFromFile$(
+    file: File,
+    sampleRate: number
+  ): Observable<AudioBuffer> {
+    var audioCtx = new AudioContext({ sampleRate });
+    var audioFile = file.arrayBuffer().then((buffer: any) => {
+      return audioCtx.decodeAudioData(buffer);
+    });
+    return from(audioFile);
+  }
 
   returnFileFromPath$ = (url: string, responseType: string = "blob") => {
     const httpOptions: Object = { responseType };
