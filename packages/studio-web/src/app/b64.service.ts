@@ -1,11 +1,10 @@
 import { forkJoin, Observable } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { switchMap } from "rxjs/operators";
 
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
 import { FileService } from "./file.service";
-import { Segment } from "soundswallower";
 
 @Injectable({
   providedIn: "root",
@@ -13,6 +12,11 @@ import { Segment } from "soundswallower";
 export class B64Service {
   JS_BUNDLE_URL = "assets/bundle.js";
   FONTS_BUNDLE_URL = "assets/fonts.b64.css";
+  /**
+   * Creates an instance of B64Service, a service for B64 encoding assets.
+   * @param {HttpClient} http - The HttpClient service for making HTTP requests.
+   * @param {FileService} fileService - The FileService for handling file operations.
+   */
   constructor(private http: HttpClient, private fileService: FileService) {}
   getBundle$(): Observable<any[]> {
     return forkJoin([

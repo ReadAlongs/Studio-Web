@@ -2,6 +2,7 @@
 import { ToastrService } from "ngx-toastr";
 import {
   Observable,
+  BehaviorSubject,
   Subject,
   catchError,
   finalize,
@@ -29,7 +30,6 @@ import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
 import { HttpErrorResponse } from "@angular/common/http";
 
-import { AudioService } from "../audio.service";
 import { environment } from "../../environments/environment";
 import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
@@ -39,6 +39,7 @@ import {
   ReadAlongRequest,
   SupportedLanguage,
 } from "../ras.service";
+import { UploadService } from "../upload.service";
 import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
@@ -83,7 +84,7 @@ export class UploadComponent implements OnDestroy, OnInit {
     audio: "mic",
     text: "edit",
   };
-  textInput: string = "";
+  textInput = new BehaviorSubject<string>("");
   unsubscribe$ = new Subject<void>();
   private route: ActivatedRoute;
   constructor(
@@ -92,11 +93,23 @@ export class UploadComponent implements OnDestroy, OnInit {
     private toastr: ToastrService,
     private rasService: RasService,
     private fileService: FileService,
-    private audioService: AudioService,
     private ssjsService: SoundswallowerService,
     private microphoneService: MicrophoneService,
+    private uploadService: UploadService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.audioControl.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((audio) => this.uploadService.$currentAudio.next(audio));
+    this.textControl.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((textBlob) => this.uploadService.$currentText.next(textBlob));
+    this.textInput
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((textString) =>
+        this.uploadService.$currentText.next(textString)
+      );
+  }
 
   async ngOnInit() {
     this.rasService
@@ -211,8 +224,8 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   downloadText() {
-    if (this.textInput) {
-      let textBlob = new Blob([this.textInput], {
+    if (this.textInput.value) {
+      let textBlob = new Blob([this.textInput.value], {
         type: "text/plain",
       });
       var url = window.URL.createObjectURL(textBlob);
@@ -334,8 +347,8 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       return;
     }
     if (this.inputMethod.text === "edit") {
-      if (this.textInput) {
-        let inputText = new Blob([this.textInput], {
+      if (this.textInput.value) {
+        let inputText = new Blob([this.textInput.value], {
           type: "text/plain",
         });
         this.textControl.setValue(inputText);
@@ -380,7 +393,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         type: input_type,
       };
       forkJoin({
-        audio: this.audioService.loadAudioBufferFromFile$(
+        audio: this.fileService.loadAudioBufferFromFile$(
           this.audioControl.value as File,
           8000
         ),

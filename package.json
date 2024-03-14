@@ -55,6 +55,8 @@
     "bootstrap": "^5.2.3",
     "file-saver": "^2.0.5",
     "image-conversion": "^2.1.1",
+    "jszip": "^3.10.1",
+    "mime": "^4.0.1",
     "ngx-toastr": "^16.1.0",
     "shepherd.js": "^11.0.1",
     "soundswallower": "^0.6.3",
