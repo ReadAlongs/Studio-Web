@@ -147,9 +147,9 @@ export class StudioComponent implements OnDestroy, OnInit {
 
   formIsDirty() {
     return (
-      this.upload?.audioControl.value !== null ||
-      this.upload?.textControl.value !== null ||
-      this.upload?.textInput
+      this.upload?.audioControl$.value !== null ||
+      this.upload?.textControl$.value !== null ||
+      this.upload?.$textInput
     );
   }
 
@@ -200,9 +200,9 @@ export class StudioComponent implements OnDestroy, OnInit {
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((audioFile) => {
           if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
-            this.upload.textInput.next("Hello world!");
+            this.upload.$textInput.next("Hello world!");
             this.upload.inputMethod.text = "edit";
-            this.upload.audioControl.setValue(audioFile);
+            this.upload.audioControl$.setValue(audioFile);
             this.upload?.nextStep();
             this.stepper.animationDone.pipe(take(1)).subscribe(() => {
               // We can only attach to the shadow dom once it's been created, so unfortunately we need to define the steps like this.

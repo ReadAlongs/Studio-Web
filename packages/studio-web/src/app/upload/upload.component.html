@@ -78,7 +78,7 @@
               <button
                 i18n="Text download button"
                 mat-button
-                [disabled]="!(textInput | async)"
+                [disabled]="!($textInput | async)"
                 (click)="downloadText()"
                 aria-label="Text download button"
                 class="pr-0"
@@ -90,8 +90,8 @@
           <div class="row">
             <mat-form-field class="col-12 p-0 b-0">
               <textarea
-                [ngModel]="textInput | async"
-                (ngModelChange)="textInput.next($event)"
+                [ngModel]="$textInput | async"
+                (ngModelChange)="$textInput.next($event)"
                 id="textInput"
                 class="border rounded b-0 p-0 bg-light"
                 matInput
@@ -163,12 +163,12 @@
               <mat-icon class="mat-icon-lg">mic</mat-icon>
               <span
                 i18n="Audio re-record button"
-                *ngIf="audioControl.value !== null && !this.recording"
+                *ngIf="audioControl$.value !== null && !this.recording"
                 >Delete and re-record</span
               >
               <span
                 i18n="Audio record button"
-                *ngIf="audioControl.value === null && !this.recording"
+                *ngIf="audioControl$.value === null && !this.recording"
                 >Record</span
               >
               <span i18n="Audio recording button" *ngIf="this.recording"
@@ -195,7 +195,7 @@
               i18n="Audio play button"
               class="audioControl"
               (click)="playRecording()"
-              *ngIf="!recording && audioControl.value !== null && !playing"
+              *ngIf="!recording && audioControl$.value !== null && !playing"
               mat-button
               color="primary"
               aria-label="Play button"
@@ -208,7 +208,7 @@
               class="audioControl"
               color="warn"
               (click)="stopPlayback()"
-              *ngIf="!recording && audioControl.value !== null && playing"
+              *ngIf="!recording && audioControl$.value !== null && playing"
               mat-button
               aria-label="Stop button"
             >
@@ -222,7 +222,7 @@
               class="audioControl"
               color="primary"
               (click)="downloadRecording()"
-              *ngIf="!recording && audioControl.value !== null"
+              *ngIf="!recording && audioControl$.value !== null"
               mat-button
               color="primary"
               aria-label="Audio save button"
@@ -236,7 +236,7 @@
               i18n="Audio delete button"
               class="audioControl"
               (click)="deleteRecording()"
-              *ngIf="!recording && audioControl.value !== null"
+              *ngIf="!recording && audioControl$.value !== null"
               mat-button
               color="warn"
               aria-label="Delete button"
@@ -320,7 +320,7 @@
                   >Select Language</mat-label
                 >
                 <mat-select
-                  [formControl]="langControl"
+                  [formControl]="langControl$"
                   required
                   [disabled]="langMode !== 'specific'"
                 >
