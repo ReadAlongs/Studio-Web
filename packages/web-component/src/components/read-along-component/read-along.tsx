@@ -177,8 +177,8 @@ export class ReadAlongComponent {
       this.isScrolling = false;
     }, 125);
   }
-  isAutoPaused: boolean = false;
-  endOfPageTags: { [key: string]: number } = {};
+  autoPauseTimer: any;
+  endOfPageTags: Alignment = {};
   finalTaggedWord: string;
   /************
    *  LISTENERS  *
@@ -891,7 +891,10 @@ export class ReadAlongComponent {
             const sentence =
               paragraphs[paragraphs.length - 1].querySelector("s:last-of-type");
             const word = sentence.querySelector("w:last-of-type");
-            this.endOfPageTags[word.id] = parseFloat(word.getAttribute("dur"));
+            this.endOfPageTags[word.id] = [
+              parseFloat(word.getAttribute("time")),
+              parseFloat(word.getAttribute("dur")) * 1000,
+            ];
             this.finalTaggedWord = word.id;
           } catch (err) {}
         }
@@ -954,6 +957,7 @@ export class ReadAlongComponent {
       this.reading$ = this.audio_howl_sprites._reading$
         .pipe(distinctUntilChanged())
         .subscribe((el_tag) => {
+          //console.log("reading",el_tag)
           // Only highlight when playing
           if (this.playing) {
             //if auto pause is active and not on last word of the read along pause the audio
@@ -962,13 +966,22 @@ export class ReadAlongComponent {
               el_tag in this.endOfPageTags &&
               this.finalTaggedWord !== el_tag
             ) {
-              //wait for the audio of the last word
-              if (!this.isAutoPaused)
-                setTimeout(
+              //console.log(this.audio_howl_sprites.sound.seek() ,el_tag, this.endOfPageTags[el_tag], this.play_id);
+              //this is a work around to ignore id's not close to current sound time
+              //
+              const timeDiff = Math.round(
+                this.audio_howl_sprites.sound.seek() -
+                  this.endOfPageTags[el_tag][0]
+              );
+              if (timeDiff == 0) {
+                if (this.autoPauseTimer)
+                  window.clearTimeout(this.autoPauseTimer);
+
+                this.autoPauseTimer = window.setTimeout(
                   () => this.pause(),
-                  this.endOfPageTags[el_tag] * 1000 - 150
+                  this.endOfPageTags[el_tag][1] - 50
                 );
-              this.isAutoPaused = !this.isAutoPaused;
+              }
             }
             // Turn tag to query
             let query = this.tagToQuery(el_tag);
