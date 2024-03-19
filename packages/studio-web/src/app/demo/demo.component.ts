@@ -57,7 +57,7 @@ The plain text used to create your ReadAlong is also stored here along with an e
 
 Your index.html file demonstrates the snippet and imports needed to host the ReadAlong on your server.
 
-Please host all assets on your server, include the font and package imports defined in the index.html in your website's imports, and include the corresponding <readalong> snippet everywhere you would like your ReadAlong to be displayed.
+Please host all assets on your server, include the font and package imports defined in the index.html in your website's imports, and include the corresponding <read-along> snippet everywhere you would like your ReadAlong to be displayed.
     `,
     ],
     {
@@ -242,7 +242,10 @@ Please host all assets on your server, include the font and package imports defi
       // Create inner folder
       const innerFolder = zipFile.folder("readalong");
       const assetsFolder = innerFolder?.folder("assets");
-      const timestamp = Date.now();
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[^0-9]/g, "")
+        .slice(0, -3);
       const basename = `readalong-${timestamp}`;
       // - add audio file
       if (this.uploadService.$currentAudio.value !== null) {
