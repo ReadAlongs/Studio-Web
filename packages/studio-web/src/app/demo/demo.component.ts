@@ -230,7 +230,7 @@ Please host all assets on your server, include the font and package imports defi
         <script src="${this.b64Inputs[2][0]}" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}"></script>
       </head>
       <body>
-          <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${this.b64Inputs[0]}" use-assets-folder="false">
+          <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${this.b64Inputs[0]}" image-assets-folder="">
           <span slot="read-along-header">${this.slots.title}</span>
           <span slot="read-along-subheader">${this.slots.subtitle}</span>
           </read-along>
@@ -311,7 +311,7 @@ Please host all assets on your server, include the font and package imports defi
 
             <body>
                 <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
-                <read-along href="assets/${basename}.readalong" audio="assets/${basename}.mp3" theme="light" language="en">
+                <read-along href="assets/${basename}.readalong" audio="assets/${basename}.mp3" theme="light" language="en" image-assets-folder="assets/">
                     <span slot='read-along-header'>${this.slots.title}</span>
                     <span slot='read-along-subheader'>${this.slots.subtitle}</span>
                 </read-along>

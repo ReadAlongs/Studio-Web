@@ -96,11 +96,13 @@ export class ReadAlongComponent {
   @Prop() cssUrl?: string;
 
   /**
-   * Toggle the use of assets folder for resolving urls. Defaults to on
-   * to maintain backwards compatibility
+   * Toggle the use of an assets folder. All image paths
+   * will be prefixed with this. Defaults to 'assets'.
+   * .readalong files should just contain base filenames
+   * not the full paths to the images.
    */
 
-  @Prop() useAssetsFolder: boolean = true;
+  @Prop() imageAssetsFolder: string = "assets/";
 
   /**
    * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
@@ -208,11 +210,12 @@ export class ReadAlongComponent {
    */
   private urlTransform(path: string): string {
     if (
-      this.useAssetsFolder &&
+      this.imageAssetsFolder &&
       looksLikeRelativePath(path) &&
       !path.startsWith("blob")
-    )
-      return "assets/" + path;
+    ) {
+      return this.imageAssetsFolder + path;
+    }
     return path;
 
     function looksLikeRelativePath(path: string): boolean {
