@@ -13,6 +13,7 @@
     "6874638171510323302": "Subtítulos (formato WebVTT)",
     "8762728484338173358": "La conversión del formato ReadAlong falló.",
     "6017683769837067192": "Ah, no logramos conectarnos en este momentos a la API de ReadAlong. Inténtelo otra vez más tarde.",
+    "880407735794041263": "Error de descarga.",
     "6766123079913371250": "Error de alineamiento",
     "1614347125196988603": " No se pudo iniciar el alineador. Esto puede por incompatibilidad con su buscador de Internet. Por favor {$START_LINK}{$START_TAG_MAT_ICON}mail{$CLOSE_TAG_MAT_ICON} contacte a los programadores{$CLOSE_LINK} y envíe una copia completa del mensaje de error aquí debajo: ",
     "8263673404941155539": "Error de servidor",
