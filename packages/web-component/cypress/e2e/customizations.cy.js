@@ -25,4 +25,18 @@ context("Testing creator enabled settings", () => {
       cy.get("[data-cy=translation-toggle]").should("be.visible");
     });
   });
+
+  it("testing creator enabling auto pause ", function () {
+    cy.visit("/ej-fra/index-auto-pause.html");
+    cy.wait("@text");
+    cy.wait("@audio");
+    cy.readalong().within(() => {
+      cy.get("[data-cy=play-button]").click();
+      cy.wait(12000); //wait for the last word of the first page (at 6.4) + ~5 sec
+
+      cy.get("#t0b0d0p0s2w15")
+        .should("be.visible")
+        .should("have.class", "reading"); //check the last word is still highlighted
+    });
+  });
 });

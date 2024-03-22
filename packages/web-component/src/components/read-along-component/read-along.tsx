@@ -967,24 +967,12 @@ export class ReadAlongComponent {
               el_tag in this.endOfPageTags &&
               this.finalTaggedWord !== el_tag
             ) {
-              //console.log(this.audio_howl_sprites.sound.seek() ,el_tag, this.endOfPageTags[el_tag], this.play_id);
-              //this is a work around to ignore id's not close to current sound time
-              //
-              const timeDiff = Math.round(
-                (this.audio_howl_sprites.sound.seek() -
-                  this.endOfPageTags[el_tag][0]) *
-                  100 //in microsecond
-              );
-
-              if (timeDiff < 100) {
-                //if under a microsecond
-                if (this.autoPauseTimer)
-                  window.clearTimeout(this.autoPauseTimer);
-
-                this.autoPauseTimer = window.setTimeout(() => {
-                  this.pause();
-                }, this.endOfPageTags[el_tag][1] - 50);
-              }
+              //if under a microsecond
+              if (this.autoPauseTimer) window.clearTimeout(this.autoPauseTimer);
+              //pause 50ms before end of word
+              this.autoPauseTimer = window.setTimeout(() => {
+                this.pause();
+              }, this.endOfPageTags[el_tag][1] - 25);
             }
             // Turn tag to query
             let query = this.tagToQuery(el_tag);

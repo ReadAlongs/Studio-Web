@@ -90,6 +90,7 @@ export var Sprite = function (options) {
   self._tinySprite = Object.keys(options.sprite).map((str) => [
     self._sprite[str][0],
     str,
+    self._sprite[str][0] + self._sprite[str][1], //start time + duration (real time upper limit of the sprite)
   ]);
   // remove the 'all' sprite
   self._tinySprite.pop();
@@ -147,7 +148,10 @@ Sprite.prototype = {
       for (var j = 0; j < self._spriteLeft.length; j++) {
         // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
         if (seek * 1000 >= self._spriteLeft[j][0]) {
-          self._reading$.next(self._spriteLeft[j][1]);
+          if (seek * 1000 <= self._spriteLeft[j][2]) {
+            self._reading$.next(self._spriteLeft[j][1]); // only emit current sprite
+          }
+
           self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length);
         }
       }
@@ -179,7 +183,9 @@ Sprite.prototype = {
     for (var j = 0; j < self._spriteLeft.length; j++) {
       // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
       if (seek * 1000 >= self._spriteLeft[j][0]) {
-        self._reading$.next(self._spriteLeft[j][1]);
+        if (seek * 1000 <= self._spriteLeft[j][2]) {
+          self._reading$.next(self._spriteLeft[j][1]); // only emit current sprite
+        }
         self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length);
       }
     }
@@ -213,7 +219,9 @@ Sprite.prototype = {
         if (seek > 0) {
           // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
           if (seek * 1000 >= self._spriteLeft[j][0]) {
-            self._reading$.next(self._spriteLeft[j][1]);
+            if (seek * 1000 <= self._spriteLeft[j][2]) {
+              self._reading$.next(self._spriteLeft[j][1]); // only emit current sprite
+            }
             self._spriteLeft = self._spriteLeft.slice(
               j,
               self._spriteLeft.length
