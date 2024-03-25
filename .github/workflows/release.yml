@@ -32,6 +32,10 @@ jobs:
       - run: cd ./packages/web-component && npm version patch
       - run: cd ./packages/ngx-web-component && npm version patch
       - run: npx nx build web-component && npx nx bundle web-component && npx nx build ngx-web-component
+        # We have to do this now because nx is broken (see https://github.com/nrwl/nx/issues/19989)
+      - run: |
+          export VERSION=$(npm view node_modules/@readalongs/web-component version)
+          perl -i -lne 'if (/peerDependencies/) {print; print "\"\@readalongs/web-component\": \"'$VERSION'\","} else { print }' dist/packages/ngx-web-component/package.json
       - run: |
           cd dist/packages/web-component && npm publish --access=public
         env:
@@ -43,7 +47,7 @@ jobs:
       - name: Determine tag
         id: determine_tag
         run: |
-          echo "TAG_VERSION=$(npm view @readalongs/web-component version)" >> $GITHUB_OUTPUT
+          echo "TAG_VERSION=$(npm view node_modules/@readalongs/web-component version)" >> $GITHUB_OUTPUT
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
