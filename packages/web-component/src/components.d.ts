@@ -13,6 +13,10 @@ export namespace Components {
          */
         "audio": string;
         /**
+          * Auto Pause at end of every page
+         */
+        "autoPauseAtEndOfPage"?: boolean;
+        /**
           * Change theme
          */
         "changeTheme": () => Promise<void>;
@@ -87,6 +91,10 @@ declare namespace LocalJSX {
           * URL of the audio file
          */
         "audio"?: string;
+        /**
+          * Auto Pause at end of every page
+         */
+        "autoPauseAtEndOfPage"?: boolean;
         /**
           * Optional custom Stylesheet to override defaults
          */
