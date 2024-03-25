@@ -132,6 +132,11 @@ export class ReadAlongComponent {
    */
   @Prop() playbackRateRange: number = 15;
 
+  /**
+   * Auto Pause at end of every page
+   */
+  @Prop() autoPauseAtEndOfPage? = false;
+
   /************
    *  STATES  *
    ************/
@@ -172,7 +177,9 @@ export class ReadAlongComponent {
       this.isScrolling = false;
     }, 125);
   }
-
+  autoPauseTimer: any;
+  endOfPageTags: Alignment = {};
+  finalTaggedWord: string;
   /************
    *  LISTENERS  *
    ************/
@@ -877,6 +884,22 @@ export class ReadAlongComponent {
         } else {
           this.images[i] = null;
         }
+        //get the ids for the last word on each the page
+        if ("paragraphs" in page) {
+          try {
+            const paragraphs = (page as Page).paragraphs;
+            const sentences = paragraphs[
+              paragraphs.length - 1
+            ].querySelectorAll("s:not(.translation)"); //get non-translation sentences in the last paragraph
+            const word =
+              sentences[sentences.length - 1].querySelector("w:last-of-type"); //get the last word of the last sentence
+            this.endOfPageTags[word.id] = [
+              parseFloat(word.getAttribute("time")), //in seconds
+              parseFloat(word.getAttribute("dur")) * 1000, // in milliseconds
+            ];
+            this.finalTaggedWord = word.id; // do not pause on the last word of the read-along
+          } catch (err) {}
+        }
       }
       // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
 
@@ -938,6 +961,19 @@ export class ReadAlongComponent {
         .subscribe((el_tag) => {
           // Only highlight when playing
           if (this.playing) {
+            //if auto pause is active and not on last word of the read along pause the audio
+            if (
+              this.autoPauseAtEndOfPage &&
+              el_tag in this.endOfPageTags &&
+              this.finalTaggedWord !== el_tag
+            ) {
+              //clear previous timeout if active
+              if (this.autoPauseTimer) window.clearTimeout(this.autoPauseTimer);
+              //pause 25ms before end of word
+              this.autoPauseTimer = window.setTimeout(() => {
+                this.pause();
+              }, this.endOfPageTags[el_tag][1] - 25);
+            }
             // Turn tag to query
             let query = this.tagToQuery(el_tag);
             // select the element with that tag
