@@ -68,9 +68,15 @@
           "sourceMap": true,
           "namedChunks": true
         },
-        "en": { "localize": ["en"] },
-        "fr": { "localize": ["fr"] },
-        "es": { "localize": ["es"] }
+        "en": {
+          "localize": ["en"]
+        },
+        "fr": {
+          "localize": ["fr"]
+        },
+        "es": {
+          "localize": ["es"]
+        }
       },
       "defaultConfiguration": "production"
     },
@@ -78,23 +84,23 @@
       "executor": "@angular-builders/custom-webpack:dev-server",
       "configurations": {
         "production-en": {
-          "browserTarget": "studio-web:build:production,en"
+          "buildTarget": "studio-web:build:production,en"
         },
         "development-en": {
-          "browserTarget": "studio-web:build:development,en"
+          "buildTarget": "studio-web:build:development,en"
         },
         "production-fr": {
-          "browserTarget": "studio-web:build:production,fr"
+          "buildTarget": "studio-web:build:production,fr"
         },
         "development-fr": {
-          "browserTarget": "studio-web:build:development,fr",
+          "buildTarget": "studio-web:build:development,fr",
           "port": 4203
         },
         "production-es": {
-          "browserTarget": "studio-web:build:production,es"
+          "buildTarget": "studio-web:build:production,es"
         },
         "development-es": {
-          "browserTarget": "studio-web:build:development,es",
+          "buildTarget": "studio-web:build:development,es",
           "port": 4204
         }
       },
@@ -103,14 +109,14 @@
     "serve-es": {
       "executor": "@angular-builders/custom-webpack:dev-server",
       "options": {
-        "browserTarget": "studio-web:build:development,es",
+        "buildTarget": "studio-web:build:development,es",
         "port": 4204
       }
     },
     "serve-fr": {
       "executor": "@angular-builders/custom-webpack:dev-server",
       "options": {
-        "browserTarget": "studio-web:build:development,fr",
+        "buildTarget": "studio-web:build:development,fr",
         "port": 4203
       }
     },
@@ -122,7 +128,7 @@
       "options": {
         "format": "json",
         "outputPath": "packages/studio-web/src/i18n",
-        "browserTarget": "studio-web:build"
+        "buildTarget": "studio-web:build"
       }
     },
     "check-l10n": {
@@ -136,7 +142,7 @@
       "command": "bash -c \"diff -w <(cat packages/studio-web/src/i18n/messages.json | sed 's/:.*//' | sort) <(cat packages/studio-web/src/i18n/messages.es.json | sed 's/:.*//' | sort)\""
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
@@ -146,7 +152,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/studio-web/jest.config.ts",
