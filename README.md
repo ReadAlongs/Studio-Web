@@ -146,7 +146,7 @@ tcp 3333`):
 
     npx nx serve web-component
 
-Make sure this command is serving the test data on port 5000:
+Make sure this command is serving the test data on port 8941:
 
     npx nx serve-test-data web-component
 

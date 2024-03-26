@@ -23,7 +23,7 @@
     "test-servers": "bash ./bin/run-test-servers",
     "test:once": "cypress run",
     "test:open": "cypress open",
-    "serve-test-data": "sirv --dev --cors --port 5000 test-data/",
+    "serve-test-data": "sirv --dev --cors --port 8941 test-data/",
     "generate": "stencil generate",
     "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
   },
