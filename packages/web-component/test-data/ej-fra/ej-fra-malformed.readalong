@@ -6,7 +6,7 @@
         <body id="t0b0">
 	    <!-- divs should have been div -->
             <divs type="page" id="t0b0d0">
-            <graphic url="http://localhost:5000/ej-fra/avatar.png" id="t0b0d0graphic0"/>
+            <graphic url="http://localhost:8941/ej-fra/avatar.png" id="t0b0d0graphic0"/>
                 <p id="t0b0d0p0">
                     <s id="t0b0d0p0s0"><w id="t0b0d0p0s0w0" time="0.455" dur="1.165">Bonjour</w>.</s>
                     <s id="t0b0d0p0s1"><w id="t0b0d0p0s1w0" time="1.620" dur="0.070">Je</w> <w id="t0b0d0p0s1w1" time="1.690" dur="0.070">m</w>'<w id="t0b0d0p0s1w2" time="1.760" dur="0.240">appelle</w> <w id="t0b0d0p0s1w3" time="2.000" dur="0.220">Éric</w> <w id="t0b0d0p0s1w4" time="2.220" dur="0.370">Joanis</w>.</s>
