@@ -5,8 +5,7 @@
   "private": false,
   "peerDependencies": {
     "@angular/core": ">=13",
-    "@angular/common": ">=13",
-    "@readalongs/web-component": "1.1.2"
+    "@angular/common": ">=13"
   },
   "nx": {
     "implicitDependencies": [
