@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "stencil build --docs",
-    "bundle": "node b64Fonts.js && webpack --config webpack.config.js; packageVersion=$(npm view @readalongs/web-component version); timestamp=$(date \"+%Y-%m-%d+%H-%M-%S\") && cd ../studio-web && npm pkg set singleFileBundleVersion=\"${packageVersion}\" && npm pkg set singleFileBundleTimestamp=\"${timestamp}\"",
+    "bundle": "node b64Fonts.js && webpack --config webpack.config.js; packageVersion=$(npm view ../../node_modules/@readalongs/web-component version); timestamp=$(date \"+%Y-%m-%d+%H-%M-%S\") && cd ../studio-web && npm pkg set singleFileBundleVersion=\"${packageVersion}\" && npm pkg set singleFileBundleTimestamp=\"${timestamp}\"",
     "cy:run": "cypress run",
     "start": "stencil build --dev --watch --serve",
     "test": "npm run test-servers & npm run wait-for-test-server && npm run test:once",
