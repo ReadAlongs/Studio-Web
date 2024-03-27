@@ -2,19 +2,19 @@
 /**
  * This plugin loads the scripts and styles for a read along component
  * 
- * @link https://github.com/ReadAlongs/Web-Component
+ * @link https://github.com/ReadAlongs/
  * @since 1.0.0
  * 
  * @package WP_Read_Along_Web_App_Loader
  * 
  * @wordpress-plugin
  * Plugin Name:       WordPress Read Along Web App Loader
- * Plugin URI:        https://github.com/ReadAlongs/Web-Component
+ * Plugin URI:        https://github.com/ReadAlongs/Studio-Web/
  * Description:       This plugin allows you to inject the script and styles needed to activate the <read-along> tag in wordpress site
  * Version:           1.0.0
  * Author:            Delasie Torkornoo
  * License:           MIT
- * License URI:       https://github.com/ReadAlongs/Web-Component/blob/main/LICENSE
+ * License URI:       https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE
 
  */
 
