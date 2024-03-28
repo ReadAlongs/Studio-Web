@@ -16,8 +16,8 @@ This WordPress plugin allows the deployment and activation of Read-Alongs genera
 
 This WordPress plugin allows the deployment and activation of Read-Alongs generated using https://github.com/ReadAlongs/ on WordPress sites. Just wrap your `<read-along>` in a WordPress shortcode `[wp_read_along_web_app_loader]`. The plugin does not load the script on all pages on your site; it will only add the script to the pages with the shortcode.
 The shortcode accepts two optional attributes:
- - The `src` attribute for users with custom scripts: defaults to unpkg.com
- - The `version` attribute for which version on unpkg.com defaults: to the latest
+ - The `src` attribute for users with custom scripts; defaults to unpkg.com
+ - The `version` attribute for which version on unpkg.com defaults; to the latest
 
 == Frequently Asked Questions ==
 
