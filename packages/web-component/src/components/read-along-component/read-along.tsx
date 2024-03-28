@@ -1025,7 +1025,7 @@ export class ReadAlongComponent {
             // scroll vertically (through paragraph) if needed
             if (this.inPageContentOverflow(query_el)) {
               if (this.autoScroll) {
-                query_el.scrollIntoView(false);
+                query_el.scrollIntoView({ block: "start", inline: "nearest" });
                 if (!this.isScrolling) this.scrollByHeight(query_el);
               }
             } // scroll horizontal (through paragraph) if needed
