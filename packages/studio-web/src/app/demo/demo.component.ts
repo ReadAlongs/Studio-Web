@@ -6,6 +6,7 @@ import { Components } from "@readalongs/web-component/loader";
 import { HttpErrorResponse } from "@angular/common/http";
 
 import { B64Service } from "../b64.service";
+import { slugify } from "../utils/utils";
 
 import { compress } from "image-conversion";
 import { RasService, SupportedOutputs } from "../ras.service";
@@ -208,6 +209,13 @@ Please host all assets on your server, include the font and package imports defi
     if (this.selectedOutputFormat == "html") {
       await this.updateImages(ras);
       await this.updateTranslations(ras);
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[^0-9]/g, "")
+        .slice(0, -3);
+      const basename =
+        (this.slots.title ? slugify(this.slots.title, 15) : "readalong") +
+        `-${timestamp}`;
       let b64ras = this.b64Service.xmlToB64(ras);
       var element = document.createElement("a");
       let blob = new Blob(
@@ -232,7 +240,8 @@ Please host all assets on your server, include the font and package imports defi
         { type: "text/html;charset=utf-8" }
       );
       element.href = window.URL.createObjectURL(blob);
-      element.download = "readalong.html";
+
+      element.download = `${basename}.html`;
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
@@ -246,7 +255,9 @@ Please host all assets on your server, include the font and package imports defi
         .toISOString()
         .replace(/[^0-9]/g, "")
         .slice(0, -3);
-      const basename = `readalong-${timestamp}`;
+      const basename =
+        (this.slots.title ? slugify(this.slots.title, 15) : "readalong") +
+        `-${timestamp}`;
       // - add audio file
       if (this.uploadService.$currentAudio.value !== null) {
         // Recorded audio is always mp3
@@ -267,7 +278,7 @@ Please host all assets on your server, include the font and package imports defi
       const images: Image[] = await this.updateImages(
         ras,
         false,
-        `image-${timestamp}`
+        `image-${basename}`
       );
       for (let image of images) {
         assetsFolder?.file(image.path, image.blob);
