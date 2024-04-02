@@ -58,6 +58,6 @@
     "unidecode": "^1.0.1",
     "zone.js": "^0.11.8"
   },
-  "singleFileBundleVersion": "1.1.1",
+  "singleFileBundleVersion": "1.2.0",
   "singleFileBundleTimestamp": "2024-04-02+15-07-59"
 }
