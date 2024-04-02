@@ -221,6 +221,9 @@ export class ReadAlongComponent {
       looksLikeRelativePath(path) &&
       !path.startsWith("blob")
     ) {
+      if (this.imageAssetsFolder && !this.imageAssetsFolder.endsWith("/")) {
+        this.imageAssetsFolder += "/";
+      }
       return this.imageAssetsFolder + path;
     }
     return path;
