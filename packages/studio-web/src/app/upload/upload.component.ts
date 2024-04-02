@@ -2,6 +2,7 @@
 import { ToastrService } from "ngx-toastr";
 import {
   Observable,
+  BehaviorSubject,
   Subject,
   catchError,
   finalize,
@@ -29,7 +30,6 @@ import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
 import { HttpErrorResponse } from "@angular/common/http";
 
-import { AudioService } from "../audio.service";
 import { environment } from "../../environments/environment";
 import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
@@ -39,6 +39,7 @@ import {
   ReadAlongRequest,
   SupportedLanguage,
 } from "../ras.service";
+import { UploadService } from "../upload.service";
 import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 
@@ -57,12 +58,15 @@ export class UploadComponent implements OnDestroy, OnInit {
   langs: Array<SupportedLanguage> = [];
   loading = false;
   langMode = langMode.generic;
-  langControl = new FormControl<string>(
+  langControl$ = new FormControl<string>(
     { value: "und", disabled: this.langMode !== "specific" },
     Validators.required
   );
-  textControl = new FormControl<any>(null, Validators.required);
-  audioControl = new FormControl<File | Blob | null>(null, Validators.required);
+  textControl$ = new FormControl<any>(null, Validators.required);
+  audioControl$ = new FormControl<File | Blob | null>(
+    null,
+    Validators.required
+  );
   starting_to_record = false;
   recording = false;
   playing = false;
@@ -75,15 +79,15 @@ export class UploadComponent implements OnDestroy, OnInit {
   @ViewChild("textInputElement") textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
   public uploadFormGroup = this._formBuilder.group({
-    lang: this.langControl,
-    text: this.textControl,
-    audio: this.audioControl,
+    lang: this.langControl$,
+    text: this.textControl$,
+    audio: this.audioControl$,
   });
   inputMethod = {
     audio: "mic",
     text: "edit",
   };
-  textInput: string = "";
+  $textInput = new BehaviorSubject<string>("");
   unsubscribe$ = new Subject<void>();
   private route: ActivatedRoute;
   constructor(
@@ -92,11 +96,23 @@ export class UploadComponent implements OnDestroy, OnInit {
     private toastr: ToastrService,
     private rasService: RasService,
     private fileService: FileService,
-    private audioService: AudioService,
     private ssjsService: SoundswallowerService,
     private microphoneService: MicrophoneService,
+    private uploadService: UploadService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.audioControl$.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((audio) => this.uploadService.$currentAudio.next(audio));
+    this.textControl$.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((textBlob) => this.uploadService.$currentText.next(textBlob));
+    this.$textInput
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((textString) =>
+        this.uploadService.$currentText.next(textString)
+      );
+  }
 
   async ngOnInit() {
     this.rasService
@@ -178,9 +194,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   downloadRecording() {
-    if (this.audioControl.value !== null) {
-      let blob = new Blob([this.audioControl.value], {
-        type: this.audioControl.value.type,
+    if (this.audioControl$.value !== null) {
+      let blob = new Blob([this.audioControl$.value], {
+        type: this.audioControl$.value.type,
       });
       let ext;
       switch (blob.type) {
@@ -211,8 +227,8 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   downloadText() {
-    if (this.textInput) {
-      let textBlob = new Blob([this.textInput], {
+    if (this.$textInput.value) {
+      let textBlob = new Blob([this.$textInput.value], {
         type: "text/plain",
       });
       var url = window.URL.createObjectURL(textBlob);
@@ -256,10 +272,10 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   playRecording() {
-    if (!this.playing && this.audioControl.value !== null) {
+    if (!this.playing && this.audioControl$.value !== null) {
       let player = new window.Audio();
       this.player = player;
-      player.src = URL.createObjectURL(this.audioControl.value);
+      player.src = URL.createObjectURL(this.audioControl$.value);
       player.onended = () => this.stopPlayback();
       player.onerror = () => this.stopPlayback();
       player.load();
@@ -275,7 +291,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   deleteRecording() {
-    this.audioControl.setValue(null);
+    this.audioControl$.setValue(null);
   }
 
   async stopRecording() {
@@ -288,7 +304,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         $localize`Yay!`,
         { timeOut: 10000 }
       );
-      this.audioControl.setValue(output);
+      this.audioControl$.setValue(output);
       // do any post output steps
     } catch (err: any) {
       if (err === "Recorder didn't hear anything") {
@@ -313,9 +329,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
 
   toggleLangMode(event: any) {
     if (event.value === "generic") {
-      this.langControl.setValue("und");
+      this.langControl$.setValue("und");
     } else {
-      this.langControl.setValue("");
+      this.langControl$.setValue("");
     }
     this.langMode = event.value;
   }
@@ -325,7 +341,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   nextStep() {
-    if (this.langControl.value === "") {
+    if (this.langControl$.value === "") {
       this.toastr.error(
         $localize`Please select a language or choose the default option`,
         $localize`No language selected`,
@@ -334,11 +350,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       return;
     }
     if (this.inputMethod.text === "edit") {
-      if (this.textInput) {
-        let inputText = new Blob([this.textInput], {
+      if (this.$textInput.value) {
+        let inputText = new Blob([this.$textInput.value], {
           type: "text/plain",
         });
-        this.textControl.setValue(inputText);
+        this.textControl$.setValue(inputText);
       } else {
         this.toastr.error(
           $localize`Please enter text to align.`,
@@ -347,7 +363,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         );
       }
     } else {
-      if (this.textControl.value === null) {
+      if (this.textControl$.value === null) {
         this.toastr.error(
           $localize`Please select a text file.`,
           $localize`No text`,
@@ -361,7 +377,10 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         $localize`No model loaded`,
         { timeOut: 15000 }
       );
-    } else if (this.uploadFormGroup.valid && this.audioControl.value !== null) {
+    } else if (
+      this.uploadFormGroup.valid &&
+      this.audioControl$.value !== null
+    ) {
       // Show progress bar
       this.loading = true;
       this.progressMode = "query";
@@ -369,22 +388,22 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       let input_type;
       if (
         this.inputMethod.text === "upload" &&
-        (this.textControl.value.name.toLowerCase().endsWith(".xml") ||
-          this.textControl.value.name.toLowerCase().endsWith(".readalong"))
+        (this.textControl$.value.name.toLowerCase().endsWith(".xml") ||
+          this.textControl$.value.name.toLowerCase().endsWith(".readalong"))
       )
         input_type = "application/readalong+xml";
       else input_type = "text/plain";
       // Create request (text is possibly read from a file later...)
       let body: ReadAlongRequest = {
-        text_languages: [this.langControl.value as string, "und"],
+        text_languages: [this.langControl$.value as string, "und"],
         type: input_type,
       };
       forkJoin({
-        audio: this.audioService.loadAudioBufferFromFile$(
-          this.audioControl.value as File,
+        audio: this.fileService.loadAudioBufferFromFile$(
+          this.audioControl$.value as File,
           8000
         ),
-        ras: this.fileService.readFile$(this.textControl.value).pipe(
+        ras: this.fileService.readFile$(this.textControl$.value).pipe(
           switchMap((text: string): Observable<ReadAlong> => {
             body.input = text;
             this.progressMode = "determinate";
@@ -448,7 +467,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               this.loading = false;
               this.stepChange.emit([
                 "aligned",
-                this.audioControl.value,
+                this.audioControl$.value,
                 progress.xml,
                 progress.hypseg,
               ]);
@@ -470,14 +489,14 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           },
         });
     } else {
-      if (this.langControl.value === null) {
+      if (this.langControl$.value === null) {
         this.toastr.error(
           $localize`Please select a language.`,
           $localize`No language`,
           { timeOut: 15000 }
         );
       }
-      if (this.audioControl.value === null) {
+      if (this.audioControl$.value === null) {
         this.toastr.error(
           $localize`Please (re-)record some audio or select an audio file.`,
           $localize`No audio`,
@@ -498,9 +517,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       if (file.type == "video/webm") {
         // No, it is audio, because we say so.
         const audioFile = new File([file], file.name, { type: "audio/webm" });
-        this.audioControl.setValue(audioFile);
+        this.audioControl$.setValue(audioFile);
       } else {
-        this.audioControl.setValue(file);
+        this.audioControl$.setValue(file);
       }
       this.toastr.success(
         $localize`File ` +
@@ -521,7 +540,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         );
         this.textInputElement.nativeElement.value = "";
       } else {
-        this.textControl.setValue(file);
+        this.textControl$.setValue(file);
         this.toastr.success(
           $localize`File ` +
             file.name +

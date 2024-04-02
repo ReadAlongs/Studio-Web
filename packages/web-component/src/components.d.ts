@@ -41,6 +41,10 @@ export namespace Components {
          */
         "href": string;
         /**
+          * Toggle the use of an assets folder. All image paths will be prefixed with this. Defaults to 'assets'. .readalong files should just contain base filenames not the full paths to the images.
+         */
+        "imageAssetsFolder": string;
+        /**
           * Language  of the interface. In 639-3 code. Options are "eng" (English), "fra" (French) or "spa" (Spanish)
          */
         "language": InterfaceLanguage;
@@ -68,10 +72,6 @@ export namespace Components {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme": string;
-        /**
-          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
-         */
-        "useAssetsFolder": boolean;
     }
 }
 declare global {
@@ -108,6 +108,10 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
+          * Toggle the use of an assets folder. All image paths will be prefixed with this. Defaults to 'assets'. .readalong files should just contain base filenames not the full paths to the images.
+         */
+        "imageAssetsFolder"?: string;
+        /**
           * Language  of the interface. In 639-3 code. Options are "eng" (English), "fra" (French) or "spa" (Spanish)
          */
         "language"?: InterfaceLanguage;
@@ -135,10 +139,6 @@ declare namespace LocalJSX {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme"?: string;
-        /**
-          * Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility
-         */
-        "useAssetsFolder"?: boolean;
     }
     interface IntrinsicElements {
         "read-along": ReadAlong;
