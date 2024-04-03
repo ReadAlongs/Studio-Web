@@ -70,30 +70,34 @@ context("The Readalong Component", () => {
     it("should bring next word to middle of page if hidden", () => {
       cy.visit("/ej-fra/index-long-text.html");
       cy.wait("@text");
-      cy.wait("@audio");
-      cy.readalong().within(() => {
-        //word corpus and robuste should hidden
-        cy.get("#t0b0d1p0s2w1").should("not.be.visible");
-        cy.get("#t0b0d1p1s0w14").should("not.be.visible");
-        //advance to about 61%
-        cy.get("[data-cy=progress-bar]")
-          .as("progress-bar")
-          .then((el) => {
-            // click 3/4 of the way in the readalong (should be second page)
-            cy.get("@progress-bar").click(el.width() * 0.61, el.height() * 0.5);
-          });
-        //word corpus and robuste should hidden
-        cy.get("#t0b0d1p0s2w1").should("not.be.visible");
-        cy.get("#t0b0d1p1s0w14").should("not.be.visible");
-        cy.get("[data-cy=play-button]")
-          .click()
-          .then(() => {
-            cy.wait(FOR_PAGE_TURN_ANIMATION);
-            //word corpus and robuste should now visible
-            cy.get("#t0b0d1p0s2w1").should("be.visible");
-            cy.get("#t0b0d1p1s0w14").should("be.visible");
-            cy.get("[data-cy=play-button]").click();
-          });
+      cy.wait("@audio").then(() => {
+        cy.readalong().within(() => {
+          //word corpus and robuste should hidden
+          cy.get("#t0b0d1p0s2w1").should("not.be.visible");
+          cy.get("#t0b0d1p1s0w14").should("not.be.visible");
+          //advance to about 61%
+          cy.get("[data-cy=progress-bar]")
+            .as("progress-bar")
+            .then((el) => {
+              // click 3/4 of the way in the readalong (should be second page)
+              cy.get("@progress-bar").click(
+                el.width() * 0.61,
+                el.height() * 0.5
+              );
+            });
+          //word corpus and robuste should hidden
+          cy.get("#t0b0d1p0s2w1").should("not.be.visible");
+          cy.get("#t0b0d1p1s0w14").should("not.be.visible");
+          cy.get("[data-cy=play-button]")
+            .click()
+            .then(() => {
+              cy.wait(FOR_PAGE_TURN_ANIMATION);
+              //word corpus and robuste should now visible
+              cy.get("#t0b0d1p0s2w1").should("be.visible");
+              cy.get("#t0b0d1p1s0w14").should("be.visible");
+              cy.get("[data-cy=play-button]").click();
+            });
+        });
       });
     });
   });
