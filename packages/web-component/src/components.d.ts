@@ -6,7 +6,6 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { InterfaceLanguage, ReadAlongMode } from "./index.d";
-export { InterfaceLanguage, ReadAlongMode } from "./index.d";
 export namespace Components {
     interface ReadAlong {
         /**
