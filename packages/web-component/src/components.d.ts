@@ -42,7 +42,7 @@ export namespace Components {
          */
         "href": string;
         /**
-          * Toggle the use of an assets folder. All image paths will be prefixed with this. Defaults to 'assets'. .readalong files should just contain base filenames not the full paths to the images.
+          * Define a path for where the image assets are located This should be used instead of use-assets-folder. Defaults to 'assets/'. The empty string means that image paths will not have a prefix added to them. Use of the forward slash is optional.
          */
         "imageAssetsFolder": string;
         /**
@@ -73,6 +73,10 @@ export namespace Components {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme": string;
+        /**
+          * DEPRECATED Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.
+         */
+        "useAssetsFolder"?: boolean;
     }
 }
 declare global {
@@ -109,7 +113,7 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
-          * Toggle the use of an assets folder. All image paths will be prefixed with this. Defaults to 'assets'. .readalong files should just contain base filenames not the full paths to the images.
+          * Define a path for where the image assets are located This should be used instead of use-assets-folder. Defaults to 'assets/'. The empty string means that image paths will not have a prefix added to them. Use of the forward slash is optional.
          */
         "imageAssetsFolder"?: string;
         /**
@@ -140,6 +144,10 @@ declare namespace LocalJSX {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme"?: string;
+        /**
+          * DEPRECATED Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.
+         */
+        "useAssetsFolder"?: boolean;
     }
     interface IntrinsicElements {
         "read-along": ReadAlong;
