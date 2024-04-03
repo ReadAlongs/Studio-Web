@@ -96,10 +96,21 @@ export class ReadAlongComponent {
   @Prop() cssUrl?: string;
 
   /**
-   * Toggle the use of an assets folder. All image paths
-   * will be prefixed with this. Defaults to 'assets'.
+   * DEPRECATED
+   * Toggle the use of an assets folder. Defaults to undefined.
+   * Previously (<1.2.0) defaulted to 'true'.
    * .readalong files should just contain base filenames
    * not the full paths to the images.
+   */
+
+  @Prop() useAssetsFolder?: boolean;
+
+  /**
+   * Define a path for where the image assets are located
+   * This should be used instead of use-assets-folder.
+   * Defaults to 'assets/'. The empty string means that
+   * image paths will not have a prefix added to them.
+   * Use of the forward slash is optional.
    */
 
   @Prop() imageAssetsFolder: string = "assets/";
@@ -216,7 +227,19 @@ export class ReadAlongComponent {
    * @return string
    */
   private urlTransform(path: string): string {
-    if (
+    // Frankenstein of combined useAssetsFolder v1.1.1 functionality and imageAssetsFolder v2.0.0 functionality
+    if (this.useAssetsFolder !== undefined) {
+      // Old v1.1.1 functionality
+      if (
+        this.useAssetsFolder &&
+        looksLikeRelativePath(path) &&
+        !path.startsWith("blob")
+      ) {
+        return "assets/" + path;
+      } else {
+        return path;
+      }
+    } else if (
       this.imageAssetsFolder &&
       looksLikeRelativePath(path) &&
       !path.startsWith("blob")
@@ -482,7 +505,7 @@ export class ReadAlongComponent {
         this.playing = false;
         // }
       },
-      this.play_id
+      this.play_id,
     );
   }
 
@@ -512,7 +535,7 @@ export class ReadAlongComponent {
         this.playing = false;
         // }
       },
-      this.play_id
+      this.play_id,
     );
   }
 
@@ -589,7 +612,7 @@ export class ReadAlongComponent {
    * @private
    */
   private static _getSentenceContainerOfWord(
-    element: HTMLElement
+    element: HTMLElement,
   ): HTMLElement {
     return element.parentElement.parentElement.parentElement;
   }
@@ -776,7 +799,7 @@ export class ReadAlongComponent {
       {
         root: sent_container,
         threshold: [0, 0.25, 0.5, 0.75, 1],
-      }
+      },
     );
     intersectionObserver.observe(el);
   }
@@ -926,7 +949,7 @@ export class ReadAlongComponent {
       "https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined&display=swap";
     let iconElement = document.querySelector(`link[href="${iconsFontCssUrl}"]`);
     let fontElement = document.querySelector(
-      `link[href="${bcSansFontCssUrl}"]`
+      `link[href="${bcSansFontCssUrl}"]`,
     );
 
     // Only inject the element if it's not yet present
@@ -958,7 +981,7 @@ export class ReadAlongComponent {
       this.duration = this.audio_howl_sprites.duration();
       this.audio_howl_sprites = this.buildSprite(
         this.audio,
-        this.processed_alignment
+        this.processed_alignment,
       );
       // Once Sprites are built, subscribe to reading subject and update element class
       // when new distinct values are emitted
@@ -1006,12 +1029,12 @@ export class ReadAlongComponent {
               Math.ceil(
                 this.el.shadowRoot
                   .querySelector(".pages__container")
-                  .getBoundingClientRect().left
+                  .getBoundingClientRect().left,
               ) + 1;
             const pageLeftEdge = Math.ceil(
               this.el.shadowRoot
                 .querySelector("#" + this.current_page)
-                .getBoundingClientRect().left
+                .getBoundingClientRect().left,
             );
 
             //if the user has scrolled away from the from the current page bring them page
@@ -1062,7 +1085,7 @@ export class ReadAlongComponent {
     if (this.latestTranslation) {
       // Add focus to the latest translation line that was added
       let newLine: HTMLElement = this.el.shadowRoot.querySelector(
-        this.latestTranslation
+        this.latestTranslation,
       );
       newLine.focus();
       this.latestTranslation = "";
@@ -1107,7 +1130,7 @@ export class ReadAlongComponent {
    */
   getI18nString(
     key: string,
-    substitutions: { readonly [index: string]: string } = {}
+    substitutions: { readonly [index: string]: string } = {},
   ): string {
     let result: string = this.getRawI18nString(key);
     for (const [sub_key, value] of Object.entries(substitutions)) {
@@ -1362,7 +1385,7 @@ export class ReadAlongComponent {
           (sentence: Element) =>
             sentence.childNodes.length > 0 && (
               <this.Sentence sentenceData={sentence} />
-            )
+            ),
         )
       }
     </div>
@@ -1380,7 +1403,7 @@ export class ReadAlongComponent {
     let sentenceID: string = props.sentenceData.id;
     if (!this.hasTextTranslations && props.sentenceData.hasAttribute("class")) {
       this.hasTextTranslations = /translation/.test(
-        props.sentenceData.getAttribute("class")
+        props.sentenceData.getAttribute("class"),
       );
     }
     let nodeProps = {};
@@ -1481,7 +1504,7 @@ export class ReadAlongComponent {
                     onInput={(e: any) => {
                       this.updateTranslation(
                         sentenceID,
-                        e.currentTarget.innerText
+                        e.currentTarget.innerText,
                       );
                     }}
                     contentEditable
