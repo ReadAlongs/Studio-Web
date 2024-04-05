@@ -12,7 +12,8 @@
   "unpkg": "dist/bundle.js",
   "private": false,
   "files": [
-    "dist/"
+    "dist/",
+    "loader/"
   ],
   "scripts": {
     "build": "stencil build --docs",
