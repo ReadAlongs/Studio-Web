@@ -12,7 +12,8 @@
   "unpkg": "dist/bundle.js",
   "private": false,
   "files": [
-    "dist/"
+    "dist/",
+    "loader/"
   ],
   "scripts": {
     "build": "stencil build --docs",
@@ -30,7 +31,7 @@
   "dependencies": {
     "audio-recorder-polyfill": "^0.4.1",
     "howler": "^2.2.3",
-    "rxjs": "^6.6.7"
+    "rxjs": ">=6.6.7"
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^0.4.0",
