@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "@angular-builders/custom-webpack": "^17",
-    "@angular/cli": "^17.3.3",
+    "@angular/cli": "^17",
     "@angular/compiler-cli": "^17",
     "@angular/language-service": "^17",
     "@angular/localize": "^17",
