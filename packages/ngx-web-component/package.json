@@ -2,29 +2,15 @@
   "name": "@readalongs/ngx-web-component",
   "type": "module",
   "version": "1.2.1",
-  "peerDependencies": {
-    "@angular/animations": "^15.2.4",
-    "@angular/common": "^15.2.4",
-    "@angular/compiler": "^15.2.4",
-    "@angular/core": "^15.2.4",
-    "@angular/forms": "^15.2.4",
-    "@angular/platform-browser": "^15.2.4",
-    "@angular/platform-browser-dynamic": "^15.2.4",
-    "@angular/router": "^15.2.4",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.12.0"
-  },
   "private": false,
+  "peerDependencies": {
+    "@angular/core": "^17",
+    "@angular/common": "^17",
+    "@readalongs/web-component": "1.2.1"
+  },
   "nx": {
     "implicitDependencies": [
       "web-component"
     ]
-  },
-  "devDependencies": {
-    "@angular-devkit/architect": "^0.1501.6",
-    "@angular-devkit/build-angular": "^15.2.4",
-    "@angular/cli": "^15.2.4",
-    "ng-packagr": "^15.2.2"
   }
 }

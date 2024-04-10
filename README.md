@@ -146,7 +146,7 @@ tcp 3333`):
 
     npx nx serve web-component
 
-Make sure this command is serving the test data on port 5000:
+Make sure this command is serving the test data on port 8941:
 
     npx nx serve-test-data web-component
 
@@ -193,7 +193,19 @@ The publication of the web component and its angular wrapper has been automated 
 
 WARNING: only use this process if the release workflow is broken.
 
-To publish the web component, first you must belong to the [@readalongs organization](https://www.npmjs.com/org/readalongs) on NPM. Then, bump the version number in both `packages/web-component/package.json` and `packages/ngx-web-component/package.json`, run `npm install` to reflect that bump in `package-lock.json`, and build both the web component and angular wrapper:
+To publish the web component, first you must belong to the
+[@readalongs organization](https://www.npmjs.com/org/readalongs) on
+NPM. Then, bump the version number in both
+`packages/web-component/package.json` and
+`packages/ngx-web-component/package.json` (note that Nx now
+unfortunately no longer manages dependencies among projects properly,
+so you must also update the version in `peerDependencies` for
+`@readalongs/web-component` in
+`packages/ngx-web-component/package.json` - if you find this to be
+less than useful feel free to add your voice to [this bug
+report](https://github.com/nrwl/nx/issues/19989)), run `npm install`
+to reflect that bump in `package-lock.json`, and build both the web
+component and angular wrapper:
 
     npx nx build web-component
     npx nx build ngx-web-component
