@@ -361,7 +361,9 @@ Replace assets/ with the path from your Media Library
       ]);
 
       // - add plain text readme
-      innerFolder?.file("README.txt", WP_deployment_readme);
+      // TODO: switch to this when the WP installation instructions are added
+      // innerFolder?.file("README.txt", WP_deployment_readme);
+      innerFolder?.file("README.txt", this.readmeFile);
       // - write zip
       zipFile.generateAsync({ type: "blob" }).then(
         (content) => saveAs(content, `${basename}.zip`),
