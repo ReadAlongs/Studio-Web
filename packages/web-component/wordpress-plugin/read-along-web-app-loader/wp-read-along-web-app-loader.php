@@ -5,12 +5,12 @@
  * @link https://github.com/ReadAlongs/
  * @since 1.0.0
  * 
- * @package WP_Read_Along_Web_App_Loader
+ * @package Read_Along_Web_App_Loader
  * 
  * @wordpress-plugin
- * Plugin Name:       WordPress Read Along Web App Loader
+ * Plugin Name:       Read Along Web App Loader
  * Plugin URI:        https://github.com/ReadAlongs/Studio-Web/
- * Description:       This plugin allows you to inject the script and styles needed to activate the <read-along> tag in wordpress site
+ * Description:       This plugin allows you to inject the script and styles needed to activate the &lt;read-along&gt; tag in a wordpress site
  * Version:           1.0.0
  * Author:            Delasie Torkornoo
  * License:           MIT
@@ -25,16 +25,16 @@ if (!defined("WPINC")) {
 /**
  * Currently plugin version.
  */
-define("WP_Read_Along_Web_App_Loader_VERSION", "1.0.0");
+define("Read_Along_Web_App_Loader_VERSION", "1.0.0");
 
 /**
  * This function handles the activation of the code
- * The [wp_read_along_web_app_loader src="" version=""] short code
+ * The [read_along_web_app_loader src="" version=""] short code
  * Accepts version: on unpkg
  * Accepts src: custom source
  */
 
-function wp_read_along_web_app_loader_short_code(
+function read_along_web_app_loader_short_code(
     $attrs = [],
     $content = null,
     $tag = ""
@@ -52,10 +52,10 @@ function wp_read_along_web_app_loader_short_code(
     );
     $output = "";
     wp_enqueue_style(
-        "WP_Read_Along_Web_App_Loader_Font",
+        "Read_Along_Web_App_Loader_Font",
         "https://fonts.googleapis.com/css?family=Lato%7CMaterial+Icons%7CMaterial+Icons+Outlined",
         [],
-        false
+        "1.0.0"
     );
     if (!is_null($content)) {
         $output = apply_filters("the_content", $content);
@@ -87,12 +87,12 @@ function add_read_along_format($mimes = [])
  *
  */
 
-function run_wp_read_along_web_app_init()
+function run_read_along_web_app_init()
 {
-    if (!shortcode_exists("wp_read_along_web_app_loader")) {
+    if (!shortcode_exists("read_along_web_app_loader")) {
         add_shortcode(
-            "wp_read_along_web_app_loader",
-            "wp_read_along_web_app_loader_short_code"
+            "read_along_web_app_loader",
+            "read_along_web_app_loader_short_code"
         );
     }
 }
@@ -101,9 +101,9 @@ function run_wp_read_along_web_app_init()
  *
  * @since    1.0.0
  */
-function run_wp_read_along_web_app()
+function run_read_along_web_app()
 {
-    add_action("init", "run_wp_read_along_web_app_init", 11); //hook to the init
+    add_action("init", "run_read_along_web_app_init", 11); //hook to the init
 }
-run_wp_read_along_web_app(); //run the plugin
-add_filter("upload_mimes", "add_read_along_format");
+run_read_along_web_app(); //run the plugin
+add_filter("upload_mimes", "add_read_along_format");//add supported formats
