@@ -32,3 +32,11 @@ jobs:
           npx nx extract-i18n studio-web
           if diff -w <(git show HEAD:packages/studio-web/src/i18n/messages.json | sort) <(sort < packages/studio-web/src/i18n/messages.json); then echo OK: The i18n database is up to date.; else echo ERROR: The i18n database is out of date.; npx nx check-l10n studio-web || echo ERROR: The l10n databases are also out of date.; false; fi
           if npx nx check-l10n studio-web; then echo OK: The l10n databases are up to date.; else echo ERROR: An l10n database is out of date.; false; fi
+      - name: make sure the WP plugin zip file is in sync
+        run: |
+          cd packages/web-component/wordpress-plugin
+          unzip -d extract read-along-web-app-loader.zip
+          if ! diff -qr read-along-web-app-loader extract/read-along-web-app-loader; then \
+            echo The zipped WordPress plugin packages/web-component/wordpress-plugin/read-along-web-app-loader.zip is out of date.; \
+            false; \
+          fi
