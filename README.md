@@ -1,9 +1,9 @@
 # ReadAlongs Web App Suite
 
-[![Publish Status](https://github.com/readalongs/Web-Component/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Web-Component/actions)
-[![Test Status](https://github.com/readalongs/Web-Component/actions/workflows/end-to-end-tests.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Web-Component/actions)
-[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Web-Component)](https://github.com/ReadAlongs/Web-Component/blob/main/LICENSE)
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/ReadAlongs/Web-Component)
+[![Publish Status](https://github.com/readalongs/Studio-Web/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Studio-Web/actions)
+[![Test Status](https://github.com/readalongs/Studio-Web/actions/workflows/end-to-end-tests.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Studio-Web/actions)
+[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Studio-Web)](https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/ReadAlongs/Studio-Web)
 [![web-component release](https://img.shields.io/npm/v/@readalongs/web-component)](https://www.npmjs.com/package/@readalongs/web-component)
 [![ngx-web-component release](https://img.shields.io/npm/v/@readalongs/ngx-web-component)](https://www.npmjs.com/package/@readalongs/ngx-web-component)
 
@@ -11,7 +11,7 @@ Interactive story telling embeddable into any website!
 
 <!-- TODO: put an animated GIF here, showing it off! -->
 
-This mono repo combines four packages:
+This mono repo, formerly called Web-Component, now called Studio-Web, combines four packages:
 
 - A [stencil web component](packages/web-component/) for visualizing read alongs,
 - An [Angular Library](packages/ngx-web-component/) that wraps the stencil web component,
@@ -46,13 +46,13 @@ repository. You also should only run commands from the root of the repo. See gui
 
 Clone the repo:
 
-    git clone git@github.com:ReadAlongs/Web-Component.git
+    git clone git@github.com:ReadAlongs/Studio-Web.git
 
 ### Installing dependencies
 
 Use `npm` to install all dependencies:
 
-    cd Web-Component
+    cd Studio-Web
     npm install
 
 ### Serving/Development
@@ -262,7 +262,7 @@ so if you have deployed the API elsewhere, you must:
 
 ## Contributing
 
-Feel free to dive in! [Open an issue](https://github.com/ReadAlongs/Web-Component/issues/new) or submit PRs.
+Feel free to dive in! [Open an issue](https://github.com/ReadAlongs/Studio-Web/issues/new) or submit PRs.
 
 This repo follows the [Contributor Covenant](https://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
