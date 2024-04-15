@@ -344,15 +344,15 @@ Use the text editor to paste the snippet below in your WordPress page
 
 Replace assets/ with the path from your Media Library 
 
-        ---- WP Deployment SNIPPET ----
+        ---- WordPress Deployment SNIPPET ----
 
 <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
-[wp_read_along_web_app_loader version="^${environment.packageJson.singleFileBundleVersion}"]
+[read_along_web_app_loader image-asset-folder="./" version="^${environment.packageJson.singleFileBundleVersion}"]
   <read-along href="assets/${basename}.readalong" audio="assets/${basename}.mp3" theme="light" language="en" image-assets-folder="assets/">
             <span slot='read-along-header'>${this.slots.title}</span>
             <span slot='read-along-subheader'>${this.slots.subtitle}</span>
         </read-along>
-[/wp_read_along_web_app_loader]
+[/read_along_web_app_loader]
 
         ----- END OF SNIPPET----
 

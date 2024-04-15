@@ -8,7 +8,7 @@
  * @package Read_Along_Web_App_Loader
  * 
  * @wordpress-plugin
- * Plugin Name:       Read Along Web App Loader
+ * Plugin Name:       Read-Along Web App Loader
  * Plugin URI:        https://github.com/ReadAlongs/Studio-Web/
  * Description:       This plugin allows you to inject the script and styles needed to activate the &lt;read-along&gt; tag in a wordpress site
  * Version:           1.0.0
