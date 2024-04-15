@@ -1,6 +1,6 @@
-=== Read Along Web App Loader ===
+=== ReadAlong Web App Loader ===
 Contributors: deltork
-Tags: read-along, web app loading
+Tags: read-along, read along, web app loading
 Requires at least: 4.7
 Tested up to: 6.5.2
 Stable tag: 1.0.0
@@ -30,8 +30,9 @@ There are two ways to generate a read-along. The online web app (download the we
 
 == Screenshots ==
 
-1. Configure read along web app component in your WordPress text editor
-2. Sample read along book 
+1. Configure read-along web app component in your WordPress classic editor
+2. Sample read-along book 
+3. Configure read-along web app component in your WordPress block editor
 
 == Changelog ==
 
