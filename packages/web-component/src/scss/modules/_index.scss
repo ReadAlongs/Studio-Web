@@ -18,6 +18,7 @@
 @import "overlay";
 @import "pages";
 @import "slots";
+@import "settings";
 
 // loader
 .loader {
@@ -35,8 +36,10 @@
   position: fixed;
   top: calc(50vh - 10rem);
   left: calc(50vw - 10rem);
-  z-index: 1000;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  z-index: z("modal");
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 /* Safari */

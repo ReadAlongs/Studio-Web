@@ -63,13 +63,13 @@ Please host all assets on your server, include the font and package imports defi
     ],
     {
       type: "text/plain",
-    }
+    },
   );
   constructor(
     public b64Service: B64Service,
     private rasService: RasService,
     private toastr: ToastrService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
   ) {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
@@ -93,7 +93,7 @@ Please host all assets on your server, include the font and package imports defi
         $localize`ReadAlong format conversion failed.`,
         {
           timeOut: 15000,
-        }
+        },
       );
     } else {
       this.toastr.error(
@@ -101,7 +101,7 @@ Please host all assets on your server, include the font and package imports defi
         $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
         {
           timeOut: 60000,
-        }
+        },
       );
     }
   }
@@ -112,13 +112,13 @@ Please host all assets on your server, include the font and package imports defi
       return false;
     } else {
       const sentence_nodes = doc.querySelectorAll(
-        "s:not(.sentence__translation)"
+        "s:not(.sentence__translation)",
       );
       // represents all translation nodes that have already been added
       const translation_node_ids = new Set(
         Array.from(doc.querySelectorAll(".editable__translation")).map(
-          (t_node) => t_node.id
-        )
+          (t_node) => t_node.id,
+        ),
       );
       sentence_nodes.forEach((sentence: Element) => {
         // Add a translation
@@ -132,7 +132,7 @@ Please host all assets on your server, include the font and package imports defi
           newSentence.setAttribute("id", sentence.id);
           newSentence.setAttribute(
             "class",
-            "sentence__translation editable__translation"
+            "sentence__translation editable__translation",
           );
           newSentence.setAttribute("xml:lang", "eng");
           newSentence.append(translations[sentence.id]);
@@ -145,7 +145,7 @@ Please host all assets on your server, include the font and package imports defi
           translation_node_ids.has(sentence.id)
         ) {
           let elementToRemove = doc.querySelector(
-            `#${sentence.id}.sentence__translation`
+            `#${sentence.id}.sentence__translation`,
           );
           elementToRemove?.remove();
         }
@@ -157,7 +157,7 @@ Please host all assets on your server, include the font and package imports defi
   async updateImages(
     doc: Document,
     b64Embed = true,
-    imagePrefix = "image"
+    imagePrefix = "image",
   ): Promise<boolean | Image[]> {
     const images = await this.readalong.getImages();
     const page_nodes = doc.querySelectorAll("div[type=page]");
@@ -237,7 +237,7 @@ Please host all assets on your server, include the font and package imports defi
       </body>
       </html>`,
         ],
-        { type: "text/html;charset=utf-8" }
+        { type: "text/html;charset=utf-8" },
       );
       element.href = window.URL.createObjectURL(blob);
 
@@ -270,7 +270,7 @@ Please host all assets on your server, include the font and package imports defi
         }
         assetsFolder?.file(
           `${basename}.${audioExtension}`,
-          this.uploadService.$currentAudio.value
+          this.uploadService.$currentAudio.value,
         );
       }
       // - add images
@@ -278,7 +278,7 @@ Please host all assets on your server, include the font and package imports defi
       const images: Image[] = await this.updateImages(
         ras,
         false,
-        `image-${basename}`
+        `image-${basename}`,
       );
       for (let image of images) {
         assetsFolder?.file(image.path, image.blob);
@@ -287,14 +287,14 @@ Please host all assets on your server, include the font and package imports defi
       if (this.uploadService.$currentText.value !== null) {
         innerFolder?.file(
           `${basename}.txt`,
-          this.uploadService.$currentText.value
+          this.uploadService.$currentText.value,
         );
       }
       // - add .readalong file
       this.updateTranslations(ras);
 
       const xmlString = this.xmlSerializer.serializeToString(
-        ras.documentElement
+        ras.documentElement,
       );
       const rasFile = new Blob([xmlString], { type: "application/xml" });
       assetsFolder?.file(`${basename}.readalong`, rasFile);
@@ -324,6 +324,12 @@ Please host all assets on your server, include the font and package imports defi
       const indexHtmlFile = new Blob([sampleHtml], { type: "text/html" });
       innerFolder?.file("index.html", indexHtmlFile);
       //snippet for WP deployment
+      const today = new Date();
+      const month =
+        today.getMonth() < 9
+          ? `0${today.getMonth() + 1}`
+          : `${today.getMonth() + 1}`;
+      const WP_UPLOAD_FOLDER = `/wp-content/uploads/${today.getFullYear()}/${month}/`;
       const WP_deployment_readme = new Blob([
         this.readmeFile,
         `
@@ -335,25 +341,26 @@ Setup the plugin (do this once)
 
 Install and activate our plugin 'wp-read-along-web-app-loader' on your WordPress site. 
 
+See https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component/wordpress-plugin for more information
+
 
 Deploy the read-along
 
-Upload the ${basename}.readalong and ${basename}.mp3 to your Media Library of your WordPress site.
+Upload the images, ${basename}.readalong and ${basename}.mp3 to your Media Library of your WordPress site.
 
 Use the text editor to paste the snippet below in your WordPress page 
 
-Replace assets/ with the path from your Media Library 
 
         ---- WordPress Deployment SNIPPET ----
 
-<!-- Here is how you declare the Web Component. Supported languages: en, fr -->
-[read_along_web_app_loader image-asset-folder="./" version="^${environment.packageJson.singleFileBundleVersion}"]
-  <read-along href="assets/${basename}.readalong" audio="assets/${basename}.mp3" theme="light" language="en" image-assets-folder="assets/">
+<!-- wp:html -->
+[read_along_web_app_loader version="^${environment.packageJson.singleFileBundleVersion}"]
+  <read-along href="${WP_UPLOAD_FOLDER}${basename}.readalong" audio="${WP_UPLOAD_FOLDER}${basename}.mp3" theme="light" language="eng" image-assets-folder="${WP_UPLOAD_FOLDER}">
             <span slot='read-along-header'>${this.slots.title}</span>
             <span slot='read-along-subheader'>${this.slots.subtitle}</span>
         </read-along>
 [/read_along_web_app_loader]
-
+<!-- /wp:html -->
         ----- END OF SNIPPET----
 
         
@@ -362,15 +369,15 @@ Replace assets/ with the path from your Media Library
 
       // - add plain text readme
       // TODO: switch to this when the WP installation instructions are added
-      // innerFolder?.file("README.txt", WP_deployment_readme);
-      innerFolder?.file("README.txt", this.readmeFile);
+      innerFolder?.file("readme.txt", WP_deployment_readme);
+      //innerFolder?.file("README.txt", this.readmeFile);
       // - write zip
       zipFile.generateAsync({ type: "blob" }).then(
         (content) => saveAs(content, `${basename}.zip`),
         (err: HttpErrorResponse) =>
           this.toastr.error(err.error.detail, $localize`Download failed.`, {
             timeOut: 30000,
-          })
+          }),
       );
     } else {
       let audio: HTMLAudioElement = new Audio(this.b64Inputs[0]);
@@ -380,7 +387,7 @@ Replace assets/ with the path from your Media Library
             dur: audio.duration,
             ras: new XMLSerializer().serializeToString(ras.documentElement),
           },
-          this.selectedOutputFormat
+          this.selectedOutputFormat,
         )
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe({

@@ -5,8 +5,8 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { InterfaceLanguage, ReadAlongMode } from "./index.d";
-export { InterfaceLanguage, ReadAlongMode } from "./index.d";
+import { InterfaceLanguage, ReadAlongMode, ScrollBehaviour } from "./index.d";
+export { InterfaceLanguage, ReadAlongMode, ScrollBehaviour } from "./index.d";
 export namespace Components {
     interface ReadAlong {
         /**
@@ -64,7 +64,7 @@ export namespace Components {
         /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
          */
-        "scrollBehaviour": "smooth" | "auto";
+        "scrollBehaviour": ScrollBehaviour;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
@@ -135,7 +135,7 @@ declare namespace LocalJSX {
         /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
          */
-        "scrollBehaviour"?: "smooth" | "auto";
+        "scrollBehaviour"?: ScrollBehaviour;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */

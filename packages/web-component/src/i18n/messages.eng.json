@@ -16,6 +16,16 @@
     "theme-tooltip": "Change theme",
     "full-screen-tooltip": "Full screen mode",
     "translation-tooltip": "Toggle translations",
-    "add-translation": "Add a translation, transliteration or gloss"
+    "add-translation": "Add a translation, transliteration or gloss",
+    "configuration-tooltip": "Change configuration",
+    "settings": "My Preferences",
+    "page-animation": "Page animation",
+    "auto-pause": "Pause at the end of each page",
+    "language": "Interface language",
+    "save-settings": "Remember my preferences",
+    "eng": "Eng",
+    "fra": "Fra",
+    "spa": "Spa",
+    "close": ""
   }
 }

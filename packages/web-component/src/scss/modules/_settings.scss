@@ -1,0 +1,144 @@
+.settings-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.075);
+  z-index: z("overlay");
+  -webkit-backdrop-filter: blur(5px) !important;
+  backdrop-filter: blur(5px) !important;
+}
+.settings {
+  height: $page-size + 0vh;
+  max-height: $page-size + 0vh;
+  width: $setting-width;
+  max-width: $setting-width;
+  position: fixed;
+  z-index: z("modal");
+  top: 15vh;
+  left: calc(calc(100% - $setting-width) / 2);
+
+  overflow-x: hidden;
+
+  transition: 0.5s;
+  @extend %border--strong--top;
+  @extend %border--strong--left;
+  @extend %border--strong--right;
+  @extend %border--strong--bottom;
+  @extend %themed-bg;
+
+  h3 {
+    border-bottom: 1px solid #ccc;
+    & button {
+      float: inline-start;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  //close button
+  & > .close {
+    position: relative;
+    float: inline-end;
+    background-color: inherit;
+    color: inherit;
+    font-size: 18px;
+
+    display: inline-block;
+    padding: 0.275rem 0.75rem;
+
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    border: 0;
+    transition:
+      color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out,
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
+
+    &:hover {
+      color: #fff;
+      background-color: #bb2d3b;
+      border-color: #bb2d3b;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 1px 1px rgba(0, 0, 0, 0.075);
+    }
+  }
+
+  & p {
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    & select,
+    & button {
+      margin-right: 1em;
+      width: 80px;
+      text-align: justify;
+    }
+    & button {
+      margin: 0 1em 0 0;
+      padding: 0 0.0625em;
+    }
+    margin: 0.5em 1em;
+  }
+  & > .footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding: 0.01em 1em;
+    @extend %border--strong--top;
+    height: 3em;
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-content: space-between;
+    justify-content: space-between;
+
+    & > div {
+      flex-grow: 8;
+    }
+    & > button {
+      border: 1px solid #ccc;
+      padding: 0.25em 0.5em !important;
+    }
+    & > button:hover {
+      background-color: rgba(0, 0, 0, 0.15);
+      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
+    }
+  }
+  & button:disabled {
+    background-color: rgba(200, 200, 200, 0.15);
+    color: #ccc;
+  }
+}
+.settings.theme--dark {
+  color: #fff;
+}
+@media screen and (max-width: 385px) {
+  .settings {
+    width: 95vw;
+    max-width: 95vw;
+    left: 2.5vw;
+    overflow: auto;
+    & p {
+      & select,
+      & button {
+        display: block;
+        width: 80%;
+      }
+      margin-bottom: 1em;
+      border-bottom: 1px solid #ccc;
+    }
+  }
+}
