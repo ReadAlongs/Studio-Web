@@ -1,7 +1,10 @@
 import { Howl } from "howler";
 import { BehaviorSubject, Subject } from "rxjs";
-import { Alignment, Page } from "../index.d";
+import { Alignment, Page, UserPreferences } from "../index.d";
 
+export const USER_PREFERENCE_STORAGE_ID = "RAUserPreferences";
+
+export const USER_PREFERENCE_VERSION = "0.1";
 /**
  * Return a zipped array of arrays
  * @param {array[]} arrays
@@ -155,6 +158,7 @@ Sprite.prototype = {
           self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length);
         }
       }
+      self._reading$.next(self._spriteLeft[0][1]);
       // else, return back to beginning
     } else {
       var id: number = self.sound.seek(0, id);
@@ -190,6 +194,7 @@ Sprite.prototype = {
         self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length);
       }
     }
+    self._reading$.next(self._spriteLeft[0][1]);
     // else, return back to beginning
     return id;
   },
@@ -256,3 +261,23 @@ export async function isFileAvailable(url) {
     xhr.send();
   });
 }
+// returns users preference if it matches current version format
+export const getUserPreferences = (): UserPreferences | null => {
+  const prefs: string = window.localStorage.getItem(USER_PREFERENCE_STORAGE_ID);
+  if (prefs && prefs.length) {
+    const user_preferences: UserPreferences = JSON.parse(prefs);
+    if (
+      user_preferences.version &&
+      user_preferences.version === USER_PREFERENCE_VERSION
+    ) {
+      return user_preferences;
+    }
+  }
+  return null;
+};
+export const setUserPreferences = (userPref: UserPreferences) => {
+  window.localStorage.setItem(
+    USER_PREFERENCE_STORAGE_ID,
+    JSON.stringify(userPref),
+  );
+};

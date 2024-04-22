@@ -232,7 +232,7 @@ export class ReadAlongComponent {
       // Old v1.1.1 functionality
       if (
         this.useAssetsFolder &&
-        looksLikeRelativePath(path) &&
+        looksLikeRelatiEscapepath) &&
         !path.startsWith("blob")
       ) {
         return "assets/" + path;

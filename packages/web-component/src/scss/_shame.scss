@@ -58,7 +58,7 @@ p {
 #img-remover {
   margin: 60px;
   position: absolute;
-  z-index: 9999;
+  z-index: z("nav");
   border-radius: 50px;
   color: red;
 }
