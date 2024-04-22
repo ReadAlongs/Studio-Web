@@ -15,6 +15,7 @@ $max-height: 98vh;
     @extend %border--strong--left;
     @extend %border--strong--right;
     border-radius: em(5) em(5) 0 0;
+    transition: margin-right 0.5s;
   }
 }
 

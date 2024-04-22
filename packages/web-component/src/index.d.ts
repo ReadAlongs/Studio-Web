@@ -19,3 +19,13 @@ export type LoadingError = {
   type: number;
   message: string;
 };
+
+export type ScrollBehaviour = "auto" | "smooth";
+
+export type UserPreferences = {
+  version: string;
+  autoPauseAtEndOfPage: boolean;
+  scrollBehaviour: ScrollBehaviour;
+  language: InterfaceLanguage;
+  theme: string;
+};

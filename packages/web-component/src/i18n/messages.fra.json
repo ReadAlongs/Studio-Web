@@ -16,6 +16,16 @@
     "theme-tooltip": "Changer de thême visuel",
     "full-screen-tooltip": "Mode plein écran",
     "translation-tooltip": "Afficher ou cacher les traductions",
-    "add-translation": "Ajouter une traduction, une translitération ou une glose"
+    "add-translation": "Ajouter une traduction, une translitération ou une glose",
+    "configuration-tooltip": "",
+    "settings": "",
+    "page-animation": "",
+    "auto-pause": "",
+    "language": "",
+    "save-settings": "",
+    "eng": "Ang",
+    "fra": "Fra",
+    "spa": "",
+    "close": ""
   }
 }

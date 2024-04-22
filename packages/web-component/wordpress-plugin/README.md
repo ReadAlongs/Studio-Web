@@ -44,10 +44,13 @@ There are several ways to deploy your read-along on your WordPress site. In this
 Once the Read Along Web App Loader plugin is activated on your WordPress site, you can upload your read-along alignment file `.readalong` to your media library. It is best to upload all assets to the media library on the same day since the WordPress Media Library defaults to storing media in folders by the date of upload.
 
 1. Upload your audio, (optional) image and alignment (`.readalong`) assets to your media library.
+
+   If the media library rejects the `.readalong` file, verify that the plugin is active and try again. If the file is still rejected, you can add `define('ALLOW_UNFILTERED_UPLOADS', true);` to `wp-config.php` in your Word Press installation. This modification has security implications and should be used temporarily only.
+
 2. Open the `README.txt` of the read-along. In the WordPress Deployment Snippet section
-   - Update the `<read-along` attribute `href=` with the `File URL` of your alignment file (`.readalong`) in your media library.
-   - Update the `<read-along` attribute `audio=` with the `File URL` of your audio file in your media library.
-   - Update the `<read-along` attribute `image-asset-folder=` with the folder path of your images.
+   - Update the `<read-along` attribute `href=` with the `File URL` of your alignment file (`.readalong`) in your media library as needed.
+   - Update the `<read-along` attribute `audio=` with the `File URL` of your audio file in your media library as needed.
+   - Update the `<read-along` attribute `image-asset-folder=` with the folder path of your images as needed.
 3. Copy and Paste the updated WordPress Deployment Snippet into a custom HTML block of your WordPress page/post editor, if using a classic editor the text tab of your editor
 4. Preview and Publish
 
