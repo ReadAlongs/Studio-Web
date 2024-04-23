@@ -17,6 +17,8 @@ import { NgxRAWebComponentModule } from "@readalongs/ngx-web-component";
 import { defineCustomElements } from "@readalongs/web-component/loader";
 import { StudioComponent, PrivacyDialog } from "./studio/studio.component";
 import { ErrorPageComponent } from "./error-page/error-page.component";
+import { EditorComponent } from "./editor/editor.component";
+import { SharedModule } from "./shared/shared.module";
 
 defineCustomElements();
 
@@ -29,6 +31,7 @@ defineCustomElements();
     TextFormatDialogComponent,
     StudioComponent,
     ErrorPageComponent,
+    EditorComponent,
     // ShepherdComponent
   ],
   imports: [
@@ -42,6 +45,7 @@ defineCustomElements();
     MatToolbarModule,
     FormsModule,
     NgxRAWebComponentModule,
+    SharedModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
