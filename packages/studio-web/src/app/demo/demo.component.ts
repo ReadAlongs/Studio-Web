@@ -63,13 +63,13 @@ Please host all assets on your server, include the font and package imports defi
     ],
     {
       type: "text/plain",
-    }
+    },
   );
   constructor(
     public b64Service: B64Service,
     private rasService: RasService,
     private toastr: ToastrService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
   ) {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
@@ -93,7 +93,7 @@ Please host all assets on your server, include the font and package imports defi
         $localize`ReadAlong format conversion failed.`,
         {
           timeOut: 15000,
-        }
+        },
       );
     } else {
       this.toastr.error(
@@ -101,7 +101,7 @@ Please host all assets on your server, include the font and package imports defi
         $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
         {
           timeOut: 60000,
-        }
+        },
       );
     }
   }
@@ -112,13 +112,13 @@ Please host all assets on your server, include the font and package imports defi
       return false;
     } else {
       const sentence_nodes = doc.querySelectorAll(
-        "s:not(.sentence__translation)"
+        "s:not(.sentence__translation)",
       );
       // represents all translation nodes that have already been added
       const translation_node_ids = new Set(
         Array.from(doc.querySelectorAll(".editable__translation")).map(
-          (t_node) => t_node.id
-        )
+          (t_node) => t_node.id,
+        ),
       );
       sentence_nodes.forEach((sentence: Element) => {
         // Add a translation
@@ -132,7 +132,7 @@ Please host all assets on your server, include the font and package imports defi
           newSentence.setAttribute("id", sentence.id);
           newSentence.setAttribute(
             "class",
-            "sentence__translation editable__translation"
+            "sentence__translation editable__translation",
           );
           newSentence.setAttribute("xml:lang", "eng");
           newSentence.append(translations[sentence.id]);
@@ -145,7 +145,7 @@ Please host all assets on your server, include the font and package imports defi
           translation_node_ids.has(sentence.id)
         ) {
           let elementToRemove = doc.querySelector(
-            `#${sentence.id}.sentence__translation`
+            `#${sentence.id}.sentence__translation`,
           );
           elementToRemove?.remove();
         }
@@ -157,7 +157,7 @@ Please host all assets on your server, include the font and package imports defi
   async updateImages(
     doc: Document,
     b64Embed = true,
-    imagePrefix = "image"
+    imagePrefix = "image",
   ): Promise<boolean | Image[]> {
     const images = await this.readalong.getImages();
     const page_nodes = doc.querySelectorAll("div[type=page]");
@@ -237,7 +237,7 @@ Please host all assets on your server, include the font and package imports defi
       </body>
       </html>`,
         ],
-        { type: "text/html;charset=utf-8" }
+        { type: "text/html;charset=utf-8" },
       );
       element.href = window.URL.createObjectURL(blob);
 
@@ -270,7 +270,7 @@ Please host all assets on your server, include the font and package imports defi
         }
         assetsFolder?.file(
           `${basename}.${audioExtension}`,
-          this.uploadService.$currentAudio.value
+          this.uploadService.$currentAudio.value,
         );
       }
       // - add images
@@ -278,7 +278,7 @@ Please host all assets on your server, include the font and package imports defi
       const images: Image[] = await this.updateImages(
         ras,
         false,
-        `image-${basename}`
+        `image-${basename}`,
       );
       for (let image of images) {
         assetsFolder?.file(image.path, image.blob);
@@ -287,14 +287,14 @@ Please host all assets on your server, include the font and package imports defi
       if (this.uploadService.$currentText.value !== null) {
         innerFolder?.file(
           `${basename}.txt`,
-          this.uploadService.$currentText.value
+          this.uploadService.$currentText.value,
         );
       }
       // - add .readalong file
-      this.updateTranslations(ras);
+      await this.updateTranslations(ras);
 
       const xmlString = this.xmlSerializer.serializeToString(
-        ras.documentElement
+        ras.documentElement,
       );
       const rasFile = new Blob([xmlString], { type: "application/xml" });
       assetsFolder?.file(`${basename}.readalong`, rasFile);
@@ -370,7 +370,7 @@ Replace assets/ with the path from your Media Library
         (err: HttpErrorResponse) =>
           this.toastr.error(err.error.detail, $localize`Download failed.`, {
             timeOut: 30000,
-          })
+          }),
       );
     } else {
       let audio: HTMLAudioElement = new Audio(this.b64Inputs[0]);
@@ -380,7 +380,7 @@ Replace assets/ with the path from your Media Library
             dur: audio.duration,
             ras: new XMLSerializer().serializeToString(ras.documentElement),
           },
-          this.selectedOutputFormat
+          this.selectedOutputFormat,
         )
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe({
