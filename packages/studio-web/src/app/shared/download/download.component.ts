@@ -12,7 +12,7 @@ import { DownloadService } from "./download.service";
   styleUrl: "./download.component.sass",
 })
 export class DownloadComponent {
-  @Input() b64Inputs: [string, Document, [string, string]];
+  @Input() b64Inputs: [string, Document];
   @Input() slots: ReadAlongSlots;
   @Input() readalong: Components.ReadAlong;
   outputFormats = [

@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
-import { BehaviorSubject, takeUntil, Subject, combineLatest } from "rxjs";
+import { BehaviorSubject, takeUntil, Subject, combineLatest, take } from "rxjs";
 import {
   AfterViewInit,
   Component,
@@ -15,6 +15,7 @@ import { Components } from "@readalongs/web-component/loader";
 import { HttpClient } from "@angular/common/http";
 import { B64Service } from "../b64.service";
 import { ToastrService } from "ngx-toastr";
+import { FileService } from "../file.service";
 
 @Component({
   selector: "app-editor",
@@ -32,26 +33,26 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   // readalong: Document | null;
   readalong_element: Element;
   audioControl$ = new FormControl<File | null>(null, Validators.required);
-  rasControl$ = new FormControl<any>(null, Validators.required);
-  b64Inputs: [string, Document, [string, string]] = [
-    "",
-    new Document(),
-    ["", ""],
-  ];
-  readalong: Components.ReadAlong;
+  rasControl$ = new FormControl<File | null>(null, Validators.required);
+  b64Inputs: [string, Document] = ["", new Document()];
+  @ViewChild("readalong") readalong!: Components.ReadAlong;
   slots: ReadAlongSlots = {
-    title: "test",
-    subtitle: "test",
+    title: "Title",
+    subtitle: "Subtitle",
   };
+  language: "eng" | "fra" | "spa" = "eng";
+  audioB64Control$ = new FormControl<string | null>(null, Validators.required);
   public uploadFormGroup = this._formBuilder.group({
     audio: this.audioControl$,
     ras: this.rasControl$,
+    audioB64: this.audioB64Control$,
   });
   unsubscribe$ = new Subject<void>();
   constructor(
     private _formBuilder: FormBuilder,
     private http: HttpClient,
-    private b64Service: B64Service,
+    public b64Service: B64Service,
+    private fileService: FileService,
     private toastr: ToastrService,
   ) {
     this.audioControl$.valueChanges
@@ -61,6 +62,13 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         if (audioFile) {
           this.wavesurfer.loadBlob(audioFile);
           this.wavesurfer.clearSegments();
+          this.fileService
+            .readFileAsData$(audioFile)
+            .pipe(take(1))
+            .subscribe((audiob64) => {
+              this.b64Inputs[0] = audiob64;
+              this.audioB64Control$.setValue(audiob64);
+            });
         }
       });
     // this.loadSampleAudio(); // Just for mocking
@@ -94,6 +102,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       height: 200,
       minPxPerSec: 300, // FIXME: uncertain about this
     });
+    this.wavesurfer.on("segment-updated", (segment, e) => {
+      console.log(segment);
+      console.log(e);
+    });
     this.wavesurfer.on("segment-click", (segment, e) => {
       e.stopPropagation();
       segment.play();
@@ -123,6 +135,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
 
   onTextFileSelected(event: any) {
     let file: File = event.target.files[0];
+    this.rasControl$.setValue(file);
     this.load_readalong(file);
   }
 
@@ -164,6 +177,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.parse_readalong(text2);
       }
     }
+    this.b64Inputs[1] = readalong;
     return readalong;
   }
 

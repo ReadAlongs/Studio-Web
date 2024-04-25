@@ -49,7 +49,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 export class StudioComponent implements OnDestroy, OnInit {
   firstFormGroup: any;
   title = "readalong-studio";
-  b64Inputs$ = new Subject<[string, Document, [string, string]]>();
+  b64Inputs$ = new Subject<[string, Document]>();
   render$ = new BehaviorSubject<boolean>(false);
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
@@ -59,7 +59,6 @@ export class StudioComponent implements OnDestroy, OnInit {
   constructor(
     private titleService: Title,
     private router: Router,
-    private b64Service: B64Service,
     private fileService: FileService,
     private dialog: MatDialog,
     private meta: Meta,
@@ -291,9 +290,8 @@ export class StudioComponent implements OnDestroy, OnInit {
     if (event[0] === "aligned") {
       const aligned_xml = createAlignedXML(event[2], event[3] as Segment);
       forkJoin([
-        this.fileService.readFileAsData$(event[1]),
+        this.fileService.readFileAsData$(event[1]), // audio
         of(aligned_xml),
-        this.b64Service.getBundle$(),
       ])
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((x: any) => {

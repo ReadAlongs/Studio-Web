@@ -12,7 +12,7 @@ import { ReadAlongSlots } from "../ras.service";
   styleUrls: ["./demo.component.sass"],
 })
 export class DemoComponent implements OnDestroy, OnInit {
-  @Input() b64Inputs: [string, Document, [string, string]];
+  @Input() b64Inputs: [string, Document];
   @Input() render$: Observable<boolean>;
   @ViewChild("readalong") readalong!: Components.ReadAlong;
   slots: ReadAlongSlots = {

@@ -58,6 +58,41 @@
       </div>
     </div>
   </div>
+  <div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+      <read-along
+        id="readalong"
+        [language]="language"
+        #readalong
+        *ngIf="uploadFormGroup.valid"
+        mode="EDIT"
+        href="data:application/readalong+xml;base64,{{
+          b64Service.xmlToB64(b64Inputs[1])
+        }}"
+        audio="{{ b64Inputs[0] }}"
+        class="hydrated"
+      >
+        <input
+          #title
+          [(ngModel)]="slots.title"
+          [ngStyle]="{ 'width.ch': slots.title.length, 'min-width.ch': 20 }"
+          style="border: none"
+          placeholder="Enter your title here"
+          slot="read-along-header"
+        />
+        <input
+          #subtitle
+          [(ngModel)]="slots.subtitle"
+          [ngStyle]="{ 'width.ch': slots.subtitle.length, 'min-width.ch': 20 }"
+          style="border: none"
+          placeholder="Enter your subtitle here"
+          slot="read-along-subheader"
+        />
+      </read-along>
+    </div>
+    <div class="col-2"></div>
+  </div>
   <div class="row mt-5">
     <div class="col-2"></div>
     <div class="col-8">

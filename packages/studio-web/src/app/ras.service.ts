@@ -39,6 +39,11 @@ export interface ReadAlongSlots {
   subtitle: string;
 }
 
+export interface ReadAlongData {
+  audio: Blob | File;
+  alignedXML: Document;
+}
+
 export enum SupportedOutputs {
   eaf = "eaf",
   textgrid = "textgrid",

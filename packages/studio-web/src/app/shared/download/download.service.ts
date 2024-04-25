@@ -160,7 +160,7 @@ Please host all assets on your server, include the font and package imports defi
 
   async download(
     selectedOutputFormat: SupportedOutputs,
-    b64Inputs: [string, Document, [string, string]],
+    b64Inputs: [string, Document],
     slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
   ) {
@@ -181,16 +181,17 @@ Please host all assets on your server, include the font and package imports defi
         `-${timestamp}`;
       let b64ras = this.b64Service.xmlToB64(ras);
       var element = document.createElement("a");
-      let blob = new Blob(
-        [
-          `<!DOCTYPE html>
+      if (this.b64Service.jsAndFontsBundle$.value !== null) {
+        let blob = new Blob(
+          [
+            `<!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
         <title>${slots.title}</title>
-        <link rel="stylesheet" href="${b64Inputs[2][1]}">
-        <script src="${b64Inputs[2][0]}" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}"></script>
+        <link rel="stylesheet" href="${this.b64Service.jsAndFontsBundle$.value[1]}">
+        <script src="${this.b64Service.jsAndFontsBundle$.value[0]}" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}"></script>
       </head>
       <body>
           <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${b64Inputs[0]}" image-assets-folder="">
@@ -199,16 +200,25 @@ Please host all assets on your server, include the font and package imports defi
           </read-along>
       </body>
       </html>`,
-        ],
-        { type: "text/html;charset=utf-8" },
-      );
-      element.href = window.URL.createObjectURL(blob);
+          ],
+          { type: "text/html;charset=utf-8" },
+        );
+        element.href = window.URL.createObjectURL(blob);
 
-      element.download = `${basename}.html`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-      this.registerDownloadEvent(selectedOutputFormat);
+        element.download = `${basename}.html`;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        this.registerDownloadEvent(selectedOutputFormat);
+      } else {
+        this.toastr.error(
+          "JS & Fonts Bundle did not get loaded",
+          $localize`Download failed.`,
+          {
+            timeOut: 30000,
+          },
+        );
+      }
     } else if (selectedOutputFormat === SupportedOutputs.zip) {
       let zipFile = new JSZip();
       // Create inner folder
