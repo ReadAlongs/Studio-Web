@@ -40,7 +40,7 @@ export namespace Components {
          */
         "getImages": () => Promise<object>;
         /**
-          * Get ReadAlong
+          * Get ReadAlong Element
          */
         "getReadAlongElement": () => Promise<Element>;
         /**

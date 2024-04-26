@@ -597,7 +597,7 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Get ReadAlong
+   * Get ReadAlong Element
    */
   @Method()
   async getReadAlongElement(): Promise<Element> {

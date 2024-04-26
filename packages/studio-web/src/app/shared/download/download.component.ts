@@ -12,8 +12,9 @@ import { DownloadService } from "./download.service";
   styleUrl: "./download.component.sass",
 })
 export class DownloadComponent {
-  @Input() b64Inputs: [string, Document];
   @Input() slots: ReadAlongSlots;
+  @Input() b64Audio: string;
+  @Input() rasXML: Document;
   @Input() readalong: Components.ReadAlong;
   outputFormats = [
     { value: SupportedOutputs.html, display: $localize`Offline HTML` },
@@ -29,7 +30,8 @@ export class DownloadComponent {
   download() {
     this.downloadService.download(
       this.selectedOutputFormat,
-      this.b64Inputs,
+      this.b64Audio,
+      this.rasXML,
       this.slots,
       this.readalong,
     );

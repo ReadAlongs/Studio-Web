@@ -12,7 +12,6 @@ import {
 import SegmentsPlugin, { Segment } from "./segments";
 import { ReadAlongSlots } from "../ras.service";
 import { Alignment, Components } from "@readalongs/web-component/loader";
-import { HttpClient } from "@angular/common/http";
 import { B64Service } from "../b64.service";
 import { ToastrService } from "ngx-toastr";
 import { FileService } from "../file.service";
@@ -30,12 +29,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   zoom_in: HTMLButtonElement;
   zoom_out: HTMLButtonElement;
   $downloadable = new BehaviorSubject(false);
-  // readalong: Document | null;
-  readalong_element: Element;
+  @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
   audioControl$ = new FormControl<File | null>(null, Validators.required);
-  rasControl$ = new FormControl<File | null>(null, Validators.required);
-  b64Inputs: [string, Document] = ["", new Document()];
-  @ViewChild("readalong") readalong!: Components.ReadAlong;
+  rasControl$ = new FormControl<Document | null>(null, Validators.required);
+  readalong: Components.ReadAlong;
   slots: ReadAlongSlots = {
     title: "Title",
     subtitle: "Subtitle",
@@ -65,15 +62,11 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
             .readFileAsData$(audioFile)
             .pipe(take(1))
             .subscribe((audiob64) => {
-              this.b64Inputs[0] = audiob64;
               this.audioB64Control$.setValue(audiob64);
             });
         }
       });
     // this.loadSampleAudio(); // Just for mocking
-    this.audio_input = document.getElementById(
-      "audio-input",
-    ) as HTMLInputElement;
     this.ras_input = document.getElementById("ras-input") as HTMLInputElement;
     this.zoom_in = document.getElementById("zoom-in") as HTMLButtonElement;
     this.zoom_out = document.getElementById("zoom-out") as HTMLButtonElement;
@@ -102,13 +95,11 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       minPxPerSec: 300, // FIXME: uncertain about this
     });
     this.wavesurfer.on("segment-updated", async (segment, e) => {
-      console.log(e);
-      console.log(segment);
       if (e.action == "contentEdited") {
-        let readalong_element = await this.readalong.getReadAlongElement();
-        let changedSegment = readalong_element.shadowRoot?.getElementById(
-          segment.data.id,
-        );
+        let readalongContainerElement =
+          await this.readalong.getReadAlongElement();
+        let changedSegment =
+          readalongContainerElement.shadowRoot?.getElementById(segment.data.id);
         if (changedSegment) {
           changedSegment.innerText = segment.data.text;
         }
@@ -150,20 +141,16 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     );
   }
 
-  onTextFileSelected(event: any) {
+  async onRasFileSelected(event: any) {
     let file: File = event.target.files[0];
-    this.rasControl$.setValue(file);
-    this.load_readalong(file);
-  }
-
-  async load_readalong(ras_file: File) {
-    const text = await ras_file.text();
+    const text = await file.text();
     await this.parse_readalong(text);
   }
 
   async parse_readalong(text: string): Promise<Document | null> {
     const parser = new DOMParser();
     const readalong = parser.parseFromString(text, "text/html");
+    this.rasControl$.setValue(readalong);
     const element = readalong.querySelector("read-along");
     if (element === null) return null;
     // We can always download *something* (FIXME: will reconsider)
@@ -179,7 +166,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           new File([blob], "test-audio.webm", { type: "audio/webm" }),
         );
         // Clear previously selected file
-        this.audio_input.value = "";
         this.$downloadable.next(false);
       }
     }
@@ -194,7 +180,24 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.parse_readalong(text2);
       }
     }
-    this.b64Inputs[1] = readalong;
+    let readalongBody = readalong.querySelector("body")?.innerHTML;
+    if (readalongBody) {
+      this.readalongContainerElement.nativeElement.innerHTML = readalongBody;
+      const rasElement =
+        this.readalongContainerElement.nativeElement.querySelector(
+          "read-along",
+        );
+      // Get Title and Subtitle Slots
+      this.slots.title = rasElement.querySelector(
+        "span[slot='read-along-header']",
+      ).innerText;
+      this.slots.subtitle = rasElement.querySelector(
+        "span[slot='read-along-subheader']",
+      ).innerText;
+      // Make Editable
+      rasElement.setAttribute("mode", "EDIT");
+      this.readalong = rasElement;
+    }
     return readalong;
   }
 

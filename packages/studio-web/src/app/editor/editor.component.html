@@ -6,54 +6,40 @@
           Welcome to the ReadAlong Studio Editor
         </h1>
       </div>
-      <div class="col-6" *ngIf="uploadFormGroup.valid">
+      <div
+        class="col-6"
+        *ngIf="
+          uploadFormGroup.valid && audioB64Control$.value && rasControl$.value
+        "
+      >
         <ras-shared-download
           [slots]="slots"
-          [b64Inputs]="b64Inputs"
           [readalong]="readalong"
+          [b64Audio]="audioB64Control$.value"
+          [rasXML]="rasControl$.value"
         ></ras-shared-download>
       </div>
     </div>
     <div class="row mb-6">
-      <div class="col-6">
+      <div class="col-8">
         <h2 i18n="Title for upload box" class="subtitle">
-          Select an audio file
+          Select a single-file HTML ReadAlong file
         </h2>
         <label
-          i18n="Instructions for uploading audio"
-          for="updateAudio"
+          i18n="Instructions for uploading editable RAS"
+          for="updateRAS"
           class="form-label"
-          >Use pre-recorded audio from an MP3 or WAV file.</label
+          >Select a corresponding ReadAlong Studio temporary HTML file
+          (.html)</label
         >
         <input
-          (change)="onAudioFileSelected($event)"
-          class="form-control"
-          name="audio"
-          type="file"
-          id="updateAudio"
-          accept=".mp3,.wav,.webm,.m4a"
-        />
-      </div>
-      <div class="col-6" *ngIf="audioControl$.valid">
-        <h2 i18n="Title for upload box" class="subtitle">
-          Select a .readalong file
-        </h2>
-        <label
-          i18n="Instructions for uploading text"
-          for="updateText"
-          class="form-label"
-          >Select a corresponding ReadAlong Studio temporary file
-          (.readalong)</label
-        >
-        <input
-          [disabled]="!audioControl$.valid"
           #textInputElement
-          (change)="onTextFileSelected($event)"
+          (change)="onRasFileSelected($event)"
           class="form-control"
           name="text"
           type="file"
-          id="updateText"
-          accept=".readalong"
+          id="updateRAS"
+          accept=".html"
         />
       </div>
     </div>
@@ -61,35 +47,7 @@
   <div class="row">
     <div class="col-2"></div>
     <div class="col-8">
-      <read-along
-        id="readalong"
-        [language]="language"
-        #readalong
-        *ngIf="uploadFormGroup.valid"
-        mode="EDIT"
-        href="data:application/readalong+xml;base64,{{
-          b64Service.xmlToB64(b64Inputs[1])
-        }}"
-        audio="{{ b64Inputs[0] }}"
-        class="hydrated"
-      >
-        <input
-          #title
-          [(ngModel)]="slots.title"
-          [ngStyle]="{ 'width.ch': slots.title.length, 'min-width.ch': 20 }"
-          style="border: none"
-          placeholder="Enter your title here"
-          slot="read-along-header"
-        />
-        <input
-          #subtitle
-          [(ngModel)]="slots.subtitle"
-          [ngStyle]="{ 'width.ch': slots.subtitle.length, 'min-width.ch': 20 }"
-          style="border: none"
-          placeholder="Enter your subtitle here"
-          slot="read-along-subheader"
-        />
-      </read-along>
+      <div #readalongContainer></div>
     </div>
     <div class="col-2"></div>
   </div>
@@ -121,54 +79,3 @@
     <div class="col-2"></div>
   </div>
 </section>
-
-<!-- 
-            <div class="pure-u-1-2">
-                <div class="content-box">
-                    <form class="pure-form-stacked">
-                        <label>Upload an audio file:
-                                    <input
-                                        id="audio-input"
-                                        type="file"
-                                        value="Upload"
-                                        accept=".mp3,.wav,.webm"
-                                    />
-                                </label>
-                </form>
-            </div>
-        </div>
-        <div class="pure-u-1-2">
-            <div class="content-box">
-                <form class="pure-form-stacked">
-                    <label>Upload a ReadAlong file:
-                                    <input
-                                        id="ras-input"
-                                        type="file"
-                                        value="Upload"
-                                        accept=".readalong,.html"
-                                    />
-                                </label>
-                </form>
-            </div>
-        </div>
-        <div class="pure-u-1" id="wavesurfer"></div>
-        <div class="pure-u-1-2" style="text-align: center">
-            <div class="content-box">
-                <button class="pure-button" id="zoom-in">
-                                Zoom In
-                            </button>
-                <button class="pure-button" id="zoom-out">
-                                Zoom Out
-                            </button>
-            </div>
-        </div>
-        <div class="pure-u-1-2" style="text-align: center">
-            <div class="content-box">
-                <button class="pure-button" id="download" disabled>
-                                Download
-                            </button>
-            </div>
-        </div>
-    </div>
-    </div>
-    </div> -->

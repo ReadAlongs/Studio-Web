@@ -59,7 +59,7 @@ Type: `Promise<object>`
 
 ### `getReadAlongElement() => Promise<Element>`
 
-Get ReadAlong
+Get ReadAlong Element
 
 #### Returns
 

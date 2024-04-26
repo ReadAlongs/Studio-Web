@@ -160,18 +160,14 @@ Please host all assets on your server, include the font and package imports defi
 
   async download(
     selectedOutputFormat: SupportedOutputs,
-    b64Inputs: [string, Document],
+    b64Audio: string,
+    rasXML: Document,
     slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
   ) {
-    console.log(selectedOutputFormat);
-    console.log(b64Inputs);
-    console.log(slots);
-    console.log(readalong);
-    let ras = b64Inputs[1];
     if (selectedOutputFormat == SupportedOutputs.html) {
-      await this.updateImages(ras, true, "image", readalong);
-      await this.updateTranslations(ras, readalong);
+      await this.updateImages(rasXML, true, "image", readalong);
+      await this.updateTranslations(rasXML, readalong);
       const timestamp = new Date()
         .toISOString()
         .replace(/[^0-9]/g, "")
@@ -179,7 +175,7 @@ Please host all assets on your server, include the font and package imports defi
       const basename =
         (slots.title ? slugify(slots.title, 15) : "readalong") +
         `-${timestamp}`;
-      let b64ras = this.b64Service.xmlToB64(ras);
+      let b64ras = this.b64Service.xmlToB64(rasXML);
       var element = document.createElement("a");
       if (this.b64Service.jsAndFontsBundle$.value !== null) {
         let blob = new Blob(
@@ -194,7 +190,7 @@ Please host all assets on your server, include the font and package imports defi
         <script src="${this.b64Service.jsAndFontsBundle$.value[0]}" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}"></script>
       </head>
       <body>
-          <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${b64Inputs[0]}" image-assets-folder="">
+          <read-along href="data:application/readalong+xml;base64,${b64ras}" audio="${b64Audio}" image-assets-folder="">
           <span slot="read-along-header">${slots.title}</span>
           <span slot="read-along-subheader">${slots.subtitle}</span>
           </read-along>
@@ -249,7 +245,7 @@ Please host all assets on your server, include the font and package imports defi
       // - add images
       // @ts-ignore
       const images: Image[] = await this.updateImages(
-        ras,
+        rasXML,
         false,
         `image-${basename}`,
         readalong,
@@ -265,10 +261,10 @@ Please host all assets on your server, include the font and package imports defi
         );
       }
       // - add .readalong file
-      await this.updateTranslations(ras, readalong);
+      await this.updateTranslations(rasXML, readalong);
 
       const xmlString = this.xmlSerializer.serializeToString(
-        ras.documentElement,
+        rasXML.documentElement,
       );
       const rasFile = new Blob([xmlString], { type: "application/xml" });
       assetsFolder?.file(`${basename}.readalong`, rasFile);
@@ -347,12 +343,12 @@ Replace assets/ with the path from your Media Library
           }),
       );
     } else {
-      let audio: HTMLAudioElement = new Audio(b64Inputs[0]);
+      let audio: HTMLAudioElement = new Audio(b64Audio);
       this.rasService
         .convertRasFormat$(
           {
             dur: audio.duration,
-            ras: new XMLSerializer().serializeToString(ras.documentElement),
+            ras: new XMLSerializer().serializeToString(rasXML.documentElement),
           },
           selectedOutputFormat,
         )
