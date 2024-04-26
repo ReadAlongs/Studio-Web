@@ -50,7 +50,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   unsubscribe$ = new Subject<void>();
   constructor(
     private _formBuilder: FormBuilder,
-    private http: HttpClient,
     public b64Service: B64Service,
     private fileService: FileService,
     private toastr: ToastrService,
