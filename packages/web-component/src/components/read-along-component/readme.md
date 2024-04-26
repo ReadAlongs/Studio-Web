@@ -37,6 +37,16 @@ Type: `Promise<void>`
 
 
 
+### `getAlignments() => Promise<Alignment>`
+
+Get Alignments
+
+#### Returns
+
+Type: `Promise<Alignment>`
+
+
+
 ### `getImages() => Promise<object>`
 
 Get Images
@@ -47,6 +57,16 @@ Type: `Promise<object>`
 
 
 
+### `getReadAlongElement() => Promise<Element>`
+
+Get ReadAlong
+
+#### Returns
+
+Type: `Promise<Element>`
+
+
+
 ### `getTranslations() => Promise<object>`
 
 Get Translations
@@ -54,6 +74,22 @@ Get Translations
 #### Returns
 
 Type: `Promise<object>`
+
+
+
+### `updateSpriteAlignments(alignment: Alignment) => Promise<void>`
+
+Update Single Sprite
+
+#### Parameters
+
+| Name        | Type        | Description |
+| ----------- | ----------- | ----------- |
+| `alignment` | `Alignment` |             |
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 

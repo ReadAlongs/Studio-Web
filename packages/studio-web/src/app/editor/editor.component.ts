@@ -11,7 +11,7 @@ import {
 } from "@angular/core";
 import SegmentsPlugin, { Segment } from "./segments";
 import { ReadAlongSlots } from "../ras.service";
-import { Components } from "@readalongs/web-component/loader";
+import { Alignment, Components } from "@readalongs/web-component/loader";
 import { HttpClient } from "@angular/common/http";
 import { B64Service } from "../b64.service";
 import { ToastrService } from "ngx-toastr";
@@ -87,7 +87,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       new File([sampleAudio], "test.webm", { type: "audio/webm" }),
     );
   }
-  ngAfterViewInit(): void {
+  async ngAfterViewInit(): Promise<void> {
     this.wavesurfer = WaveSurfer.create({
       container: this.wavesurferContainer.nativeElement as HTMLElement,
       progressColor: "#999",
@@ -102,9 +102,27 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       height: 200,
       minPxPerSec: 300, // FIXME: uncertain about this
     });
-    this.wavesurfer.on("segment-updated", (segment, e) => {
-      console.log(segment);
+    this.wavesurfer.on("segment-updated", async (segment, e) => {
       console.log(e);
+      console.log(segment);
+      if (e.action == "contentEdited") {
+        let readalong_element = await this.readalong.getReadAlongElement();
+        let changedSegment = readalong_element.shadowRoot?.getElementById(
+          segment.data.id,
+        );
+        if (changedSegment) {
+          changedSegment.innerText = segment.data.text;
+        }
+      }
+      if (e.action == "resize") {
+        let alignments = await this.readalong.getAlignments();
+        let start = parseFloat((segment.start * 1000).toFixed(0));
+        let end = parseFloat((segment.end * 1000).toFixed(0));
+        alignments[segment.data.id] = [start, end];
+        const new_al: Alignment = {};
+        new_al[segment.data.id] = [start, end];
+        await this.readalong.updateSpriteAlignments(alignments);
+      }
     });
     this.wavesurfer.on("segment-click", (segment, e) => {
       e.stopPropagation();
@@ -179,25 +197,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
     this.b64Inputs[1] = readalong;
     return readalong;
-  }
-
-  adjust_alignment(element: Element) {
-    const segments: { [id: string]: Segment } = {};
-    for (const s of Object.values(this.wavesurfer.segments.list)) {
-      const segment = s as Segment;
-      segments[segment.data.id as string] = segment;
-    }
-    for (const w of Array.from(element.querySelectorAll("w[id]"))) {
-      const wordId = w.getAttribute("id");
-      if (wordId == null) continue;
-      const segment = segments[wordId];
-      if (!segment)
-        // deletions not allowed for now
-        throw `missing segment for ${wordId}`;
-      w.setAttribute("time", segment.start.toFixed(3));
-      w.setAttribute("dur", (segment.end - segment.start).toFixed(3));
-      w.textContent = segment.data.text as string;
-    }
   }
 
   create_segments(element: Element) {

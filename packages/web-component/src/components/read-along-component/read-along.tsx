@@ -63,7 +63,7 @@ export class ReadAlongComponent {
    * URL of the audio file
    */
   @Prop() audio: string;
-
+  audio_howl: Howl;
   audio_howl_sprites: any;
   reading$: Subject<string>; // An RxJs Subject for the current item being read.
   duration: number; // Duration of the audio file
@@ -434,6 +434,7 @@ export class ReadAlongComponent {
    */
   stop(): void {
     this.playing = false;
+    this.play_id = undefined;
     this.audio_howl_sprites.stop();
     this.el.shadowRoot
       .querySelectorAll(".reading")
@@ -583,6 +584,32 @@ export class ReadAlongComponent {
   @Method()
   async getImages(): Promise<object> {
     return this.images;
+  }
+
+  /**
+   * Update Single Sprite
+   */
+  @Method()
+  async updateSpriteAlignments(alignment: Alignment): Promise<void> {
+    this.stop();
+    this.processed_alignment = alignment;
+    this.attachScrollingLogicToAudio();
+  }
+
+  /**
+   * Get ReadAlong
+   */
+  @Method()
+  async getReadAlongElement(): Promise<Element> {
+    return this.el;
+  }
+
+  /**
+   * Get Alignments
+   */
+  @Method()
+  async getAlignments(): Promise<Alignment> {
+    return this.processed_alignment;
   }
 
   /**
@@ -968,107 +995,108 @@ export class ReadAlongComponent {
     this.processed_alignment = extractAlignment(this.parsed_text);
     this.alignment_failed = Object.keys(this.processed_alignment).length == 0;
     // load basic Howl
-    this.audio_howl_sprites = new Howl({
+    this.audio_howl = new Howl({
       src: [this.audio],
       preload: false,
     });
     // Once loaded, get duration and build Sprite
-    this.audio_howl_sprites.once("load", () => {
-      this.processed_alignment["all"] = [
-        0,
-        this.audio_howl_sprites.duration() * 1000,
-      ];
-      this.duration = this.audio_howl_sprites.duration();
-      this.audio_howl_sprites = this.buildSprite(
-        this.audio,
-        this.processed_alignment,
-      );
-      // Once Sprites are built, subscribe to reading subject and update element class
-      // when new distinct values are emitted
-      this.reading$ = this.audio_howl_sprites._reading$
-        .pipe(distinctUntilChanged())
-        .subscribe((el_tag) => {
-          // Only highlight when playing
-          if (this.playing) {
-            //if auto pause is active and not on last word of the read along pause the audio
-            if (
-              this.autoPauseAtEndOfPage &&
-              el_tag in this.endOfPageTags &&
-              this.finalTaggedWord !== el_tag
-            ) {
-              //clear previous timeout if active
-              if (this.autoPauseTimer) window.clearTimeout(this.autoPauseTimer);
-              //pause 25ms before end of word
-              this.autoPauseTimer = window.setTimeout(() => {
-                this.pause();
-              }, this.endOfPageTags[el_tag][1] - 25);
-            }
-            // Turn tag to query
-            let query = this.tagToQuery(el_tag);
-            // select the element with that tag
-            let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
-            // Remove all elements with reading class
-            this.el.shadowRoot
-              .querySelectorAll(".reading")
-              .forEach((x) => x.classList.remove("reading"));
-            // Add reading to the selected el
-            query_el.classList.add("reading");
-
-            // Scroll horizontally (to different page) if needed
-            let current_page =
-              ReadAlongComponent._getSentenceContainerOfWord(query_el)
-                .parentElement.id;
-
-            if (current_page !== this.current_page) {
-              if (this.current_page !== undefined && !this.isScrolling) {
-                this.scrollToPage(current_page);
-              }
-              this.current_page = current_page;
-            }
-            const leftEdge =
-              Math.ceil(
-                this.el.shadowRoot
-                  .querySelector(".pages__container")
-                  .getBoundingClientRect().left,
-              ) + 1;
-            const pageLeftEdge = Math.ceil(
-              this.el.shadowRoot
-                .querySelector("#" + this.current_page)
-                .getBoundingClientRect().left,
-            );
-
-            //if the user has scrolled away from the from the current page bring them page
-            if (
-              query_el.getBoundingClientRect().left < 0 ||
-              pageLeftEdge !== leftEdge
-            ) {
-              if (!this.isScrolling) this.scrollToPage(current_page);
-            }
-
-            // scroll vertically (through paragraph) if needed
-            if (this.inPageContentOverflow(query_el)) {
-              if (this.autoScroll) {
-                query_el.scrollIntoView({ block: "start", inline: "nearest" });
-                if (!this.isScrolling) this.scrollByHeight(query_el);
-              }
-            } // scroll horizontal (through paragraph) if needed
-            if (this.inParagraphContentOverflow(query_el)) {
-              if (this.autoScroll) {
-                query_el.scrollIntoView(false);
-                if (!this.isScrolling) this.scrollByWidth(query_el);
-              }
-            }
-          }
-        });
-      this.hasLoaded += 1;
-      this.assetsStatus.AUDIO = LOADED;
+    this.audio_howl.once("load", () => {
+      this.attachScrollingLogicToAudio();
     });
     // Handle load errors
-    this.audio_howl_sprites.once("loaderror", () => {
+    this.audio_howl.once("loaderror", () => {
       this.hasLoaded += 1;
       this.assetsStatus.AUDIO = ERROR_LOADING;
     });
-    this.audio_howl_sprites.load();
+    this.audio_howl.load();
+  }
+
+  attachScrollingLogicToAudio(): void {
+    this.processed_alignment["all"] = [0, this.audio_howl.duration() * 1000];
+    this.duration = this.audio_howl.duration();
+    this.audio_howl_sprites = this.buildSprite(
+      this.audio,
+      this.processed_alignment,
+    );
+    // Once Sprites are built, subscribe to reading subject and update element class
+    // when new distinct values are emitted
+    this.reading$ = this.audio_howl_sprites._reading$
+      .pipe(distinctUntilChanged())
+      .subscribe((el_tag) => {
+        // Only highlight when playing
+        if (this.playing) {
+          //if auto pause is active and not on last word of the read along pause the audio
+          if (
+            this.autoPauseAtEndOfPage &&
+            el_tag in this.endOfPageTags &&
+            this.finalTaggedWord !== el_tag
+          ) {
+            //clear previous timeout if active
+            if (this.autoPauseTimer) window.clearTimeout(this.autoPauseTimer);
+            //pause 25ms before end of word
+            this.autoPauseTimer = window.setTimeout(() => {
+              this.pause();
+            }, this.endOfPageTags[el_tag][1] - 25);
+          }
+          // Turn tag to query
+          let query = this.tagToQuery(el_tag);
+          // select the element with that tag
+          let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
+          // Remove all elements with reading class
+          this.el.shadowRoot
+            .querySelectorAll(".reading")
+            .forEach((x) => x.classList.remove("reading"));
+          // Add reading to the selected el
+          query_el.classList.add("reading");
+
+          // Scroll horizontally (to different page) if needed
+          let current_page =
+            ReadAlongComponent._getSentenceContainerOfWord(query_el)
+              .parentElement.id;
+
+          if (current_page !== this.current_page) {
+            if (this.current_page !== undefined && !this.isScrolling) {
+              this.scrollToPage(current_page);
+            }
+            this.current_page = current_page;
+          }
+          const leftEdge =
+            Math.ceil(
+              this.el.shadowRoot
+                .querySelector(".pages__container")
+                .getBoundingClientRect().left,
+            ) + 1;
+          const pageLeftEdge = Math.ceil(
+            this.el.shadowRoot
+              .querySelector("#" + this.current_page)
+              .getBoundingClientRect().left,
+          );
+
+          //if the user has scrolled away from the from the current page bring them page
+          if (
+            query_el.getBoundingClientRect().left < 0 ||
+            pageLeftEdge !== leftEdge
+          ) {
+            if (!this.isScrolling) this.scrollToPage(current_page);
+          }
+
+          // scroll vertically (through paragraph) if needed
+          if (this.inPageContentOverflow(query_el)) {
+            if (this.autoScroll) {
+              query_el.scrollIntoView({ block: "start", inline: "nearest" });
+              if (!this.isScrolling) this.scrollByHeight(query_el);
+            }
+          } // scroll horizontal (through paragraph) if needed
+          if (this.inParagraphContentOverflow(query_el)) {
+            if (this.autoScroll) {
+              query_el.scrollIntoView(false);
+              if (!this.isScrolling) this.scrollByWidth(query_el);
+            }
+          }
+        }
+      });
+    this.hasLoaded += 1;
+    this.assetsStatus.AUDIO = LOADED;
   }
 
   componentDidRender(): void {
