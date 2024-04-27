@@ -158,29 +158,20 @@ Please host all assets on your server, include the font and package imports defi
     });
   }
 
-  async download(
-    selectedOutputFormat: SupportedOutputs,
-    b64Audio: string,
+  async createSingleFileBlob(
     rasXML: Document,
-    slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
+    slots: ReadAlongSlots,
+    b64Audio: string,
   ) {
-    if (selectedOutputFormat == SupportedOutputs.html) {
-      await this.updateImages(rasXML, true, "image", readalong);
-      await this.updateTranslations(rasXML, readalong);
-      const timestamp = new Date()
-        .toISOString()
-        .replace(/[^0-9]/g, "")
-        .slice(0, -3);
-      const basename =
-        (slots.title ? slugify(slots.title, 15) : "readalong") +
-        `-${timestamp}`;
-      let b64ras = this.b64Service.xmlToB64(rasXML);
-      var element = document.createElement("a");
-      if (this.b64Service.jsAndFontsBundle$.value !== null) {
-        let blob = new Blob(
-          [
-            `<!DOCTYPE html>
+    await this.updateImages(rasXML, true, "image", readalong);
+    await this.updateTranslations(rasXML, readalong);
+
+    let b64ras = this.b64Service.xmlToB64(rasXML);
+    if (this.b64Service.jsAndFontsBundle$.value !== null) {
+      let blob = new Blob(
+        [
+          `<!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="utf-8">
@@ -196,11 +187,38 @@ Please host all assets on your server, include the font and package imports defi
           </read-along>
       </body>
       </html>`,
-          ],
-          { type: "text/html;charset=utf-8" },
-        );
-        element.href = window.URL.createObjectURL(blob);
+        ],
+        { type: "text/html;charset=utf-8" },
+      );
+      return blob;
+    }
+    return undefined;
+  }
 
+  async download(
+    selectedOutputFormat: SupportedOutputs,
+    b64Audio: string,
+    rasXML: Document,
+    slots: ReadAlongSlots,
+    readalong: Components.ReadAlong,
+  ) {
+    if (selectedOutputFormat == SupportedOutputs.html) {
+      var element = document.createElement("a");
+      const blob = await this.createSingleFileBlob(
+        rasXML,
+        readalong,
+        slots,
+        b64Audio,
+      );
+      if (blob) {
+        const timestamp = new Date()
+          .toISOString()
+          .replace(/[^0-9]/g, "")
+          .slice(0, -3);
+        const basename =
+          (slots.title ? slugify(slots.title, 15) : "readalong") +
+          `-${timestamp}`;
+        element.href = window.URL.createObjectURL(blob);
         element.download = `${basename}.html`;
         document.body.appendChild(element);
         element.click();
@@ -219,7 +237,17 @@ Please host all assets on your server, include the font and package imports defi
       let zipFile = new JSZip();
       // Create inner folder
       const innerFolder = zipFile.folder("readalong");
+      const innerFolderEditable = zipFile.folder("editable");
       const assetsFolder = innerFolder?.folder("assets");
+      const blob = await this.createSingleFileBlob(
+        rasXML,
+        readalong,
+        slots,
+        b64Audio,
+      );
+      if (blob) {
+        innerFolderEditable?.file("editable.html", blob);
+      }
       const timestamp = new Date()
         .toISOString()
         .replace(/[^0-9]/g, "")
@@ -228,6 +256,7 @@ Please host all assets on your server, include the font and package imports defi
         (slots.title ? slugify(slots.title, 15) : "readalong") +
         `-${timestamp}`;
       // - add audio file
+      // Add uploaded file/recorded audio
       if (this.uploadService.$currentAudio.value !== null) {
         // Recorded audio is always mp3
         let audioExtension = "mp3";
