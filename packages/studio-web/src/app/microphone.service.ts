@@ -45,7 +45,7 @@ export class MicrophoneService {
         },
         (_) => {
           reject("Recorder timed out");
-        }
+        },
       );
       if (this.recorder === null) reject("Recorder was not created");
       else this.recorder.stop();

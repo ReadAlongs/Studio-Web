@@ -11,7 +11,7 @@ import {
 // First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting()
+  platformBrowserDynamicTesting(),
 );
 
 // Then we used to find the tests here, but since Angular 15 karma finds them automatically.

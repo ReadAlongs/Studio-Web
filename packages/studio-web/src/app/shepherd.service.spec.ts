@@ -66,7 +66,7 @@ describe("ShepherdService", () => {
       start() {
         expect(steps[0].options.scrollToHandler()).toBe(
           "custom scrollToHandler",
-          "The handler was passed through as an option on the step"
+          "The handler was passed through as an option on the step",
         );
       },
     };

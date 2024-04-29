@@ -16,7 +16,7 @@ export function makeButton(this: any, button: any) {
 
   if (builtInButtonTypes.indexOf(type) === -1) {
     throw new Error(
-      `'type' property must be one of 'back', 'cancel', or 'next'`
+      `'type' property must be one of 'back', 'cancel', or 'next'`,
     );
   }
 

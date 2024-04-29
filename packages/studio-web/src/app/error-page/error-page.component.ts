@@ -13,7 +13,10 @@ export class ErrorPageComponent implements OnInit {
   errorType: string | null = null;
   contactLink = environment.packageJson.contact;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
     this.msg = this.route.snapshot.queryParamMap.get("msg");

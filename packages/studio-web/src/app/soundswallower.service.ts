@@ -67,7 +67,7 @@ export class SoundswallowerService {
         soundswallower_factory().then((module) => {
           soundswallower = module;
           return this.preload();
-        })
+        }),
       );
     else return from(this.preload());
   }
@@ -108,7 +108,7 @@ export class SoundswallowerService {
                 decoder.process_audio(
                   channel_data.subarray(pos, pos + len),
                   false,
-                  false
+                  false,
                 );
                 resolve();
               }, 0);
@@ -148,7 +148,7 @@ export class SoundswallowerService {
 
 export function createAlignedXML(
   xmlText: string,
-  alignment: Segment
+  alignment: Segment,
 ): Document {
   if (alignment.w === undefined) throw "Missing segmentation in alignment";
   const parser = new DOMParser();

@@ -17,18 +17,21 @@ export class B64Service {
    * @param {HttpClient} http - The HttpClient service for making HTTP requests.
    * @param {FileService} fileService - The FileService for handling file operations.
    */
-  constructor(private http: HttpClient, private fileService: FileService) {}
+  constructor(
+    private http: HttpClient,
+    private fileService: FileService,
+  ) {}
   getBundle$(): Observable<any[]> {
     return forkJoin([
       this.http
         .get(this.JS_BUNDLE_URL, { responseType: "blob" })
         .pipe(
-          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob))
+          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob)),
         ),
       this.http
         .get(this.FONTS_BUNDLE_URL, { responseType: "blob" })
         .pipe(
-          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob))
+          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob)),
         ),
     ]);
   }
@@ -37,7 +40,7 @@ export class B64Service {
     return window.btoa(
       encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
         return String.fromCharCode(parseInt(p1, 16));
-      })
+      }),
     );
   }
   b64_to_utf8(str: string) {
@@ -47,7 +50,7 @@ export class B64Service {
         .call(window.atob(str), function (c) {
           return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
         })
-        .join("")
+        .join(""),
     );
   }
 

@@ -48,7 +48,7 @@ export function extractPages(xml: Document | Element): Array<Page> {
       }
       if (page.attributes) parsed_page["attributes"] = page.attributes;
       return parsed_page;
-    }
+    },
   );
   return parsed_pages;
 }
@@ -226,7 +226,7 @@ Sprite.prototype = {
             }
             self._spriteLeft = self._spriteLeft.slice(
               j,
-              self._spriteLeft.length
+              self._spriteLeft.length,
             );
           }
         }

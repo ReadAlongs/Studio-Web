@@ -64,13 +64,13 @@ export class StudioComponent implements OnDestroy, OnInit {
     private dialog: MatDialog,
     private meta: Meta,
     public shepherdService: ShepherdService,
-    private ssjsService: SoundswallowerService
+    private ssjsService: SoundswallowerService,
   ) {}
   ngOnInit(): void {
     // Set Meta Tags for search engines and social media
     // We don't have to set charset or viewport for example since Angular already adds them
     this.titleService.setTitle(
-      $localize`ReadAlong-Studio for Interactive Storytelling`
+      $localize`ReadAlong-Studio for Interactive Storytelling`,
     );
     this.meta.addTags(
       [
@@ -106,7 +106,7 @@ export class StudioComponent implements OnDestroy, OnInit {
           content: $localize`Interactive ReadAlong that highlights text as it is spoken`,
         },
       ],
-      true
+      true,
     );
 
     // User Browser's default messaging to warn the user when they're about to leave the page
@@ -210,7 +210,7 @@ export class StudioComponent implements OnDestroy, OnInit {
                 element: document
                   .querySelector("#readalong")
                   ?.shadowRoot?.querySelector(
-                    "div.control-panel__buttons--left"
+                    "div.control-panel__buttons--left",
                   ),
                 on: "top",
               };

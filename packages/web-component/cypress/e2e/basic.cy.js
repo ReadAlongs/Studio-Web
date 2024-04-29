@@ -82,7 +82,7 @@ context("The Readalong Component", () => {
               // click 3/4 of the way in the readalong (should be second page)
               cy.get("@progress-bar").click(
                 el.width() * 0.61,
-                el.height() * 0.5
+                el.height() * 0.5,
               );
             });
           //word corpus and robuste should hidden

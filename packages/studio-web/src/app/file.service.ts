@@ -8,11 +8,14 @@ import { AudioContext, AudioBuffer } from "standardized-audio-context";
   providedIn: "root",
 })
 export class FileService {
-  constructor(private http: HttpClient, private toastr: ToastrService) {}
+  constructor(
+    private http: HttpClient,
+    private toastr: ToastrService,
+  ) {}
 
   loadAudioBufferFromFile$(
     file: File,
-    sampleRate: number
+    sampleRate: number,
   ): Observable<AudioBuffer> {
     var audioCtx = new AudioContext({ sampleRate });
     var audioFile = file.arrayBuffer().then((buffer: any) => {
@@ -30,14 +33,14 @@ export class FileService {
           $localize`Hmm, the file is unreachable. Please try again later.`,
           {
             timeOut: 10000,
-          }
+          },
         );
         return of(err);
       }),
       map((blob) => {
         return blob;
       }),
-      take(1)
+      take(1),
     );
   };
 

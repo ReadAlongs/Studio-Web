@@ -33,7 +33,7 @@ describe("B64Service", () => {
     E̶򱩀򑪟eٌϐ򔜮霗燨综*􍪻񭚴oꕃ𷴨2ҽT񺆥uR혙񗊭:򉪼񙏺ۤƓ騡
     񱺡􌡩PȌ񸛍񩍢􅓴冖㌃ۄ𦄜7Ž⇆*zѱ澁nަvۭË́듍JҢ䆹M󩗟繶`;
     expect(service.b64_to_utf8(service.utf8_to_b64(testUTF8))).toEqual(
-      testUTF8
+      testUTF8,
     );
   });
 });

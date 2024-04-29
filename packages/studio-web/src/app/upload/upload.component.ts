@@ -60,12 +60,12 @@ export class UploadComponent implements OnDestroy, OnInit {
   langMode = langMode.generic;
   langControl$ = new FormControl<string>(
     { value: "und", disabled: this.langMode !== "specific" },
-    Validators.required
+    Validators.required,
   );
   textControl$ = new FormControl<any>(null, Validators.required);
   audioControl$ = new FormControl<File | Blob | null>(
     null,
-    Validators.required
+    Validators.required,
   );
   starting_to_record = false;
   recording = false;
@@ -99,7 +99,7 @@ export class UploadComponent implements OnDestroy, OnInit {
     private ssjsService: SoundswallowerService,
     private microphoneService: MicrophoneService,
     private uploadService: UploadService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.audioControl$.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
@@ -110,7 +110,7 @@ export class UploadComponent implements OnDestroy, OnInit {
     this.$textInput
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((textString) =>
-        this.uploadService.$currentText.next(textString)
+        this.uploadService.$currentText.next(textString),
       );
   }
 
@@ -147,7 +147,7 @@ export class UploadComponent implements OnDestroy, OnInit {
           $localize`Your text may contain unpronounceable characters or numbers.
 Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
           $localize`Pronunciation mapping issues.`,
-          { timeOut: 30000 }
+          { timeOut: 30000 },
         );
       }
       this.toastr.error(err.error.detail, $localize`Text processing failed.`, {
@@ -157,7 +157,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.toastr.error(
         err.message,
         $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
-        { timeOut: 60000 }
+        { timeOut: 60000 },
       );
     }
   }
@@ -167,7 +167,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       $localize`Your text may contain unpronounceable characters or numbers.
 Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
       $localize`Alignment failed.`,
-      { timeOut: 30000 }
+      { timeOut: 30000 },
     );
   }
 
@@ -176,13 +176,13 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.toastr.warning(
         $localize`Hmm, this is harder than usual, please wait while we try again.`,
         $localize`Alignment failed.`,
-        { timeOut: 5000 }
+        { timeOut: 5000 },
       );
     } else {
       this.toastr.error(
         $localize`This is really difficult. We'll try one last time, but it might take a long time and produce poor results. Please make sure your text matches your audio and that there is as little background noise as possible.`,
         $localize`Alignment failed.`,
-        { timeOut: 30000 }
+        { timeOut: 30000 },
       );
     }
   }
@@ -302,7 +302,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.toastr.success(
         $localize`Audio was successfully recorded. Please listen to your recording to make sure it's OK, and save it for reuse if so.`,
         $localize`Yay!`,
-        { timeOut: 10000 }
+        { timeOut: 10000 },
       );
       this.audioControl$.setValue(output);
       // do any post output steps
@@ -310,12 +310,12 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       if (err === "Recorder didn't hear anything") {
         this.toastr.error(
           $localize`We couldn't record anything, is your microphone blocked or disconnected? If the problem persists please try with a headset or other microphone.`,
-          $localize`Audio not recorded!`
+          $localize`Audio not recorded!`,
         );
       } else {
         this.toastr.error(
           $localize`Please try again, or select a pre-recorded file.`,
-          $localize`Audio not recorded!`
+          $localize`Audio not recorded!`,
         );
       }
 
@@ -345,7 +345,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.toastr.error(
         $localize`Please select a language or choose the default option`,
         $localize`No language selected`,
-        { timeOut: 15000 }
+        { timeOut: 15000 },
       );
       return;
     }
@@ -359,7 +359,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         this.toastr.error(
           $localize`Please enter text to align.`,
           $localize`No text`,
-          { timeOut: 15000 }
+          { timeOut: 15000 },
         );
       }
     } else {
@@ -367,7 +367,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         this.toastr.error(
           $localize`Please select a text file.`,
           $localize`No text`,
-          { timeOut: 15000 }
+          { timeOut: 15000 },
         );
       }
     }
@@ -375,7 +375,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.toastr.error(
         $localize`Sorry, the alignment model isn't loaded yet. Please wait a while and try again if you're on a slow connection. If the problem persists, please contact us.`,
         $localize`No model loaded`,
-        { timeOut: 15000 }
+        { timeOut: 15000 },
       );
     } else if (
       this.uploadFormGroup.valid &&
@@ -401,7 +401,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       forkJoin({
         audio: this.fileService.loadAudioBufferFromFile$(
           this.audioControl$.value as File,
-          8000
+          8000,
         ),
         ras: this.fileService.readFile$(this.textControl$.value).pipe(
           switchMap((text: string): Observable<ReadAlong> => {
@@ -409,7 +409,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
             this.progressMode = "determinate";
             this.progressValue = 0;
             return this.rasService.assembleReadalong$(body);
-          })
+          }),
         ),
       })
         .pipe(
@@ -422,12 +422,12 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
                   this.toastr.warning(
                     matches.join("\n"),
                     $localize`Possible text processing issues.`,
-                    { timeOut: 30000 }
+                    { timeOut: 30000 },
                   );
                 }
               }
               return this.ssjsService.align$(audio, ras as ReadAlong);
-            }
+            },
           ),
           catchError((err: Error) => {
             // Catch all errors. If error message is "No alignment found" then gradually loosen the beam defaults.
@@ -459,7 +459,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
             }
           }),
           takeUntil(this.unsubscribe$),
-          finalize(() => (this.ssjsService.mode = BeamDefaults.strict))
+          finalize(() => (this.ssjsService.mode = BeamDefaults.strict)),
         )
         .subscribe({
           next: (progress) => {
@@ -473,7 +473,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               ]);
             } else {
               this.progressValue = Math.round(
-                (progress.pos / progress.length) * 100
+                (progress.pos / progress.length) * 100,
               );
             }
           },
@@ -493,20 +493,20 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         this.toastr.error(
           $localize`Please select a language.`,
           $localize`No language`,
-          { timeOut: 15000 }
+          { timeOut: 15000 },
         );
       }
       if (this.audioControl$.value === null) {
         this.toastr.error(
           $localize`Please (re-)record some audio or select an audio file.`,
           $localize`No audio`,
-          { timeOut: 15000 }
+          { timeOut: 15000 },
         );
       }
       this.toastr.error(
         $localize`Please select or write text, select or record audio data, and select the language.`,
         $localize`Form not complete`,
-        { timeOut: 15000 }
+        { timeOut: 15000 },
       );
     }
   }
@@ -526,7 +526,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           file.name +
           $localize` processed, but not uploaded. Your audio will stay on your computer.`,
         $localize`Great!`,
-        { timeOut: 10000 }
+        { timeOut: 10000 },
       );
     } else if (type === "text") {
       let maxSizeKB =
@@ -536,7 +536,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       if (file.size > maxSizeKB * 1024) {
         this.toastr.error(
           $localize`File too large. Max size: ` + maxSizeKB + $localize` KB`,
-          $localize`Sorry!`
+          $localize`Sorry!`,
         );
         this.textInputElement.nativeElement.value = "";
       } else {
@@ -546,7 +546,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
             file.name +
             $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
           $localize`Great!`,
-          { timeOut: 10000 }
+          { timeOut: 10000 },
         );
       }
     }

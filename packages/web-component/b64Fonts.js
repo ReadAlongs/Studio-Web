@@ -5,7 +5,7 @@ const fonts = [
   {
     font: {
       "MaterialIcons.woff2": fs.readFileSync(
-        "src/scss/fonts/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2"
+        "src/scss/fonts/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2",
       ),
     },
     options: {
@@ -17,7 +17,7 @@ const fonts = [
   {
     font: {
       "MaterialIconsOutlined.woff2": fs.readFileSync(
-        "src/scss/fonts/gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUcel5euIg.woff2"
+        "src/scss/fonts/gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUcel5euIg.woff2",
       ),
     },
     options: {
@@ -29,7 +29,7 @@ const fonts = [
   {
     font: {
       "BCSans-Regular.woff2": fs.readFileSync(
-        "src/scss/fonts/BCSans-Regular.woff2"
+        "src/scss/fonts/BCSans-Regular.woff2",
       ),
     },
     options: {
