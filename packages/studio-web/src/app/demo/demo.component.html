@@ -11,7 +11,7 @@
           Congratulations! Here's your ReadAlong!
         </h2>
       </div>
-      <div class="col-3">
+      <div class="col-3" *ngIf="b64Inputs">
         <ras-shared-download
           [slots]="slots"
           [b64Audio]="b64Inputs[0]"

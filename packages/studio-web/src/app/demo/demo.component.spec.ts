@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MaterialModule } from "../material.module";
 import { DemoComponent } from "./demo.component";
 import { FormsModule } from "@angular/forms";
+import { SharedModule } from "../shared/shared.module";
 
 // ==== check create or not and default value =====
 describe("DemoComponent", () => {
@@ -17,6 +18,7 @@ describe("DemoComponent", () => {
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
+        SharedModule,
         BrowserAnimationsModule,
         FormsModule,
         MaterialModule,
