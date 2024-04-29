@@ -550,7 +550,7 @@ export class ReadAlongComponent {
     if (this.svgOverlay) {
       // either with svg overlay
       this.animateProgressWithOverlay();
-    } else {
+    } else if (play_id) {
       // or default progress bar
       this.animateProgressDefault(play_id, "all");
     }
@@ -658,10 +658,15 @@ export class ReadAlongComponent {
    * Make Fullscreen
    */
   private toggleFullscreen(): void {
+    //let fullScreenPromise;
     if (!this.fullscreen) {
       let elem: any = this.el.shadowRoot.getElementById("read-along-container");
       if (elem.requestFullscreen) {
-        elem.requestFullscreen();
+        elem
+          .requestFullscreen()
+          .then(
+            () => (this.fullscreen = window.document.fullscreenElement != null),
+          );
       } else if (elem.mozRequestFullScreen) {
         /* Firefox */
         elem.mozRequestFullScreen();
@@ -693,7 +698,8 @@ export class ReadAlongComponent {
         .getElementById("read-along-container")
         .classList.remove("read-along-container--fullscreen");
     }
-    this.fullscreen = !this.fullscreen;
+    console.log(window.document.fullscreenElement);
+    this.fullscreen = window.document.fullscreenElement != null; //check that read along is full screen
   }
 
   /*************
