@@ -160,14 +160,13 @@ Please host all assets on your server, include the font and package imports defi
 
   async createSingleFileBlob(
     rasDoc: Document,
-    rasB64: string,
     readalong: Components.ReadAlong,
     slots: ReadAlongSlots,
     b64Audio: string,
   ) {
     await this.updateImages(rasDoc, true, "image", readalong);
     await this.updateTranslations(rasDoc, readalong);
-
+    let rasB64 = this.b64Service.xmlToB64(rasDoc);
     if (this.b64Service.jsAndFontsBundle$.value !== null) {
       let blob = new Blob(
         [
@@ -202,13 +201,10 @@ Please host all assets on your server, include the font and package imports defi
     slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
   ) {
-    let rasB64 = this.b64Service.xmlToB64(rasXML);
-
     if (selectedOutputFormat == SupportedOutputs.html) {
       var element = document.createElement("a");
       const blob = await this.createSingleFileBlob(
         rasXML,
-        rasB64,
         readalong,
         slots,
         b64Audio,
@@ -244,7 +240,6 @@ Please host all assets on your server, include the font and package imports defi
       const assetsFolder = innerFolder?.folder("assets");
       const blob = await this.createSingleFileBlob(
         rasXML,
-        rasB64,
         readalong,
         slots,
         b64Audio,
