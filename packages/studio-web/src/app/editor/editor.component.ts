@@ -103,16 +103,15 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         }
       }
       if (e.action == "resize") {
-        // Update Demo Alignments
+        // Update Demo Alignments (uses milliseconds)
         let alignments = await this.readalong.getAlignments();
         let dur = parseFloat(segment.end) - parseFloat(segment.start);
-        let start = parseFloat((segment.start * 1000).toFixed(0));
-        let end = parseFloat((segment.end * 1000).toFixed(0));
-        alignments[segment.data.id] = [start, end];
+        let dur_ms = parseInt((dur * 1000).toFixed(0));
+        let start_ms = parseInt((segment.start * 1000).toFixed(0));
+        alignments[segment.data.id] = [start_ms, dur_ms];
         const new_al: Alignment = {};
-        new_al[segment.data.id] = [start, end];
-        await this.readalong.updateSpriteAlignments(alignments);
-        // Update XML alignments
+        new_al[segment.data.id] = [start_ms, dur_ms];
+        // Update XML alignments (uses seconds)
         if (this.rasControl$.value) {
           let changedSegment = this.rasControl$.value.getElementById(
             segment.data.id,
@@ -122,6 +121,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
             changedSegment.setAttribute("dur", dur.toString());
           }
         }
+        await this.readalong.updateSpriteAlignments(alignments);
       }
     });
     this.wavesurfer.on("segment-click", (segment, e) => {
