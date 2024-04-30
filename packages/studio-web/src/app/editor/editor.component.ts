@@ -40,7 +40,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     audioB64: this.audioB64Control$,
   });
   unsubscribe$ = new Subject<void>();
-  currentWaveSurferCenter = new Subject<number>();
   constructor(
     private _formBuilder: FormBuilder,
     public b64Service: B64Service,
@@ -180,12 +179,30 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           "read-along",
         );
       // Get Title and Subtitle Slots
-      this.slots.title = rasElement.querySelector(
+      let titleSlot = rasElement.querySelector(
         "span[slot='read-along-header']",
-      )?.innerText;
-      this.slots.subtitle = rasElement.querySelector(
+      );
+      let subtitleSlot = rasElement.querySelector(
         "span[slot='read-along-subheader']",
-      )?.innerText;
+      );
+      if (titleSlot) {
+        this.slots.title = titleSlot.innerText;
+        titleSlot.setAttribute("contenteditable", true);
+        // Because we're just loading this from the single-file HTML, it's cumbersome to
+        // use Angular event input event listeners like we do in the demo
+        titleSlot.addEventListener(
+          "input",
+          (ev: any) => (this.slots.title = ev.target?.innerHTML),
+        );
+      }
+      if (subtitleSlot) {
+        this.slots.subtitle = subtitleSlot.innerText;
+        subtitleSlot.setAttribute("contenteditable", true);
+        subtitleSlot.addEventListener(
+          "input",
+          (ev: any) => (this.slots.subtitle = ev.target?.innerHTML),
+        );
+      }
       // Make Editable
       rasElement.setAttribute("mode", "EDIT");
       this.readalong = rasElement;
