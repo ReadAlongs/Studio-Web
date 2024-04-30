@@ -47,6 +47,16 @@ Type: `Promise<Alignment>`
 
 
 
+### `getCurrentWord() => Promise<Subject<string>>`
+
+Get Current Word
+
+#### Returns
+
+Type: `Promise<Subject<string>>`
+
+
+
 ### `getImages() => Promise<object>`
 
 Get Images

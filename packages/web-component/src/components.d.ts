@@ -6,8 +6,10 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Alignment, InterfaceLanguage, ReadAlongMode } from "./index.d";
+import { Subject } from "rxjs";
 import { Element } from "@stencil/core";
 export { Alignment, InterfaceLanguage, ReadAlongMode } from "./index.d";
+export { Subject } from "rxjs";
 export { Element } from "@stencil/core";
 export namespace Components {
     interface ReadAlong {
@@ -35,6 +37,10 @@ export namespace Components {
           * Get Alignments
          */
         "getAlignments": () => Promise<Alignment>;
+        /**
+          * Get Current Word
+         */
+        "getCurrentWord": () => Promise<Subject<string>>;
         /**
           * Get Images
          */

@@ -65,7 +65,7 @@ export class ReadAlongComponent {
   @Prop() audio: string;
   audio_howl: Howl;
   audio_howl_sprites: any;
-  reading$: Subject<string>; // An RxJs Subject for the current item being read.
+  reading$ = new Subject<string>(); // An RxJs Subject for the current item being read.
   duration: number; // Duration of the audio file
 
   /**
@@ -579,6 +579,14 @@ export class ReadAlongComponent {
   }
 
   /**
+   * Get Current Word
+   */
+  @Method()
+  async getCurrentWord(): Promise<Subject<string>> {
+    return this.reading$;
+  }
+
+  /**
    * Get Images
    */
   @Method()
@@ -1020,9 +1028,11 @@ export class ReadAlongComponent {
     );
     // Once Sprites are built, subscribe to reading subject and update element class
     // when new distinct values are emitted
-    this.reading$ = this.audio_howl_sprites._reading$
+    this.audio_howl_sprites._reading$
       .pipe(distinctUntilChanged())
       .subscribe((el_tag) => {
+        // Update the main reading tag subject
+        this.reading$.next(el_tag);
         // Only highlight when playing
         if (this.playing) {
           //if auto pause is active and not on last word of the read along pause the audio

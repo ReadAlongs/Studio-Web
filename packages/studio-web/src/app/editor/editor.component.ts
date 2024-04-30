@@ -45,6 +45,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     audioB64: this.audioB64Control$,
   });
   unsubscribe$ = new Subject<void>();
+  currentWaveSurferCenter = new Subject<number>();
   constructor(
     private _formBuilder: FormBuilder,
     public b64Service: B64Service,
@@ -197,6 +198,16 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       // Make Editable
       rasElement.setAttribute("mode", "EDIT");
       this.readalong = rasElement;
+      const currentWord$ = await this.readalong.getCurrentWord();
+      const alignments = await this.readalong.getAlignments();
+      // Subscribe to the current word of the readalong and center the wavesurfer element on it
+      currentWord$
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((word) =>
+          this.wavesurfer.seekAndCenter(
+            alignments[word][0] / 1000 / this.wavesurfer.getDuration(),
+          ),
+        );
     }
     return readalong;
   }
