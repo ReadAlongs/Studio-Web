@@ -145,10 +145,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   async onRasFileSelected(event: any) {
     let file: File = event.target.files[0];
     const text = await file.text();
-    await this.parse_readalong(text);
+    await this.parseReadalong(text);
   }
 
-  async parse_readalong(text: string): Promise<Document | null> {
+  async parseReadalong(text: string): Promise<Document | null> {
     const parser = new DOMParser();
     const readalong = parser.parseFromString(text, "text/html");
     this.rasControl$.setValue(readalong);
@@ -172,13 +172,13 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
     // Is read-along linked (including data URI) or embedded?
     const href = element.getAttribute("href");
-    if (href === null) this.create_segments(element);
+    if (href === null) this.createSegments(element);
     else {
       const reply = await fetch(href);
       if (reply.ok) {
         const text2 = await reply.text();
         // FIXME: potential zip-bombing?
-        this.parse_readalong(text2);
+        this.parseReadalong(text2);
       }
     }
     let readalongBody = readalong.querySelector("body")?.innerHTML;
@@ -212,7 +212,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     return readalong;
   }
 
-  create_segments(element: Element) {
+  createSegments(element: Element) {
     this.wavesurfer.clearSegments();
     for (const w of Array.from(element.querySelectorAll("w[id]"))) {
       const wordText = w.textContent;
