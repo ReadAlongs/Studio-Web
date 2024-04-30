@@ -435,7 +435,9 @@ export class ReadAlongComponent {
   stop(): void {
     this.playing = false;
     this.play_id = undefined;
-    this.audio_howl_sprites.stop();
+    if (this.audio_howl_sprites) {
+      this.audio_howl_sprites.stop();
+    }
     this.el.shadowRoot
       .querySelectorAll(".reading")
       .forEach((x) => x.classList.remove("reading"));

@@ -24,11 +24,6 @@ import { FileService } from "../file.service";
 export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
   wavesurfer: WaveSurfer;
-  audio_input: HTMLInputElement;
-  ras_input: HTMLInputElement;
-  zoom_in: HTMLButtonElement;
-  zoom_out: HTMLButtonElement;
-  $downloadable = new BehaviorSubject(false);
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
   audioControl$ = new FormControl<File | null>(null, Validators.required);
   rasControl$ = new FormControl<Document | null>(null, Validators.required);
@@ -67,19 +62,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
             });
         }
       });
-    // this.loadSampleAudio(); // Just for mocking
-    this.ras_input = document.getElementById("ras-input") as HTMLInputElement;
-    this.zoom_in = document.getElementById("zoom-in") as HTMLButtonElement;
-    this.zoom_out = document.getElementById("zoom-out") as HTMLButtonElement;
   }
-  async loadSampleAudio() {
-    const sampleAudio = await fetch(
-      "https://roedoejet.github.io/wmrc-gitksan/audio/aluu-VG.mp3",
-    ).then((r) => r.blob());
-    this.audioControl$.setValue(
-      new File([sampleAudio], "test.webm", { type: "audio/webm" }),
-    );
-  }
+
   async ngAfterViewInit(): Promise<void> {
     this.wavesurfer = WaveSurfer.create({
       container: this.wavesurferContainer.nativeElement as HTMLElement,
@@ -96,7 +80,12 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       minPxPerSec: 300, // FIXME: uncertain about this
     });
     this.wavesurfer.on("segment-updated", async (segment, e) => {
+      // Each time a segment is updated we have to update it in both the demo ReadAlong
+      // as well as the XML. This is faster than just editing the XML and asking the
+      // ReadAlong to re-render, which would create all the new audio sprites again etc
+      // when we are just editing a single element at a time.
       if (e.action == "contentEdited") {
+        // Update Demo text
         let readalongContainerElement =
           await this.readalong.getReadAlongElement();
         let changedSegment =
@@ -104,15 +93,36 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         if (changedSegment) {
           changedSegment.innerText = segment.data.text;
         }
+        // Update XML text
+        if (this.rasControl$.value) {
+          changedSegment = this.rasControl$.value.getElementById(
+            segment.data.id,
+          );
+          if (changedSegment) {
+            changedSegment.innerText = segment.data.text;
+          }
+        }
       }
       if (e.action == "resize") {
+        // Update Demo Alignments
         let alignments = await this.readalong.getAlignments();
+        let dur = parseFloat(segment.end) - parseFloat(segment.start);
         let start = parseFloat((segment.start * 1000).toFixed(0));
         let end = parseFloat((segment.end * 1000).toFixed(0));
         alignments[segment.data.id] = [start, end];
         const new_al: Alignment = {};
         new_al[segment.data.id] = [start, end];
         await this.readalong.updateSpriteAlignments(alignments);
+        // Update XML alignments
+        if (this.rasControl$.value) {
+          let changedSegment = this.rasControl$.value.getElementById(
+            segment.data.id,
+          );
+          if (changedSegment) {
+            changedSegment.setAttribute("time", segment.start);
+            changedSegment.setAttribute("dur", dur.toString());
+          }
+        }
       }
     });
     this.wavesurfer.on("segment-click", (segment, e) => {
@@ -124,22 +134,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-  }
-
-  onAudioFileSelected(event: any) {
-    let file: File = event.target.files[0];
-    if (file.type == "video/webm") {
-      // No, it is audio, because we say so.
-      file = new File([file], file.name, { type: "audio/webm" });
-    }
-    this.audioControl$.setValue(file);
-    this.toastr.success(
-      $localize`File ` +
-        file.name +
-        $localize` processed, but not uploaded. Your audio will stay on your computer.`,
-      $localize`Great!`,
-      { timeOut: 10000 },
-    );
   }
 
   async onRasFileSelected(event: any) {
@@ -154,8 +148,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     this.rasControl$.setValue(readalong);
     const element = readalong.querySelector("read-along");
     if (element === null) return null;
-    // We can always download *something* (FIXME: will reconsider)
-    this.$downloadable.next(true);
     // Oh, there's an audio file, okay, try to load it
     const audio = element.getAttribute("audio");
     if (audio !== null) {
@@ -166,14 +158,13 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.audioControl$.setValue(
           new File([blob], "test-audio.webm", { type: "audio/webm" }),
         );
-        // Clear previously selected file
-        this.$downloadable.next(false);
       }
     }
     // Is read-along linked (including data URI) or embedded?
     const href = element.getAttribute("href");
-    if (href === null) this.createSegments(element);
-    else {
+    if (href === null) {
+      this.createSegments(element);
+    } else {
       const reply = await fetch(href);
       if (reply.ok) {
         const text2 = await reply.text();
@@ -191,23 +182,23 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       // Get Title and Subtitle Slots
       this.slots.title = rasElement.querySelector(
         "span[slot='read-along-header']",
-      ).innerText;
+      )?.innerText;
       this.slots.subtitle = rasElement.querySelector(
         "span[slot='read-along-subheader']",
-      ).innerText;
+      )?.innerText;
       // Make Editable
       rasElement.setAttribute("mode", "EDIT");
       this.readalong = rasElement;
       const currentWord$ = await this.readalong.getCurrentWord();
       const alignments = await this.readalong.getAlignments();
       // Subscribe to the current word of the readalong and center the wavesurfer element on it
-      currentWord$
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((word) =>
+      currentWord$.pipe(takeUntil(this.unsubscribe$)).subscribe((word) => {
+        if (word) {
           this.wavesurfer.seekAndCenter(
             alignments[word][0] / 1000 / this.wavesurfer.getDuration(),
-          ),
-        );
+          );
+        }
+      });
     }
     return readalong;
   }
