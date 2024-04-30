@@ -42,7 +42,8 @@
     "nx": "18.2.4",
     "prettier": "^3.2.5",
     "pretty-quick": "^4.0.0",
-    "ts-jest": "^29"
+    "ts-jest": "^29",
+    "tsx": "^4.7.3"
   },
   "dependencies": {
     "@angular/animations": "^17",

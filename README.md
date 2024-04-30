@@ -172,9 +172,11 @@ you can extract them with
 
     npx nx extract-i18n studio-web
 
-This will update `packages/studio-web/src/i18n/messages.json` with the English strings. Add or
-correct their translations in `messages.es.json` and `messages.fr.json`, and then
-run these checks to confirm all the required strings are there:
+This will update `packages/studio-web/src/i18n/messages.json` with the English strings.
+Add or correct their translations in `messages.es.json` and `messages.fr.json`.
+(See `packages/studio-web/extract-i18n-lang.ts` for partial automation of that task.)
+
+Finally, run these checks to confirm all the required strings are there:
 
     npx nx check-es-l10n studio-web
     npx nx check-fr-l10n studio-web
