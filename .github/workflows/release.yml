@@ -27,7 +27,10 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@readalongs"
       - run: npm install
-      - run: npx nx build web-component && npx nx bundle web-component && npx nx build ngx-web-component
+      - run: |
+          npx nx build web-component
+          npx nx bundle web-component
+          npx nx build ngx-web-component
       - run: |
           cd dist/packages/web-component && npm publish --access=public
         env:
