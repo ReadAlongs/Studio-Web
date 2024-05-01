@@ -19,7 +19,6 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
-      - uses: fregante/setup-git-user@v2
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
@@ -27,15 +26,21 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@readalongs"
       - run: npm install
-      - run: |
+      - name: Build and bundle
+        run: |
           npx nx build web-component
           npx nx bundle web-component
           npx nx build ngx-web-component
-      - run: |
+      - name: Check that the web-component bundle was up to date
+        run: |
+          if git status --porcelain | grep packages/studio-web/src/assets/; then echo ERROR: The web-component bundle is out of date. Please run \"npx nx bundle web-component\" and commit the results, then update the tag and try again.; false; fi
+      - name: Publish web-component to npmjs
+        run: |
           cd dist/packages/web-component && npm publish --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: |
+      - name: Publish ngx-web-component to npmjs
+        run: |
           cd dist/packages/ngx-web-component && npm publish --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

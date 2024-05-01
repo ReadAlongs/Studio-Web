@@ -194,6 +194,7 @@ Publication to npmjs is mostly automated via the tag-triggered `release.yml` CI 
 - Update `singleFileBundleVersion` in [packages/studio-web/package.json](packages/studio-web/package.json).
 - All the versions above should be exactly in sync!
 - Run `npm install` to reflect the version changes in `package-lock.json`.
+- Run `npx nx bundle web-component` to refresh the bundle for studio-web.
 - Commit all those changes.
 - Tag the final commit that is ready to publish with the new version number, e.g., `git tag -a -m'v1.3.0' v1.3.0`.
 
