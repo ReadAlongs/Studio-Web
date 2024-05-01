@@ -255,20 +255,14 @@ Please host all assets on your server, include the font and package imports defi
         (slots.title ? slugify(slots.title, 15) : "readalong") +
         `-${timestamp}`;
       // - add audio file
-      // Add uploaded file/recorded audio
-      if (this.uploadService.$currentAudio.value !== null) {
-        // Recorded audio is always mp3
-        let audioExtension = "mp3";
-        // If the audio is a file, just pull the extension
-        if (this.uploadService.$currentAudio.value instanceof File) {
-          const file_parts =
-            this.uploadService.$currentAudio.value.name.split(".");
-          audioExtension = file_parts[file_parts.length - 1];
-        }
-        assetsFolder?.file(
-          `${basename}.${audioExtension}`,
-          this.uploadService.$currentAudio.value,
+      if (b64Audio) {
+        const [_, audioData] = b64Audio.split(";base64,");
+        const rawBytes = window.atob(audioData);
+        const byteArray = new Uint8Array(new ArrayBuffer(rawBytes.length));
+        [...rawBytes].forEach(
+          (_, i) => (byteArray[i] = rawBytes.charCodeAt(i)),
         );
+        assetsFolder?.file(`${basename}.wav`, byteArray);
       }
       // - add images
       // @ts-ignore
