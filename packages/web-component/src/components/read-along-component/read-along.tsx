@@ -18,12 +18,17 @@ import {
   extractPages,
   extractAlignment,
   isFileAvailable,
+  getUserPreferences,
+  USER_PREFERENCE_VERSION,
+  setUserPreferences,
 } from "../../utils/utils";
 import {
   Alignment,
   Page,
   InterfaceLanguage,
   ReadAlongMode,
+  UserPreferences,
+  ScrollBehaviour,
 } from "../../index.d";
 import { web_component as eng_strings } from "../../i18n/messages.eng.json";
 import { web_component as fra_strings } from "../../i18n/messages.fra.json";
@@ -132,7 +137,8 @@ export class ReadAlongComponent {
    * animated, good for fast computers) or "auto" (choppy but much less compute
    * intensive)
    */
-  @Prop() scrollBehaviour: "smooth" | "auto" = "smooth";
+  @Prop({ mutable: true, reflect: true }) scrollBehaviour: ScrollBehaviour =
+    "smooth";
 
   /**
    * Show text translation  on at load time
@@ -148,7 +154,7 @@ export class ReadAlongComponent {
   /**
    * Auto Pause at end of every page
    */
-  @Prop() autoPauseAtEndOfPage? = false;
+  @Prop({ mutable: true, reflect: true }) autoPauseAtEndOfPage? = false;
 
   /************
    *  STATES  *
@@ -193,6 +199,8 @@ export class ReadAlongComponent {
   autoPauseTimer: any;
   endOfPageTags: Alignment = {};
   finalTaggedWord: string;
+  @State() settingsVisible: boolean = false;
+  @State() userPreferencesDirty: boolean = false;
   /************
    *  LISTENERS  *
    ************/
@@ -217,6 +225,18 @@ export class ReadAlongComponent {
       }
     }
   }
+  // handle cases where user presses esc to cancel full screen
+  @Listen("fullscreenchange")
+  fullScreenHandler() {
+    this.fullscreen = window.document.fullscreenElement != null;
+  }
+  @Listen("keydown")
+  handleKeyDown(event: KeyboardEvent) {
+    //dismiss setting modal user pressing escape
+    if (event.key === "Escape" && this.settingsVisible) {
+      this.settingsVisible = false;
+    }
+  }
 
   /***********
    *  UTILS  *
@@ -232,7 +252,7 @@ export class ReadAlongComponent {
       // Old v1.1.1 functionality
       if (
         this.useAssetsFolder &&
-        looksLikeRelatiEscapepath) &&
+        looksLikeRelativePath(path) &&
         !path.startsWith("blob")
       ) {
         return "assets/" + path;
@@ -313,6 +333,24 @@ export class ReadAlongComponent {
     }
   }
 
+  /**
+   * toggle the setting pane visiblilty
+   */
+  toggleSettings() {
+    //pause audio if playing and setting modal is being presented
+
+    if (this.playing) {
+      this.pause();
+    }
+
+    this.settingsVisible = !this.settingsVisible;
+  }
+  /**
+   * toggle (override) scrolling animation
+   */
+  toggleScrollBehavior(): void {
+    this.scrollBehaviour = this.scrollBehaviour === "auto" ? "smooth" : "auto";
+  }
   /*************
    *   AUDIO   *
    *************/
@@ -658,48 +696,49 @@ export class ReadAlongComponent {
    * Make Fullscreen
    */
   private toggleFullscreen(): void {
-    //let fullScreenPromise;
+    let fullScreenPromise;
     if (!this.fullscreen) {
       let elem: any = this.el.shadowRoot.getElementById("read-along-container");
+
       if (elem.requestFullscreen) {
-        elem
-          .requestFullscreen()
-          .then(
-            () => (this.fullscreen = window.document.fullscreenElement != null),
-          );
+        fullScreenPromise = elem.requestFullscreen();
       } else if (elem.mozRequestFullScreen) {
         /* Firefox */
-        elem.mozRequestFullScreen();
+        fullScreenPromise = elem.mozRequestFullScreen();
       } else if (elem.webkitRequestFullscreen) {
         /* Chrome, Safari and Opera */
-        elem.webkitRequestFullscreen();
+        fullScreenPromise = elem.webkitRequestFullscreen();
       } else if (elem.msRequestFullscreen) {
         /* IE/Edge */
-        elem.msRequestFullscreen();
+        fullScreenPromise = elem.msRequestFullscreen();
       }
-      this.el.shadowRoot
-        .getElementById("read-along-container")
-        .classList.add("read-along-container--fullscreen");
+      fullScreenPromise.then(() => {
+        this.fullscreen = true;
+        this.el.shadowRoot
+          .getElementById("read-along-container")
+          .classList.add("read-along-container--fullscreen");
+      });
     } else {
       let document: any = this.el.ownerDocument;
       if (document.exitFullscreen) {
-        document.exitFullscreen();
+        fullScreenPromise = document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {
         /* Firefox */
-        document.mozCancelFullScreen();
+        fullScreenPromise = document.mozCancelFullScreen();
       } else if (document.webkitExitFullscreen) {
         /* Chrome, Safari and Opera */
-        document.webkitExitFullscreen();
+        fullScreenPromise = document.webkitExitFullscreen();
       } else if (document.msExitFullscreen) {
         /* IE/Edge */
-        document.msExitFullscreen();
+        fullScreenPromise = document.msExitFullscreen();
       }
-      this.el.shadowRoot
-        .getElementById("read-along-container")
-        .classList.remove("read-along-container--fullscreen");
+      fullScreenPromise.then(() => {
+        this.fullscreen = false;
+        this.el.shadowRoot
+          .getElementById("read-along-container")
+          .classList.remove("read-along-container--fullscreen");
+      });
     }
-    console.log(window.document.fullscreenElement);
-    this.fullscreen = window.document.fullscreenElement != null; //check that read along is full screen
   }
 
   /*************
@@ -895,6 +934,17 @@ export class ReadAlongComponent {
    * Using this Lifecycle hook to handle backwards compatibility of component attribute
    */
   async componentWillLoad() {
+    //load user preferences
+    const userPreferences: UserPreferences | null = getUserPreferences();
+    if (
+      userPreferences !== null &&
+      userPreferences.version === USER_PREFERENCE_VERSION
+    ) {
+      this.language = userPreferences.language;
+      this.scrollBehaviour = userPreferences.scrollBehaviour;
+      this.autoPauseAtEndOfPage = userPreferences.autoPauseAtEndOfPage;
+      this.theme = userPreferences.theme || this.theme;
+    }
     // The backward compatible behaviour used to be audio, alignment and text files outside assets
     // and only image files inside assets.
     // See version 0.1.0, where it only looks in assets/ for images, nothing else.
@@ -1668,6 +1718,7 @@ export class ReadAlongComponent {
         " background--" +
         this.theme
       }
+      tabindex={1}
     >
       <i class="material-icons">{this.playing ? "pause" : "play_arrow"}</i>
     </button>
@@ -1784,6 +1835,24 @@ export class ReadAlongComponent {
     </button>
   );
 
+  ToggleSettingsControl = (): Element => (
+    <button
+      data-test-id={"settings-button"}
+      title={this.getI18nString("configuration-tooltip")}
+      onClick={() => this.toggleSettings()}
+      id={"settings-button"}
+      class={
+        "control-panel__control ripple theme--" +
+        this.theme +
+        " background--" +
+        this.theme
+      }
+    >
+      <i class="material-icons" aria-label="Show settings">
+        settings
+      </i>
+    </button>
+  );
   ErrorMessage = (props: { msg: string; data_cy: string }): Element => (
     <p data-cy={props.data_cy} class="alert status-error">
       <span class="material-icons">error_outline</span> {props.msg}
@@ -1809,8 +1878,156 @@ export class ReadAlongComponent {
 
       <div class="control-panel__buttons--right">
         {this.hasTextTranslations && <this.TextTranslationDisplayControl />}
+        {/* enable fullscreen button if supported*/}
+        {window.document.fullscreenEnabled && <this.FullScreenControl />}
+        <this.ToggleSettingsControl />
+      </div>
+    </div>
+  );
+
+  Settings = (): Element => (
+    <div
+      id={"settings"}
+      data-test-id={"settings"}
+      class={"settings  theme--" + this.theme}
+    >
+      <button
+        class={"close"}
+        data-test-id={"settings-close-button"}
+        onClick={() => {
+          this.toggleSettings();
+        }}
+      >
+        &times;{" "}
+      </button>
+      <h3>{this.getI18nString("settings")}</h3>
+      <p>
+        <label>
+          <select
+            title={this.getI18nString("language")}
+            onChange={(e) => {
+              this.language = (e.target as HTMLSelectElement)
+                .value as InterfaceLanguage;
+              this.userPreferencesDirty = true;
+            }}
+            data-test-id="settings-language"
+            tabindex={2}
+          >
+            <option selected={this.language == "eng"} value="eng">
+              {this.getI18nString("eng")}
+            </option>
+            <option selected={this.language == "fra"} value="fra">
+              {this.getI18nString("fra")}
+            </option>
+            <option selected={this.language == "spa"} value="spa">
+              {this.getI18nString("spa")}
+            </option>
+          </select>
+          {this.getI18nString("language")}
+        </label>
+      </p>
+      <p
+        onClick={() => {
+          this.changeTheme();
+          this.userPreferencesDirty = true;
+        }}
+        tabindex={3}
+      >
         <this.StyleControl />
-        <this.FullScreenControl />
+        {this.getI18nString("theme-tooltip")}
+      </p>
+
+      <p
+        onClick={() => {
+          this.toggleScrollBehavior();
+          this.userPreferencesDirty = true;
+        }}
+        tabindex={4}
+      >
+        <button
+          class={
+            "control-panel__control  ripple theme--" +
+            this.theme +
+            " background--" +
+            this.theme
+          }
+          title={this.getI18nString("page-animation")}
+          data-test-id={"settings-scroll-behavior"}
+        >
+          <i class="material-icons-outlined">
+            {this.scrollBehaviour === "smooth"
+              ? "check_box"
+              : "check_box_outline_blank"}
+          </i>
+        </button>
+        {this.getI18nString("page-animation")}
+      </p>
+      <p
+        onClick={() => {
+          this.autoPauseAtEndOfPage = !this.autoPauseAtEndOfPage;
+          this.userPreferencesDirty = true;
+        }}
+        tabindex={5}
+      >
+        <button
+          class={
+            "control-panel__control  ripple theme--" +
+            this.theme +
+            " background--" +
+            this.theme
+          }
+          title={this.getI18nString("auto-pause")}
+          data-test-id={"settings-auto-pause"}
+        >
+          <i class="material-icons-outlined">
+            {this.autoPauseAtEndOfPage
+              ? "check_box"
+              : "check_box_outline_blank"}
+          </i>
+        </button>
+        {this.getI18nString("auto-pause")}
+      </p>
+
+      <div class="footer">
+        <button
+          type="button"
+          class={
+            "control-panel__control  ripple theme--" +
+            this.theme +
+            " background--" +
+            this.theme
+          }
+          title={this.getI18nString("save-settings")}
+          onClick={() => {
+            setUserPreferences({
+              version: USER_PREFERENCE_VERSION,
+              autoPauseAtEndOfPage: this.autoPauseAtEndOfPage,
+              scrollBehaviour: this.scrollBehaviour,
+              language: this.language,
+              theme: this.theme,
+            });
+            this.userPreferencesDirty = false;
+          }}
+          data-test-id={"settings-save"}
+          disabled={!this.userPreferencesDirty}
+          tabindex={6}
+        >
+          {this.getI18nString("save-settings")}
+        </button>
+
+        <div></div>
+        <button
+          onClick={() => this.toggleSettings()}
+          class={
+            "control-panel__control  ripple theme--" +
+            this.theme +
+            " background--" +
+            this.theme
+          }
+          tabindex={7}
+        >
+          {this.getI18nString("close")}
+        </button>
       </div>
     </div>
   );
@@ -1886,7 +2103,13 @@ export class ReadAlongComponent {
             ))}
           {this.hasLoaded < 2 && <div class="loader" />}
         </div>
-
+        {this.settingsVisible && (
+          <div
+            class="settings-background"
+            onClick={() => (this.settingsVisible = false)}
+          ></div>
+        )}
+        {this.settingsVisible && <this.Settings />}
         {this.alignment_failed || (
           <div
             onClick={(e) => this.goToSeekFromProgress(e)}
