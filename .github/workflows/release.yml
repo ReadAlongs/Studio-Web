@@ -1,18 +1,25 @@
-# This workflows will build, test and upload the package to npm when a release is created
+# This workflows will build, test and upload the package to npm when a release
+# is created.
+# To create a release, please follow the steps documented in the "Build &
+# Publish" section of the README.md file.
 
 name: Upload Package
 on:
   push:
-    branches: [release]
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
 jobs:
+  test:
+    uses: ./.github/workflows/end-to-end-tests.yml
+    secrets: inherit
+
   build:
     runs-on: ubuntu-20.04
+    needs: test
     steps:
       - uses: actions/checkout@v4
-      - uses: fregante/setup-git-user@v1
+      - uses: fregante/setup-git-user@v2
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
@@ -20,22 +27,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@readalongs"
       - run: npm install
-      - name: Cypress run for web-component
-        uses: cypress-io/github-action@v6
-        with:
-          install: false
-          start: |
-            npx nx serve web-component
-            npx nx serve-test-data web-component
-          wait-on: "http://localhost:3333/build/web-component.esm.js"
-          command: npx nx test:once web-component
-      - run: cd ./packages/web-component && npm version patch
-      - run: cd ./packages/ngx-web-component && npm version patch
       - run: npx nx build web-component && npx nx bundle web-component && npx nx build ngx-web-component
-        # We have to do this now because nx is broken (see https://github.com/nrwl/nx/issues/19989)
-      - run: |
-          export VERSION=$(npm view node_modules/@readalongs/web-component version)
-          perl -i -lne 'if (/peerDependencies/) {print; print "\"\@readalongs/web-component\": \"'$VERSION'\","} else { print }' dist/packages/ngx-web-component/package.json
       - run: |
           cd dist/packages/web-component && npm publish --access=public
         env:
@@ -44,33 +36,17 @@ jobs:
           cd dist/packages/ngx-web-component && npm publish --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Determine tag
-        id: determine_tag
-        run: |
-          echo "TAG_VERSION=$(npm view node_modules/@readalongs/web-component version)" >> $GITHUB_OUTPUT
-      - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: ${{ steps.determine_tag.outputs.TAG_VERSION }}
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
-      - name: Submit a PR for the bumped version
-        uses: peter-evans/create-pull-request@v4
-        with:
-          commit-message: "chore: commit version"
-          delete-branch: true
-          base: main
-          add-paths: |
-            package.json
-            package-lock.json
-            packages/*/package.json
-            packages/studio-web/src/assets/bundle.js
-            packages/studio-web/src/assets/fonts.b64.css
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changes }}

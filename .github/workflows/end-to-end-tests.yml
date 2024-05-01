@@ -1,5 +1,7 @@
 name: Run tests
-on: [push]
+on:
+  - push
+  - workflow_call
 jobs:
   test-suites:
     runs-on: ubuntu-latest

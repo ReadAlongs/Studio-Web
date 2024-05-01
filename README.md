@@ -185,27 +185,30 @@ or
 
 ### Build & Publish
 
-#### Web Component & Angular Wrapper - via a PR
+#### Preparing to publish the Web Component & Angular Wrapper
 
-The publication of the web component and its angular wrapper has been automated in the `release.yml` workflow. To trigger it, submit a pull request to the `release` branch and get it reviewed. Publication will happen when the PR is merged.
+Publication to npmjs is mostly automated via the tag-triggered `release.yml` CI workflow, but first you have to update the repo with the new version number in multiple places:
 
-#### Web Component & Angular Wrapper - manually
+- Update the version number for web-component and ngx-web-component in [packages/web-component/package.json](packages/web-component/package.json) and [packages/ngx-web-component/package.json](packages/ngx-web-component/package.json).
+- Nx does not manage dependencies among projects for us, so update the version in `peerDependencies` for `@readalongs/web-component` in [packages/ngx-web-component/package.json](packages/ngx-web-component/package.json).
+- Update `singleFileBundleVersion` in [packages/studio-web/package.json](packages/studio-web/package.json).
+- All the versions above should be exactly in sync!
+- Run `npm install` to reflect the version changes in `package-lock.json`.
+- Commit all those changes.
+- Tag the final commit that is ready to publish with the new version number, e.g., `git tag -a -m'v1.3.0' v1.3.0`.
+
+#### Web Component & Angular Wrapper - via a tag push
+
+The publication of the web component and its angular wrapper has been automated in the `release.yml` workflow. The workflow will be triggered when you push the tag vX.Y.Z tag created above.
+
+#### Web Component & Angular Wrapper - manually - please don't do this!
 
 WARNING: only use this process if the release workflow is broken.
 
 To publish the web component, first you must belong to the
 [@readalongs organization](https://www.npmjs.com/org/readalongs) on
-NPM. Then, bump the version number in both
-`packages/web-component/package.json` and
-`packages/ngx-web-component/package.json` (note that Nx now
-unfortunately no longer manages dependencies among projects properly,
-so you must also update the version in `peerDependencies` for
-`@readalongs/web-component` in
-`packages/ngx-web-component/package.json` - if you find this to be
-less than useful feel free to add your voice to [this bug
-report](https://github.com/nrwl/nx/issues/19989)), run `npm install`
-to reflect that bump in `package-lock.json`, and build both the web
-component and angular wrapper:
+NPM. Then, apply all the version bump and `npm install` steps above,
+and build both the web component and angular wrapper:
 
     npx nx build web-component
     npx nx build ngx-web-component
@@ -223,7 +226,7 @@ Then, go to the directory and publish:
     cd dist/packages/web-component && npm publish --access=public
     cd dist/packages/ngx-web-component && npm publish --access=public
 
-Then you also have to make sure to tag the repo with the new version and create a matching GitHub release.
+Then you also have to make sure to tag the repo with the new version and create a matching GitHub release, but expect errors since pushing the tag will trigger the automated workflow to do all this again!
 
 #### Studio-Web
 
