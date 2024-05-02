@@ -19,6 +19,8 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
+      - name: Stop early if the tag fails any validation
+        run: sh validate-version.sh ${{ github.ref_name }}
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
@@ -34,13 +36,6 @@ jobs:
       - name: Check that the web-component bundle was up to date
         run: |
           if git status --porcelain | grep packages/studio-web/src/assets/; then echo ERROR: The web-component bundle is out of date. Please run \"npx nx bundle web-component\" and commit the results, then update the tag and try again.; false; fi
-      - name: Check that the versions are in sync
-        run: |
-          wcver=$(npm view dist/packages/web-component version)
-          nwcver=$(npm view dist/packages/ngx-web-component version)
-          pdep=$(npm view dist/packages/ngx-web-component peerDependencies.@readalongs/web-component)
-          if test "$wcver" != "$nwcver"; then echo ERROR: The ngx-web-component version $nwcver does not match the web-component version $wcver.  Please update packages/web-component/package.json and packages/ngx-web-component/package.json, commit the results, update the tag and try again.; false; fi
-          if test "$pdep" != "$wcver"; then echo ERROR: ngx-web-component has a peerDependency on @readalongs/web-component version $pdep, which does not match the web-component version $wcver.  Please update packages/ngx-web-component/package.json, commit the results, update the tag and try again.; false; fi
       - name: Publish web-component to npmjs
         run: |
           cd dist/packages/web-component && npm publish --access=public
