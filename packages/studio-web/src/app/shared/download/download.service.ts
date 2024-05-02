@@ -233,6 +233,7 @@ Please host all assets on your server, include the font and package imports defi
         );
       }
     } else if (selectedOutputFormat === SupportedOutputs.zip) {
+      let audioExtension = "wav";
       let zipFile = new JSZip();
       // Create inner folder
       const innerFolder = zipFile.folder("readalong");
@@ -262,7 +263,7 @@ Please host all assets on your server, include the font and package imports defi
         [...rawBytes].forEach(
           (_, i) => (byteArray[i] = rawBytes.charCodeAt(i)),
         );
-        assetsFolder?.file(`${basename}.wav`, byteArray);
+        assetsFolder?.file(`${basename}.${audioExtension}`, byteArray);
       }
       // - add images
       // @ts-ignore
@@ -303,7 +304,7 @@ Please host all assets on your server, include the font and package imports defi
 
             <body>
                 <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
-                <read-along href="assets/${basename}.readalong" audio="assets/${basename}.mp3" theme="light" language="en" image-assets-folder="assets/">
+                <read-along href="assets/${basename}.readalong" audio="assets/${basename}.${audioExtension}" theme="light" language="en" image-assets-folder="assets/">
                     <span slot='read-along-header'>${slots.title}</span>
                     <span slot='read-along-subheader'>${slots.subtitle}</span>
                 </read-along>
@@ -330,7 +331,7 @@ Install and activate our plugin 'wp-read-along-web-app-loader' on your WordPress
 
 Deploy the read-along
 
-Upload the ${basename}.readalong and ${basename}.mp3 to your Media Library of your WordPress site.
+Upload the ${basename}.readalong and ${basename}.${audioExtension} to your Media Library of your WordPress site.
 
 Use the text editor to paste the snippet below in your WordPress page 
 
@@ -340,7 +341,7 @@ Replace assets/ with the path from your Media Library
 
 <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
 [read_along_web_app_loader image-asset-folder="./" version="^${environment.packageJson.singleFileBundleVersion}"]
-  <read-along href="assets/${basename}.readalong" audio="assets/${basename}.mp3" theme="light" language="en" image-assets-folder="assets/">
+  <read-along href="assets/${basename}.readalong" audio="assets/${basename}.${audioExtension}" theme="light" language="en" image-assets-folder="assets/">
             <span slot='read-along-header'>${slots.title}</span>
             <span slot='read-along-subheader'>${slots.subtitle}</span>
         </read-along>
