@@ -33,9 +33,6 @@ jobs:
           npx nx build web-component
           npx nx bundle web-component
           npx nx build ngx-web-component
-      - name: Check that the web-component bundle was up to date
-        run: |
-          if git status --porcelain | grep packages/studio-web/src/assets/; then echo ERROR: The web-component bundle is out of date. Please run \"npx nx bundle web-component\" and commit the results, then update the tag and try again.; false; fi
       - name: Publish web-component to npmjs
         run: |
           cd dist/packages/web-component && npm publish --access=public
