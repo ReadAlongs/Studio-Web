@@ -11,27 +11,13 @@
           Congratulations! Here's your ReadAlong!
         </h2>
       </div>
-      <div class="col-3 download__buttons">
-        <mat-form-field class="d-none d-lg-block" appearance="fill">
-          <mat-label i18n="Output format">Output Format</mat-label>
-          <mat-select [(ngModel)]="selectedOutputFormat">
-            <mat-option
-              *ngFor="let format of outputFormats"
-              [value]="format.value"
-            >
-              {{ format.display }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button
-          class="download"
-          color="primary"
-          (click)="download()"
-          mat-mini-fab
-          aria-label="Example icon button with a download icon"
-        >
-          <mat-icon>file_download</mat-icon>
-        </button>
+      <div class="col-3" *ngIf="b64Inputs">
+        <ras-shared-download
+          [slots]="slots"
+          [b64Audio]="b64Inputs[0]"
+          [rasXML]="b64Inputs[1]"
+          [readalong]="readalong"
+        ></ras-shared-download>
       </div>
     </div>
 

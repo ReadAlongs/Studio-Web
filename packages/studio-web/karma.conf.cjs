@@ -12,6 +12,18 @@ module.exports = function (config) {
       require("karma-coverage"),
       require("@angular-devkit/build-angular/plugins/karma"),
     ],
+    files: [
+      {
+        pattern: "./src/assets/**",
+        watched: false,
+        included: false,
+        nocache: false,
+        served: true,
+      },
+    ],
+    proxies: {
+      "/assets/": "/base/src/assets/",
+    },
     client: {
       jasmine: {
         // you can add configuration options for Jasmine here

@@ -5,8 +5,12 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { InterfaceLanguage, ReadAlongMode } from "./index.d";
-export { InterfaceLanguage, ReadAlongMode } from "./index.d";
+import { Alignment, InterfaceLanguage, ReadAlongMode } from "./index.d";
+import { Subject } from "rxjs";
+import { Element } from "@stencil/core";
+export { Alignment, InterfaceLanguage, ReadAlongMode } from "./index.d";
+export { Subject } from "rxjs";
+export { Element } from "@stencil/core";
 export namespace Components {
     interface ReadAlong {
         /**
@@ -30,9 +34,21 @@ export namespace Components {
          */
         "displayTranslation": boolean;
         /**
+          * Get Alignments
+         */
+        "getAlignments": () => Promise<Alignment>;
+        /**
+          * Get Current Word
+         */
+        "getCurrentWord": () => Promise<Subject<string>>;
+        /**
           * Get Images
          */
         "getImages": () => Promise<object>;
+        /**
+          * Get ReadAlong Element
+         */
+        "getReadAlongElement": () => Promise<Element>;
         /**
           * Get Translations
          */
@@ -73,6 +89,10 @@ export namespace Components {
           * Theme to use: ['light', 'dark'] defaults to 'dark'
          */
         "theme": string;
+        /**
+          * Update Single Sprite
+         */
+        "updateSpriteAlignments": (alignment: Alignment) => Promise<void>;
         /**
           * DEPRECATED Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.
          */

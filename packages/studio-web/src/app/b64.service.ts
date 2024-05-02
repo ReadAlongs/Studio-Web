@@ -1,4 +1,4 @@
-import { forkJoin, Observable } from "rxjs";
+import { forkJoin, Observable, BehaviorSubject } from "rxjs";
 import { switchMap } from "rxjs/operators";
 
 import { HttpClient } from "@angular/common/http";
@@ -17,11 +17,16 @@ export class B64Service {
    * @param {HttpClient} http - The HttpClient service for making HTTP requests.
    * @param {FileService} fileService - The FileService for handling file operations.
    */
+  jsAndFontsBundle$ = new BehaviorSubject<[string, string] | null>(null);
   constructor(
     private http: HttpClient,
     private fileService: FileService,
-  ) {}
-  getBundle$(): Observable<any[]> {
+  ) {
+    this.getBundle$().subscribe((bundle) => {
+      this.jsAndFontsBundle$.next(bundle);
+    });
+  }
+  getBundle$(): Observable<[string, string]> {
     return forkJoin([
       this.http
         .get(this.JS_BUNDLE_URL, { responseType: "blob" })

@@ -34,11 +34,23 @@ export interface SupportedLanguage {
   names: { [code: string]: string };
 }
 
+export interface ReadAlongSlots {
+  title: string;
+  subtitle: string;
+}
+
+export interface ReadAlongData {
+  audio: Blob | File;
+  alignedXML: Document;
+}
+
 export enum SupportedOutputs {
-  eaf,
-  textgrid,
-  srt,
-  vtt,
+  eaf = "eaf",
+  textgrid = "textgrid",
+  srt = "srt",
+  vtt = "vtt",
+  html = "html",
+  zip = "zip",
 }
 
 @Injectable({
@@ -50,7 +62,7 @@ export class RasService {
 
   convertRasFormat$(
     body: ReadAlongFormatRequest,
-    output_type: SupportedOutputs | string,
+    output_type: SupportedOutputs,
   ): Observable<Blob> {
     return this.http.post(
       this.baseURL + "/convert_alignment/" + output_type,

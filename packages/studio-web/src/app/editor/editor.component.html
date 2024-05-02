@@ -1,0 +1,74 @@
+<section>
+  <div class="container mb-2 mt-5">
+    <div class="row mb-5">
+      <div class="col-6">
+        <h1 i18n="Welcome message for app editor" id="welcome-header">
+          Welcome to the ReadAlong Studio Editor
+        </h1>
+      </div>
+      <div
+        class="col-6"
+        *ngIf="
+          uploadFormGroup.valid && audioB64Control$.value && rasControl$.value
+        "
+      >
+        <ras-shared-download
+          [slots]="slots"
+          [readalong]="readalong"
+          [b64Audio]="audioB64Control$.value"
+          [rasXML]="rasControl$.value"
+        ></ras-shared-download>
+      </div>
+    </div>
+    <div class="row mb-6">
+      <div class="col-8">
+        <h2 i18n="Title for upload box" class="subtitle">
+          Select a single-file HTML ReadAlong file
+        </h2>
+        <input
+          #textInputElement
+          (change)="onRasFileSelected($event)"
+          class="form-control"
+          name="text"
+          type="file"
+          id="updateRAS"
+          accept=".html"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+      <div #readalongContainer></div>
+    </div>
+    <div class="col-2"></div>
+  </div>
+  <div class="row mt-5 mb-5">
+    <div class="col-2"></div>
+    <div class="col-8">
+      <mat-toolbar *ngIf="audioControl$.valid">
+        <span>Audio Toolbar</span>
+        <span class="example-spacer"></span>
+        <button
+          (click)="zoomIn()"
+          mat-icon-button
+          class="example-icon zoom-in-icon"
+          aria-label="Zoom in icon for audio waveform"
+        >
+          <mat-icon>zoom_in</mat-icon>
+        </button>
+        <button
+          (click)="zoomOut()"
+          mat-icon-button
+          class="example-icon"
+          aria-label="Zoom out icon for audio waveform"
+        >
+          <mat-icon>zoom_out</mat-icon>
+        </button>
+      </mat-toolbar>
+      <div class="pure-u-1" id="wavesurferContainer" #wavesurferContainer></div>
+    </div>
+    <div class="col-2"></div>
+  </div>
+</section>
