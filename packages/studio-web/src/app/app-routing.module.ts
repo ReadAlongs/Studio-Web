@@ -7,6 +7,7 @@ import { EditorComponent } from "./editor/editor.component";
 const routes: Routes = [
   {
     path: "",
+    pathMatch: "full",
     component: StudioComponent,
   },
   {
@@ -24,7 +25,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { useHash: false })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
