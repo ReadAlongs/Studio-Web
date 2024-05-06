@@ -328,21 +328,20 @@ Please host all assets on your server, include the font and package imports defi
         `
 
 WordPress Deployment Guide
-        
-        
+
+
 Setup the plugin (do this once)
 
-Install and activate our plugin 'wp-read-along-web-app-loader' on your WordPress site. 
+Install and activate our plugin 'wp-read-along-web-app-loader' on your WordPress site.
 
-See https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component/wordpress-plugin for more information
+See https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component/wordpress-plugin for more information.
 
 
 Deploy the read-along
 
 Upload the images, ${basename}.readalong and ${basename}.mp3 to your Media Library of your WordPress site.
 
-Use the text editor to paste the snippet below in your WordPress page 
-
+Use the text editor to paste the snippet below in your WordPress page:
 
         ---- WordPress Deployment SNIPPET ----
 
@@ -355,15 +354,11 @@ Use the text editor to paste the snippet below in your WordPress page
 [/read_along_web_app_loader]
 <!-- /wp:html -->
         ----- END OF SNIPPET----
-
-        
-        `,
+`,
       ]);
 
-      // - add plain text readme
-      //  with the WP installation instructions
+      // - add plain text readme with regular and WordPress installation instructions
       innerFolder?.file("readme.txt", WP_deployment_readme);
-      //innerFolder?.file("README.txt", this.readmeFile);
       // - write zip
       zipFile.generateAsync({ type: "blob" }).then(
         (content) => saveAs(content, `${basename}.zip`),
