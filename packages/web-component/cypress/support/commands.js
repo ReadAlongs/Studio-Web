@@ -28,3 +28,9 @@ Cypress.Commands.add("readalong", () => {
 Cypress.Commands.add("readalongElement", () => {
   return cy.get("read-along").first();
 });
+
+Cypress.Commands.add("playReadAlong", () => {
+  cy.get("[data-cy=play-button]", { timeout: 10000 })
+    .should("be.enabled")
+    .click();
+});
