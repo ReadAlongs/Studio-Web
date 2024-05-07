@@ -2,7 +2,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - deploy
 
 jobs:
   deploy:
@@ -22,6 +22,7 @@ jobs:
         run: |
           npx nx build web-component
           # create the bundles required for studio-web
+          # TODO: stop updating the bundle, keep the published one.
           npx nx bundle web-component
       - name: Test
         run: |
@@ -37,4 +38,6 @@ jobs:
           branch: gh-pages # The branch the action should deploy to.
           folder: dist/packages/studio-web # The folder the action should deploy.
           force: false # rebase instead of force push by default
-          clean-exclude: pr-preview/ # don't delete pr previews
+          clean-exclude: |
+            pr-preview/
+            dev/
