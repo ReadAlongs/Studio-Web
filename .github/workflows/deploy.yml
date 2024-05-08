@@ -1,0 +1,43 @@
+name: Deploy
+concurrency: deploy
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        run: |
+          npm install
+      - name: Build web-component
+        run: |
+          npx nx build web-component
+          # create the bundles required for studio-web
+          # TODO: stop updating the bundle, keep the published one.
+          npx nx bundle web-component
+      - name: Test
+        run: |
+          npx nx test:once studio-web
+      - name: Build
+        run: |
+          npx nx build studio-web --configuration=production
+          npx nx build studio-web --configuration=production --localize=fr --deleteOutputPath=false
+          npx nx build studio-web --configuration=production --localize=es --deleteOutputPath=false
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: dist/packages/studio-web # The folder the action should deploy.
+          force: false # rebase instead of force push by default
+          clean-exclude: |
+            pr-preview/
+            dev/

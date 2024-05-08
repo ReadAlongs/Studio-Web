@@ -1,11 +1,12 @@
-name: Deploy
+name: Deploy dev preview
+concurrency: dev-preview
 on:
   push:
     branches:
       - main
 
 jobs:
-  deploy:
+  deploy-dev-preview:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,7 +17,6 @@ jobs:
           node-version: "20"
       - name: Install
         run: |
-          # The default config is for the monorepo, while this is for standalone
           npm install
       - name: Build web-component
         run: |
@@ -28,13 +28,14 @@ jobs:
           npx nx test:once studio-web
       - name: Build
         run: |
-          npx nx build studio-web --configuration=production
-          npx nx build studio-web --configuration=production --localize=fr --deleteOutputPath=false
-          npx nx build studio-web --configuration=production --localize=es --deleteOutputPath=false
+          npx nx build studio-web --configuration=production --base-href=/dev/
+          npx nx build studio-web --configuration=production --base-href=/dev/ --localize=fr --deleteOutputPath=false
+          npx nx build studio-web --configuration=production --base-href=/dev/ --localize=es --deleteOutputPath=false
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: dist/packages/studio-web # The folder the action should deploy.
           force: false # rebase instead of force push by default
-          clean-exclude: pr-preview/ # don't delete pr previews
+          target-folder: dev
+          commit-message: "Deploy dev preview to gh-pages from @ ${{ github.repository }}@${{ github.sha }}"
