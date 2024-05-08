@@ -1,0 +1,41 @@
+name: Deploy dev preview
+concurrency: dev-preview
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-dev-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        run: |
+          npm install
+      - name: Build web-component
+        run: |
+          npx nx build web-component
+          # create the bundles required for studio-web
+          npx nx bundle web-component
+      - name: Test
+        run: |
+          npx nx test:once studio-web
+      - name: Build
+        run: |
+          npx nx build studio-web --configuration=production --base-href=/dev/
+          npx nx build studio-web --configuration=production --base-href=/dev/ --localize=fr --deleteOutputPath=false
+          npx nx build studio-web --configuration=production --base-href=/dev/ --localize=es --deleteOutputPath=false
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: dist/packages/studio-web # The folder the action should deploy.
+          force: false # rebase instead of force push by default
+          target-folder: dev
+          commit-message: "Deploy dev preview to gh-pages from @ ${{ github.repository }}@${{ github.sha }}"
