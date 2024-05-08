@@ -16,6 +16,16 @@
     "theme-tooltip": "Cambie la paleta de colores",
     "full-screen-tooltip": "Modo pantalla completa",
     "translation-tooltip": "Active o desactive las traducciones",
-    "add-translation": "Añada una traducción, transliteración o glosa"
+    "add-translation": "Añada una traducción, transliteración o glosa",
+    "configuration-tooltip": "Preferencias",
+    "settings": "Mis preferencias",
+    "page-animation": "Transiciónes de página animadas",
+    "auto-pause": "Pausa al final de cada página",
+    "language": "Idioma de la interfaz",
+    "save-settings": "Recordar mis preferencias para este sitio",
+    "eng": "Inglés",
+    "fra": "Francés",
+    "spa": "Español",
+    "close": "Cerrar"
   }
 }

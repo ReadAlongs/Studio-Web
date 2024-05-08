@@ -317,46 +317,48 @@ Please host all assets on your server, include the font and package imports defi
       const indexHtmlFile = new Blob([sampleHtml], { type: "text/html" });
       innerFolder?.file("index.html", indexHtmlFile);
       //snippet for WP deployment
+      const today = new Date();
+      const month =
+        today.getMonth() < 9
+          ? `0${today.getMonth() + 1}`
+          : `${today.getMonth() + 1}`;
+      const WP_UPLOAD_FOLDER = `/wp-content/uploads/${today.getFullYear()}/${month}/`;
       const WP_deployment_readme = new Blob([
         this.readmeFile,
         `
 
 WordPress Deployment Guide
-        
-        
+
+
 Setup the plugin (do this once)
 
-Install and activate our plugin 'wp-read-along-web-app-loader' on your WordPress site. 
+Install and activate our plugin 'wp-read-along-web-app-loader' on your WordPress site.
+
+See https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component/wordpress-plugin for more information.
 
 
 Deploy the read-along
 
-Upload the ${basename}.readalong and ${basename}.${audioExtension} to your Media Library of your WordPress site.
+Upload the images, ${basename}.readalong and ${basename}.mp3 to your Media Library of your WordPress site.
 
-Use the text editor to paste the snippet below in your WordPress page 
-
-Replace assets/ with the path from your Media Library 
+Use the text editor to paste the snippet below in your WordPress page:
 
         ---- WordPress Deployment SNIPPET ----
 
-<!-- Here is how you declare the Web Component. Supported languages: en, fr -->
-[read_along_web_app_loader image-asset-folder="./" version="^${environment.packageJson.singleFileBundleVersion}"]
-  <read-along href="assets/${basename}.readalong" audio="assets/${basename}.${audioExtension}" theme="light" language="en" image-assets-folder="assets/">
+<!-- wp:html -->
+[read_along_web_app_loader version="^${environment.packageJson.singleFileBundleVersion}"]
+  <read-along href="${WP_UPLOAD_FOLDER}${basename}.readalong" audio="${WP_UPLOAD_FOLDER}${basename}.mp3" theme="light" language="eng" image-assets-folder="${WP_UPLOAD_FOLDER}">
             <span slot='read-along-header'>${slots.title}</span>
             <span slot='read-along-subheader'>${slots.subtitle}</span>
         </read-along>
 [/read_along_web_app_loader]
-
+<!-- /wp:html -->
         ----- END OF SNIPPET----
-
-        
-        `,
+`,
       ]);
 
-      // - add plain text readme
-      // TODO: switch to this when the WP installation instructions are added
-      // innerFolder?.file("README.txt", WP_deployment_readme);
-      innerFolder?.file("README.txt", this.readmeFile);
+      // - add plain text readme with regular and WordPress installation instructions
+      innerFolder?.file("readme.txt", WP_deployment_readme);
       // - write zip
       zipFile.generateAsync({ type: "blob" }).then(
         (content) => saveAs(content, `${basename}.zip`),

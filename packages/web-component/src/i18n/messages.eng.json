@@ -13,9 +13,19 @@
     "play-tooltip": "Play/pause audio recording",
     "rewind-tooltip": "Rewind 5 seconds",
     "stop-tooltip": "Stop audio playback",
-    "theme-tooltip": "Change theme",
+    "theme-tooltip": "Toggle dark/light mode",
     "full-screen-tooltip": "Full screen mode",
     "translation-tooltip": "Toggle translations",
-    "add-translation": "Add a translation, transliteration or gloss"
+    "add-translation": "Add a translation, transliteration or gloss",
+    "configuration-tooltip": "Preferences",
+    "settings": "My preferences",
+    "page-animation": "Animated page transitions",
+    "auto-pause": "Pause at the end of each page",
+    "language": "Interface language",
+    "save-settings": "Remember my preferences for this site",
+    "eng": "English",
+    "fra": "French",
+    "spa": "Spanish",
+    "close": "Close"
   }
 }
