@@ -243,34 +243,24 @@ We use Cypress (instead of Jest+Puppeteer) to do integration/end-to-end testing.
 
 ### How to run the tests
 
-First, start the test servers (yes, plural!), by using this command:
+Since this package is part of a monorepo, all the following commands must be run at the root of the monorepo, not in this directory.
 
-    npm run test-servers
+First, start the two test servers, by using this command:
 
-If you are on a Windows machine, the command above will not work if you do not have bash setup.
+    npx nx run-many --targets=serve-test-data,serve --projects=web-component
 
-Run each of the following in a separate command prompt:
+Or you can run each test server separately:
 
-    npm run start
+    npx nx serve web-component
+    npx nx serve-test-data web-component
 
-    npm run serve-test-data
+Run the full test suite automatically using this command:
 
-Then you can run test **interactively** using the following command:
+    npx nx test:once web-component
 
-    npx cypress open
+Alternatively, this command will launch Cypress so that you can run the tests **interactively**:
 
-Or run all tests automatically using this command:
-
-    npx cypress run
-
-### Run the tests in the mono repo:
-
-In the monorepo root directory, follow the monorepo installation instructions
-with and run these commands in three separate windows:
-
-    nx serve web-component
-    nx serve-test-data web-component
-    nx test:once web-component
+    npx nx test:open web-component
 
 ### Interactively testing your local copy
 
