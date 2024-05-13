@@ -15,16 +15,12 @@
     "dist/"
   ],
   "scripts": {
-    "build": "stencil build --docs",
     "bundle": "node b64Fonts.js && webpack --config webpack.config.js; packageVersion=$(npm view ../../node_modules/@readalongs/web-component version); timestamp=$(date \"+%Y-%m-%d+%H-%M-%S\") && cd ../studio-web && npm pkg set singleFileBundleVersion=\"${packageVersion}\" && npm pkg set singleFileBundleTimestamp=\"${timestamp}\"",
     "cy:run": "cypress run",
-    "start": "stencil build --dev --watch --serve",
-    "test": "npm run test-servers & npm run wait-for-test-server && npm run test:once",
-    "test-servers": "bash ./bin/run-test-servers",
+    "test:full-pipeline": "npm run serve-test-data & nx run serve & npm run wait-for-test-server && npm run test:once",
     "test:once": "cypress run",
     "test:open": "cypress open",
     "serve-test-data": "sirv --dev --cors --port 8941 test-data/",
-    "generate": "stencil generate",
     "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
   },
   "dependencies": {
