@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Observable, Subject, takeUntil } from "rxjs";
-import { slugify } from "../../utils/utils";
+import { Subject, takeUntil } from "rxjs";
+import slugify from "@sindresorhus/slugify";
 import { UploadService } from "../../upload.service";
 import { ToastrService } from "ngx-toastr";
 
@@ -215,7 +215,7 @@ Please host all assets on your server, include the font and package imports defi
           .replace(/[^0-9]/g, "")
           .slice(0, -3);
         const basename =
-          (slots.title ? slugify(slots.title, 15) : "readalong") +
+          (slots.title ? slugify(slots.title).substring(0, 15) : "readalong") +
           `-${timestamp}`;
         element.href = window.URL.createObjectURL(blob);
         element.download = `${basename}.html`;
@@ -253,7 +253,7 @@ Please host all assets on your server, include the font and package imports defi
         .replace(/[^0-9]/g, "")
         .slice(0, -3);
       const basename =
-        (slots.title ? slugify(slots.title, 15) : "readalong") +
+        (slots.title ? slugify(slots.title).substring(0, 15) : "readalong") +
         `-${timestamp}`;
       // - add audio file
       if (b64Audio) {
