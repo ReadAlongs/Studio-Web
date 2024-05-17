@@ -12,7 +12,7 @@
  * Plugin Name:       Read-Along Web App Loader
  * Plugin URI:        https://github.com/ReadAlongs/Studio-Web/
  * Description:       This plugin loads the script and styles needed to activate the &lt;read-along&gt; tag in a Word Press site
- * Version:           1.3.0
+ * Version:           1.3.2
  * Author:            Delasie Torkornoo
  * License:           MIT
  * License URI:       https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE
@@ -26,7 +26,7 @@ if (!defined("WPINC")) {
 /**
  * Currently plugin version.
  */
-define("Read_Along_Web_App_Loader_VERSION", "1.3.0");
+define("Read_Along_Web_App_Loader_VERSION", "1.3.2");
 define("Read_Along_Web_App_VERSION", "1.3.0");
 class ReadAlongWebAppLoader
 {
@@ -36,25 +36,34 @@ class ReadAlongWebAppLoader
    * Accepts version of read-along generated
    */
 
-  public static function short_code($attrs = [], $content = null)
+  public static function short_code($attrs = [], $content = null, $tag = "")
   {
     $output = "";
-    wp_enqueue_style(
-      "Read_Along_Web_App_Loader_Font",
-      "https://fonts.googleapis.com/css?family=Lato%7CMaterial+Icons%7CMaterial+Icons+Outlined",
-      [],
-      Read_Along_Web_App_Loader_VERSION
+    // normalize attribute keys, lowercase
+    $attrs = array_change_key_case((array) $attrs, CASE_LOWER);
+    $attributes = shortcode_atts(
+      [
+        "version" => Read_Along_Web_App_VERSION,
+      ],
+      $attrs,
+      $tag
     );
-    wp_enqueue_script_module(
-      "read_along_web_component_script",
-      plugin_dir_url(__FILE__) . "js/web-component.esm.js",
-      [],
-      Read_Along_Web_App_VERSION
-    );
+
     if (!is_null($content)) {
       $output = apply_filters("the_content", $content);
     }
 
+    $src = sprintf(
+      "https://unpkg.com/@readalongs/web-component@%s/dist/web-component/web-component.esm.js",
+      $attributes["version"]
+    );
+    //script source code https://github.com/ReadAlongs/Studio-Web/
+    wp_enqueue_script_module(
+      "read_along_web_component_script",
+      $src,
+      [],
+      Read_Along_Web_App_VERSION
+    );
     return $output;
   }
   /**
