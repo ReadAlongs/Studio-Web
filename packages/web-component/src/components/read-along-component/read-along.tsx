@@ -934,6 +934,14 @@ export class ReadAlongComponent {
    * Using this Lifecycle hook to handle backwards compatibility of component attribute
    */
   async componentWillLoad() {
+    //set theme based on system default mode (dark/light)
+    if (window.matchMedia) {
+      if (window.matchMedia("prefers-color-scheme: dark").matches) {
+        this.theme = "dark";
+      } else {
+        this.theme = "light";
+      }
+    }
     //load user preferences
     const userPreferences: UserPreferences | null = getUserPreferences();
     if (
@@ -1787,7 +1795,6 @@ export class ReadAlongComponent {
   StyleControl = (): Element => (
     <button
       aria-label="Change theme"
-      onClick={() => this.changeTheme()}
       title={this.getI18nString("theme-tooltip")}
       class={
         "control-panel__control ripple theme--" +
