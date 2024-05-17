@@ -55,6 +55,7 @@
     "@angular/material": "^17",
     "@angular/platform-browser": "^17",
     "@angular/router": "^17",
+    "@sindresorhus/slugify": "^2.2.1",
     "bootstrap": "^5.3.3",
     "file-saver": "^2.0.5",
     "image-conversion": "^2.1.1",
