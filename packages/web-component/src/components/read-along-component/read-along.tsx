@@ -450,7 +450,7 @@ export class ReadAlongComponent {
    */
   play() {
     //do not attempt to play if sprites are not initialized
-    if (this.audio_howl_sprites == undefined) return;
+    if (this.audio_howl_sprites === undefined) return;
     this.playing = true;
     // If already playing once, continue playing
     if (this.play_id !== undefined) {
@@ -1122,7 +1122,7 @@ export class ReadAlongComponent {
         }
         // Turn tag to query
         let query = this.tagToQuery(el_tag);
-        if (query == undefined) return; // not go any further if tag does not exist in the DOM
+        if (query === undefined) return; // not go any further if tag does not exist in the DOM
         // select the element with that tag
         let query_el: HTMLElement = this.el.shadowRoot.querySelector(query);
         // Remove all elements with reading class
@@ -1215,7 +1215,7 @@ export class ReadAlongComponent {
     if (this.audio_howl_sprites === undefined) return false;
 
     //not ready if
-    if (this.audio_howl_sprites.sound == undefined) return false;
+    if (this.audio_howl_sprites.sound === undefined) return false;
 
     return true; //it is ready
   }
