@@ -6,8 +6,7 @@ context("Testing creator enabled settings", () => {
 
   it("testing creator enforced hiding of translation at load time ", function () {
     cy.visit("/ej-fra/index-translated-no-display.html");
-    cy.wait("@text");
-    cy.wait("@audio");
+    cy.wait(["@text", "@audio"]);
     cy.readalong().within(() => {
       cy.get("#t0b0d0p0s0w0").should("be.visible");
       cy.get("#t0b0d0p0s0trtext0").should("not.be.visible");
@@ -17,8 +16,7 @@ context("Testing creator enabled settings", () => {
 
   it("testing creator allows showing of translation at load time ", function () {
     cy.visit("/ej-fra/index-translated.html");
-    cy.wait("@text");
-    cy.wait("@audio");
+    cy.wait(["@text", "@audio"]);
     cy.readalong().within(() => {
       cy.get("#t0b0d0p0s0w0").should("be.visible");
       cy.get("#t0b0d0p0s0trtext0").should("be.visible");
@@ -28,10 +26,9 @@ context("Testing creator enabled settings", () => {
 
   it("testing creator enabling auto pause ", function () {
     cy.visit("/ej-fra/index-with-auto-pause.html");
-    cy.wait("@text");
-    cy.wait("@audio");
+    cy.wait(["@text", "@audio"]);
     cy.readalong().within(() => {
-      cy.get("[data-cy=play-button]").click();
+      cy.playReadAlong();
       cy.wait(12000); //wait for the last word of the first page (at 6.4) + ~5 sec
 
       cy.get("#t0b0d0p0s2w15")

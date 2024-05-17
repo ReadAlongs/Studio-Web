@@ -168,9 +168,7 @@ Sprite.prototype = {
   },
 
   /**
-   * Go back s seconds, or if current position - s is less than 0
-   * go back to the beginning.
-   *
+   * Go to s seconds in the audio timeline
    * @param id - the id of the audio to roll back
    * @param s - the number of seconds to go back
    */
@@ -182,19 +180,31 @@ Sprite.prototype = {
     // and highlight it; seek to current_seek -s.
 
     var id: number = self.sound.seek(s, id);
-    // move highlight back TODO: refactor out into its own function and combine with version in step()
-    var seek = self.sound.seek((id = id));
+    // get the current audio position and convert it from seconds to millisecond
+    var seek = self.sound.seek((id = id)) * 1000;
     for (var j = 0; j < self._spriteLeft.length; j++) {
       // if seek passes sprite start point, replace self._reading with that sprite and slice the array of sprites left
-      if (seek * 1000 >= self._spriteLeft[j][0]) {
+      if (seek >= self._spriteLeft[j][0]) {
         // only emit sprite if within current audio seek position
-        if (seek * 1000 <= self._spriteLeft[j][2]) {
+        if (seek <= self._spriteLeft[j][2]) {
           self._reading$.next(self._spriteLeft[j][1]);
+          //attempt to adjust the audio position
+          id = self.sound.seek(self._spriteLeft[j][0], id); //set sound to beginning of word
+          self.sound.seek((id = id));
+          self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length);
+          break;
         }
-        self._spriteLeft = self._spriteLeft.slice(j, self._spriteLeft.length);
       }
     }
-    self._reading$.next(self._spriteLeft[0][1]);
+    //update the progress bar
+    if (self.sounds.length) {
+      const percentage =
+        (Math.round((s / self.sound.duration(id)) * 100) || 0) + "%";
+
+      self.sounds[0].style.width = percentage;
+      self.sounds[0].setAttribute("offset", percentage);
+    }
+
     // else, return back to beginning
     return id;
   },

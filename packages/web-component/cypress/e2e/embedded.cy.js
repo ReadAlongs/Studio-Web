@@ -19,7 +19,7 @@ context("The Readalong Component", () => {
     cy.wait(EXPECTED_LOADING_TIME);
 
     cy.readalong().within(() => {
-      cy.get("[data-cy=play-button]").click();
+      cy.playReadAlong();
       cy.wait(FOR_ERIC_TO_TALK_A_BIT);
       cy.get("[data-cy=stop-button]").click();
     });
@@ -36,7 +36,7 @@ context("The Readalong Component", () => {
       cy.wait(EXPECTED_LOADING_TIME);
 
       cy.readalong().within(() => {
-        cy.get("[data-cy=play-button]").click();
+        cy.playReadAlong();
         cy.get("[data-cy=page-count__current]")
           .filter("*:visible")
           .invoke("text")

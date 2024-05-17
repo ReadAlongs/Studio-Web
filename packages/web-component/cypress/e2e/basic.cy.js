@@ -20,30 +20,27 @@ context("The Readalong Component", () => {
   });
 
   it("should play the entire ReadAlong", () => {
-    cy.wait("@text");
-    cy.wait("@audio");
+    cy.wait(["@text", "@audio"]);
 
     cy.readalong().within(() => {
-      cy.get("[data-cy=play-button]").click();
+      cy.playReadAlong();
       cy.wait(FOR_ERIC_TO_TALK_A_BIT);
       cy.get("[data-cy=stop-button]").click();
     });
   });
 
   it("should play a single word when clicked", () => {
-    cy.wait("@text");
-    cy.wait("@audio");
+    cy.wait(["@text", "@audio"]);
 
     cy.readalong().contains("technologies").click();
   });
 
   describe("the progress bar", () => {
     it("should skip ahead when clicked", () => {
-      cy.wait("@text");
-      cy.wait("@audio");
+      cy.wait(["@text", "@audio"]);
 
       cy.readalong().within(() => {
-        cy.get("[data-cy=play-button]").click();
+        cy.playReadAlong();
         cy.get("[data-cy=page-count__current]")
           .filter("*:visible")
           .invoke("text")
@@ -72,6 +69,8 @@ context("The Readalong Component", () => {
       cy.wait("@text");
       cy.wait("@audio").then(() => {
         cy.readalong().within(() => {
+          //wait for initialization process to be completed
+          cy.get("[data-cy=play-button]").should("be.enabled");
           //word corpus and robuste should hidden
           cy.get("#t0b0d1p0s2w1").should("not.be.visible");
           cy.get("#t0b0d1p1s0w14").should("not.be.visible");
@@ -85,9 +84,9 @@ context("The Readalong Component", () => {
                 el.height() * 0.5,
               );
             });
-          //word corpus and robuste should hidden
-          cy.get("#t0b0d1p0s2w1").should("not.be.visible");
-          cy.get("#t0b0d1p1s0w14").should("not.be.visible");
+          //word corpus and robuste should now be visible
+          cy.get("#t0b0d1p0s2w1").should("be.visible");
+          cy.get("#t0b0d1p1s0w14").should("be.visible");
           cy.get("[data-cy=play-button]")
             .click()
             .then(() => {
@@ -95,7 +94,7 @@ context("The Readalong Component", () => {
               //word corpus and robuste should now visible
               cy.get("#t0b0d1p0s2w1").should("be.visible");
               cy.get("#t0b0d1p1s0w14").should("be.visible");
-              cy.get("[data-cy=play-button]").click();
+              cy.playReadAlong();
             });
         });
       });
