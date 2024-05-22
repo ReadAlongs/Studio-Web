@@ -32,7 +32,11 @@ context("The Readalong Component", () => {
   it("should play a single word when clicked", () => {
     cy.wait(["@text", "@audio"]);
 
-    cy.readalong().contains("technologies").click();
+    cy.readalong().within(() => {
+      //wait for initialization process to be completed
+      cy.get("[data-cy=play-button]").should("be.enabled");
+      cy.get("span").contains("technologies").click();
+    });
   });
 
   describe("the progress bar", () => {

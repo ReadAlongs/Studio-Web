@@ -174,13 +174,15 @@ Please host all assets on your server, include the font and package imports defi
       <html lang="en">
       <head>
         <meta charset="utf-8">
+        <meta name="application-name" content="read along">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+        <meta name="generator" content="@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}">
         <title>${slots.title}</title>
         <link rel="stylesheet" href="${this.b64Service.jsAndFontsBundle$.value[1]}">
         <script src="${this.b64Service.jsAndFontsBundle$.value[0]}" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}"></script>
       </head>
       <body>
-          <read-along href="data:application/readalong+xml;base64,${rasB64}" audio="${b64Audio}" image-assets-folder="">
+          <read-along version="${environment.packageJson.singleFileBundleVersion}"  href="data:application/readalong+xml;base64,${rasB64}" audio="${b64Audio}" image-assets-folder="">
           <span slot="read-along-header">${slots.title}</span>
           <span slot="read-along-subheader">${slots.subtitle}</span>
           </read-along>
@@ -298,6 +300,9 @@ Please host all assets on your server, include the font and package imports defi
             <head>
                 <meta charset="UTF-8">
                 <title>${slots.title}</title>
+                <meta name="application-name" content="read along">
+                <meta name="generator" content="@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}">
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <!-- Import fonts. Material Icons are needed by the web component -->
                 <link href="https://fonts.googleapis.com/css?family=Lato%7CMaterial+Icons%7CMaterial+Icons+Outlined" rel="stylesheet">
             </head>

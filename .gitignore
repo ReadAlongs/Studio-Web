@@ -7,3 +7,4 @@ www
 .nx
 .python-version
 *~
+**/version.ts

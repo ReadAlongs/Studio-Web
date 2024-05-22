@@ -123,6 +123,12 @@
     background-color: rgba(200, 200, 200, 0.15);
     color: #ccc;
   }
+  & p.version {
+    padding: 1em;
+    font-size: 0.7em;
+    font-weight: 100;
+    color: #ccc;
+  }
 }
 .settings.theme--dark {
   color: #fff;

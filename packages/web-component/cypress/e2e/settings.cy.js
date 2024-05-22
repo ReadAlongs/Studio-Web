@@ -87,4 +87,17 @@ context("Testing end user enabled settings", () => {
       cy.getAllLocalStorage();
     });
   });
+  it("has version information", () => {
+    cy.readalong().within(() => {
+      cy.get("[data-test-id=settings-button]").click();
+      cy.get("[data-test-id=settings]")
+        .should("be.visible")
+        .within(() => {
+          //check version is semantic
+          cy.get(".version")
+            .invoke("text")
+            .should("match", /\d+\.\d+\.\d+$/);
+        });
+    });
+  });
 });

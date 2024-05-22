@@ -34,7 +34,7 @@ import {
 import { web_component as eng_strings } from "../../i18n/messages.eng.json";
 import { web_component as fra_strings } from "../../i18n/messages.fra.json";
 import { web_component as spa_strings } from "../../i18n/messages.spa.json";
-
+import { PACKAGE_VERSION } from "../../version";
 const LOADING = 0;
 const LOADED = 1;
 const ERROR_PARSING = 2;
@@ -2027,7 +2027,9 @@ export class ReadAlongComponent {
         </button>
         {this.getI18nString("auto-pause")}
       </p>
-
+      <p class="version">
+        @readalongs/web-component version: {PACKAGE_VERSION}
+      </p>
       <div class="footer">
         <button
           type="button"
