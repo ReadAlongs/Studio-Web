@@ -1,7 +1,7 @@
 import { Subject } from "rxjs";
 
 import { Component, OnDestroy, OnInit } from "@angular/core";
-
+import { environment } from "../environments/environment";
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
@@ -9,6 +9,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 })
 export class AppComponent implements OnDestroy, OnInit {
   unsubscribe$ = new Subject<void>();
+  version = environment.packageJson.singleFileBundleVersion;
   constructor() {}
   ngOnInit(): void {}
 

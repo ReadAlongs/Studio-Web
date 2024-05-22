@@ -21,17 +21,29 @@ This mono repo, formerly called Web-Component, now called Studio-Web, combines f
 ## Table of Contents
 
 - [ReadAlongs Web App Suite](#readalongs-web-app-suite)
+  - [Table of Contents](#table-of-contents)
   - [For maintainers and developers](#for-maintainers-and-developers)
     - [Cloning](#cloning)
     - [Installing dependencies](#installing-dependencies)
     - [Serving/Development](#servingdevelopment)
+      - [Web-Component](#web-component)
+      - [Studio-Web](#studio-web)
+      - [Understanding where the components come from when you run locally](#understanding-where-the-components-come-from-when-you-run-locally)
     - [Testing](#testing)
-    - [Build and Publish](#build--publish)
+      - [Web-Component](#web-component-1)
+      - [Studio-Web](#studio-web-1)
+    - [Internationalization (i18n) and localization (l10n)](#internationalization-i18n-and-localization-l10n)
+    - [Build \& Publish](#build--publish)
+      - [Preparing to publish the Web Component \& Angular Wrapper](#preparing-to-publish-the-web-component--angular-wrapper)
+      - [Web Component \& Angular Wrapper - via a tag push](#web-component--angular-wrapper---via-a-tag-push)
+      - [Web Component \& Angular Wrapper - manually - please don't do this!](#web-component--angular-wrapper---manually---please-dont-do-this)
+      - [Studio-Web](#studio-web-2)
   - [Maintainers](#maintainers)
   - [Contributing](#contributing)
   - [Acknowledgements](#acknowledgements)
+    - [Northeastern University collaboration](#northeastern-university-collaboration)
   - [Citing](#citing)
-  - [License](#license)
+- [License](#license)
 
 ## TL;DR Spinning up the Studio Web App locally
 
@@ -100,11 +112,11 @@ If you are only developing the web-component you can run the following to start 
 
 Then, in another terminal, run the following to serve the web-component:
 
-    npx nx serve web-component
+    npx nx dev-build web-component
 
 Alternatively run together as:
 
-    npx nx run-many --targets=serve-test-data,serve --projects=web-component
+    npx nx dev web-component
 
 #### Studio-Web
 

@@ -23,6 +23,7 @@
     "build": {
       "executor": "@nxext/stencil:build",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["update-version-file"],
       "options": {
         "projectType": "library",
         "tsConfig": "packages/web-component/tsconfig.lib.json",
@@ -47,8 +48,9 @@
       }
     },
     "e2e": {
-      "executor": "@nxext/stencil:e2e",
+      "executor": "@nxext/cypress:cypress",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["build"],
       "options": {
         "projectType": "library",
         "tsConfig": "packages/web-component/tsconfig.lib.json",
@@ -61,6 +63,36 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": "packages/web-component/**/*.{ts,tsx}"
+      }
+    },
+    "update-version-file": {
+      "command": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./packages/web-component/package.json').version) + ';'\"> packages/web-component/src/version.ts"
+    },
+    "serve-test-data": {
+      "command": "sirv --dev --cors --port 8941 ./packages/web-component/test-data/"
+    },
+    "dev-build": {
+      "executor": "@nxext/stencil:build",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["update-version-file"],
+      "options": {
+        "projectType": "library",
+        "tsConfig": "packages/web-component/tsconfig.lib.json",
+        "configPath": "packages/web-component/stencil.config.ts",
+        "outputPath": "dist/packages/web-component",
+        "dev": true,
+        "watch": true,
+        "serve": true
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx nx serve-test-data web-component",
+          "npx nx dev-build web-component"
+        ],
+        "parallel": true
       }
     }
   }

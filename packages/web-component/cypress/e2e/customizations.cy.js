@@ -36,4 +36,24 @@ context("Testing creator enabled settings", () => {
         .should("have.class", "reading"); //check the last word is still highlighted
     });
   });
+
+  it("testing creator enabling one-column-page-layout ", function () {
+    cy.intercept(/\.png/).as("image");
+    cy.visit("/ej-fra/index-one-column.html");
+    cy.wait(["@text", "@audio", "@image"]);
+    cy.readalong().within(() => {
+      //is image above the text
+      cy.get(".page")
+        .first()
+        .within(() => {
+          cy.get(".image__container").then((imgContainer) => {
+            cy.get(".page__col__text").then((textElement) => {
+              expect(
+                imgContainer[0].getBoundingClientRect().top,
+              ).to.be.lessThan(textElement[0].getBoundingClientRect().top);
+            });
+          });
+        });
+    });
+  });
 });
