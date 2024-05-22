@@ -3,7 +3,7 @@ Contributors: deltork
 Tags: read-along, read along, web app loading
 Requires at least: 6.5.0
 Tested up to: 6.5.2
-Stable tag: 1.3.2
+Stable tag: 1.4.0
 Requires PHP: 7.0
 License: MIT
 License URI: GPLv2 or later
@@ -37,6 +37,8 @@ There are two ways to generate a read-along. The online web app (download the we
 3. Configure the read-along web app component in your WordPress block editor
 
 == Changelog ==
+= 1.4.0=
+* default read-along app version bumped to 1.4.0
 = 1.3.2 =
 * Code updates
 = 1.0.0 =
