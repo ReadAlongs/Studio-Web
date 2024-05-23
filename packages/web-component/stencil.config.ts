@@ -29,7 +29,11 @@ export const config: Config = {
     {
       type: "www",
       serviceWorker: null, // disable service workers
-      copy: [{ src: "scss/fonts", dest: "build/assets/fonts" }],
+      copy: [
+        { src: "scss/fonts", dest: "build/assets/fonts" },
+        // Hacky, I know, but we really need the readme to be in the root dist folder and I didn't figure how else to do that.
+        { src: "../readme.md", dest: "../readme.md" },
+      ],
     },
 
     angularOutputTarget({
