@@ -103,6 +103,7 @@ export class ReadAlongComponent {
 
   /**
    * DEPRECATED
+   * Will be removed in version 2.0.0
    * Toggle the use of an assets folder. Defaults to undefined.
    * Previously (<1.2.0) defaulted to 'true'.
    * .readalong files should just contain base filenames
@@ -251,6 +252,7 @@ export class ReadAlongComponent {
    */
   private urlTransform(path: string): string {
     // Frankenstein of combined useAssetsFolder v1.1.1 functionality and imageAssetsFolder v2.0.0 functionality
+    // TODO: delete this first if statement and all occurrences of useAssetsFolder for v2.0.0
     if (this.useAssetsFolder !== undefined) {
       // Old v1.1.1 functionality
       if (

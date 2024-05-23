@@ -94,7 +94,7 @@ export namespace Components {
          */
         "updateSpriteAlignments": (alignment: Alignment) => Promise<void>;
         /**
-          * DEPRECATED Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.
+          * DEPRECATED Will be removed in version 2.0.0 Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.
          */
         "useAssetsFolder"?: boolean;
     }
@@ -165,7 +165,7 @@ declare namespace LocalJSX {
          */
         "theme"?: string;
         /**
-          * DEPRECATED Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.
+          * DEPRECATED Will be removed in version 2.0.0 Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.
          */
         "useAssetsFolder"?: boolean;
     }

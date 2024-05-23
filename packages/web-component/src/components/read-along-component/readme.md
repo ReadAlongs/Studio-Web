@@ -22,7 +22,7 @@
 | `scrollBehaviour`      | `scroll-behaviour`          | Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)                                                                                   | `"auto" \| "smooth"`         | `"smooth"`     |
 | `svgOverlay`           | `svg-overlay`               | Overlay This is an SVG overlay to place over the progress bar                                                                                                                                                                                     | `string`                     | `undefined`    |
 | `theme`                | `theme`                     | Theme to use: ['light', 'dark'] defaults to 'dark'                                                                                                                                                                                                | `string`                     | `"light"`      |
-| `useAssetsFolder`      | `use-assets-folder`         | DEPRECATED Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.                                              | `boolean`                    | `undefined`    |
+| `useAssetsFolder`      | `use-assets-folder`         | DEPRECATED Will be removed in version 2.0.0 Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.             | `boolean`                    | `undefined`    |
 
 
 ## Methods

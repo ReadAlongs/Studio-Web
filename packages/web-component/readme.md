@@ -6,7 +6,12 @@ This is a web component for embedding read-along, audio/text aligned content in 
 
 ## Basic use
 
-The simplest way to use the web component is to generate a read along using [ReadAlongs Studio](https://github.com/ReadAlongs/Studio). Its `align` command will output a folder containing the read-along XML file, the other assets, and a minimal HTML index page, which you can view with `python -m http.server`, for example.
+The simplest way to use the web component is to generate a read along using the [ReadAlongs Studio web app](https://readalong-studio.mothertongues.org/).
+Once you've create a readalong, you can download the Web Bundle.
+
+You can also use the [ReadAlongs Studio CLI](https://github.com/ReadAlongs/Studio). Its `align` command will output the bundle in a folder.
+
+Whether you're using the web app or the CLI, the bundle will contain the read-along XML file (.readalong), the other assets, and a minimal HTML index page, which you can view with `python -m http.server`, for example, or deploy on a web server.
 
 The rest of this readme is intended for users who want to customize their readalongs or contribute to the development of this web component.
 
@@ -18,32 +23,35 @@ you make to `/src` will be automatically shown in the browser.
 
 ## Properties
 
-| Property               | Attribute                   | Description                                                                                                                                                     | Type                         | Default        |
-| ---------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | -------------- |
-| `audio`                | `audio`                     | URL of the audio file                                                                                                                                           | `string`                     | `undefined`    |
-| `cssUrl`               | `css-url`                   | Optional custom Stylesheet to override defaults                                                                                                                 | `string`                     | `undefined`    |
-| `displayTranslation`   | `display-translation`       | Show text translation on at load time                                                                                                                           | `boolean`                    | `true`         |
-| `href`                 | `href`                      | URL of the aligned text as readalong XML                                                                                                                        | `string`                     | `undefined`    |
-| `language`             | `language`                  | Language of the interface. In 639-3 code Options are - "eng" for English - "fra" for French                                                                     | `"eng" \| "fra"`             | `'eng'`        |
-| `mode`                 | `mode`                      | Choose mode of ReadAlong - either view (default) or edit                                                                                                        | `"EDIT" \| "VIEW"`           | `"VIEW"`       |
-| `pageScrolling`        | `page-scrolling`            | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                                                                                  | `"horizontal" \| "vertical"` | `"horizontal"` |
-| `playbackRateRange`    | `playback-rate-range`       | Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.                                               | `number`                     | `15`           |
-| `scrollBehaviour`      | `scroll-behaviour`          | Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive) | `"auto" \| "smooth"`         | `"smooth"`     |
-| `svgOverlay`           | `svg-overlay`               | Overlay This is an SVG overlay to place over the progress bar                                                                                                   | `string`                     | `undefined`    |
-| `theme`                | `theme`                     | Theme to use: ['light', 'dark'] defaults to 'dark'                                                                                                              | `string`                     | `'light'`      |
-| `useAssetsFolder`      | `use-assets-folder`         | Toggle the use of assets folder for resolving urls. Defaults to on to maintain backwards compatibility                                                          | `boolean`                    | `true`         |
-| `autoPauseAtEndOfPage` | `auto-pause-at-end-of-page` | Activate the automatic pausing of the audio at the end of the page                                                                                              | `boolean`                    | `false`        |
+| Property               | Attribute                   | Description                                                                                                                                                                                                                                       | Type                         | Default        |
+| ---------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | -------------- |
+| `audio`                | `audio`                     | URL of the audio file                                                                                                                                                                                                                             | `string`                     | `undefined`    |
+| `autoPauseAtEndOfPage` | `auto-pause-at-end-of-page` | Auto Pause at end of every page                                                                                                                                                                                                                   | `boolean`                    | `false`        |
+| `cssUrl`               | `css-url`                   | Optional custom Stylesheet to override defaults                                                                                                                                                                                                   | `string`                     | `undefined`    |
+| `displayTranslation`   | `display-translation`       | Show text translation on at load time                                                                                                                                                                                                             | `boolean`                    | `true`         |
+| `href`                 | `href`                      | URL of the aligned text as readalong XML                                                                                                                                                                                                          | `string`                     | `undefined`    |
+| `imageAssetsFolder`    | `image-assets-folder`       | Define a path for where the image assets are located This should be used instead of use-assets-folder. Defaults to 'assets/'. The empty string means that image paths will not have a prefix added to them. Use of the forward slash is optional. | `string`                     | `"assets/"`    |
+| `language`             | `language`                  | Language of the interface. In 639-3 code. Options are "eng" (English), "fra" (French) or "spa" (Spanish)                                                                                                                                          | `"eng" \| "fra" \| "spa"`    | `"eng"`        |
+| `mode`                 | `mode`                      | Choose mode of ReadAlong - either view (default) or edit                                                                                                                                                                                          | `"EDIT" \| "VIEW"`           | `"VIEW"`       |
+| `pageScrolling`        | `page-scrolling`            | Toggles the page scrolling from horizontal to vertical. Defaults to horizontal                                                                                                                                                                    | `"horizontal" \| "vertical"` | `"horizontal"` |
+| `playbackRateRange`    | `playback-rate-range`       | Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.                                                                                                                                 | `number`                     | `15`           |
+| `scrollBehaviour`      | `scroll-behaviour`          | Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)                                                                                   | `"auto" \| "smooth"`         | `"smooth"`     |
+| `svgOverlay`           | `svg-overlay`               | Overlay This is an SVG overlay to place over the progress bar                                                                                                                                                                                     | `string`                     | `undefined`    |
+| `theme`                | `theme`                     | Theme to use: ['light', 'dark'] defaults to 'dark'                                                                                                                                                                                                | `string`                     | `"light"`      |
+| `useAssetsFolder`      | `use-assets-folder`         | DEPRECATED Toggle the use of an assets folder. Defaults to undefined. Previously (<1.2.0) defaulted to 'true'. .readalong files should just contain base filenames not the full paths to the images.                                              | `boolean`                    | `undefined`    |
 
 #### IMAGES
 
 You have three options:
 
-- put images in "assets/" and provide relative link
-- provide a full path
-- put it in a custom relative folder and make sure to add `use-assets-folder="false"` attribute to the read-long
+- put images in "assets/" and provide relative links
+- provide full paths
+- put them in a custom relative folder and make sure to add `image-assets-folder="path/to/images/folder"` attribute to the read-long
   component
 
-Note that images are normally inserted in a read-along by specifying them in the `config.json` file provided to `readalongs align`, which will then attempt to generate and populate the assets folder automatically.
+Images can be inserted in a read-along interactively using the web app.
+
+If you're using the CLI, images are normally inserted in a read-along by specifying them in the `config.json` file provided to `readalongs align`, which will then attempt to generate and populate the assets folder automatically.
 See the [readalongs CLI user guide](https://readalong-studio.readthedocs.io/en/latest/cli-guide.html#adding-titles-images-and-do-not-align-segments-via-the-config-json-file) for details.
 
 ## Test with your site
@@ -54,35 +62,34 @@ the following script import in your own `index.html` page:
 ```html
 <script
   type="module"
-  src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/web-component.esm.js"
-></script>
-<script
-  nomodule
-  src="https://unpkg.com/@readalongs/web-component@^0.2.1/dist/read-along/read-along.js"
+  src="https://unpkg.com/@readalongs/web-component@^1.4.0/dist/web-component/web-component.esm.js"
 ></script>
 ```
 
-Then, you can add as many read-along components to your page as you like simply by adding `<read-along></read-along>`
-elements with arguments for where to find your text, alignments and audio file. These files can be generated
-using \_\_\_ service located here: \_\_\_.
+Then, you can add as many read-along components to your page as you like simply by adding `<read-along>`
+elements with arguments for where to find your text, alignments and audio file.
+These files can be generated using the
+[ReadAlongs Studio web app](https://readalong-studio.mothertongues.org/)
+or the
+[ReadAlongs Studio CLI](https://github.com/ReadAlongs/Studio).
 
 ```html
 <read-along
-  href="assets/s2.readalong"
-  audio="assets/s2.wav"
+  href="assets/my-story.readalong"
+  audio="assets/my-story.wav"
   css-url="assets/custom.css"
-  use-assets-folder="true"
+  image-assets-folder="assets/"
 ></read-along>
 ```
 
 ## Loading as a single file
 
-By default, Stencil (the tool used to build this web component) uses lazy loading. However, some use cases for this web component might involve running the component as a single file, without access to the internet. A single-file script of this web component is therefore made available at https://unpkg.com/@readalongs/web-component@^0.2.1/dist/bundle.js although we recommend using the default imports using the unpkg content delivery network (cdn) described above.
+By default, Stencil (the tool used to build this web component) uses lazy loading. However, some use cases for this web component might involve running the component as a single file, without access to the internet. A single-file script of this web component is therefore made available at https://unpkg.com/@readalongs/web-component@^1.4.0/dist/bundle.js although we recommend using the default imports using the unpkg content delivery network (cdn) described above.
 
 ## Theming
 
-There are two themes out-of-the-box: `light` and `dark`. You set them as a property on the `<read-along></read-along>`
-web component. If you want to add your own theme, it's as easy as adding your colour palette to the `$ui-themes`
+There are two themes out-of-the-box: `light` and `dark`. You set them as a property on the `<read-along>`
+web component element. If you want to add your own theme, it's as easy as adding your colour palette to the `$ui-themes`
 variable in `src/components/read-along-component/scss/utilities/_colors.scss`. Note you will have to rebuild the web
 component from source to do this, or submit your theme as a pull-request!
 
@@ -110,11 +117,12 @@ $ui-themes: (
 ## Slots
 
 Slots allow you to add custom html into specific "slots" within the web component. For example, to add an optional
-header to the `<read-along></read-along` component, you would write:
+header and subheader to the `<read-along>` element, you would write:
 
 ```html
 <read-along>
   <span slot="read-along-header">Hello World!</span>
+  <span slot="read-along-subheader">Read by I-travelled Around-the-world</span>
 </read-along>
 ```
 
@@ -125,21 +133,20 @@ header to the `<read-along></read-along` component, you would write:
 
 ## Page layout
 
-By default, the pages are two column layout with image on the left and text on the left. You force any page to one
+By default, the pages are two column layout with images on the left and text on the right. You can force any page to one
 column layout by setting the class of the page to `one-column-layout-page`
+in the `.readalong` file.
 
 ```xml
-
 <div type="page" class="one-column-layout-page">
   ...
 </div>
 ```
 
-The default layout is auto adjust without restrictions. To force a 40-60 split between the image and text use
+The default layout auto adjusts without restrictions. To force a 40-60 split between the image and the text use
 the `two-column-layout-page` class for the page.
 
 ```xml
-
 <div type="page" class="two-column-layout-page">
   ...
 </div>
@@ -147,13 +154,13 @@ the `two-column-layout-page` class for the page.
 
 ### Hide page number
 
-You can hide the page number for any page by specifying the class `hide-page-counter`.
+You can hide the page number for any page by specifying the class `hide-page-counter` on its `<div type="page">` element in the `.readalong` file.
 
 ## Assets folder
 
-By defaults the image assets will be resolved to `.\assets\` relative to the index.html file. You can
-override this behaviour by using this attribute on the component `use-assets-folder="false"`. The web component will
-not longer resolve url to the **assets** folder when this attribute is present.
+By defaults the image assets will be resolved to `./assets/` relative to the index.html file. You can
+override this behaviour by using this attribute on the `<read-along>` element in your `.html` file: `images-assets-folder="path/to/assets"`. The web component will
+resolve urls for images by prepending the specified path to image paths. Specifying `""` disables this behaviour.
 
 ## CSS customization
 
@@ -185,8 +192,8 @@ Here is a list of classes you want to override:
 
 ## XML customizations
 
-You can add classes to the xml tags in the text XML file. When coupled with the custom css, it will produce most of the
-visual effect you want in your read along. e.g. ` <s class="sentence__translation ">`
+You can add classes to the xml tags in the `.readalong` XML file. When coupled with the custom css, it will produce most of the
+visual effect you want in your read along. E.g. `<s class="sentence__translation">`
 
 ### Built-in translation class
 
