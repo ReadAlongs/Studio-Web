@@ -33,6 +33,41 @@ This mono repo, formerly called Web-Component, now called Studio-Web, combines f
   - [Citing](#citing)
   - [License](#license)
 
+## TL;DR Spinning up the Studio Web App locally
+
+Here is the quick recipe to spin up the ReadAlongs Studio Web app locally.
+
+```
+# Clone and install the Studio CLI in a Python environment and make sure it's activated:
+git clone https://github.com/ReadAlongs/Studio.git
+cd Studio
+# First create a python environment with conda or venv, activate it, and then run:
+pip install -e .
+cd ..
+
+# Clone and install the Studio-Web monorepo:
+git clone https://github.com/ReadAlongs/Studio-Web.git
+cd Studio-Web
+npm install
+
+# Run all the servers
+npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
+```
+
+After about a minute -- be patient -- six different servers will have started, and you will be able to access the ReadAlongs Studio Web App at these links:
+
+- In English: http://localhost:4200
+- In French: http://localhost:4203
+- In Spanish: http://localhost:4204
+
+These additional servers are only for testing or indirect use by the web app, not for interactive use:
+
+- The Web Component: http://localhost:3333
+- Test data for the Web Component: http://localhost:8941/ej-fra/
+- The Studio Web API: http://localhost:8000/api/v1/docs
+
+For more details, keep reading.
+
 ## For maintainers and developers
 
 This repo is managed using [Nx]. The biggest change between using Nx and
@@ -112,7 +147,8 @@ Alternatively run together as:
 
     npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
 
-Studio-Web will automatically [publish](.github/workflows/publish.yml) to https://readalong-studio.mothertongues.org/ every time there is a change to `main`.
+Studio-Web will automatically [deploy](.github/workflows/deploy.yml) to https://readalong-studio.mothertongues.org/ every time there is a push to `deploy`.
+Each push to `main` will deploy a [dev preview](.github/workflows/dev-preview.yml) at https://readalong-studio.mothertongues.org/dev/.
 
 #### Understanding where the components come from when you run locally
 
