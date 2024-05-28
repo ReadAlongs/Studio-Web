@@ -1,6 +1,7 @@
 name: Deploy
 concurrency: deploy
 on:
+  workflow_call:
   push:
     branches:
       - deploy

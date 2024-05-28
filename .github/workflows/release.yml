@@ -14,9 +14,11 @@ jobs:
     uses: ./.github/workflows/end-to-end-tests.yml
     secrets: inherit
 
-  build:
+  publish:
     runs-on: ubuntu-20.04
     needs: test
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Stop early if the tag fails any validation
@@ -57,3 +59,8 @@ jobs:
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.changes }}
+
+  deploy:
+    needs: publish
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
