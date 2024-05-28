@@ -221,7 +221,7 @@ or
 
     npx nx run-many --targets=check-es-l10n,check-fr-l10n --projects=studio-web
 
-### Build & Publish
+### Build & Publish the Web Component
 
 #### Preparing to publish the Web Component & Angular Wrapper
 
@@ -238,11 +238,11 @@ Publication to npmjs is mostly automated via the tag-triggered `release.yml` CI 
 
 #### Web Component & Angular Wrapper - via a tag push
 
-The publication of the web component and its angular wrapper has been automated in the `release.yml` workflow. The workflow will be triggered when you push the tag vX.Y.Z tag created above.
+The publication of the web component and its angular wrapper has been automated in the `release.yml` CI workflow. The workflow will be triggered when you push the tag vX.Y.Z tag created above.
 
 #### Web Component & Angular Wrapper - manually - please don't do this!
 
-WARNING: only use this process if the release workflow is broken.
+**WARNING**: only use this process if the release workflow is broken.
 
 To publish the web component, first you must belong to the
 [@readalongs organization](https://www.npmjs.com/org/readalongs) on
@@ -260,14 +260,27 @@ Alternatively run together as:
 
     npx nx run-many --targets=build,bundle --projects=web-component,ngx-web-component --parallel 1
 
-Then, go to the directory and publish:
+Then, go to the dist directories and publish (but we mean it, **don't do this**):
 
     cd dist/packages/web-component && npm publish --access=public
     cd dist/packages/ngx-web-component && npm publish --access=public
 
 Then you also have to make sure to tag the repo with the new version and create a matching GitHub release, but expect errors since pushing the tag will trigger the automated workflow to do all this again!
 
-#### Studio-Web
+### Build and Deploy and Studio-Web app
+
+#### Automated Deployment
+
+Live deployment of the Studio-Web app to https://readalong-studio.mothertongues.org/ has been automated in the `deploy.yml` CI workflow, and is triggered by a push to the `deploy` branch.
+
+Process:
+
+- Make sure the version to deploy is up-to-date on the `main` branch and test it on our [dev preview page](https://readalong-studio.mothertongues.org/dev/).
+- [Submit a PR from `main` to `deploy`](https://github.com/ReadAlongs/Studio-Web/compare/deploy...main?expand=1).
+- Get it reviewed and approved.
+- Do a **fast-forward merge** using the Git CLI. Do not merge from the GitHub UI, as we want the `deploy` branch to point to the same commit as the `main` branch when we deploy. If you're not sure how to do this, ask for help.
+
+#### Build Studio-Web and deploy it somewhere else
 
 To build the web application in the currently deployed configuration
 (English interface in the root and French under `/fr`, and Spanish under `/es`), run:
@@ -282,9 +295,8 @@ To build with each interface language in its own directory, run:
 
 This will create a complete website under `dist/packages/studio-web/`
 which you can deploy in whatever fashion you like to your server
-([rsync](https://rsync.samba.org/) has worked well for a few decades
-now). Note that the production build expects to talk to the
-ReadAlongs API at
+(e.g., using [rsync](https://rsync.samba.org/), scp, sfpt, WinSCP, etc).
+Note that the production build expects to talk to the ReadAlongs API at
 [https://readalong-studio.herokuapp.com/api/v1](https://readalong-studio.herokuapp.com/api/v1/docs),
 so if you have deployed the API elsewhere, you must:
 
