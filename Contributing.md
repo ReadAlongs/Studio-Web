@@ -36,6 +36,8 @@ Convential commits look like this:
 Valid types: (these are the default, which we're using as is)
 
 - build: commits for the build system
+  - build(deps): dependency updates
+  - build(dev-deps): development dependency updates
 - chore: maintain the repo, not the code itself
 - ci: commits for the continuous integration system
 - docs: adding and changing documentation
