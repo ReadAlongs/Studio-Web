@@ -105,6 +105,9 @@ export var Sprite = function (options) {
     src: options.src,
     sprite: options.sprite,
     rate: options.rate,
+    onend: function () {
+      self._reading$.next(""); //flush the pipe
+    },
   });
 
   // Begin the progress step tick.
