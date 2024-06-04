@@ -12,6 +12,6 @@
     "test:once": "ng test --watch=false --browsers ChromeHeadlessCI"
   },
   "private": true,
-  "singleFileBundleVersion": "1.4.0",
+  "singleFileBundleVersion": "1.4.1",
   "singleFileBundleTimestamp": "2024-05-17+14-29-32"
 }
