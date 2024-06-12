@@ -36,6 +36,10 @@ jobs:
           npx nx build web-component
           npx nx bundle web-component
           npx nx build ngx-web-component
+      - name: Fix the relative URLs in the READMEs to work on npmjs
+        run: |
+          sed -i 's/(\.\.\/web-component)/(web-component)/g' dist/packages/ngx-web-component/README.md
+          sed -i 's/(test-data\//(https:\/\/github.com\/ReadAlongs\/Studio-Web\/blob\/${{ github.ref_name }}\/packages\/web-component\/test-data\//g' dist/packages/web-component/README.md
       - name: Publish web-component to npmjs
         run: |
           cd dist/packages/web-component && npm publish --access=public
