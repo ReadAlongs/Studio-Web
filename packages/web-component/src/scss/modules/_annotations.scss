@@ -1,0 +1,42 @@
+#annotationsMenu {
+  @extend %border--strong--bottom;
+  @extend %border--strong--left;
+  @extend %border--strong--right;
+  @extend %border--strong--top;
+  position: absolute;
+  bottom: 4em;
+  right: em(5);
+  z-index: z("modal");
+  width: fit-content;
+  width: -moz-fit-content;
+  display: flex;
+  flex-direction: column;
+  border-radius: em(5);
+
+  & h3 {
+    @extend %border--strong--bottom;
+
+    margin: em(5) 0;
+    padding: em(5) em(8);
+  }
+
+  & button {
+    display: flex;
+    justify-content: flex-start;
+    align-content: baseline;
+    font-size: medium;
+    @extend %border--strong--bottom;
+    @extend %border--strong--top;
+    padding: em(8);
+
+    & .material-icons-outlined {
+      font-size: inherit;
+      border-radius: 0;
+      margin-right: em(5);
+    }
+  }
+}
+/* hide annotated sentence when not selected */
+.sentence.invisible[annotation-id] {
+  display: none;
+}

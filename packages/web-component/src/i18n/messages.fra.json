@@ -26,6 +26,7 @@
     "eng": "Anglais",
     "fra": "Français",
     "spa": "Espagnol",
-    "close": "Fermer"
+    "close": "Fermer",
+    "annotations-tooltip": "Annotations"
   }
 }

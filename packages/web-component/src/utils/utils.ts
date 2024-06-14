@@ -1,6 +1,6 @@
 import { Howl } from "howler";
 import { BehaviorSubject, Subject } from "rxjs";
-import { Alignment, Page, UserPreferences } from "../index.d";
+import { Alignment, Page, UserPreferences, RASMeta, RASDoc } from "../index.d";
 
 export const USER_PREFERENCE_STORAGE_ID = "RAUserPreferences";
 
@@ -21,16 +21,16 @@ export function zip(arrays): Array<any[]> {
  * Return pages from readalong XML file
  * @param {string} - the path to the readalong file
  */
-export async function parseRAS(path: string): Promise<Array<Page>> {
+export async function parseRAS(path: string): Promise<RASDoc> {
   let response = await fetch(path);
   if (!response.ok) {
-    console.log(`fetch(${path}) failed with status ${response.status}`);
-    return null;
+    console.error(`fetch(${path}) failed with status ${response.status}`);
+    return { pages: null, meta: null };
   }
   let xmlDocument = await response.text();
   let parser = new DOMParser();
   let xml = parser.parseFromString(xmlDocument, "text/xml");
-  return extractPages(xml);
+  return { pages: extractPages(xml), meta: extractMeta(xml) };
 }
 
 /**
@@ -54,6 +54,21 @@ export function extractPages(xml: Document | Element): Array<Page> {
     },
   );
   return parsed_pages;
+}
+
+/**
+ *
+ * @param {xml} - the parsed XML
+ * @returns {RASMeta} - meta key-values
+ */
+export function extractMeta(xml: Document | Element): RASMeta {
+  let meta = {};
+  Array.from(xml.querySelectorAll("meta")).forEach((metaTag) => {
+    const key = metaTag.getAttribute("name");
+    let value = metaTag.getAttribute("content");
+    meta[key] = value.trim();
+  });
+  return meta;
 }
 
 /**

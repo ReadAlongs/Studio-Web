@@ -29,3 +29,21 @@ export type UserPreferences = {
   language: InterfaceLanguage;
   theme: string;
 };
+/**
+ * .readalong file version >= 1.1 has meta tags
+ * the meta tags can be used to define annotated layers
+ *
+ */
+export type RASMeta = {
+  [key as string]: string;
+};
+export type RASDoc = {
+  pages: Array<Page>;
+  meta: RASMeta;
+};
+
+export type RASAnnotation = {
+  id: string;
+  isVisible: boolean;
+  name: string;
+};
