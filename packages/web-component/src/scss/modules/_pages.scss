@@ -167,6 +167,7 @@ $max-height: 98vh;
   }
 
   &__translation &__text,
+  &[annotation-id] &__text,
   &__translation &__word {
     color: #777;
     font-style: italic;

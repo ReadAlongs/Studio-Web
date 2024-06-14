@@ -22,6 +22,7 @@ import {
   getUserPreferences,
   USER_PREFERENCE_VERSION,
   setUserPreferences,
+  extractMeta,
 } from "../../utils/utils";
 import {
   Alignment,
@@ -30,6 +31,8 @@ import {
   ReadAlongMode,
   UserPreferences,
   ScrollBehaviour,
+  RASMeta,
+  RASAnnotation,
 } from "../../index.d";
 import { web_component as eng_strings } from "../../i18n/messages.eng.json";
 import { web_component as fra_strings } from "../../i18n/messages.fra.json";
@@ -203,6 +206,9 @@ export class ReadAlongComponent {
   finalTaggedWord: string;
   @State() settingsVisible: boolean = false;
   @State() userPreferencesDirty: boolean = false;
+  meta: RASMeta = {};
+  @State() annotations: RASAnnotation[] = [];
+  @State() annotationsMenuVisible: boolean = false;
   @Watch("audio_howl_sprites")
   /************
    *  LISTENERS  *
@@ -502,11 +508,29 @@ export class ReadAlongComponent {
    */
   toggleTextTranslation(): void {
     this.el.shadowRoot
-      .querySelectorAll(".translation")
+      .querySelectorAll(".translation, .sentence__translation, [annotation-id]")
       .forEach((translation) => translation.classList.toggle("invisible"));
+  }
+
+  /**
+   * Toggle the visibility of annotation layers (sentences)
+   * if id is set to * it toggles all layers
+   * @param annotationId
+   */
+  toggleTextAnnotation(annotationId: string): void {
     this.el.shadowRoot
-      .querySelectorAll(".sentence__translation")
-      .forEach((translation) => translation.classList.toggle("invisible"));
+      .querySelectorAll(
+        "[annotation-id" +
+          (annotationId === "*" ? "]" : '="' + annotationId + '"]'),
+      )
+      .forEach((annotationElem) =>
+        annotationElem.classList.toggle("invisible"),
+      );
+    this.annotations = this.annotations.map((annotationObj) => {
+      if (annotationObj.id == annotationId || annotationId === "*")
+        annotationObj.isVisible = !annotationObj.isVisible;
+      return annotationObj;
+    });
   }
 
   /*************
@@ -988,7 +1012,7 @@ export class ReadAlongComponent {
 
     // Make sure scroll-behaviour is valid
     if (this.scrollBehaviour !== "smooth" && this.scrollBehaviour !== "auto") {
-      console.log("Invalid scroll-behaviour value, using default (smooth)");
+      console.error("Invalid scroll-behaviour value, using default (smooth)");
       this.scrollBehaviour = "smooth";
     }
 
@@ -998,15 +1022,22 @@ export class ReadAlongComponent {
       this.playbackRateRange < 0 ||
       this.playbackRateRange > 99
     ) {
-      console.log("Invalid playback-rate-range value, using default (15).");
+      console.error("Invalid playback-rate-range value, using default (15).");
       this.playbackRateRange = 15;
     }
 
     // TODO: if parseRAS has an error, we need ERROR_PARSING
     // Parse the text to be displayed
     const text = this.el.querySelector("read-along > text");
-    if (text) this.parsed_text = extractPages(text);
-    else this.parsed_text = await parseRAS(this.href);
+    if (text) {
+      this.parsed_text = extractPages(text);
+      this.meta = extractMeta(this.el);
+    } else {
+      const doc = await parseRAS(this.href);
+
+      this.parsed_text = doc.pages;
+      this.meta = doc.meta;
+    }
     if (this.parsed_text === null) {
       this.parsed_text = [];
       this.assetsStatus.RAS = ERROR_LOADING;
@@ -1046,7 +1077,31 @@ export class ReadAlongComponent {
         }
       }
       // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
-
+      /**
+       * parse defined annotations information from the .readalong meta
+       * annotations-id defines the id of each layer
+       * annotations-labels defines the display label for each layer
+       * annotations-label-{locale} defines the localized display label for each layer
+       * all lists are delimited by comma
+       */
+      if (this.meta["annotations-ids"]) {
+        const delimiter = ",";
+        const labels: string | undefined = this.meta[
+          "annotations-labels-" + this.language
+        ]
+          ? this.meta["annotations-labels-" + this.language]
+          : this.meta["annotations-labels"];
+        const annotationNames = labels ? labels.split(delimiter) : [];
+        this.meta["annotations-ids"]
+          .split(delimiter)
+          .forEach((annotation, l) => {
+            this.annotations.push({
+              isVisible: false, //hide by default
+              name: annotationNames[l].trim() ?? annotation.trim(),
+              id: annotation.trim(),
+            });
+          });
+      }
       this.assetsStatus.RAS = LOADED;
     }
     this.hasLoaded += 1;
@@ -1544,11 +1599,14 @@ export class ReadAlongComponent {
       );
     }
     let nodeProps = {};
+    //attributes of sentence you want to retain
+    for (const attr of ["annotation-id", "do-not-align", "lang"]) {
+      if (props.sentenceData.hasAttribute(attr)) {
+        nodeProps[attr] = props.sentenceData.getAttribute(attr);
+      }
+    }
     if (props.sentenceData.hasAttribute("xml:lang")) {
       nodeProps["lang"] = props.sentenceData.getAttribute("xml:lang");
-    }
-    if (props.sentenceData.hasAttribute("lang")) {
-      nodeProps["lang"] = props.sentenceData.getAttribute("lang");
     }
 
     return (
@@ -1559,7 +1617,8 @@ export class ReadAlongComponent {
           " " +
           (props.sentenceData.hasAttribute("class")
             ? props.sentenceData.getAttribute("class")
-            : "")
+            : "") +
+          (nodeProps["annotation-id"] ? " invisible" : "")
         }
       >
         {
@@ -1858,6 +1917,25 @@ export class ReadAlongComponent {
     </button>
   );
 
+  TextAnnotationsControl = (): Element => (
+    <button
+      data-test-id="annotations-toggle"
+      aria-label="Toggle Annotations"
+      title={this.getI18nString("annotations-tooltip")}
+      onClick={() =>
+        (this.annotationsMenuVisible = !this.annotationsMenuVisible)
+      }
+      class={
+        "control-panel__control ripple theme--" +
+        this.theme +
+        " background--" +
+        this.theme
+      }
+    >
+      <i class="material-icons-outlined">layers</i>
+    </button>
+  );
+
   TextTranslationDisplayControl = (): Element => (
     <button
       data-cy="translation-toggle"
@@ -1917,7 +1995,11 @@ export class ReadAlongComponent {
       </div>
 
       <div class="control-panel__buttons--right">
-        {this.hasTextTranslations && <this.TextTranslationDisplayControl />}
+        {this.annotations.length > 0 ? (
+          <this.TextAnnotationsControl />
+        ) : (
+          this.hasTextTranslations && <this.TextTranslationDisplayControl />
+        )}
         {/* enable fullscreen button if supported*/}
         {window.document.fullscreenEnabled && <this.FullScreenControl />}
         <this.ToggleSettingsControl />
@@ -2074,6 +2156,37 @@ export class ReadAlongComponent {
     </div>
   );
 
+  AnnotationsMenu = (): Element => {
+    return (
+      <div
+        id="annotationsMenu"
+        class={"annotations-menu  theme--" + this.theme}
+      >
+        {/*<h3 class={"theme--" + this.theme}> {this.getI18nString("annotation-layers")}</h3> */}
+        {this.annotations.map((annotation) => (
+          <button
+            data-test-id={"toggle-annotation-" + annotation.id}
+            class={"ripple theme--" + this.theme + " background--" + this.theme}
+            onClick={() => this.toggleTextAnnotation(annotation.id)}
+          >
+            <i class="material-icons-outlined">
+              {" "}
+              {annotation.isVisible ? "check_box" : "check_box_outline_blank"}
+            </i>{" "}
+            {annotation.name}
+          </button>
+        ))}
+        <button
+          data-test-id="toggle-all-annotations"
+          class={"ripple theme--" + this.theme + " background--" + this.theme}
+          onClick={() => this.toggleTextAnnotation("*")}
+        >
+          <i class="material-icons-outlined">layers</i> All
+        </button>
+      </div>
+    );
+  };
+
   /**
    * Render main component
    */
@@ -2152,6 +2265,7 @@ export class ReadAlongComponent {
           ></div>
         )}
         {this.settingsVisible && <this.Settings />}
+
         {this.alignment_failed || (
           <div
             onClick={(e) => this.goToSeekFromProgress(e)}
@@ -2167,6 +2281,7 @@ export class ReadAlongComponent {
             {this.svgOverlay ? <this.Overlay /> : null}
           </div>
         )}
+        {this.annotationsMenuVisible && <this.AnnotationsMenu />}
         {this.assetsStatus.AUDIO == LOADED && <this.ControlPanel />}
 
         {this.cssUrl && this.cssUrl.match(".css") != null && (
