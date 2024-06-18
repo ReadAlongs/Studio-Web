@@ -338,6 +338,8 @@ export const readalong_export_step: any = {
     "<ul><li>" +
     $localize`<b>Offline HTML</b>: your ReadAlongs in a single-file HTML document that requires no web access to work` +
     "</li><li>" +
+    $localize`<b>Web Bundle</b>: all your ReadAlong files in a folder that can be hosted on a web server.` +
+    "</li><li>" +
     $localize`<b>Elan and Praat files</b>: export formats used by documentary linguists` +
     "</li><li>" +
     $localize`<b>SRT and WebVTT subtitles</b>: export formats used to add subtitles to videos` +
