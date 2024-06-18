@@ -196,6 +196,14 @@ Please host all assets on your server, include the font and package imports defi
     return undefined;
   }
 
+  createRASBasename(title: string) {
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[^0-9]/g, "")
+      .slice(0, -3);
+    return (title ? slugify(title, 15) : "readalong") + `-${timestamp}`;
+  }
+
   async download(
     selectedOutputFormat: SupportedOutputs,
     b64Audio: string,
@@ -212,13 +220,7 @@ Please host all assets on your server, include the font and package imports defi
         b64Audio,
       );
       if (blob) {
-        const timestamp = new Date()
-          .toISOString()
-          .replace(/[^0-9]/g, "")
-          .slice(0, -3);
-        const basename =
-          (slots.title ? slugify(slots.title, 15) : "readalong") +
-          `-${timestamp}`;
+        const basename = this.createRASBasename(slots.title);
         element.href = window.URL.createObjectURL(blob);
         element.download = `${basename}.html`;
         document.body.appendChild(element);
@@ -238,8 +240,8 @@ Please host all assets on your server, include the font and package imports defi
       let audioExtension = "wav";
       let zipFile = new JSZip();
       // Create inner folder
-      const innerFolder = zipFile.folder("readalong");
-      const innerFolderEditable = zipFile.folder("editable");
+      const innerFolder = zipFile.folder("www");
+      const innerFolderEditable = zipFile.folder("Offline-HTML");
       const assetsFolder = innerFolder?.folder("assets");
       const blob = await this.createSingleFileBlob(
         rasXML,
@@ -247,16 +249,12 @@ Please host all assets on your server, include the font and package imports defi
         slots,
         b64Audio,
       );
+      const basename = this.createRASBasename(slots.title);
+
       if (blob) {
-        innerFolderEditable?.file("editable.html", blob);
+        innerFolderEditable?.file(`${basename}.html`, blob);
       }
-      const timestamp = new Date()
-        .toISOString()
-        .replace(/[^0-9]/g, "")
-        .slice(0, -3);
-      const basename =
-        (slots.title ? slugify(slots.title, 15) : "readalong") +
-        `-${timestamp}`;
+
       // - add audio file
       if (b64Audio) {
         const [_, audioData] = b64Audio.split(";base64,");
