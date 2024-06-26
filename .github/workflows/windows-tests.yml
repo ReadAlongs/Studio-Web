@@ -1,0 +1,39 @@
+name: Run tests on Windows
+on:
+  push:
+    branches:
+      - main
+jobs:
+  tests-on-windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --verbose
+      - name: Ng test for studio-web
+        run: |
+          npx nx build web-component
+          npx nx test:once studio-web
+
+      - name: Cypress run for web-component
+        uses: cypress-io/github-action@v6
+        with:
+          install: true # fails on Windows with install: false
+          start: |
+            npx nx serve web-component
+            npx nx serve-test-data web-component
+          wait-on: "http://localhost:3333/build/web-component.esm.js"
+          command: npx nx test:once web-component
+
+      - run: npx nx extract-i18n studio-web
+      - run: npx nx check-l10n studio-web
+      - run: npx nx build ngx-web-component
+      - run: npx nx build studio-web
+
+      # bundle only works in Git Bash on Windows, so don't exercise it here, we know it'll fail.
+      #- run: npx nx bundle web-component
+      #  shell: bash
+      #  continue-on-error: true
