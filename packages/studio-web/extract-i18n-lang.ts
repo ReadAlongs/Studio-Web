@@ -48,7 +48,7 @@ for (const key in languageData.translations) {
 }
 //console.log(languageData)
 
-let sortedTranslations = {};
+let sortedTranslations: any = {};
 for (const key in englishData.translations) {
   sortedTranslations[key] = languageData.translations[key];
 }

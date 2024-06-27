@@ -336,13 +336,13 @@ export const readalong_export_step: any = {
   text:
     $localize`When you're happy with your ReadAlong, you can export it by selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: ` +
     "<ul><li>" +
-    $localize`<b>Offline HTML</b>: your ReadAlongs in a single-file HTML document that requires no web access to work` +
+    $localize`<b>Offline HTML</b>: your ReadAlongs in a single-file HTML document that requires no web access to work,` +
     "</li><li>" +
-    $localize`<b>Web Bundle</b>: all your ReadAlong files in a folder that can be hosted on a web server.` +
+    $localize`<b>Web Bundle</b>: all your ReadAlong files in a folder that can be hosted on a web server,` +
     "</li><li>" +
-    $localize`<b>Elan and Praat files</b>: export formats used by documentary linguists` +
+    $localize`<b>Elan and Praat files</b>: export formats used by documentary linguists,` +
     "</li><li>" +
-    $localize`<b>SRT and WebVTT subtitles</b>: export formats used to add subtitles to videos` +
+    $localize`<b>SRT and WebVTT subtitles</b>: export formats used to add subtitles to videos.` +
     "</li></ul>",
   attachTo: {
     element: "div.download__buttons",
