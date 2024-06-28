@@ -218,20 +218,16 @@ above (or just `npx nx build web-component`) if you have not already done so, an
 `studio-web` is localized in French and Spanish. When you add new strings that need localizing,
 you can extract them with
 
+    npx nx build web-component  # (if not done before)
     npx nx extract-i18n studio-web
 
 This will update `packages/studio-web/src/i18n/messages.json` with the English strings.
 Add or correct their translations in `messages.es.json` and `messages.fr.json`.
 (See `packages/studio-web/extract-i18n-lang.ts` for partial automation of that task.)
 
-Finally, run these checks to confirm all the required strings are there:
+Finally, run this check to confirm all the required strings are present in each language:
 
-    npx nx check-es-l10n studio-web
-    npx nx check-fr-l10n studio-web
-
-or
-
-    npx nx run-many --targets=check-es-l10n,check-fr-l10n --projects=studio-web
+    npx nx check-l10n studio-web
 
 ### Build & Publish the Web Component
 
@@ -338,7 +334,7 @@ This work would not have been possible without the many collaborators who shared
 
 ### Northeastern University collaboration
 
-Several groups of students in the Foundations of Software Enginering course at Northeastern University have contributed to this project, first in sprint 2022 under Michael Running Wolf and then in fall 2022 under Yvonne Coady. We are very grateful for all groups' hard work and contributions, prototypes and ideas. The students involved were: Siqi Chen, Kwok Keung Chung, Koon Kit Kong, He Yang, Yuzhe Shen, Rui Wang, Zirui Wang, Xuehan Yi, Zhenjie Zhou, Yongxiang Chen, Yun Feng, Xiaotong Guan, Mengdi Wei.
+Several groups of students in the Foundations of Software Enginering course at Northeastern University have contributed to this project, first in spring 2022 under Michael Running Wolf and then in fall 2022 under Yvonne Coady. We are very grateful for all groups' hard work and contributions, prototypes and ideas. The students involved were: Siqi Chen, Kwok Keung Chung, Koon Kit Kong, He Yang, Yuzhe Shen, Rui Wang, Zirui Wang, Xuehan Yi, Zhenjie Zhou, Yongxiang Chen, Yun Feng, Xiaotong Guan, Mengdi Wei.
 
 ## Citing
 
