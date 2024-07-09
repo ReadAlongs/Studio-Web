@@ -22,6 +22,7 @@ This mono repo, formerly called Web-Component, now called Studio-Web, combines f
 
 - [ReadAlongs Web App Suite](#readalongs-web-app-suite)
   - [Table of Contents](#table-of-contents)
+  - [TL;DR Spinning up the Studio Web App locally](#tldr-spinning-up-the-studio-web-app-locally)
   - [For maintainers and developers](#for-maintainers-and-developers)
     - [Cloning](#cloning)
     - [Installing dependencies](#installing-dependencies)
