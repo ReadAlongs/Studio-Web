@@ -33,11 +33,11 @@ This mono repo, formerly called Web-Component, now called Studio-Web, combines f
       - [Web-Component](#web-component-1)
       - [Studio-Web](#studio-web-1)
     - [Internationalization (i18n) and localization (l10n)](#internationalization-i18n-and-localization-l10n)
-    - [Build \& Publish](#build--publish)
+    - [Build \& Publish](#build--publish-the-web-component)
       - [Preparing to publish the Web Component \& Angular Wrapper](#preparing-to-publish-the-web-component--angular-wrapper)
       - [Web Component \& Angular Wrapper - via a tag push](#web-component--angular-wrapper---via-a-tag-push)
       - [Web Component \& Angular Wrapper - manually - please don't do this!](#web-component--angular-wrapper---manually---please-dont-do-this)
-      - [Studio-Web](#studio-web-2)
+    - [Build \& Deploy the Studio-Web App](#build--deploy-the-studio-web-app)
   - [Maintainers](#maintainers)
   - [Contributing](#contributing)
   - [Acknowledgements](#acknowledgements)
@@ -275,7 +275,7 @@ Then, go to the dist directories and publish (but we mean it, **don't do this**)
 
 Then you also have to make sure to tag the repo with the new version and create a matching GitHub release, but expect errors since pushing the tag will trigger the automated workflow to do all this again!
 
-### Build and Deploy and Studio-Web app
+### Build & Deploy the Studio-Web app
 
 #### Automated Deployment
 
@@ -324,9 +324,7 @@ so if you have deployed the API elsewhere, you must:
 
 ## Contributing
 
-Feel free to dive in! [Open an issue](https://github.com/ReadAlongs/Studio-Web/issues/new) or submit PRs.
-
-This repo follows the [Contributor Covenant](https://contributor-covenant.org/version/1/3/0/) Code of Conduct.
+Please read [Contributing.md](Contributing.md).
 
 ## Acknowledgements
 
