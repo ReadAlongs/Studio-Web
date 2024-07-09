@@ -1,4 +1,19 @@
 <section>
+  <div class="row">
+    <div class="col-3"></div>
+    <button
+      i18n="Take the tour"
+      class="mb-4 col-6 center text-center plausible-event-name=Tour"
+      mat-raised-button
+      color="primary"
+      (click)="startTour()"
+    >
+      Take the tour!
+    </button>
+    <div class="col-3"></div>
+  </div>
+</section>
+<section id="editor">
   <div class="container mb-2 mt-5">
     <div class="row mb-5">
       <div class="col-6">
@@ -43,32 +58,34 @@
   <div class="row">
     <div class="col-2"></div>
     <div class="col-8">
-      <div #readalongContainer></div>
+      <div id="readalongContainer" #readalongContainer></div>
     </div>
     <div class="col-2"></div>
   </div>
   <div class="row mt-5 mb-5">
     <div class="col-2"></div>
-    <div class="col-8">
+    <div class="col-8" id="audioToolbar">
       <mat-toolbar *ngIf="audioControl$.valid">
         <span>Audio Toolbar</span>
         <span class="example-spacer"></span>
-        <button
-          (click)="zoomIn()"
-          mat-icon-button
-          class="example-icon zoom-in-icon"
-          aria-label="Zoom in icon for audio waveform"
+        <span id="zoomControls">
+          <button
+            (click)="zoomIn()"
+            mat-icon-button
+            class="example-icon zoom-in-icon"
+            aria-label="Zoom in icon for audio waveform"
+          >
+            <mat-icon>zoom_in</mat-icon>
+          </button>
+          <button
+            (click)="zoomOut()"
+            mat-icon-button
+            class="example-icon"
+            aria-label="Zoom out icon for audio waveform"
+          >
+            <mat-icon>zoom_out</mat-icon>
+          </button></span
         >
-          <mat-icon>zoom_in</mat-icon>
-        </button>
-        <button
-          (click)="zoomOut()"
-          mat-icon-button
-          class="example-icon"
-          aria-label="Zoom out icon for audio waveform"
-        >
-          <mat-icon>zoom_out</mat-icon>
-        </button>
       </mat-toolbar>
       <div class="pure-u-1" id="wavesurferContainer" #wavesurferContainer></div>
     </div>

@@ -1,4 +1,6 @@
+import { title } from "process";
 import { environment } from "../environments/environment";
+import { text } from "stream/consumers";
 
 export const intro_step: any = {
   title: $localize`Welcome to ReadAlong Studio`,
@@ -390,4 +392,140 @@ export const readalong_go_back_step: any = {
     },
   ],
   id: "readalong-back",
+};
+
+export const readalong_editor_intro: any = {
+  title: $localize`Editor for your exported ReadAlong.`,
+  text: $localize`This tool allows you to modify your exported ReadAlong. P.S. This tool only supports the Offline HTML format`,
+  attachTo: {
+    element: "#editor",
+    on: "bottom-center",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+};
+
+export const readalong_editor_choose_file: any = {
+  title: $localize`Choose File.`,
+  text: $localize` Select an offline HTML ReadAlong file. Or, you can use the
+          Offline-HTML file included in the Web Bundle download format.`,
+  attachTo: {
+    element: "#updateRAS",
+    on: "bottom-middle",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+    },
+  ],
+};
+
+export const readalong_editor_file_loaded: any = {
+  title: $localize`Tadaa!`,
+  text: $localize`Now your ReadAlong has been loaded.`,
+  attachTo: {
+    element: "#readalongContainer",
+    on: "top",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+};
+
+export const readalong_editor_audio_toolbar: any = {
+  title: $localize`Audio Toolbar.`,
+  text: $localize`In this section, you can see a visual representation of your audio and text alignment. You can also manually adjust your audio-text alignments and fix spelling errors here.`,
+  attachTo: {
+    element: "#audioToolbar",
+    on: "top",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+};
+
+export const readalong_editor_audio_toolbar_zoom: any = {
+  title: $localize`Audio Toolbar Zoom.`,
+  text: $localize`Use the zoom controls in this section to zoom in on the visualization of your audio.`,
+  attachTo: {
+    element: "#zoomControls",
+    on: "top-end",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+};
+
+export const readalong_editor_audio_wav: any = {
+  title: $localize`Audio Text Alignment Visualization.`,
+  text: $localize`This is a visual representation of the audio-to-text alignment in your read-along. You can manually adjust your alignment by dragging the bars at the word boundaries.`,
+  attachTo: {
+    element: "#wavesurferContainer",
+    on: "top",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+};
+export const readalong_editor_fix_text: any = {
+  title: $localize`Fix Spelling Error.`,
+  text: $localize`You can also fix spelling errors by clicking on a word and editing it.`,
+  attachTo: {
+    element: "#wavesurferContainer",
+    on: "top",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
 };

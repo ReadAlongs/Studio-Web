@@ -149,6 +149,20 @@
     "6899344040225872362": "Bravo!",
     "7895338145504956239": "Fichier trop lourd. Poids maximal: ",
     "5997429059663319535": " Ko",
-    "2722548994886578004": " lu. Il sera téléversé à l'aide d'une connexion chiffrée quand vous passerez à la prochaine étape."
+    "2722548994886578004": " lu. Il sera téléversé à l'aide d'une connexion chiffrée quand vous passerez à la prochaine étape.",
+    "6302531340836050053": "Editor for your exported ReadAlong.",
+    "953181758853365907": "This tool allows you to modify your exported ReadAlong. P.S. This tool only supports the Offline HTML format",
+    "7800427494728881649": "Choose File.",
+    "3479221957614855181": " Select an offline HTML ReadAlong file. Or, you can use the\n          Offline-HTML file included in the Web Bundle download format.",
+    "1002393057771078764": "Now your ReadAlong has been loaded.",
+    "4132139285249619380": "Audio Toolbar.",
+    "116165503812362861": "In this section, you can see a visual representation of your audio and text alignment. You can also manually adjust your audio-text alignments and fix spelling errors here.",
+    "8110590195477138715": "Audio Toolbar Zoom.",
+    "6622057201524253104": "Use the zoom controls in this section to zoom in on the visualization of your audio.",
+    "5446418918590167880": "Audio Text Alignment Visualization.",
+    "3554191119120547568": "This is a visual representation of the audio-to-text alignment in your read-along. You can manually adjust your alignment by dragging the bars at the word boundaries.",
+    "889609040644470400": "Fix Spelling Error.",
+    "2773189193481434399": "You can also fix spelling errors by clicking on a word and editing it.",
+    "7819314041543176992": "Close"
   }
 }
