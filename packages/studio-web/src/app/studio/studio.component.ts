@@ -193,6 +193,7 @@ export class StudioComponent implements OnDestroy, OnInit {
         $localize`Next` + " " + $localize`(overwrites your data)`;
       step_one_final_step["buttons"][1]["classes"] = "shepherd-button-warning";
     }
+
     step_one_final_step["buttons"][1]["action"] = () => {
       this.fileService
         .returnFileFromPath$("assets/hello-world.mp3")
@@ -256,6 +257,7 @@ export class StudioComponent implements OnDestroy, OnInit {
           }
         });
     };
+
     this.shepherdService.modal = true;
     this.shepherdService.confirmCancel = false;
     // Add initial steps for part one of the tour, other steps are added later
