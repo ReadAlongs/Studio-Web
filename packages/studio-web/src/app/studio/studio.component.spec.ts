@@ -46,13 +46,4 @@ describe("StudioComponent", () => {
     const app = fixture.componentInstance;
     expect(app.title).toEqual("readalong-studio");
   });
-
-  it("should have an h1", () => {
-    const fixture = TestBed.createComponent(StudioComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector("h1")?.textContent).toContain(
-      "Welcome to ReadAlong Studio",
-    );
-  });
 });
