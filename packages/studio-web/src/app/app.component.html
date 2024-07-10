@@ -1,2 +1,33 @@
+<mat-toolbar>
+  <span i18n="Welcome message for app" id="welcome-header">
+    ReadAlong Studio
+  </span>
+  <span class="nav-spacer"></span>
+  <div class="nav__buttons">
+    <button
+      class="nav__button"
+      mat-button
+      [color]="currentURL === '/' ? 'accent' : ''"
+      [routerLink]="''"
+    >
+      Studio
+    </button>
+    <button
+      class="nav__button"
+      mat-button
+      [color]="currentURL === '/editor' ? 'accent' : ''"
+      [routerLink]="'editor'"
+    >
+      <mat-icon>edit</mat-icon>
+      Editor
+    </button>
+    <button class="nav__button" mat-button (click)="openPrivacyDialog()">
+      <mat-icon>policy</mat-icon>
+      Privacy
+    </button>
+  </div>
+</mat-toolbar>
 <router-outlet></router-outlet>
-<div class="version">&#64;readalongs/studio-web version: {{ version }}</div>
+<div class="footer">
+  <div class="version">&#64;readalongs/studio-web version: {{ version }}</div>
+</div>

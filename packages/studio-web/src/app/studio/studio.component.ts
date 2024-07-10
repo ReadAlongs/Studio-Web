@@ -5,12 +5,11 @@ import { Segment } from "soundswallower";
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FormGroup } from "@angular/forms";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
 import { Title } from "@angular/platform-browser";
 
-import { B64Service } from "../b64.service";
 import {
   createAlignedXML,
   SoundswallowerService,
@@ -60,7 +59,6 @@ export class StudioComponent implements OnDestroy, OnInit {
     private titleService: Title,
     private router: Router,
     private fileService: FileService,
-    private dialog: MatDialog,
     private meta: Meta,
     public shepherdService: ShepherdService,
     private ssjsService: SoundswallowerService,
@@ -277,13 +275,6 @@ export class StudioComponent implements OnDestroy, OnInit {
     this.shepherdService.start();
   }
 
-  openPrivacyDialog(): void {
-    this.dialog.open(PrivacyDialog, {
-      width: "50vw",
-      maxHeight: "90vh",
-    });
-  }
-
   formChanged(formGroup: FormGroup) {
     this.firstFormGroup = formGroup;
   }
@@ -301,28 +292,5 @@ export class StudioComponent implements OnDestroy, OnInit {
           this.stepper.next();
         });
     }
-  }
-}
-
-@Component({
-  selector: "privacy-dialog",
-  templateUrl: "privacy-dialog.html",
-})
-export class PrivacyDialog {
-  analyticsExcluded =
-    window.localStorage.getItem("plausible_ignore") === "true";
-  constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
-  ngOnInit() {
-    this.dialogRef.updateSize("100%");
-  }
-
-  toggleAnalytics() {
-    if (this.analyticsExcluded) {
-      window.localStorage.removeItem("plausible_ignore");
-    } else {
-      window.localStorage.setItem("plausible_ignore", "true");
-    }
-    this.analyticsExcluded =
-      window.localStorage.getItem("plausible_ignore") === "true";
   }
 }
