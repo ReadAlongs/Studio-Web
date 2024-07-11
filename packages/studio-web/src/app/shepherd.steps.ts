@@ -449,7 +449,7 @@ export const readalong_editor_file_loaded: any = {
 
 export const readalong_editor_audio_toolbar: any = {
   title: $localize`Audio Toolbar`,
-  text: $localize`In this section, you can see a visual representation of your audio and text alignment. You can also manually adjust your audio-text alignments and fix spelling errors here.`,
+  text: $localize`In this section, you can see a visual representation of your audio and text alignment. You can adjust your audio-text alignments and fix spelling errors here.`,
   attachTo: {
     element: "#audioToolbar",
     on: "top",
@@ -491,7 +491,7 @@ export const readalong_editor_audio_toolbar_zoom: any = {
 
 export const readalong_editor_audio_wav: any = {
   title: $localize`Audio Text Alignment Visualization`,
-  text: $localize`This is a visual representation of the audio-to-text alignment in your read-along. You can manually adjust your alignment by dragging the bars at the word boundaries.`,
+  text: $localize`This is a visual representation of the audio-to-text alignment in your read-along. You can click on the wave form of a word to hear it, and drag the bars at the word boundaries to adjust its alignment.`,
   attachTo: {
     element: "#wavesurferContainer",
     on: "top",
