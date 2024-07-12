@@ -35,11 +35,14 @@
     </div>
     <div class="row justify-content-center mb-6">
       <div class="col-8">
-        <p i18n="Title for upload box" class="subtitle">
-          Select an offline HTML ReadAlong file. To get this file, you should
-          have created a ReadAlong using the <a routerLink="/">Studio</a>, and
-          then selected "Offline HTML" as the output. Or, you can use the
-          Offline-HTML file included in the Web Bundle download format.
+        <h2 i18n="Title for upload box" class="title">
+          Select an offline HTML ReadAlong file.
+        </h2>
+        <p i18n="Description for upload box" class="subtitle">
+          To get this file, you should have created a ReadAlong using the
+          <a routerLink="/">Studio</a>, and then selected "Offline HTML" as the
+          output. Or, you can use the Offline-HTML file included in the Web
+          Bundle download format.
         </p>
         <input
           #textInputElement
@@ -61,7 +64,7 @@
   <div class="row justify-content-center mt-5 mb-5">
     <div class="col-8" id="audioToolbar">
       <mat-toolbar *ngIf="audioControl$.valid">
-        <span>Audio Toolbar</span>
+        <span i18n="Audio Toolbar">Audio Toolbar</span>
         <span class="example-spacer"></span>
         <span id="zoomControls">
           <button
