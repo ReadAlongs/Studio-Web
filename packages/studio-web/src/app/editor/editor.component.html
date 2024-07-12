@@ -1,28 +1,26 @@
-<section>
-  <div class="row">
-    <div class="col-3"></div>
+<section class="container-fluid mt-1">
+  <div class="row justify-content-center">
     <button
       i18n="Take the tour"
-      class="mb-4 col-6 center text-center plausible-event-name=Tour"
+      class="mb-4 col-8 center text-center plausible-event-name=Tour"
       mat-raised-button
       color="primary"
       (click)="startTour()"
     >
       Take the tour!
     </button>
-    <div class="col-3"></div>
   </div>
 </section>
 <section id="editor">
-  <div class="container mb-2 mt-5">
-    <div class="row mb-5">
-      <div class="col-6">
+  <div class="container-fluid mb-2 mt-5">
+    <div class="row justify-content-center mb-5">
+      <div class="col-6 col-md-4 .offset-md-2">
         <h1 i18n="Welcome message for app editor" id="welcome-header">
           Welcome to the ReadAlong Studio Editor
         </h1>
       </div>
       <div
-        class="col-6"
+        class="col-6 col-md-4"
         *ngIf="
           uploadFormGroup.valid && audioB64Control$.value && rasControl$.value
         "
@@ -35,14 +33,14 @@
         ></ras-shared-download>
       </div>
     </div>
-    <div class="row mb-6">
+    <div class="row justify-content-center mb-6">
       <div class="col-8">
-        <h2 i18n="Title for upload box" class="subtitle">
+        <p i18n="Title for upload box" class="subtitle">
           Select an offline HTML ReadAlong file. To get this file, you should
           have created a ReadAlong using the <a routerLink="/">Studio</a>, and
           then selected "Offline HTML" as the output. Or, you can use the
           Offline-HTML file included in the Web Bundle download format.
-        </h2>
+        </p>
         <input
           #textInputElement
           (change)="onRasFileSelected($event)"
@@ -55,15 +53,12 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-2"></div>
+  <div class="row justify-content-center">
     <div class="col-8">
       <div id="readalongContainer" #readalongContainer></div>
     </div>
-    <div class="col-2"></div>
   </div>
-  <div class="row mt-5 mb-5">
-    <div class="col-2"></div>
+  <div class="row justify-content-center mt-5 mb-5">
     <div class="col-8" id="audioToolbar">
       <mat-toolbar *ngIf="audioControl$.valid">
         <span>Audio Toolbar</span>
@@ -89,6 +84,5 @@
       </mat-toolbar>
       <div class="pure-u-1" id="wavesurferContainer" #wavesurferContainer></div>
     </div>
-    <div class="col-2"></div>
   </div>
 </section>
