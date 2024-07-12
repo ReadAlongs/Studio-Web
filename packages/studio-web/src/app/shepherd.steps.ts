@@ -412,8 +412,7 @@ export const readalong_editor_intro: any = {
 
 export const readalong_editor_choose_file: any = {
   title: $localize`Choose File`,
-  text: $localize` Select an offline HTML ReadAlong file. Or, you can use the
-          Offline-HTML file included in the Web Bundle download format.`,
+  text: $localize`Select an offline HTML ReadAlong file. Or, you can use the Offline-HTML file  included in the Web Bundle download format. For the purposes of the tour, we'll add an example readalong for you.`,
   attachTo: {
     element: "#updateRAS",
     on: "bottom-middle",
@@ -425,7 +424,7 @@ export const readalong_editor_choose_file: any = {
       type: "back",
     },
     {
-      classes: "shepherd-button-primary",
+      classes: "shepherd-button-warning",
       text: $localize`Next`,
     },
   ],
@@ -449,7 +448,7 @@ export const readalong_editor_file_loaded: any = {
 
 export const readalong_editor_audio_toolbar: any = {
   title: $localize`Audio Toolbar`,
-  text: $localize`In this section, you can see a visual representation of your audio and text alignment. You can adjust your audio-text alignments and fix spelling errors here.`,
+  text: $localize`In this section, you can see a visual representation of your audio and text alignment. You can adjust your audio-text alignments and fix spelling errors here. Click 'next' to see how.`,
   attachTo: {
     element: "#audioToolbar",
     on: "top",
@@ -491,7 +490,7 @@ export const readalong_editor_audio_toolbar_zoom: any = {
 
 export const readalong_editor_audio_wav: any = {
   title: $localize`Audio Text Alignment Visualization`,
-  text: $localize`This is a visual representation of the audio-to-text alignment in your read-along. You can click on the wave form of a word to hear it, and drag the bars at the word boundaries to adjust its alignment.`,
+  text: $localize`This is a visual representation of the audio-to-text alignment in your read-along. You can click on the wave form of a word to hear it, and drag the bars at the word boundaries to adjust its alignment. Please click on the play button above to see how adjusting the word boundaries affects the highlighting of your readalong.`,
   attachTo: {
     element: "#wavesurferContainer",
     on: "top",
@@ -514,7 +513,7 @@ export const readalong_editor_fix_text: any = {
   text: $localize`You can also fix spelling errors by clicking on a word and editing it.`,
   attachTo: {
     element: "#wavesurferContainer",
-    on: "top",
+    on: "left",
   },
   buttons: [
     {
