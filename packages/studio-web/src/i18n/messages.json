@@ -89,6 +89,8 @@
     "8428348909593474745": "Step 1",
     "7458890725604973091": " Welcome to ReadAlong Studio ",
     "3614618598824071164": " This is a tool to help you make your own interactive 'readalong' that highlights words as they are spoken. Have a look at {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} this example in East Cree{$CLOSE_LINK} to get a better idea of what these are. ",
+    "7459555979295642756": "{$START_TAG_MAT_ICON} new_releases {$CLOSE_TAG_MAT_ICON} Try the new {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} ReadAlong Studio Editor{$CLOSE_LINK}. ",
+    "1380235932960787950": "{$START_TAG_MAT_ICON} new_releases {$CLOSE_TAG_MAT_ICON} {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} Documentation{$CLOSE_LINK}",
     "11480612528390167": " To get started making your own, read our {$START_LINK}privacy and data sovereignty policy{$CLOSE_LINK}, then take a tour by clicking on the tour button below, and follow the steps below. ",
     "3943314737845757694": "Step 2",
     "1021386634200142621": "ReadAlong-Studio for Interactive Storytelling",

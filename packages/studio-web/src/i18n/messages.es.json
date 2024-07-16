@@ -89,6 +89,8 @@
     "8428348909593474745": "Paso 1",
     "7458890725604973091": "Bienvenido al Studio de ReadAlong",
     "3614618598824071164": " Esta es una herramienta diseñada para ayudarlo a crear su propio 'readalong' que resalta las palabras a medida que se pronuncian. Puede ver {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} este ejemplo en el idioma cree oriental{$CLOSE_LINK} para tener una mejor idea de qué es un 'readalong'. ",
+    "7459555979295642756": "{$START_TAG_MAT_ICON} new_releases {$CLOSE_TAG_MAT_ICON} Prueba el nuevo {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} Editor del Studio de ReadAlong{$CLOSE_LINK}. ",
+    "1380235932960787950": "{$START_TAG_MAT_ICON} new_releases {$CLOSE_TAG_MAT_ICON} {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} Documentación (en inglés){$CLOSE_LINK}",
     "11480612528390167": "Para empezar a crear su propio 'readalong', lea nuestra {$START_LINK}política de privacidad y soberanía de los datos{$CLOSE_LINK} y luego siga el tour del sitio haciendo clic en el botón «Siga el tour» y siguiendo los pasos descritos aquí debajo. ",
     "3943314737845757694": "Paso 2",
     "1021386634200142621": "Studio de ReadAlong para Narraciones Interactivas",

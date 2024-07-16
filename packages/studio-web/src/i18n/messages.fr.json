@@ -89,6 +89,8 @@
     "8428348909593474745": "Étape 1",
     "7458890725604973091": " Bienvenue au Studio ReadAlong ",
     "3614618598824071164": " Cet outil vous aidera à créer une page interactive de lecture accompagnée, sur laquelle les mots sont surlignés lorsqu'ils sont lus à voix haute. Jetez un coup d'œil à {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} cet exemple en cri de l'Est{$CLOSE_LINK} pour mieux comprendre le concept. ",
+    "7459555979295642756": "{$START_TAG_MAT_ICON} new_releases {$CLOSE_TAG_MAT_ICON} Essayer le nouvel {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} Éditeur du Studio ReadAlong{$CLOSE_LINK}. ",
+    "1380235932960787950": "{$START_TAG_MAT_ICON} new_releases {$CLOSE_TAG_MAT_ICON} {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} Documentation (en anglais){$CLOSE_LINK}",
     "11480612528390167": " Avant de commencer à en faire vous-même, veuillez lire notre {$START_LINK}politique de vie privée et de souveraineté des données{$CLOSE_LINK}, faites une visite guidée en cliquant sur le bouton « Visite guidée » puis suivez les étapes ci-dessous. ",
     "3943314737845757694": "Étape 2",
     "1021386634200142621": "Studio ReadAlong pour contes interactifs",
