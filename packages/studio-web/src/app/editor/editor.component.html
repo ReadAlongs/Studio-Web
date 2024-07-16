@@ -1,6 +1,19 @@
-<section>
+<section class="container mt-1">
+  <div class="row justify-content-center">
+    <button
+      i18n="Take the tour"
+      class="mb-4 col center text-center plausible-event-name=Tour"
+      mat-raised-button
+      color="primary"
+      (click)="startTour()"
+    >
+      Take the tour!
+    </button>
+  </div>
+</section>
+<section id="editor">
   <div class="container mb-2 mt-5">
-    <div class="row mb-5">
+    <div class="row justify-content-center mb-5">
       <div class="col-6">
         <h1 i18n="Welcome message for app editor" id="welcome-header">
           Welcome to the ReadAlong Studio Editor
@@ -20,14 +33,19 @@
         ></ras-shared-download>
       </div>
     </div>
-    <div class="row mb-6">
-      <div class="col-8">
-        <h2 i18n="Title for upload box" class="subtitle">
-          Select an offline HTML ReadAlong file. To get this file, you should
-          have created a ReadAlong using the <a routerLink="/">Studio</a>, and
-          then selected "Offline HTML" as the output. Or, you can use the
-          Offline-HTML file included in the Web Bundle download format.
+    <div class="row justify-content-center mb-6">
+      <div class="col">
+        <h2 i18n="Title for upload box" class="title">
+          Select an offline HTML ReadAlong file.
         </h2>
+        <p i18n="Description for upload box" class="subtitle">
+          To get this file, you should have created a ReadAlong using the
+          <a routerLink="/" target="_blank" rel="noopener noreferrer">
+            <mat-icon inline style="vertical-align: middle">launch</mat-icon>
+            Studio</a
+          >, and then selected "Offline HTML" as the output. Or, you can use the
+          Offline-HTML file included in the Web Bundle download format.
+        </p>
         <input
           #textInputElement
           (change)="onRasFileSelected($event)"
@@ -40,38 +58,43 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-2"></div>
-    <div class="col-8">
-      <div #readalongContainer></div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col">
+        <div id="readalongContainer" #readalongContainer></div>
+      </div>
     </div>
-    <div class="col-2"></div>
-  </div>
-  <div class="row mt-5 mb-5">
-    <div class="col-2"></div>
-    <div class="col-8">
-      <mat-toolbar *ngIf="audioControl$.valid">
-        <span>Audio Toolbar</span>
-        <span class="example-spacer"></span>
-        <button
-          (click)="zoomIn()"
-          mat-icon-button
-          class="example-icon zoom-in-icon"
-          aria-label="Zoom in icon for audio waveform"
-        >
-          <mat-icon>zoom_in</mat-icon>
-        </button>
-        <button
-          (click)="zoomOut()"
-          mat-icon-button
-          class="example-icon"
-          aria-label="Zoom out icon for audio waveform"
-        >
-          <mat-icon>zoom_out</mat-icon>
-        </button>
-      </mat-toolbar>
-      <div class="pure-u-1" id="wavesurferContainer" #wavesurferContainer></div>
+
+    <div class="row justify-content-center mt-5 mb-5">
+      <div class="col" id="audioToolbar">
+        <mat-toolbar *ngIf="audioControl$.valid">
+          <span i18n="Audio Toolbar">Audio Toolbar</span>
+          <span class="example-spacer"></span>
+          <span id="zoomControls">
+            <button
+              (click)="zoomIn()"
+              mat-icon-button
+              class="example-icon zoom-in-icon"
+              aria-label="Zoom in icon for audio waveform"
+            >
+              <mat-icon>zoom_in</mat-icon>
+            </button>
+            <button
+              (click)="zoomOut()"
+              mat-icon-button
+              class="example-icon"
+              aria-label="Zoom out icon for audio waveform"
+            >
+              <mat-icon>zoom_out</mat-icon>
+            </button></span
+          >
+        </mat-toolbar>
+        <div
+          class="pure-u-1"
+          id="wavesurferContainer"
+          #wavesurferContainer
+        ></div>
+      </div>
     </div>
-    <div class="col-2"></div>
   </div>
 </section>

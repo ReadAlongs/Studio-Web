@@ -15,7 +15,19 @@ import { Alignment, Components } from "@readalongs/web-component/loader";
 import { B64Service } from "../b64.service";
 import { ToastrService } from "ngx-toastr";
 import { FileService } from "../file.service";
-
+import {
+  readalong_editor_intro,
+  readalong_editor_choose_file,
+  readalong_editor_audio_toolbar,
+  readalong_editor_file_loaded,
+  readalong_editor_audio_toolbar_zoom,
+  readalong_editor_audio_wav,
+  readalong_export_step,
+  readalong_add_translation_step,
+  readalong_add_image_step,
+  readalong_editor_fix_text,
+} from "../shepherd.steps";
+import { ShepherdService } from "../shepherd.service";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -45,6 +57,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     public b64Service: B64Service,
     private fileService: FileService,
     private toastr: ToastrService,
+    public shepherdService: ShepherdService,
   ) {
     this.audioControl$.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
@@ -244,5 +257,78 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
 
   zoomOut() {
     this.wavesurfer.zoom(this.wavesurfer.params.minPxPerSec / 1.25);
+  }
+  startTour(): void {
+    this.shepherdService.defaultStepOptions = {
+      classes: "",
+      scrollTo: true,
+      cancelIcon: {
+        enabled: true,
+      },
+    };
+    this.shepherdService.keyboardNavigation = false;
+    readalong_editor_choose_file["buttons"][1]["action"] = () => {
+      this.fileService
+        .returnFileFromPath$("assets/hello-world.offline.html")
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(async (indexFile) => {
+          await this.onRasFileSelected({ target: { files: [indexFile] } });
+          console.log(
+            document
+              .querySelector("#wavesurferContainer")
+              ?.querySelector(".segment-content"),
+            document
+              .querySelector("#readalongContainer")
+              ?.querySelector("read-along"),
+          );
+          this.shepherdService.next();
+          readalong_add_image_step["attachTo"] = {
+            element: document
+              .querySelector("#readalongContainer")
+              ?.querySelector("read-along")
+              ?.shadowRoot?.querySelector("div.drop-area"),
+            on: "bottom",
+          };
+          readalong_add_translation_step["attachTo"] = {
+            element: document
+              .querySelector("#readalongContainer")
+              ?.querySelector("read-along")
+              ?.shadowRoot?.querySelector("div.sentence"),
+            on: "bottom",
+          };
+          readalong_editor_audio_wav["attachTo"] = {
+            element: document
+              .querySelector("#wavesurferContainer")
+              ?.querySelector(".wavesurfer-segment"),
+            on: "top",
+          };
+          readalong_editor_fix_text["attachTo"] = {
+            element: document
+              .querySelector("#wavesurferContainer")
+              ?.querySelector(".segment-content"),
+            on: "bottom-start",
+          };
+          this.shepherdService.addSteps([
+            readalong_editor_file_loaded,
+            readalong_add_image_step,
+            readalong_add_translation_step,
+            readalong_editor_audio_toolbar,
+            readalong_editor_audio_toolbar_zoom,
+            readalong_editor_audio_wav,
+            readalong_editor_fix_text,
+            readalong_export_step,
+          ]);
+          this.shepherdService.start();
+        });
+    };
+    this.shepherdService.modal = true;
+    this.shepherdService.confirmCancel = false;
+    readalong_export_step["buttons"][1]["type"] = "cancel";
+    readalong_export_step["buttons"][1]["text"] = $localize`Close`;
+    this.shepherdService.addSteps([
+      readalong_editor_intro,
+      readalong_editor_choose_file,
+    ]);
+    this.shepherdService.start();
   }
 }
