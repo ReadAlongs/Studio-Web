@@ -157,9 +157,25 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   async parseReadalong(text: string): Promise<Document | null> {
     const parser = new DOMParser();
     const readalong = parser.parseFromString(text, "text/html");
-    this.rasControl$.setValue(readalong);
     const element = readalong.querySelector("read-along");
     if (element === null) return null;
+
+    // Store the element as parsed XML
+    // Create missing body element
+    const body = document.createElement("body");
+    body.id = "t0b0";
+    const textNode = element.children[0];
+    if (textNode) {
+      while (textNode.hasChildNodes()) {
+        // @ts-ignore
+        body.appendChild(textNode.firstChild);
+      }
+      textNode.appendChild(body);
+    }
+    const serializer = new XMLSerializer();
+    const xmlString = serializer.serializeToString(element);
+    this.rasControl$.setValue(parser.parseFromString(xmlString, "text/xml")); // re-parse as XML
+
     // Oh, there's an audio file, okay, try to load it
     const audio = element.getAttribute("audio");
     if (audio !== null) {
