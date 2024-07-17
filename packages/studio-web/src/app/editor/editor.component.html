@@ -1,16 +1,4 @@
-<section class="container mt-1">
-  <div class="row justify-content-center">
-    <button
-      i18n="Take the tour"
-      class="mb-4 col center text-center plausible-event-name=Tour"
-      mat-raised-button
-      color="primary"
-      (click)="startTour()"
-    >
-      Take the tour!
-    </button>
-  </div>
-</section>
+<section class="container mt-1"></section>
 <section id="editor">
   <div class="container mb-2 mt-5">
     <div class="row justify-content-center mb-5">
@@ -18,6 +6,21 @@
         <h1 i18n="Welcome message for app editor" id="welcome-header">
           Welcome to the ReadAlong Studio Editor
         </h1>
+        <p>
+          This is a tool to help you edit your existing 'readalongs'. To get
+          started, click on the tour button below, and follow the steps.
+        </p>
+        <div class="row mt-5 justify-content-center">
+          <button
+            i18n="Take the tour"
+            class="mb-4 col center text-center plausible-event-name=Tour"
+            mat-raised-button
+            color="primary"
+            (click)="startTour()"
+          >
+            Take the tour!
+          </button>
+        </div>
       </div>
       <div
         class="col-6"
