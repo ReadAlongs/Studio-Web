@@ -18,5 +18,6 @@ export class EditorService {
     ras: this.rasControl$,
     audioB64: this.audioB64Control$,
   });
+  temporaryBlob: Blob | undefined = undefined;
   constructor(private _formBuilder: FormBuilder) {}
 }
