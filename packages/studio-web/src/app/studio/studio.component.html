@@ -4,7 +4,7 @@
   (selectionChange)="selectionChange($event)"
 >
   <mat-step
-    [stepControl]="upload.uploadFormGroup"
+    [stepControl]="studioService.uploadFormGroup"
     i18n-label="Step 1"
     label="Step 1"
   >
@@ -54,10 +54,6 @@
     </mat-step> -->
 
   <mat-step i18n-label="Step 2" label="Step 2">
-    <app-demo
-      *ngIf="b64Inputs$ | async as b64Inputs"
-      [b64Inputs]="b64Inputs"
-      [render$]="render$"
-    ></app-demo>
+    <app-demo></app-demo>
   </mat-step>
 </mat-horizontal-stepper>
