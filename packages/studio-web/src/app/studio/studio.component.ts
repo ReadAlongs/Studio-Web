@@ -39,6 +39,8 @@ import { DemoComponent } from "../demo/demo.component";
 import { UploadComponent } from "../upload/upload.component";
 import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
+import { DownloadService } from "../shared/download/download.service";
+import { StudioService } from "./studio.service";
 
 @Component({
   selector: "studio-component",
@@ -46,10 +48,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   styleUrls: ["./studio.component.sass"],
 })
 export class StudioComponent implements OnDestroy, OnInit {
-  firstFormGroup: any;
   title = "readalong-studio";
-  b64Inputs$ = new Subject<[string, Document]>();
-  render$ = new BehaviorSubject<boolean>(false);
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
@@ -57,6 +56,8 @@ export class StudioComponent implements OnDestroy, OnInit {
   private route: ActivatedRoute;
   constructor(
     private titleService: Title,
+    private downloadService: DownloadService,
+    public studioService: StudioService,
     private router: Router,
     private fileService: FileService,
     private meta: Meta,
@@ -64,6 +65,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     private ssjsService: SoundswallowerService,
   ) {}
   ngOnInit(): void {
+    console.log(this.studioService.langMode$.value);
     // Set Meta Tags for search engines and social media
     // We don't have to set charset or viewport for example since Angular already adds them
     this.titleService.setTitle(
@@ -134,9 +136,9 @@ export class StudioComponent implements OnDestroy, OnInit {
 
   selectionChange(event: StepperSelectionEvent) {
     if (event.selectedIndex === 0) {
-      this.render$.next(false);
+      this.studioService.render$.next(false);
     } else if (event.selectedIndex === 1) {
-      this.render$.next(true);
+      this.studioService.render$.next(true);
     }
   }
 
@@ -144,9 +146,9 @@ export class StudioComponent implements OnDestroy, OnInit {
 
   formIsDirty() {
     return (
-      this.upload?.audioControl$.value !== null ||
-      this.upload?.textControl$.value !== null ||
-      this.upload?.$textInput
+      this.studioService.audioControl$.value !== null ||
+      this.studioService.textControl$.value !== null ||
+      this.studioService.$textInput
     );
   }
 
@@ -162,24 +164,24 @@ export class StudioComponent implements OnDestroy, OnInit {
     text_file_step["when"] = {
       show: () => {
         if (this.upload) {
-          this.upload.inputMethod.text = "upload";
+          this.studioService.inputMethod.text = "upload";
         }
       },
       hide: () => {
         if (this.upload) {
-          this.upload.inputMethod.text = "edit";
+          this.studioService.inputMethod.text = "edit";
         }
       },
     };
     audio_file_step["when"] = {
       show: () => {
         if (this.upload) {
-          this.upload.inputMethod.audio = "upload";
+          this.studioService.inputMethod.audio = "upload";
         }
       },
       hide: () => {
         if (this.upload) {
-          this.upload.inputMethod.audio = "mic";
+          this.studioService.inputMethod.audio = "mic";
         }
       },
     };
@@ -198,9 +200,9 @@ export class StudioComponent implements OnDestroy, OnInit {
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((audioFile) => {
           if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
-            this.upload.$textInput.next("Hello world!");
-            this.upload.inputMethod.text = "edit";
-            this.upload.audioControl$.setValue(audioFile);
+            this.studioService.$textInput.next("Hello world!");
+            this.studioService.inputMethod.text = "edit";
+            this.studioService.audioControl$.setValue(audioFile);
             this.upload?.nextStep();
             this.stepper.animationDone.pipe(take(1)).subscribe(() => {
               // We can only attach to the shadow dom once it's been created, so unfortunately we need to define the steps like this.
@@ -275,10 +277,6 @@ export class StudioComponent implements OnDestroy, OnInit {
     this.shepherdService.start();
   }
 
-  formChanged(formGroup: FormGroup) {
-    this.firstFormGroup = formGroup;
-  }
-
   stepChange(event: any[]) {
     if (event[0] === "aligned") {
       const aligned_xml = createAlignedXML(event[2], event[3] as Segment);
@@ -288,7 +286,7 @@ export class StudioComponent implements OnDestroy, OnInit {
       ])
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((x: any) => {
-          this.b64Inputs$.next(x);
+          this.studioService.b64Inputs$.next(x);
           this.stepper.next();
         });
     }
