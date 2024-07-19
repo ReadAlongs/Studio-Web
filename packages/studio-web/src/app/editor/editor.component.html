@@ -25,14 +25,16 @@
       <div
         class="col-6"
         *ngIf="
-          uploadFormGroup.valid && audioB64Control$.value && rasControl$.value
+          editorService.uploadFormGroup.valid &&
+          editorService.audioB64Control$.value &&
+          editorService.rasControl$.value
         "
       >
         <ras-shared-download
-          [slots]="slots"
+          [slots]="editorService.slots"
           [readalong]="readalong"
-          [b64Audio]="audioB64Control$.value"
-          [rasXML]="rasControl$.value"
+          [b64Audio]="editorService.audioB64Control$.value"
+          [rasXML]="editorService.rasControl$.value"
         ></ras-shared-download>
       </div>
     </div>
@@ -70,7 +72,7 @@
 
     <div class="row justify-content-center mt-5 mb-5">
       <div class="col" id="audioToolbar">
-        <mat-toolbar *ngIf="audioControl$.valid">
+        <mat-toolbar *ngIf="editorService.audioControl$.valid">
           <span i18n="Audio Toolbar">Audio Toolbar</span>
           <span class="example-spacer"></span>
           <span id="zoomControls">
