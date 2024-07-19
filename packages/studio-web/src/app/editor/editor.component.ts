@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
-import { BehaviorSubject, takeUntil, Subject, combineLatest, take } from "rxjs";
+
+import { takeUntil, Subject, take } from "rxjs";
 import {
   AfterViewInit,
   Component,
@@ -9,11 +9,9 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import SegmentsPlugin, { Segment } from "./segments";
-import { ReadAlongSlots } from "../ras.service";
+import SegmentsPlugin from "./segments";
 import { Alignment, Components } from "@readalongs/web-component/loader";
 import { B64Service } from "../b64.service";
-import { ToastrService } from "ngx-toastr";
 import { FileService } from "../file.service";
 import {
   readalong_editor_intro,
@@ -28,6 +26,7 @@ import {
   readalong_editor_fix_text,
 } from "../shepherd.steps";
 import { ShepherdService } from "../shepherd.service";
+import { EditorService } from "./editor.service";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -37,29 +36,19 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
   wavesurfer: WaveSurfer;
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
-  audioControl$ = new FormControl<File | null>(null, Validators.required);
-  rasControl$ = new FormControl<Document | null>(null, Validators.required);
+
   readalong: Components.ReadAlong;
-  slots: ReadAlongSlots = {
-    title: "Title",
-    subtitle: "Subtitle",
-  };
+
   language: "eng" | "fra" | "spa" = "eng";
-  audioB64Control$ = new FormControl<string | null>(null, Validators.required);
-  public uploadFormGroup = this._formBuilder.group({
-    audio: this.audioControl$,
-    ras: this.rasControl$,
-    audioB64: this.audioB64Control$,
-  });
+
   unsubscribe$ = new Subject<void>();
   constructor(
-    private _formBuilder: FormBuilder,
     public b64Service: B64Service,
     private fileService: FileService,
-    private toastr: ToastrService,
     public shepherdService: ShepherdService,
+    public editorService: EditorService,
   ) {
-    this.audioControl$.valueChanges
+    this.editorService.audioControl$.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((audioFile) => {
         // If an audio file is loaded, then load the blob to wave surfer and clear any segments
@@ -70,7 +59,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
             .readFileAsData$(audioFile)
             .pipe(take(1))
             .subscribe((audiob64) => {
-              this.audioB64Control$.setValue(audiob64);
+              this.editorService.audioB64Control$.setValue(audiob64);
             });
         }
       });
@@ -106,8 +95,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           changedSegment.innerText = segment.data.text;
         }
         // Update XML text
-        if (this.rasControl$.value) {
-          changedSegment = this.rasControl$.value.getElementById(
+        if (this.editorService.rasControl$.value) {
+          changedSegment = this.editorService.rasControl$.value.getElementById(
             segment.data.id,
           );
           if (changedSegment) {
@@ -125,10 +114,11 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         const new_al: Alignment = {};
         new_al[segment.data.id] = [start_ms, dur_ms];
         // Update XML alignments (uses seconds)
-        if (this.rasControl$.value) {
-          let changedSegment = this.rasControl$.value.getElementById(
-            segment.data.id,
-          );
+        if (this.editorService.rasControl$.value) {
+          let changedSegment =
+            this.editorService.rasControl$.value.getElementById(
+              segment.data.id,
+            );
           if (changedSegment) {
             changedSegment.setAttribute("time", segment.start);
             changedSegment.setAttribute("dur", dur.toString());
@@ -174,7 +164,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
     const serializer = new XMLSerializer();
     const xmlString = serializer.serializeToString(element);
-    this.rasControl$.setValue(parser.parseFromString(xmlString, "text/xml")); // re-parse as XML
+    this.editorService.rasControl$.setValue(
+      parser.parseFromString(xmlString, "text/xml"),
+    ); // re-parse as XML
 
     // Oh, there's an audio file, okay, try to load it
     const audio = element.getAttribute("audio");
@@ -183,7 +175,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       // Did that work? Great!
       if (reply.ok) {
         const blob = await reply.blob();
-        this.audioControl$.setValue(
+        this.editorService.audioControl$.setValue(
           new File([blob], "test-audio.webm", { type: "audio/webm" }),
         );
       }
@@ -215,21 +207,22 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         "span[slot='read-along-subheader']",
       );
       if (titleSlot) {
-        this.slots.title = titleSlot.innerText;
+        this.editorService.slots.title = titleSlot.innerText;
         titleSlot.setAttribute("contenteditable", true);
         // Because we're just loading this from the single-file HTML, it's cumbersome to
         // use Angular event input event listeners like we do in the demo
         titleSlot.addEventListener(
           "input",
-          (ev: any) => (this.slots.title = ev.target?.innerHTML),
+          (ev: any) => (this.editorService.slots.title = ev.target?.innerHTML),
         );
       }
       if (subtitleSlot) {
-        this.slots.subtitle = subtitleSlot.innerText;
+        this.editorService.slots.subtitle = subtitleSlot.innerText;
         subtitleSlot.setAttribute("contenteditable", true);
         subtitleSlot.addEventListener(
           "input",
-          (ev: any) => (this.slots.subtitle = ev.target?.innerHTML),
+          (ev: any) =>
+            (this.editorService.slots.subtitle = ev.target?.innerHTML),
         );
       }
       // Make Editable
