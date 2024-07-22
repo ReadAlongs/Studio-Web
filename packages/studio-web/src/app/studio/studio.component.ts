@@ -4,8 +4,6 @@ import { Segment } from "soundswallower";
 
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { FormGroup } from "@angular/forms";
-import { MatDialog } from "@angular/material/dialog";
 import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
 import { Title } from "@angular/platform-browser";
@@ -65,7 +63,6 @@ export class StudioComponent implements OnDestroy, OnInit {
     private ssjsService: SoundswallowerService,
   ) {}
   ngOnInit(): void {
-    console.log(this.studioService.langMode$.value);
     // Set Meta Tags for search engines and social media
     // We don't have to set charset or viewport for example since Angular already adds them
     this.titleService.setTitle(
@@ -129,7 +126,9 @@ export class StudioComponent implements OnDestroy, OnInit {
       });
   }
 
-  ngOnDestroy(): void {
+  async ngOnDestroy() {
+    // step us back to the previously left step
+    this.studioService.lastStepperIndex = this.stepper.selectedIndex;
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -142,7 +141,11 @@ export class StudioComponent implements OnDestroy, OnInit {
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() {
+    if (this.stepper.selectedIndex < this.studioService.lastStepperIndex) {
+      this.stepper.next();
+    }
+  }
 
   formIsDirty() {
     return (

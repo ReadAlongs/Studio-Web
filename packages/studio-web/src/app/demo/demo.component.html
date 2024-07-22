@@ -1,66 +1,64 @@
 <section>
-  <ng-template *ngIf="studioService.b64Inputs$ | async as b64Inputs">
-    <div class="container">
-      <div class="row">
-        <div class="col-9">
-          <h2
-            id="readalong-congratulations"
-            i18n="Congratulations message"
-            class="subtitle"
-          >
-            Congratulations! Here's your ReadAlong!
-          </h2>
-        </div>
-        <div class="col-3" *ngIf="b64Inputs">
-          <ras-shared-download
-            [slots]="studioService.slots"
-            [b64Audio]="b64Inputs[0]"
-            [rasXML]="b64Inputs[1]"
-            [readalong]="readalong"
-          ></ras-shared-download>
-        </div>
-      </div>
-
-      <div class="row"></div>
-
-      <div class="row" *ngIf="b64Inputs">
-        <read-along
-          id="readalong"
-          [language]="language"
-          #readalong
-          *ngIf="studioService.render$ | async"
-          mode="EDIT"
-          href="data:application/readalong+xml;base64,{{
-            b64Service.xmlToB64(b64Inputs[1])
-          }}"
-          audio="{{ b64Inputs[0] }}"
-          class="hydrated"
+  <div class="container" *ngIf="studioService.render$ | async">
+    <div class="row">
+      <div class="col-9">
+        <h2
+          id="readalong-congratulations"
+          i18n="Congratulations message"
+          class="subtitle"
         >
-          <input
-            #title
-            [(ngModel)]="studioService.slots.title"
-            [ngStyle]="{
-              'width.ch': studioService.slots.title.length,
-              'min-width.ch': 20
-            }"
-            style="border: none"
-            placeholder="Enter your title here"
-            slot="read-along-header"
-          />
-          <input
-            #subtitle
-            [(ngModel)]="studioService.slots.subtitle"
-            [ngStyle]="{
-              'width.ch': studioService.slots.subtitle.length,
-              'min-width.ch': 20
-            }"
-            style="border: none"
-            placeholder="Enter your subtitle here"
-            slot="read-along-subheader"
-          />
-        </read-along>
+          Congratulations! Here's your ReadAlong!
+        </h2>
       </div>
-      <div class="row"></div>
+      <div class="col-3" *ngIf="studioService.b64Inputs$ | async as b64Inputs">
+        <ras-shared-download
+          [slots]="studioService.slots"
+          [b64Audio]="b64Inputs[0]"
+          [rasXML]="b64Inputs[1]"
+          [readalong]="readalong"
+        ></ras-shared-download>
+      </div>
     </div>
-  </ng-template>
+
+    <div class="row"></div>
+
+    <div class="row" *ngIf="studioService.b64Inputs$ | async as b64Inputs">
+      <read-along
+        id="readalong"
+        [language]="language"
+        #readalong
+        *ngIf="studioService.render$ | async"
+        mode="EDIT"
+        href="data:application/readalong+xml;base64,{{
+          b64Service.xmlToB64(b64Inputs[1])
+        }}"
+        audio="{{ b64Inputs[0] }}"
+        class="hydrated"
+      >
+        <input
+          #title
+          [(ngModel)]="studioService.slots.title"
+          [ngStyle]="{
+            'width.ch': studioService.slots.title.length,
+            'min-width.ch': 20
+          }"
+          style="border: none"
+          placeholder="Enter your title here"
+          slot="read-along-header"
+        />
+        <input
+          #subtitle
+          [(ngModel)]="studioService.slots.subtitle"
+          [ngStyle]="{
+            'width.ch': studioService.slots.subtitle.length,
+            'min-width.ch': 20
+          }"
+          style="border: none"
+          placeholder="Enter your subtitle here"
+          slot="read-along-subheader"
+        />
+      </read-along>
+    </div>
+    <div class="row"></div>
+  </div>
 </section>

@@ -16,8 +16,9 @@ export class StudioService {
     title: "Title",
     subtitle: "Subtitle",
   };
+  lastStepperIndex: number = 0;
   temporaryBlob: Blob | undefined = undefined;
-  b64Inputs$ = new Subject<[string, Document]>();
+  b64Inputs$ = new BehaviorSubject<[string, Document]>(["", new Document()]);
   render$ = new BehaviorSubject<boolean>(false);
   langMode$ = new BehaviorSubject<langMode>(langMode.generic);
   langControl$ = new FormControl<string>(
