@@ -5,6 +5,7 @@ import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
 import { StudioService } from "../studio/studio.service";
+import { DownloadService } from "../shared/download/download.service";
 
 @Component({
   selector: "app-demo",
@@ -19,6 +20,7 @@ export class DemoComponent implements OnDestroy, OnInit {
   constructor(
     public b64Service: B64Service,
     public studioService: StudioService,
+    private downloadService: DownloadService,
   ) {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
@@ -30,8 +32,19 @@ export class DemoComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {}
 
-  ngOnDestroy(): void {
+  async ngOnDestroy() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    // Save translations, images and all other edits to the studio service when we exit
+    await this.downloadService.updateTranslations(
+      this.studioService.b64Inputs$.value[1],
+      this.readalong,
+    );
+    await this.downloadService.updateImages(
+      this.studioService.b64Inputs$.value[1],
+      true,
+      "image",
+      this.readalong,
+    );
   }
 }
