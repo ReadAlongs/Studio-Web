@@ -10,8 +10,8 @@ export class EditorService {
   rasControl$ = new FormControl<Document | null>(null, Validators.required);
   audioB64Control$ = new FormControl<string | null>(null, Validators.required);
   slots: ReadAlongSlots = {
-    title: "Title",
-    subtitle: "Subtitle",
+    title: $localize`Title`,
+    subtitle: $localize`Subtitle`,
   };
   uploadFormGroup = this._formBuilder.group({
     audio: this.audioControl$,

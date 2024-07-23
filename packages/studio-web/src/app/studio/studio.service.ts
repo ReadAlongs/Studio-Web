@@ -13,8 +13,8 @@ export enum langMode {
 })
 export class StudioService {
   slots: ReadAlongSlots = {
-    title: "Title",
-    subtitle: "Subtitle",
+    title: $localize`Title`,
+    subtitle: $localize`Subtitle`,
   };
   lastStepperIndex: number = 0;
   temporaryBlob: Blob | undefined = undefined;
