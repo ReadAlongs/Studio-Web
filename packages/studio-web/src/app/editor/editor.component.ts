@@ -210,10 +210,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       );
 
       if (titleSlot) {
-        if (this.editorService.slots.title) {
-          titleSlot.innerText = this.editorService.slots.title;
-        }
-        // this.editorService.slots.title = titleSlot.innerText;
+        this.editorService.slots.title = titleSlot.innerText;
         titleSlot.setAttribute("contenteditable", true);
         // Because we're just loading this from the single-file HTML, it's cumbersome to
         // use Angular event input event listeners like we do in the demo
@@ -223,9 +220,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         );
       }
       if (subtitleSlot) {
-        if (this.editorService.slots.subtitle) {
-          subtitleSlot.innerText = this.editorService.slots.subtitle;
-        }
+        this.editorService.slots.subtitle = subtitleSlot.innerText;
         subtitleSlot.setAttribute("contenteditable", true);
         subtitleSlot.addEventListener(
           "input",
