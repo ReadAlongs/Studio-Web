@@ -1,10 +1,5 @@
-import { Component, Input } from "@angular/core";
-import { MaterialModule } from "../../material.module";
-import { ReadAlongSlots, SupportedOutputs } from "../../ras.service";
-import { FormsModule } from "@angular/forms";
-import { BrowserModule } from "@angular/platform-browser";
-import { Components } from "@readalongs/web-component/loader";
-import { DownloadService } from "./download.service";
+import { Component, EventEmitter, Output } from "@angular/core";
+import { SupportedOutputs } from "../../ras.service";
 
 @Component({
   selector: "ras-shared-download",
@@ -12,10 +7,7 @@ import { DownloadService } from "./download.service";
   styleUrl: "./download.component.sass",
 })
 export class DownloadComponent {
-  @Input() slots: ReadAlongSlots;
-  @Input() b64Audio: string;
-  @Input() rasXML: Document;
-  @Input() readalong: Components.ReadAlong;
+  @Output() downloadButtonClicked = new EventEmitter<SupportedOutputs>();
   outputFormats = [
     { value: SupportedOutputs.html, display: $localize`Offline HTML` },
     { value: SupportedOutputs.zip, display: $localize`Web Bundle` },
@@ -25,15 +17,9 @@ export class DownloadComponent {
     { value: SupportedOutputs.vtt, display: $localize`WebVTT Subtitles` },
   ];
   selectedOutputFormat: SupportedOutputs = SupportedOutputs.html;
-  constructor(private downloadService: DownloadService) {}
+  constructor() {}
 
   download() {
-    this.downloadService.download(
-      this.selectedOutputFormat,
-      this.b64Audio,
-      this.rasXML,
-      this.slots,
-      this.readalong,
-    );
+    this.downloadButtonClicked.emit(this.selectedOutputFormat);
   }
 }
