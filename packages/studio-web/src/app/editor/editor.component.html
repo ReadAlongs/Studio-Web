@@ -22,19 +22,9 @@
           </button>
         </div>
       </div>
-      <div
-        class="col-6"
-        *ngIf="
-          editorService.uploadFormGroup.valid &&
-          editorService.audioB64Control$.value &&
-          editorService.rasControl$.value
-        "
-      >
+      <div class="col-6" *ngIf="editorService.uploadFormGroup.valid">
         <ras-shared-download
-          [slots]="editorService.slots"
-          [readalong]="readalong"
-          [b64Audio]="editorService.audioB64Control$.value"
-          [rasXML]="editorService.rasControl$.value"
+          (downloadButtonClicked)="download($event)"
         ></ras-shared-download>
       </div>
     </div>
