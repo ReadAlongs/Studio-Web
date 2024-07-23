@@ -28,6 +28,8 @@ import {
 import { ShepherdService } from "../shepherd.service";
 import { EditorService } from "./editor.service";
 import { DownloadService } from "../shared/download/download.service";
+import { SupportedOutputs } from "../ras.service";
+import { ToastrService } from "ngx-toastr";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -48,6 +50,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     private fileService: FileService,
     public shepherdService: ShepherdService,
     public editorService: EditorService,
+    private toastr: ToastrService,
     private downloadService: DownloadService,
   ) {}
 
@@ -128,6 +131,25 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           this.editorService.slots,
           this.editorService.audioB64Control$.value,
         );
+    }
+  }
+
+  download(download_type: SupportedOutputs) {
+    if (
+      this.editorService.audioB64Control$.value &&
+      this.editorService.rasControl$.value
+    ) {
+      this.downloadService.download(
+        download_type,
+        this.editorService.audioB64Control$.value,
+        this.editorService.rasControl$.value,
+        this.editorService.slots,
+        this.readalong,
+      );
+    } else {
+      this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
+        timeOut: 10000,
+      });
     }
   }
 
