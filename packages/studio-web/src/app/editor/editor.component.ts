@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
-import { BehaviorSubject, takeUntil, Subject, combineLatest, take } from "rxjs";
+
+import { takeUntil, Subject, take } from "rxjs";
 import {
   AfterViewInit,
   Component,
@@ -9,11 +9,9 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import SegmentsPlugin, { Segment } from "./segments";
-import { ReadAlongSlots } from "../ras.service";
+import SegmentsPlugin from "./segments";
 import { Alignment, Components } from "@readalongs/web-component/loader";
 import { B64Service } from "../b64.service";
-import { ToastrService } from "ngx-toastr";
 import { FileService } from "../file.service";
 import {
   readalong_editor_intro,
@@ -28,6 +26,10 @@ import {
   readalong_editor_fix_text,
 } from "../shepherd.steps";
 import { ShepherdService } from "../shepherd.service";
+import { EditorService } from "./editor.service";
+import { DownloadService } from "../shared/download/download.service";
+import { SupportedOutputs } from "../ras.service";
+import { ToastrService } from "ngx-toastr";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -37,44 +39,20 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
   wavesurfer: WaveSurfer;
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
-  audioControl$ = new FormControl<File | null>(null, Validators.required);
-  rasControl$ = new FormControl<Document | null>(null, Validators.required);
+
   readalong: Components.ReadAlong;
-  slots: ReadAlongSlots = {
-    title: "Title",
-    subtitle: "Subtitle",
-  };
+
   language: "eng" | "fra" | "spa" = "eng";
-  audioB64Control$ = new FormControl<string | null>(null, Validators.required);
-  public uploadFormGroup = this._formBuilder.group({
-    audio: this.audioControl$,
-    ras: this.rasControl$,
-    audioB64: this.audioB64Control$,
-  });
+
   unsubscribe$ = new Subject<void>();
   constructor(
-    private _formBuilder: FormBuilder,
     public b64Service: B64Service,
     private fileService: FileService,
-    private toastr: ToastrService,
     public shepherdService: ShepherdService,
-  ) {
-    this.audioControl$.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((audioFile) => {
-        // If an audio file is loaded, then load the blob to wave surfer and clear any segments
-        if (audioFile) {
-          this.wavesurfer.loadBlob(audioFile);
-          this.wavesurfer.clearSegments();
-          this.fileService
-            .readFileAsData$(audioFile)
-            .pipe(take(1))
-            .subscribe((audiob64) => {
-              this.audioB64Control$.setValue(audiob64);
-            });
-        }
-      });
-  }
+    public editorService: EditorService,
+    private toastr: ToastrService,
+    private downloadService: DownloadService,
+  ) {}
 
   async ngAfterViewInit(): Promise<void> {
     this.wavesurfer = WaveSurfer.create({
@@ -91,29 +69,22 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       height: 200,
       minPxPerSec: 300, // FIXME: uncertain about this
     });
+    this.loadAudioIntoWavesurferElement();
+
+    // reload the temporary saved blob from the service
+    if (this.editorService.temporaryBlob) {
+      this.onRasFileSelected({
+        target: { files: [this.editorService.temporaryBlob] },
+      });
+    }
+
     this.wavesurfer.on("segment-updated", async (segment, e) => {
       // Each time a segment is updated we have to update it in both the demo ReadAlong
       // as well as the XML. This is faster than just editing the XML and asking the
       // ReadAlong to re-render, which would create all the new audio sprites again etc
       // when we are just editing a single element at a time.
       if (e.action == "contentEdited") {
-        // Update Demo text
-        let readalongContainerElement =
-          await this.readalong.getReadAlongElement();
-        let changedSegment =
-          readalongContainerElement.shadowRoot?.getElementById(segment.data.id);
-        if (changedSegment) {
-          changedSegment.innerText = segment.data.text;
-        }
-        // Update XML text
-        if (this.rasControl$.value) {
-          changedSegment = this.rasControl$.value.getElementById(
-            segment.data.id,
-          );
-          if (changedSegment) {
-            changedSegment.innerText = segment.data.text;
-          }
-        }
+        this.setReadAlongText(segment.data.id, segment.data.text);
       }
       if (e.action == "resize") {
         // Update Demo Alignments (uses milliseconds)
@@ -125,10 +96,11 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         const new_al: Alignment = {};
         new_al[segment.data.id] = [start_ms, dur_ms];
         // Update XML alignments (uses seconds)
-        if (this.rasControl$.value) {
-          let changedSegment = this.rasControl$.value.getElementById(
-            segment.data.id,
-          );
+        if (this.editorService.rasControl$.value) {
+          let changedSegment =
+            this.editorService.rasControl$.value.getElementById(
+              segment.data.id,
+            );
           if (changedSegment) {
             changedSegment.setAttribute("time", segment.start);
             changedSegment.setAttribute("dur", dur.toString());
@@ -142,49 +114,87 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       segment.play();
     });
   }
+
   ngOnInit(): void {}
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+  async ngOnDestroy() {
+    // Save translations, images and all other edits to a temporary blob before destroying component
+    // We just re-use the download service method here for simplicity and reload from this when
+    // navigating back to the editor
+    if (
+      this.editorService.rasControl$.value &&
+      this.editorService.audioB64Control$.value
+    ) {
+      this.editorService.temporaryBlob =
+        await this.downloadService.createSingleFileBlob(
+          this.editorService.rasControl$.value,
+          this.readalong,
+          this.editorService.slots,
+          this.editorService.audioB64Control$.value,
+        );
+    }
+  }
+
+  download(download_type: SupportedOutputs) {
+    if (
+      this.editorService.audioB64Control$.value &&
+      this.editorService.rasControl$.value
+    ) {
+      this.downloadService.download(
+        download_type,
+        this.editorService.audioB64Control$.value,
+        this.editorService.rasControl$.value,
+        this.editorService.slots,
+        this.readalong,
+      );
+    } else {
+      this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
+        timeOut: 10000,
+      });
+    }
+  }
+
+  async setReadAlongText(id: string, text: string) {
+    // Update Demo text
+    let readalongContainerElement = await this.readalong.getReadAlongElement();
+    let changedSegment =
+      readalongContainerElement.shadowRoot?.getElementById(id);
+    if (changedSegment) {
+      changedSegment.innerText = text;
+    }
+    // Update XML text
+    if (this.editorService.rasControl$.value) {
+      changedSegment = this.editorService.rasControl$.value.getElementById(id);
+      if (changedSegment) {
+        changedSegment.innerText = text;
+      }
+    }
+  }
+
+  loadAudioIntoWavesurferElement() {
+    if (this.editorService.audioControl$.value) {
+      this.wavesurfer.loadBlob(this.editorService.audioControl$.value);
+      this.wavesurfer.clearSegments();
+      this.fileService
+        .readFileAsData$(this.editorService.audioControl$.value)
+        .pipe(take(1))
+        .subscribe((audiob64) => {
+          this.editorService.audioB64Control$.setValue(audiob64);
+        });
+    }
+    if (this.editorService.rasControl$.value) {
+      this.createSegments(this.editorService.rasControl$.value);
+    }
   }
 
   async onRasFileSelected(event: any) {
     let file: File = event.target.files[0];
     const text = await file.text();
-    await this.parseReadalong(text);
+    const readalong = await this.parseReadalong(text);
+    this.loadAudioIntoWavesurferElement();
+    this.renderReadalong(readalong);
   }
 
-  async parseReadalong(text: string): Promise<Document | null> {
-    const parser = new DOMParser();
-    const readalong = parser.parseFromString(text, "text/html");
-    this.rasControl$.setValue(readalong);
-    const element = readalong.querySelector("read-along");
-    if (element === null) return null;
-    // Oh, there's an audio file, okay, try to load it
-    const audio = element.getAttribute("audio");
-    if (audio !== null) {
-      const reply = await fetch(audio);
-      // Did that work? Great!
-      if (reply.ok) {
-        const blob = await reply.blob();
-        this.audioControl$.setValue(
-          new File([blob], "test-audio.webm", { type: "audio/webm" }),
-        );
-      }
-    }
-    // Is read-along linked (including data URI) or embedded?
-    const href = element.getAttribute("href");
-    if (href === null) {
-      this.createSegments(element);
-    } else {
-      const reply = await fetch(href);
-      if (reply.ok) {
-        const text2 = await reply.text();
-        // FIXME: potential zip-bombing?
-        this.parseReadalong(text2);
-      }
-    }
-    let readalongBody = readalong.querySelector("body")?.innerHTML;
+  async renderReadalong(readalongBody: string | undefined) {
     if (readalongBody) {
       this.readalongContainerElement.nativeElement.innerHTML = readalongBody;
       const rasElement =
@@ -198,22 +208,29 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       let subtitleSlot = rasElement.querySelector(
         "span[slot='read-along-subheader']",
       );
+
       if (titleSlot) {
-        this.slots.title = titleSlot.innerText;
+        if (this.editorService.slots.title) {
+          titleSlot.innerText = this.editorService.slots.title;
+        }
+        // this.editorService.slots.title = titleSlot.innerText;
         titleSlot.setAttribute("contenteditable", true);
         // Because we're just loading this from the single-file HTML, it's cumbersome to
         // use Angular event input event listeners like we do in the demo
         titleSlot.addEventListener(
           "input",
-          (ev: any) => (this.slots.title = ev.target?.innerHTML),
+          (ev: any) => (this.editorService.slots.title = ev.target?.innerHTML),
         );
       }
       if (subtitleSlot) {
-        this.slots.subtitle = subtitleSlot.innerText;
+        if (this.editorService.slots.subtitle) {
+          subtitleSlot.innerText = this.editorService.slots.subtitle;
+        }
         subtitleSlot.setAttribute("contenteditable", true);
         subtitleSlot.addEventListener(
           "input",
-          (ev: any) => (this.slots.subtitle = ev.target?.innerHTML),
+          (ev: any) =>
+            (this.editorService.slots.subtitle = ev.target?.innerHTML),
         );
       }
       // Make Editable
@@ -230,10 +247,66 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         }
       });
     }
-    return readalong;
   }
 
-  createSegments(element: Element) {
+  async parseReadalong(text: string): Promise<string | undefined> {
+    const parser = new DOMParser();
+    const readalong = parser.parseFromString(text, "text/html");
+    const element = readalong.querySelector("read-along");
+
+    if (element === undefined || element === null) {
+      return undefined;
+    }
+
+    // Store the element as parsed XML
+    // Create missing body element
+    const body = document.createElement("body");
+    body.id = "t0b0";
+    const textNode = element.children[0];
+    if (textNode) {
+      while (textNode.hasChildNodes()) {
+        // @ts-ignore
+        body.appendChild(textNode.firstChild);
+      }
+      textNode.appendChild(body);
+    }
+    const serializer = new XMLSerializer();
+    const xmlString = serializer.serializeToString(element);
+    this.editorService.rasControl$.setValue(
+      parser.parseFromString(xmlString, "text/xml"),
+    ); // re-parse as XML
+
+    // Oh, there's an audio file, okay, try to load it
+    const audio = element.getAttribute("audio");
+
+    if (audio !== null) {
+      const reply = await fetch(audio);
+      // Did that work? Great!
+      if (reply.ok) {
+        const blob = await reply.blob();
+        this.editorService.audioControl$.setValue(
+          new File([blob], "test-audio.webm", { type: "audio/webm" }),
+        );
+      }
+    }
+    // Is read-along linked (including data URI) or embedded?
+    const href = element.getAttribute("href");
+    if (href === null) {
+      if (this.editorService.rasControl$.value) {
+        this.createSegments(this.editorService.rasControl$.value);
+      }
+    } else {
+      const reply = await fetch(href);
+      if (reply.ok) {
+        const text2 = await reply.text();
+        // FIXME: potential zip-bombing?
+        this.parseReadalong(text2);
+      }
+    }
+    return readalong.querySelector("body")?.innerHTML;
+  }
+
+  createSegments(element: Document) {
     this.wavesurfer.clearSegments();
     for (const w of Array.from(element.querySelectorAll("w[id]"))) {
       const wordText = w.textContent;

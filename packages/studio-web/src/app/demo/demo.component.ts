@@ -1,10 +1,13 @@
-import { Observable, Subject } from "rxjs";
+import { Subject } from "rxjs";
 
-import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
-import { ReadAlongSlots } from "../ras.service";
+import { StudioService } from "../studio/studio.service";
+import { DownloadService } from "../shared/download/download.service";
+import { SupportedOutputs } from "../ras.service";
+import { ToastrService } from "ngx-toastr";
 
 @Component({
   selector: "app-demo",
@@ -12,17 +15,15 @@ import { ReadAlongSlots } from "../ras.service";
   styleUrls: ["./demo.component.sass"],
 })
 export class DemoComponent implements OnDestroy, OnInit {
-  @Input() b64Inputs: [string, Document];
-  @Input() render$: Observable<boolean>;
   @ViewChild("readalong") readalong!: Components.ReadAlong;
-  slots: ReadAlongSlots = {
-    title: $localize`Title`,
-    subtitle: $localize`Subtitle`,
-  };
   language: "eng" | "fra" | "spa" = "eng";
   unsubscribe$ = new Subject<void>();
-
-  constructor(public b64Service: B64Service) {
+  constructor(
+    public b64Service: B64Service,
+    public studioService: StudioService,
+    private downloadService: DownloadService,
+    private toastr: ToastrService,
+  ) {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
       this.language = "fra";
@@ -33,8 +34,41 @@ export class DemoComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {}
 
-  ngOnDestroy(): void {
+  ngAfterViewInit(): void {}
+  download(download_type: SupportedOutputs) {
+    if (
+      this.studioService.b64Inputs$.value &&
+      this.studioService.b64Inputs$.value[1]
+    ) {
+      this.downloadService.download(
+        download_type,
+        this.studioService.b64Inputs$.value[0],
+        this.studioService.b64Inputs$.value[1],
+        this.studioService.slots,
+        this.readalong,
+      );
+    } else {
+      this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
+        timeOut: 10000,
+      });
+    }
+  }
+
+  async ngOnDestroy() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    // Save translations, images and all other edits to the studio service when we exit
+    if (this.studioService.b64Inputs$.value[1]) {
+      await this.downloadService.updateTranslations(
+        this.studioService.b64Inputs$.value[1],
+        this.readalong,
+      );
+      await this.downloadService.updateImages(
+        this.studioService.b64Inputs$.value[1],
+        true,
+        "image",
+        this.readalong,
+      );
+    }
   }
 }

@@ -4,13 +4,10 @@ import { Segment } from "soundswallower";
 
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { FormGroup } from "@angular/forms";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
 import { Title } from "@angular/platform-browser";
 
-import { B64Service } from "../b64.service";
 import {
   createAlignedXML,
   SoundswallowerService,
@@ -40,6 +37,8 @@ import { DemoComponent } from "../demo/demo.component";
 import { UploadComponent } from "../upload/upload.component";
 import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
+import { DownloadService } from "../shared/download/download.service";
+import { StudioService } from "./studio.service";
 
 @Component({
   selector: "studio-component",
@@ -47,10 +46,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   styleUrls: ["./studio.component.sass"],
 })
 export class StudioComponent implements OnDestroy, OnInit {
-  firstFormGroup: any;
   title = "readalong-studio";
-  b64Inputs$ = new Subject<[string, Document]>();
-  render$ = new BehaviorSubject<boolean>(false);
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
@@ -58,9 +54,10 @@ export class StudioComponent implements OnDestroy, OnInit {
   private route: ActivatedRoute;
   constructor(
     private titleService: Title,
+    private downloadService: DownloadService,
+    public studioService: StudioService,
     private router: Router,
     private fileService: FileService,
-    private dialog: MatDialog,
     private meta: Meta,
     public shepherdService: ShepherdService,
     private ssjsService: SoundswallowerService,
@@ -129,26 +126,32 @@ export class StudioComponent implements OnDestroy, OnInit {
       });
   }
 
-  ngOnDestroy(): void {
+  async ngOnDestroy() {
+    // step us back to the previously left step
+    this.studioService.lastStepperIndex = this.stepper.selectedIndex;
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
 
   selectionChange(event: StepperSelectionEvent) {
     if (event.selectedIndex === 0) {
-      this.render$.next(false);
+      this.studioService.render$.next(false);
     } else if (event.selectedIndex === 1) {
-      this.render$.next(true);
+      this.studioService.render$.next(true);
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() {
+    if (this.stepper.selectedIndex < this.studioService.lastStepperIndex) {
+      this.stepper.next();
+    }
+  }
 
   formIsDirty() {
     return (
-      this.upload?.audioControl$.value !== null ||
-      this.upload?.textControl$.value !== null ||
-      this.upload?.$textInput
+      this.studioService.audioControl$.value !== null ||
+      this.studioService.textControl$.value !== null ||
+      this.studioService.$textInput
     );
   }
 
@@ -164,24 +167,24 @@ export class StudioComponent implements OnDestroy, OnInit {
     text_file_step["when"] = {
       show: () => {
         if (this.upload) {
-          this.upload.inputMethod.text = "upload";
+          this.studioService.inputMethod.text = "upload";
         }
       },
       hide: () => {
         if (this.upload) {
-          this.upload.inputMethod.text = "edit";
+          this.studioService.inputMethod.text = "edit";
         }
       },
     };
     audio_file_step["when"] = {
       show: () => {
         if (this.upload) {
-          this.upload.inputMethod.audio = "upload";
+          this.studioService.inputMethod.audio = "upload";
         }
       },
       hide: () => {
         if (this.upload) {
-          this.upload.inputMethod.audio = "mic";
+          this.studioService.inputMethod.audio = "mic";
         }
       },
     };
@@ -200,9 +203,9 @@ export class StudioComponent implements OnDestroy, OnInit {
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((audioFile) => {
           if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
-            this.upload.$textInput.next("Hello world!");
-            this.upload.inputMethod.text = "edit";
-            this.upload.audioControl$.setValue(audioFile);
+            this.studioService.$textInput.next("Hello world!");
+            this.studioService.inputMethod.text = "edit";
+            this.studioService.audioControl$.setValue(audioFile);
             this.upload?.nextStep();
             this.stepper.animationDone.pipe(take(1)).subscribe(() => {
               // We can only attach to the shadow dom once it's been created, so unfortunately we need to define the steps like this.
@@ -277,17 +280,6 @@ export class StudioComponent implements OnDestroy, OnInit {
     this.shepherdService.start();
   }
 
-  openPrivacyDialog(): void {
-    this.dialog.open(PrivacyDialog, {
-      width: "50vw",
-      maxHeight: "90vh",
-    });
-  }
-
-  formChanged(formGroup: FormGroup) {
-    this.firstFormGroup = formGroup;
-  }
-
   stepChange(event: any[]) {
     if (event[0] === "aligned") {
       const aligned_xml = createAlignedXML(event[2], event[3] as Segment);
@@ -297,32 +289,9 @@ export class StudioComponent implements OnDestroy, OnInit {
       ])
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((x: any) => {
-          this.b64Inputs$.next(x);
+          this.studioService.b64Inputs$.next(x);
           this.stepper.next();
         });
     }
-  }
-}
-
-@Component({
-  selector: "privacy-dialog",
-  templateUrl: "privacy-dialog.html",
-})
-export class PrivacyDialog {
-  analyticsExcluded =
-    window.localStorage.getItem("plausible_ignore") === "true";
-  constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
-  ngOnInit() {
-    this.dialogRef.updateSize("100%");
-  }
-
-  toggleAnalytics() {
-    if (this.analyticsExcluded) {
-      window.localStorage.removeItem("plausible_ignore");
-    } else {
-      window.localStorage.setItem("plausible_ignore", "true");
-    }
-    this.analyticsExcluded =
-      window.localStorage.getItem("plausible_ignore") === "true";
   }
 }
