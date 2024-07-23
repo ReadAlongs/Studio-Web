@@ -38,10 +38,10 @@ describe("DemoComponent", () => {
   });
 
   it(`should have as title 'Title'`, () => {
-    expect(component.slots.title).toEqual("Title");
+    expect(component.studioService.slots.title).toEqual("Title");
   });
 
   it(`should have as subtitle 'SubTitle'`, () => {
-    expect(component.slots.subtitle).toEqual("Subtitle");
+    expect(component.studioService.slots.subtitle).toEqual("Subtitle");
   });
 });

@@ -1,12 +1,6 @@
 import { Subject } from "rxjs";
 
-import {
-  Component,
-  OnDestroy,
-  AfterViewInit,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
