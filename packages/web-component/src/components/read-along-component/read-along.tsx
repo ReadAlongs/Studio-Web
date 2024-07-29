@@ -1766,6 +1766,7 @@ export class ReadAlongComponent {
             event.currentTarget.setAttribute("dirty", true);
           }
         };
+        nodeProps["data-test-id"] = "annotation-layer";
       }
     }
 
@@ -1845,7 +1846,7 @@ export class ReadAlongComponent {
                   <button
                     title={this.getI18nString("add-translation")}
                     aria-label="Add translation"
-                    data-cy="add-translation-button"
+                    data-test-id="add-translation-button"
                     class="sentence__translation sentence__translation__button"
                     onClick={(e) => {
                       if (this.annotations.length) {
@@ -1915,6 +1916,7 @@ export class ReadAlongComponent {
                       " background--" +
                       this.theme
                     }
+                    data-test-id={"remove-annotation-" + sentenceID}
                   >
                     <i class="material-icons">delete</i>
                   </button>
