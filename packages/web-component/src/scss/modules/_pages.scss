@@ -213,3 +213,54 @@ $max-height: 98vh;
     min-width: 80%;
   }
 }
+
+.read-along-container[data-mode="EDIT"] {
+  .sentence {
+    &__text[dirty] {
+      background-color: #ffffce;
+    }
+
+    &__text:active,
+    &__text:focus {
+      caret: #ff7a18 underscore;
+    }
+
+    &__text:empty::after {
+      content: "---";
+    }
+
+    &__translation__button__remove {
+      color: $color-important;
+      padding-bottom: 0;
+      margin-bottom: 0;
+
+      i {
+        font-size: 16px !important;
+      }
+    }
+  }
+
+  .annotation-menu {
+    border: 1px solid #777;
+    margin: 0;
+    padding: 0;
+    z-index: z("nav");
+
+    &.invisible {
+      display: none;
+    }
+
+    li {
+      margin: 0;
+      padding: 0.1em 1em;
+      list-style-type: none;
+      border-top: 1px solid #777;
+
+      button .material-icons-outlined {
+        font-size: inherit;
+        border-radius: 0;
+        margin-right: em(5);
+      }
+    }
+  }
+}

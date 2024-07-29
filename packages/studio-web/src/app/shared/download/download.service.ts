@@ -56,55 +56,36 @@ Please host all assets on your server, include the font and package imports defi
     private toastr: ToastrService,
   ) {}
 
-  async updateTranslations(
+  async syncWithReadAlong(
     doc: Document,
     readalong: Components.ReadAlong,
   ): Promise<boolean> {
-    const translations: any = await readalong.getTranslations();
-    if (Object.keys(translations).length == 0) {
-      return false;
-    } else {
-      const sentence_nodes = doc.querySelectorAll(
-        "s:not(.sentence__translation)",
-      );
-      // represents all translation nodes that have already been added
-      const translation_node_ids = new Set(
-        Array.from(doc.querySelectorAll(".editable__translation")).map(
-          (t_node) => t_node.id,
-        ),
-      );
-      sentence_nodes.forEach((sentence: Element) => {
-        // Add a translation
-        if (
-          sentence.id in translations &&
-          !translation_node_ids.has(sentence.id)
-        ) {
-          // No namespaces!! NO! NO! NO!
-          let newSentence = document.createElementNS(null, "s");
-          newSentence.setAttribute("do-not-align", "true");
-          newSentence.setAttribute("id", sentence.id);
-          newSentence.setAttribute(
-            "class",
-            "sentence__translation editable__translation",
+    //sync text
+    const pages = await readalong.getPages();
+    if (pages) {
+      const page_nodes = doc.querySelectorAll("div[type=page]");
+      for (let pg = 0; pg < page_nodes.length; pg++) {
+        const paragraphs = pages[pg].paragraphs;
+        page_nodes[pg].querySelectorAll("p").forEach((para, p) => {
+          para.replaceChildren(
+            ...Array.from(paragraphs[p].cloneNode(true).childNodes),
           );
-          newSentence.setAttribute("xml:lang", "eng");
-          newSentence.append(translations[sentence.id]);
-          sentence.insertAdjacentElement("afterend", newSentence);
-        }
-        // Remove a translation
-        if (
-          sentence.id in translations &&
-          translations[sentence.id] === null &&
-          translation_node_ids.has(sentence.id)
-        ) {
-          let elementToRemove = doc.querySelector(
-            `#${sentence.id}.sentence__translation`,
-          );
-          elementToRemove?.remove();
-        }
-      });
-      return true;
+        });
+      }
     }
+    //TODO: update meta (add/remove annotation layers)
+    //sync meta
+    //const meta = await readalong.getMeta();
+    //add generator version
+    const generator = doc.createElementNS(null, "meta");
+    generator.setAttribute("name", "generator");
+    generator.setAttribute(
+      "content",
+      `@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}`,
+    );
+    doc.querySelector("text")?.before(generator);
+
+    return true;
   }
 
   async updateImages(
@@ -165,7 +146,7 @@ Please host all assets on your server, include the font and package imports defi
     b64Audio: string,
   ) {
     await this.updateImages(rasDoc, true, "image", readalong);
-    await this.updateTranslations(rasDoc, readalong);
+    await this.syncWithReadAlong(rasDoc, readalong);
     let rasB64 = this.b64Service.xmlToB64(rasDoc);
     if (this.b64Service.jsAndFontsBundle$.value !== null) {
       let blob = new Blob(
@@ -284,7 +265,7 @@ Please host all assets on your server, include the font and package imports defi
         );
       }
       // - add .readalong file
-      await this.updateTranslations(rasXML, readalong);
+      await this.syncWithReadAlong(rasXML, readalong);
 
       const xmlString = this.xmlSerializer.serializeToString(
         rasXML.documentElement,
