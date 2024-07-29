@@ -23,6 +23,7 @@ import {
   USER_PREFERENCE_VERSION,
   setUserPreferences,
   extractMeta,
+  sentenceIsAligned,
 } from "../../utils/utils";
 import {
   Alignment,
@@ -179,12 +180,12 @@ export class ReadAlongComponent {
   @State() hasLoaded: number = 0;
   showGuide: boolean = false;
 
-  parsed_text;
+  @State() parsed_text;
   dropAreas;
   current_page;
   hasTextTranslations: boolean = false;
   @State() images: { [key: string]: string | null };
-  @State() translations: { [key: string]: string | null };
+  @State() translations: { [key: string]: string[] };
   latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders
   assetsStatus: ASSETS_STATUS = {
     AUDIO: LOADING,
@@ -696,11 +697,19 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Get Translations
+   * get Pages
    */
   @Method()
-  async getTranslations(): Promise<object> {
-    return this.translations;
+  async getPages(): Promise<Page[]> {
+    return this.parsed_text as Page[];
+  }
+
+  /**
+   * get Pages
+   */
+  @Method()
+  async getMeta(): Promise<RASMeta> {
+    return this.meta;
   }
 
   /**
@@ -1065,15 +1074,56 @@ export class ReadAlongComponent {
             const paragraphs = (page as Page).paragraphs;
             const sentences = paragraphs[
               paragraphs.length - 1
-            ].querySelectorAll("s:not(.translation)"); //get non-translation sentences in the last paragraph
+            ].querySelectorAll(
+              "s:not(.translation), s:not(.sentence__translation)",
+            ); //get non-translation sentences in the last paragraph
             const word =
               sentences[sentences.length - 1].querySelector("w:last-of-type"); //get the last word of the last sentence
-            this.endOfPageTags[word.id] = [
-              parseFloat(word.getAttribute("time")), //in seconds
-              parseFloat(word.getAttribute("dur")) * 1000, // in milliseconds
-            ];
-            this.finalTaggedWord = word.id; // do not pause on the last word of the read-along
-          } catch (err) {}
+            if (word) {
+              this.endOfPageTags[word.id] = [
+                parseFloat(word.getAttribute("time")), //in seconds
+                parseFloat(word.getAttribute("dur")) * 1000, // in milliseconds
+              ];
+              this.finalTaggedWord = word.id; // do not pause on the last word of the read-along
+            }
+          } catch (err) {
+            console.error("para loading", err);
+          }
+          //get the translations
+          page.paragraphs
+            .map((paragraph) => paragraph.querySelectorAll("s"))
+            .forEach((sentences) => {
+              if (sentences.length) {
+                sentences.forEach((sentence) => {
+                  let translation: { [key: string]: string[] } = {};
+                  if (sentence.id && sentenceIsAligned(sentence)) {
+                    translation[sentence.id] = [];
+
+                    this.translations = {
+                      ...this.translations,
+                      ...translation,
+                    };
+                  } else {
+                    if ((sentence as Element).hasAttribute("sentence-id")) {
+                      const sentenceID = (sentence as Element).getAttribute(
+                        "sentence-id",
+                      );
+                      translation[sentenceID] =
+                        this.translations[sentenceID] ?? [];
+                      translation[sentenceID].push(
+                        sentence.hasAttribute("annotation-id")
+                          ? sentence.getAttribute("annotation-id")
+                          : sentence.id,
+                      );
+                      this.translations = {
+                        ...this.translations,
+                        ...translation,
+                      };
+                    }
+                  }
+                });
+              }
+            });
         }
       }
       // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
@@ -1096,7 +1146,7 @@ export class ReadAlongComponent {
           .split(delimiter)
           .forEach((annotation, l) => {
             this.annotations.push({
-              isVisible: false, //hide by default
+              isVisible: this.mode === "EDIT", //hide by default in non edit mode
               name: annotationNames[l].trim() ?? annotation.trim(),
               id: annotation.trim(),
             });
@@ -1104,6 +1154,7 @@ export class ReadAlongComponent {
       }
       this.assetsStatus.RAS = LOADED;
     }
+
     this.hasLoaded += 1;
   }
 
@@ -1249,6 +1300,7 @@ export class ReadAlongComponent {
   componentDidRender(): void {
     //if creator does not want the translation to show at load time
     if (
+      this.mode !== "EDIT" &&
       !this.displayTranslation &&
       this.parsed_text &&
       this.parsed_text.length > 0
@@ -1258,12 +1310,22 @@ export class ReadAlongComponent {
     }
 
     if (this.latestTranslation) {
-      // Add focus to the latest translation line that was added
-      let newLine: HTMLElement = this.el.shadowRoot.querySelector(
-        this.latestTranslation,
-      );
-      newLine.focus();
-      this.latestTranslation = "";
+      try {
+        // Add focus to the latest translation line that was added
+        let newLine: HTMLElement = this.el.shadowRoot.querySelector(
+          this.latestTranslation,
+        );
+        if (newLine) {
+          newLine.focus();
+          newLine.setAttribute(
+            "placeholder",
+            this.getI18nString("placeholder"),
+          );
+          this.latestTranslation = undefined;
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
   /**
@@ -1335,25 +1397,45 @@ export class ReadAlongComponent {
    *  EDIT  *
    **********/
 
-  addLine(sentence_element: Element) {
-    if (!this.hasTextTranslations) {
-      this.hasTextTranslations = true;
-    }
-    let newTranslation = {};
-
-    newTranslation[sentence_element.id] = "";
-    this.translations = { ...this.translations, ...newTranslation };
-    this.latestTranslation = "#" + sentence_element.id + "translation";
-  }
-
   removeLine(sentence_element: Element) {
     let newTranslation = {};
-    newTranslation[sentence_element.id] = null;
+    // remove translation and delete the node
+    const ID = sentence_element.id;
+    this.parsed_text = [
+      ...this.parsed_text.map((page) => {
+        if (ID.includes(page.id)) {
+          page.paragraphs = page.paragraphs.map((para) => {
+            if (ID.includes(para.id)) {
+              para.removeChild(sentence_element);
+            }
+            return para;
+          });
+        }
+        return page;
+      }),
+    ];
+    const sentenceID = sentence_element.getAttribute("sentence-id");
+    newTranslation[sentenceID] = this.translations[sentenceID].filter(
+      (s) => s != ID && s != sentence_element.getAttribute("annotation-id"),
+    );
     this.translations = { ...this.translations, ...newTranslation };
   }
 
   updateTranslation(sentence_id: string, text: string) {
-    this.translations[sentence_id] = text;
+    this.parsed_text = [
+      ...this.parsed_text.map((page) => {
+        if (sentence_id.includes(page.id)) {
+          page.paragraphs = page.paragraphs.map((para) => {
+            if (sentence_id.includes(para.id)) {
+              para.querySelector(`#${sentence_id}`).textContent =
+                text.trim().length < 1 ? "---" : text.trim();
+            }
+            return para;
+          });
+        }
+        return page;
+      }),
+    ];
   }
 
   async handleFiles(event: any, pageIndex: number) {
@@ -1370,6 +1452,48 @@ export class ReadAlongComponent {
     this.images = { ...this.images, ...newImage }; // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
+  /**
+   *
+   * @param sentence_element
+   * @param layerID
+   */
+  addAnnotation(sentence_element: Element, layerID: string | undefined) {
+    const sentence_id = sentence_element.id;
+    const annotation = document.createElementNS(null, "s");
+    annotation.setAttribute("do-not-align", "true");
+    annotation.setAttribute("xml:lang", this.language);
+    annotation.id =
+      sentence_id +
+      (layerID ? "an" : "tr") +
+      (1 + this.translations[sentence_id].length).toString().padStart(2, "0");
+    annotation.setAttribute("sentence-id", sentence_id);
+    if (layerID) {
+      annotation.setAttribute("annotation-id", layerID);
+    } else {
+      annotation.className = "sentence__translation editable__translation";
+    }
+    annotation.textContent = "---"; //without content the line is invisible
+    this.parsed_text = [
+      ...this.parsed_text.map((page) => {
+        if (sentence_id.includes(page.id)) {
+          page.paragraphs = page.paragraphs.map((para) => {
+            if (sentence_id.includes(para.id)) {
+              para.querySelector("#" + sentence_id).after(annotation);
+            }
+            return para;
+          });
+        }
+        return page;
+      }),
+    ];
+    const translation = this.translations[sentence_element.id];
+    translation.push(layerID ?? annotation.id);
+    this.translations = {
+      ...this.translations,
+      [sentence_element.id]: translation,
+    };
+    this.latestTranslation = "#" + annotation.id;
+  }
   /**********
    * RENDER *
    **********/
@@ -1593,20 +1717,56 @@ export class ReadAlongComponent {
   Sentence = (props: { sentenceData: Element }): Element => {
     let words: ChildNode[] = Array.from(props.sentenceData.childNodes);
     let sentenceID: string = props.sentenceData.id;
-    if (!this.hasTextTranslations && props.sentenceData.hasAttribute("class")) {
-      this.hasTextTranslations = /translation/.test(
-        props.sentenceData.getAttribute("class"),
-      );
+    const isAnnotationSentence =
+      (props.sentenceData.hasAttribute("class") &&
+        /translation/.test(props.sentenceData.getAttribute("class"))) ||
+      props.sentenceData.hasAttribute("annotation-id");
+    if (
+      !this.hasTextTranslations &&
+      /translation/.test(props.sentenceData.getAttribute("class"))
+    ) {
+      this.hasTextTranslations = true;
     }
-    let nodeProps = {};
+    let nodeProps = { id: sentenceID };
+    let editingProps = {};
     //attributes of sentence you want to retain
-    for (const attr of ["annotation-id", "do-not-align", "lang"]) {
+    for (const attr of [
+      "annotation-id",
+      "do-not-align",
+      "lang",
+      "sentence-id",
+    ]) {
       if (props.sentenceData.hasAttribute(attr)) {
         nodeProps[attr] = props.sentenceData.getAttribute(attr);
       }
     }
     if (props.sentenceData.hasAttribute("xml:lang")) {
       nodeProps["lang"] = props.sentenceData.getAttribute("xml:lang");
+    }
+    if (this.mode === "EDIT") {
+      if (isAnnotationSentence) {
+        editingProps["onBlur"] = (e: any) => {
+          this.updateTranslation(sentenceID, e.currentTarget.innerText);
+          e.currentTarget.removeAttribute("dirty");
+        };
+
+        editingProps["contentEditable"] = true;
+        editingProps["onKeyDown"] = (event) => {
+          if (event.key == "Enter") {
+            this.updateTranslation(
+              sentenceID,
+              event.currentTarget.innerText.trim(),
+            );
+            event.currentTarget.removeAttribute("dirty");
+            event.preventDefault();
+          } else if (
+            event.currentTarget.innerText.trim() !==
+            props.sentenceData.textContent
+          ) {
+            event.currentTarget.setAttribute("dirty", true);
+          }
+        };
+      }
     }
 
     return (
@@ -1618,7 +1778,9 @@ export class ReadAlongComponent {
           (props.sentenceData.hasAttribute("class")
             ? props.sentenceData.getAttribute("class")
             : "") +
-          (nodeProps["annotation-id"] ? " invisible" : "")
+          (nodeProps["annotation-id"] && this.mode !== "EDIT"
+            ? " invisible"
+            : "")
         }
       >
         {
@@ -1628,7 +1790,7 @@ export class ReadAlongComponent {
               return (
                 <this.NonWordText
                   text={child.textContent}
-                  attributes={child.attributes}
+                  attributes={{ ...child.attributes, ...editingProps }}
                   id={
                     (props.sentenceData.hasAttribute("id")
                       ? props.sentenceData.getAttribute("id")
@@ -1645,12 +1807,12 @@ export class ReadAlongComponent {
               return (
                 <this.Word
                   text={child.textContent}
-                  id={child["id"]}
                   attributes={child.attributes}
+                  id={child["id"]}
                 />
               );
             } else if (child) {
-              let cnodeProps = {};
+              let cnodeProps = editingProps;
               if (child.hasAttribute("xml:lang"))
                 cnodeProps["lang"] =
                   props.sentenceData.getAttribute("xml:lang");
@@ -1673,59 +1835,92 @@ export class ReadAlongComponent {
           })
         }
         {(() => {
-          if (
-            this.mode === "EDIT" &&
-            !/translation/.test(props.sentenceData.getAttribute("class"))
-          ) {
+          if (this.mode === "EDIT" && this.translations && this.annotations) {
             if (
-              sentenceID in this.translations &&
-              sentenceID in this.translations &&
-              this.translations[sentenceID] !== null
+              !isAnnotationSentence &&
+              sentenceIsAligned(props.sentenceData)
             ) {
               return (
-                <span class="sentence__translation">
+                <span>
                   <button
-                    title="Remove translation"
-                    aria-label="Remove translation"
-                    data-cy="remove-translation-button"
-                    onClick={() => this.removeLine(props.sentenceData)}
-                    class="sentence__translation__button remove"
+                    title={this.getI18nString("add-translation")}
+                    aria-label="Add translation"
+                    data-cy="add-translation-button"
+                    class="sentence__translation sentence__translation__button"
+                    onClick={(e) => {
+                      if (this.annotations.length) {
+                        (e.currentTarget as Element).parentNode.querySelector(
+                          "ul",
+                        ).className = "annotation-menu";
+                      } else this.addAnnotation(props.sentenceData, undefined);
+                    }}
+                    disabled={
+                      (this.annotations.length === 0 &&
+                        this.translations[props.sentenceData.id].length == 1) ||
+                      (this.annotations.length > 0 &&
+                        this.annotations.length ===
+                          this.translations[props.sentenceData.id].length)
+                    }
                   >
-                    <i class="material-icons">remove</i>
+                    <i class="material-icons">add</i>
                   </button>
-                  <p
-                    id={sentenceID + "translation"}
-                    data-cy="translation-line"
-                    class="sentence__text editable__translation"
-                    onInput={(e: any) => {
-                      this.updateTranslation(
-                        sentenceID,
-                        e.currentTarget.innerText,
-                      );
-                    }}
-                    contentEditable
-                    onKeyDown={(event) => {
-                      if (event.key == "Enter") event.preventDefault();
-                    }}
-                    data-placeholder={this.getI18nString("line-placeholder")}
-                  ></p>
+                  {this.annotations && (
+                    <ul class={"annotation-menu invisible"}>
+                      {this.annotations.map((annotation) => {
+                        if (
+                          this.translations[sentenceID].includes(annotation.id)
+                        )
+                          return <span></span>;
+                        return (
+                          <li>
+                            <button
+                              class={
+                                "control-panel__control ripple theme--" +
+                                this.theme +
+                                " background--" +
+                                this.theme
+                              }
+                              onClick={(e) => {
+                                (
+                                  e.currentTarget as Element
+                                ).parentNode.parentElement.className =
+                                  "annotation-menu invisible";
+                                this.addAnnotation(
+                                  props.sentenceData,
+                                  annotation.id,
+                                );
+                              }}
+                            >
+                              <i class="material-icons-outlined">layers</i>
+                              {annotation.name}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </span>
               );
-            } else {
+            } else if (isAnnotationSentence) {
               return (
-                <button
-                  title={this.getI18nString("add-translation")}
-                  aria-label="Add translation"
-                  data-cy="add-translation-button"
-                  class="sentence__translation sentence__translation__button"
-                  onClick={() => this.addLine(props.sentenceData)}
-                >
-                  <i class="material-icons">add</i>
-                </button>
+                <span>
+                  <button
+                    title={this.getI18nString("remove-translation")}
+                    onClick={() => {
+                      this.removeLine(props.sentenceData);
+                    }}
+                    class={
+                      "sentence__translation sentence__translation_button sentence__translation__button__remove theme--" +
+                      this.theme +
+                      " background--" +
+                      this.theme
+                    }
+                  >
+                    <i class="material-icons">delete</i>
+                  </button>
+                </span>
               );
             }
-          } else {
-            return null;
           }
         })()}
       </div>
@@ -1746,7 +1941,7 @@ export class ReadAlongComponent {
     id: string;
     attributes: NamedNodeMap;
   }): Element => {
-    let nodeProps = {};
+    let nodeProps = { ...props.attributes };
     if (props.attributes && props.attributes["xml:lang"])
       nodeProps["lang"] = props.attributes["xml:lang"].value;
     if (props.attributes && props.attributes["lang"])
@@ -2192,7 +2387,11 @@ export class ReadAlongComponent {
    */
   render(): Element {
     return (
-      <div id="read-along-container" class="read-along-container">
+      <div
+        id="read-along-container"
+        data-mode={this.mode}
+        class="read-along-container"
+      >
         <div id="title__slot__container">
           <h1 class="slot__header">
             <slot name="read-along-header" />

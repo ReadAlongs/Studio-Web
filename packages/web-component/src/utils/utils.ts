@@ -41,10 +41,44 @@ export function extractPages(xml: Document | Element): Array<Page> {
   let parsed_pages = Array.from(xml.querySelectorAll("div[type=page]")).map(
     (page) => {
       let img = page.querySelector("graphic[url]");
-      let paragraphs = page.querySelectorAll("p");
+      //fix format issues
+      let paragraphs = Array.from(page.querySelectorAll("p")).map((para) => {
+        let currentSentenceID, currentAnnotationID: string;
+        let currentAnnotationCount = 1;
+        para.childNodes.forEach((childNode) => {
+          if (childNode.nodeType === Node.ELEMENT_NODE) {
+            let sentence = childNode as Element;
+
+            if (sentenceIsAligned(sentence)) {
+              currentSentenceID = sentence.id;
+              currentAnnotationID = currentSentenceID + "an";
+              currentAnnotationCount = 0;
+            } else {
+              // fix id of translations and sentence-id attribute
+              currentAnnotationCount += 1;
+              if (
+                !sentence.hasAttribute("sentence-id") ||
+                sentence.getAttribute("sentence-id") !== currentSentenceID
+              )
+                sentence.setAttribute("sentence-id", currentSentenceID);
+              if (
+                sentence.id === undefined ||
+                sentence.id === currentSentenceID
+              )
+                (childNode as Element).id =
+                  currentAnnotationID +
+                  (currentAnnotationCount > 9 ? "" : "0") +
+                  currentAnnotationCount;
+            }
+          }
+        });
+
+        return para;
+      });
+      //fix translations id
       let parsed_page = {
         id: page.getAttribute("id"),
-        paragraphs: Array.from(paragraphs),
+        paragraphs: paragraphs,
       };
       if (img !== null) {
         parsed_page["img"] = img.getAttribute("url");
@@ -308,4 +342,10 @@ export const setUserPreferences = (userPref: UserPreferences) => {
     USER_PREFERENCE_STORAGE_ID,
     JSON.stringify(userPref),
   );
+};
+
+//utilities
+
+export const sentenceIsAligned = (sentence: Element): boolean => {
+  return sentence.innerHTML.includes("</w>");
 };
