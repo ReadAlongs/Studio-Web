@@ -100,7 +100,8 @@ export function extractMeta(xml: Document | Element): RASMeta {
   Array.from(xml.querySelectorAll("meta")).forEach((metaTag) => {
     const key = metaTag.getAttribute("name");
     let value = metaTag.getAttribute("content");
-    meta[key] = value.trim();
+    if (meta[key] === undefined) meta[key] = [];
+    meta[key].push(value.trim());
   });
   return meta;
 }

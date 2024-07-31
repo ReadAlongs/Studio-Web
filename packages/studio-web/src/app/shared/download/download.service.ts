@@ -73,17 +73,29 @@ Please host all assets on your server, include the font and package imports defi
         });
       }
     }
-    //TODO: update meta (add/remove annotation layers)
-    //sync meta
-    //const meta = await readalong.getMeta();
-    //add generator version
+
+    //get meta from readalong meta
+    const meta: { [key: string]: string[] } = await readalong.getMeta();
+    //remove current meta tag
+    doc.querySelectorAll("meta").forEach((m) => m.remove());
+    const textTag = doc.querySelector("text");
+    //create new meta based on readalong meta
+    for (const [name, contents] of Object.entries(meta)) {
+      for (const content of contents) {
+        const metaTag = doc.createElementNS(null, "meta");
+        metaTag.setAttribute("name", name);
+        metaTag.setAttribute("content", content);
+        textTag?.before(metaTag);
+      }
+    }
+    //re-add generator meta tag
     const generator = doc.createElementNS(null, "meta");
     generator.setAttribute("name", "generator");
     generator.setAttribute(
       "content",
       `@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}`,
     );
-    doc.querySelector("text")?.before(generator);
+    textTag?.before(generator);
 
     return true;
   }

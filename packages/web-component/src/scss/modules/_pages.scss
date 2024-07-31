@@ -262,5 +262,15 @@ $max-height: 98vh;
         margin-right: em(5);
       }
     }
+
+    li:first-of-type {
+      justify-content: end;
+      border: 0;
+      display: flex;
+
+      button {
+        color: $color-important;
+      }
+    }
   }
 }
