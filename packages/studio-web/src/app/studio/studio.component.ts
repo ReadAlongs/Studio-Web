@@ -32,6 +32,7 @@ import {
   readalong_go_back_step,
   text_file_step,
   text_write_step,
+  readalong_add_annotations_step,
 } from "../shepherd.steps";
 import { DemoComponent } from "../demo/demo.component";
 import { UploadComponent } from "../upload/upload.component";
@@ -235,6 +236,12 @@ export class StudioComponent implements OnDestroy, OnInit {
                   ?.shadowRoot?.querySelector("div.sentence"),
                 on: "bottom",
               };
+              readalong_add_annotations_step["attachTo"] = {
+                element: document
+                  .querySelector("#readalong")
+                  ?.shadowRoot?.querySelector("#toggleAnnotations"),
+                on: "left",
+              };
               readalong_change_title_step["attachTo"] = {
                 element: document
                   .querySelector("#readalong")
@@ -250,6 +257,7 @@ export class StudioComponent implements OnDestroy, OnInit {
                 readalong_change_title_step,
                 readalong_add_image_step,
                 readalong_add_translation_step,
+                readalong_add_annotations_step,
                 readalong_export_step,
                 readalong_go_back_step,
               ]);

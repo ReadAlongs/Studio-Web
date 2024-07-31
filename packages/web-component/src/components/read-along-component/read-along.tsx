@@ -39,6 +39,8 @@ import { web_component as eng_strings } from "../../i18n/messages.eng.json";
 import { web_component as fra_strings } from "../../i18n/messages.fra.json";
 import { web_component as spa_strings } from "../../i18n/messages.spa.json";
 import { PACKAGE_VERSION } from "../../version";
+import unidecode from "unidecode";
+import librarySlugify from "@sindresorhus/slugify";
 const LOADING = 0;
 const LOADED = 1;
 const ERROR_PARSING = 2;
@@ -185,7 +187,11 @@ export class ReadAlongComponent {
   current_page;
   hasTextTranslations: boolean = false;
   @State() images: { [key: string]: string | null };
-  @State() translations: { [key: string]: string[] };
+  /**
+   * key: sentence-id
+   * value: id of annotations/translation
+   */
+  @State() sentenceAnnotations: { [key: string]: string[] };
   latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders
   assetsStatus: ASSETS_STATUS = {
     AUDIO: LOADING,
@@ -1054,7 +1060,7 @@ export class ReadAlongComponent {
       this.assetsStatus.RAS = ERROR_PARSING;
     } else {
       this.images = {};
-      this.translations = {};
+      this.sentenceAnnotations = {};
       for (const [i, page] of this.parsed_text.entries()) {
         if ("img" in page) {
           var imageURL = this.urlTransform(page.img);
@@ -1099,8 +1105,8 @@ export class ReadAlongComponent {
                   if (sentence.id && sentenceIsAligned(sentence)) {
                     translation[sentence.id] = [];
 
-                    this.translations = {
-                      ...this.translations,
+                    this.sentenceAnnotations = {
+                      ...this.sentenceAnnotations,
                       ...translation,
                     };
                   } else {
@@ -1109,14 +1115,14 @@ export class ReadAlongComponent {
                         "sentence-id",
                       );
                       translation[sentenceID] =
-                        this.translations[sentenceID] ?? [];
+                        this.sentenceAnnotations[sentenceID] ?? [];
                       translation[sentenceID].push(
                         sentence.hasAttribute("annotation-id")
                           ? sentence.getAttribute("annotation-id")
                           : sentence.id,
                       );
-                      this.translations = {
-                        ...this.translations,
+                      this.sentenceAnnotations = {
+                        ...this.sentenceAnnotations,
                         ...translation,
                       };
                     }
@@ -1136,13 +1142,13 @@ export class ReadAlongComponent {
        */
       if (this.meta["annotations-ids"]) {
         const delimiter = ",";
-        const labels: string | undefined = this.meta[
+        const labels: string[] | undefined = this.meta[
           "annotations-labels-" + this.language
         ]
           ? this.meta["annotations-labels-" + this.language]
           : this.meta["annotations-labels"];
-        const annotationNames = labels ? labels.split(delimiter) : [];
-        this.meta["annotations-ids"]
+        const annotationNames = labels ? labels[0].split(delimiter) : [];
+        this.meta["annotations-ids"][0]
           .split(delimiter)
           .forEach((annotation, l) => {
             this.annotations.push({
@@ -1415,10 +1421,13 @@ export class ReadAlongComponent {
       }),
     ];
     const sentenceID = sentence_element.getAttribute("sentence-id");
-    newTranslation[sentenceID] = this.translations[sentenceID].filter(
+    newTranslation[sentenceID] = this.sentenceAnnotations[sentenceID].filter(
       (s) => s != ID && s != sentence_element.getAttribute("annotation-id"),
     );
-    this.translations = { ...this.translations, ...newTranslation };
+    this.sentenceAnnotations = {
+      ...this.sentenceAnnotations,
+      ...newTranslation,
+    };
   }
 
   updateTranslation(sentence_id: string, text: string) {
@@ -1460,39 +1469,164 @@ export class ReadAlongComponent {
   addAnnotation(sentence_element: Element, layerID: string | undefined) {
     const sentence_id = sentence_element.id;
     const annotation = document.createElementNS(null, "s");
+
     annotation.setAttribute("do-not-align", "true");
     annotation.setAttribute("xml:lang", this.language);
     annotation.id =
       sentence_id +
       (layerID ? "an" : "tr") +
-      (1 + this.translations[sentence_id].length).toString().padStart(2, "0");
+      (1 + this.sentenceAnnotations[sentence_id].length)
+        .toString()
+        .padStart(2, "0");
     annotation.setAttribute("sentence-id", sentence_id);
     if (layerID) {
       annotation.setAttribute("annotation-id", layerID);
     } else {
       annotation.className = "sentence__translation editable__translation";
     }
-    annotation.textContent = "---"; //without content the line is invisible
+
+    annotation.textContent = layerID ?? " "; //placeholder is possible since we are using span
     this.parsed_text = [
       ...this.parsed_text.map((page) => {
         if (sentence_id.includes(page.id)) {
-          page.paragraphs = page.paragraphs.map((para) => {
-            if (sentence_id.includes(para.id)) {
-              para.querySelector("#" + sentence_id).after(annotation);
-            }
-            return para;
-          });
+          return {
+            ...page,
+            paragraphs: [
+              ...page.paragraphs.map((para) => {
+                if (sentence_id.includes(para.id)) {
+                  const sentence_annotations = para.querySelectorAll(
+                    ":scope > [sentence-id=" + sentence_id + "]",
+                  );
+                  if (sentence_annotations.length > 0) {
+                    sentence_annotations
+                      .item(sentence_annotations.length - 1)
+                      .after(annotation);
+                  } else
+                    para.querySelector("#" + sentence_id).after(annotation);
+                }
+
+                return para;
+              }),
+            ],
+          };
         }
         return page;
       }),
     ];
-    const translation = this.translations[sentence_element.id];
+    const translation = this.sentenceAnnotations[sentence_element.id];
     translation.push(layerID ?? annotation.id);
-    this.translations = {
-      ...this.translations,
+    this.sentenceAnnotations = {
+      ...this.sentenceAnnotations,
       [sentence_element.id]: translation,
     };
     this.latestTranslation = "#" + annotation.id;
+  }
+
+  /**
+   *
+   */
+  updateAnnotationMeta() {
+    const annotationLabels = [
+      this.annotations.reduce(
+        (result, row) => result + (result.length > 0 ? "," : "") + row.name,
+        "",
+      ),
+    ];
+    let localeAnnotationLabel = {};
+    localeAnnotationLabel["annotations-labels-" + this.language] =
+      annotationLabels;
+    this.meta = {
+      ...this.meta,
+      "annotations-id": [
+        this.annotations.reduce(
+          (result, row) => result + (result.length > 0 ? "," : "") + row.id,
+          "",
+        ),
+      ],
+      "annotations-labels": annotationLabels,
+      ...localeAnnotationLabel,
+    };
+  }
+  /**
+   *
+   */
+  createNewAnnotationLayer() {
+    const name = (
+      this.el.shadowRoot.querySelector(
+        "#newAnnotationLayerName",
+      ) as HTMLInputElement
+    )?.value;
+    //do nothing
+    if (name === undefined || name.trim().length < 1) return;
+    // Adapted from https://byby.dev/js-slugify-string
+    const id = librarySlugify(
+      String(unidecode(name.trim()))
+        .normalize("NFC") // split accented characters into their base characters and diacritical marks
+        .trim() // trim leading or trailing whitespace
+        .toLowerCase() // convert to lowercase
+        .replace(/\s+/g, "-") // replace spaces with hyphens
+        .replace(/-+/g, "-"), // remove consecutive hyphens
+    );
+    //check for uniqueness of id
+    if (this.annotations.filter((row) => row.id == id).length > 0) return;
+    //update annotations
+    this.annotations = [
+      ...this.annotations,
+      {
+        isVisible: true,
+        name: name,
+        id: id,
+      },
+    ];
+    this.updateAnnotationMeta();
+    (
+      this.el.shadowRoot.querySelector(
+        "#newAnnotationLayerName",
+      ) as HTMLInputElement
+    ).value = "";
+  }
+  /**
+   *
+   * @param id
+   * @returns boolean
+   */
+  hasAnnotationLayer(id: string): boolean {
+    let layerFound = false;
+    for (let translation of Object.values(this.sentenceAnnotations)) {
+      layerFound = translation.includes(id);
+      if (layerFound) break;
+    }
+    return layerFound;
+  }
+  /**
+   *
+   * @param id
+   */
+  deleteAnnotationLayer(id: string) {
+    //only delete when there is no instance of the layer
+
+    if (!this.hasAnnotationLayer(id)) {
+      this.annotations = this.annotations.filter(
+        (annotation) => annotation.id != id,
+      );
+      this.updateAnnotationMeta();
+    }
+  }
+  /**
+   *
+   * @param el Element
+   */
+
+  toggleAnnotationMenuItemMode(el: Element) {
+    el.parentElement.childNodes.forEach((childNode) => {
+      if (childNode.nodeType === Node.ELEMENT_NODE) {
+        const elem = childNode as Element;
+        const className = elem.className;
+        elem.className = className.includes("d-none")
+          ? className.replace("d-none", "")
+          : className + " d-none";
+      }
+    });
   }
   /**********
    * RENDER *
@@ -1767,6 +1901,9 @@ export class ReadAlongComponent {
           }
         };
         nodeProps["data-test-id"] = "annotation-layer";
+
+        nodeProps["placeholder"] = nodeProps["title"] =
+          nodeProps["annotation-id"];
       }
     }
 
@@ -1836,7 +1973,11 @@ export class ReadAlongComponent {
           })
         }
         {(() => {
-          if (this.mode === "EDIT" && this.translations && this.annotations) {
+          if (
+            this.mode === "EDIT" &&
+            this.sentenceAnnotations &&
+            this.annotations
+          ) {
             if (
               !isAnnotationSentence &&
               sentenceIsAligned(props.sentenceData)
@@ -1850,54 +1991,87 @@ export class ReadAlongComponent {
                     class="sentence__translation sentence__translation__button"
                     onClick={(e) => {
                       if (this.annotations.length) {
-                        (e.currentTarget as Element).parentNode.querySelector(
-                          "ul",
-                        ).className = "annotation-menu";
+                        const menu = (
+                          e.currentTarget as Element
+                        ).parentNode.querySelector("ul");
+                        menu.className =
+                          "annotation-menu" +
+                          (menu.className.includes("invisible")
+                            ? ""
+                            : " invisible");
                       } else this.addAnnotation(props.sentenceData, undefined);
                     }}
                     disabled={
                       (this.annotations.length === 0 &&
-                        this.translations[props.sentenceData.id].length == 1) ||
+                        this.sentenceAnnotations[props.sentenceData.id]
+                          .length == 1) ||
                       (this.annotations.length > 0 &&
                         this.annotations.length ===
-                          this.translations[props.sentenceData.id].length)
+                          this.sentenceAnnotations[props.sentenceData.id]
+                            .length)
                     }
                   >
                     <i class="material-icons">add</i>
                   </button>
                   {this.annotations && (
                     <ul class={"annotation-menu invisible"}>
-                      {this.annotations.map((annotation) => {
-                        if (
-                          this.translations[sentenceID].includes(annotation.id)
+                      <li>
+                        <button
+                          onClick={(e) =>
+                            ((
+                              e.currentTarget as Element
+                            ).parentElement.parentElement.className =
+                              "annotation-menu invisible")
+                          }
+                          title={this.getI18nString("close")}
+                          class={
+                            " theme--" +
+                            this.theme +
+                            " background--" +
+                            this.theme
+                          }
+                          data-test-id="sentence-annotation-menu-button-close"
+                        >
+                          <i class="material-icons">close</i>
+                        </button>
+                      </li>
+                      {this.annotations
+                        .filter(
+                          (annotation) =>
+                            !this.sentenceAnnotations[sentenceID].includes(
+                              annotation.id,
+                            ),
                         )
-                          return <span></span>;
-                        return (
-                          <li>
-                            <button
-                              class={
-                                "control-panel__control ripple theme--" +
-                                this.theme +
-                                " background--" +
-                                this.theme
-                              }
-                              onClick={(e) => {
-                                (
-                                  e.currentTarget as Element
-                                ).parentNode.parentElement.className =
-                                  "annotation-menu invisible";
-                                this.addAnnotation(
-                                  props.sentenceData,
-                                  annotation.id,
-                                );
-                              }}
-                            >
-                              <i class="material-icons-outlined">layers</i>
-                              {annotation.name}
-                            </button>
-                          </li>
-                        );
-                      })}
+                        .map((annotation) => {
+                          return (
+                            <li>
+                              <button
+                                class={
+                                  "control-panel__control ripple theme--" +
+                                  this.theme +
+                                  " background--" +
+                                  this.theme
+                                }
+                                onClick={(e) => {
+                                  (
+                                    e.currentTarget as Element
+                                  ).parentNode.parentElement.className =
+                                    "annotation-menu invisible";
+                                  this.addAnnotation(
+                                    props.sentenceData,
+                                    annotation.id,
+                                  );
+                                }}
+                                data-test-id={
+                                  "add-sentence-annotation-" + annotation.id
+                                }
+                              >
+                                <i class="material-icons-outlined">layers</i>
+                                {annotation.name}
+                              </button>
+                            </li>
+                          );
+                        })}
                     </ul>
                   )}
                 </span>
@@ -2128,6 +2302,7 @@ export class ReadAlongComponent {
         " background--" +
         this.theme
       }
+      id="toggleAnnotations"
     >
       <i class="material-icons-outlined">layers</i>
     </button>
@@ -2192,7 +2367,8 @@ export class ReadAlongComponent {
       </div>
 
       <div class="control-panel__buttons--right">
-        {this.annotations.length > 0 ? (
+        {this.annotations.length > 0 ||
+        (this.mode === "EDIT" && !this.hasTextTranslations) ? (
           <this.TextAnnotationsControl />
         ) : (
           this.hasTextTranslations && <this.TextTranslationDisplayControl />
@@ -2357,21 +2533,110 @@ export class ReadAlongComponent {
     return (
       <div
         id="annotationsMenu"
-        class={"annotations-menu  theme--" + this.theme}
+        class={
+          "annotations-menu  theme--" +
+          this.theme +
+          "  background--" +
+          this.theme
+        }
       >
         {/*<h3 class={"theme--" + this.theme}> {this.getI18nString("annotation-layers")}</h3> */}
         {this.annotations.map((annotation) => (
-          <button
-            data-test-id={"toggle-annotation-" + annotation.id}
-            class={"ripple theme--" + this.theme + " background--" + this.theme}
-            onClick={() => this.toggleTextAnnotation(annotation.id)}
-          >
-            <i class="material-icons-outlined">
-              {" "}
-              {annotation.isVisible ? "check_box" : "check_box_outline_blank"}
-            </i>{" "}
-            {annotation.name}
-          </button>
+          <span>
+            <button
+              data-test-id={"toggle-annotation-" + annotation.id}
+              class={
+                "ripple theme--" + this.theme + " background--" + this.theme
+              }
+              onClick={() => this.toggleTextAnnotation(annotation.id)}
+            >
+              <i class="material-icons-outlined">
+                {" "}
+                {annotation.isVisible ? "check_box" : "check_box_outline_blank"}
+              </i>{" "}
+              {annotation.name}
+            </button>
+            {this.mode === "EDIT" && (
+              <button
+                data-test-id={"edit-annotation-" + annotation.id}
+                class={
+                  "ripple theme--" +
+                  this.theme +
+                  " background--" +
+                  this.theme +
+                  " icon-only annotation__layer__button__edit"
+                }
+                title={this.getI18nString("edit-layer")}
+                onClick={(e) => {
+                  this.toggleAnnotationMenuItemMode(e.currentTarget as Element);
+                }}
+              >
+                <i class="material-icons-outlined">edit</i>
+              </button>
+            )}
+            {this.mode === "EDIT" &&
+              !this.hasAnnotationLayer(annotation.id) && (
+                <button
+                  data-test-id={"remove-annotation-" + annotation.id}
+                  class={
+                    "ripple theme--" +
+                    this.theme +
+                    " background--" +
+                    this.theme +
+                    " icon-only annotation__layer__button__remove"
+                  }
+                  title={this.getI18nString("delete-layer")}
+                  onClick={() => this.deleteAnnotationLayer(annotation.id)}
+                >
+                  <i class="material-icons-outlined">delete</i>
+                </button>
+              )}
+            <span class="d-none">
+              <input
+                type="text"
+                value={annotation.name}
+                class={"edit-annotation"}
+                data-test-id={"edit-annotation-name-" + annotation.id}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    (
+                      (e.currentTarget as Element).parentElement.querySelector(
+                        "button.annotation__layer__button__save",
+                      ) as HTMLElement
+                    ).click();
+                  }
+                }}
+              />
+              <button
+                data-test-id={"save-annotation-" + annotation.id}
+                class={
+                  "ripple theme--" +
+                  this.theme +
+                  " background--" +
+                  this.theme +
+                  " icon-only annotation__layer__button__save"
+                }
+                title={this.getI18nString("save-layer")}
+                onClick={(e) => {
+                  this.annotations = [
+                    ...this.annotations.map((ann) => {
+                      if (ann.id === annotation.id) {
+                        ann.name = (
+                          e.currentTarget as Element
+                        ).parentElement.querySelector("input").value;
+                      }
+                      return ann;
+                    }),
+                  ];
+                  this.toggleAnnotationMenuItemMode(
+                    (e.currentTarget as Element).parentElement,
+                  );
+                }}
+              >
+                <i class="material-icons-outlined">save</i>
+              </button>
+            </span>
+          </span>
         ))}
         <button
           data-test-id="toggle-all-annotations"
@@ -2380,6 +2645,33 @@ export class ReadAlongComponent {
         >
           <i class="material-icons-outlined">layers</i> All
         </button>
+        {this.mode === "EDIT" && (
+          <span class={" background--" + this.theme}>
+            <input
+              type="text"
+              id="newAnnotationLayerName"
+              placeholder={this.getI18nString("create-layer")}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") this.createNewAnnotationLayer();
+              }}
+              data-test-id="create-new-annotation-text"
+            />
+            <button
+              data-test-id="create-new-annotation-button"
+              class={
+                "ripple theme--" +
+                this.theme +
+                " background--" +
+                this.theme +
+                "  icon-only"
+              }
+              onClick={() => this.createNewAnnotationLayer()}
+              title={this.getI18nString("create-layer")}
+            >
+              <i class="material-icons-outlined">add</i>
+            </button>
+          </span>
+        )}
       </div>
     );
   };

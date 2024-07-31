@@ -35,7 +35,7 @@ export type UserPreferences = {
  *
  */
 export type RASMeta = {
-  [key as string]: string;
+  [key as string]: string[];
 };
 export type RASDoc = {
   pages: Array<Page>;
