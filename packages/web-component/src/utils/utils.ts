@@ -54,7 +54,7 @@ export function extractPages(xml: Document | Element): Array<Page> {
               currentAnnotationID = currentSentenceID + "an";
               currentAnnotationCount = 0;
             } else {
-              // fix id of translations and sentence-id attribute
+              // fix id & class of translations and add sentence-id attribute
               currentAnnotationCount += 1;
               if (
                 !sentence.hasAttribute("sentence-id") ||
@@ -62,13 +62,18 @@ export function extractPages(xml: Document | Element): Array<Page> {
               )
                 sentence.setAttribute("sentence-id", currentSentenceID);
               if (
-                sentence.id === undefined ||
+                sentence.id == undefined ||
+                sentence.id.trim().length < 3 || //malformed id
                 sentence.id === currentSentenceID
               )
                 (childNode as Element).id =
                   currentAnnotationID +
-                  (currentAnnotationCount > 9 ? "" : "0") +
-                  currentAnnotationCount;
+                  currentAnnotationCount.toString().padStart(2, "0");
+              if (sentence.className.trim() == "translation")
+                sentence.setAttribute(
+                  "class",
+                  "sentence__translation " + sentence.className,
+                );
             }
           }
         });
@@ -100,7 +105,8 @@ export function extractMeta(xml: Document | Element): RASMeta {
   Array.from(xml.querySelectorAll("meta")).forEach((metaTag) => {
     const key = metaTag.getAttribute("name");
     let value = metaTag.getAttribute("content");
-    meta[key] = value.trim();
+    if (meta[key] === undefined) meta[key] = [];
+    meta[key].push(value.trim());
   });
   return meta;
 }

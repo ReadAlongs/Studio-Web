@@ -317,7 +317,7 @@ export const readalong_add_image_step: any = {
 
 export const readalong_add_translation_step: any = {
   title: $localize`Edit your ReadAlong`,
-  text: $localize`You can add a translation or extra bit of information to each sentence of your ReadAlong by clicking on the + icon here. If you later want to remove the translation, click on the − icon after adding your translation.`,
+  text: $localize`You can add a translation or extra bit of information to each sentence of your ReadAlong by clicking on the + icon here. If you later want to remove the translation, click on the 🗑️ icon after adding your translation.`,
   buttons: [
     {
       classes: "shepherd-button-primary",
@@ -375,7 +375,7 @@ export const readalong_go_back_step: any = {
     $localize`Instead, use the "Step 1" button to go back and change your text or audio.`,
   attachTo: {
     // TODO: find an anchor that doesn't depend on Angular innards
-    // We want this as undet the "Step 1" icon but we can't add any id to that since it's generated
+    // We want this as under the "Step 1" icon but we can't add any id to that since it's generated
     element: "div.mat-horizontal-stepper-header-container",
     on: "botton-start",
   },
@@ -527,4 +527,25 @@ export const readalong_editor_fix_text: any = {
       type: "next",
     },
   ],
+};
+export const readalong_add_annotations_step: any = {
+  title: $localize`Annotating your ReadAlong`,
+  text: $localize`If you need to add information tiers/layers/annotation to each sentence of your ReadAlong, define the tiers by clicking on the icon here. If you later want to remove the tier, click on the 🗑️ icon after you have deleted all data in that tier.`,
+  attachTo: {
+    element: "#toggleAnnotations",
+    on: "bottom",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Next`,
+      type: "next",
+    },
+  ],
+  id: "readalong-add-annotation",
 };
