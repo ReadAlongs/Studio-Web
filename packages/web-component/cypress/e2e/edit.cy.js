@@ -81,6 +81,16 @@ context("The Readalong Component", () => {
         .click({ force: true });
       // Check it was removed
       cy.get("[data-test-id=annotation-layer]").should("have.length", 0);
+      //edit annotation name
+      cy.get("[data-test-id=edit-annotation-english]").should("be.visible");
+      cy.get("[data-test-id=edit-annotation-english]").click();
+      cy.get("[data-test-id=edit-annotation-name-english]").type(
+        " Translations{enter}",
+      );
+      cy.get("[data-test-id=toggle-annotation-english]").should(
+        "include.text",
+        "Translations",
+      );
 
       //remove annotation
 

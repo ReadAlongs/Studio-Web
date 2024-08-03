@@ -272,5 +272,9 @@ $max-height: 98vh;
         color: $color-important;
       }
     }
+
+    .d-none {
+      display: none;
+    }
   }
 }

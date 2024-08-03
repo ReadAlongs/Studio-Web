@@ -79,12 +79,15 @@ Please host all assets on your server, include the font and package imports defi
     //remove current meta tag
     doc.querySelectorAll("meta").forEach((m) => m.remove());
     const textTag = doc.querySelector("text");
+    let id = 0;
     //create new meta based on readalong meta
     for (const [name, contents] of Object.entries(meta)) {
       for (const content of contents) {
         const metaTag = doc.createElementNS(null, "meta");
+        id++;
         metaTag.setAttribute("name", name);
         metaTag.setAttribute("content", content);
+        metaTag.setAttribute("id", "m" + id.toString().padStart(2, "0"));
         textTag?.before(metaTag);
       }
     }

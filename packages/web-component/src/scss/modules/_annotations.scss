@@ -55,6 +55,7 @@
 }
 
 /* hide annotated sentence when not selected */
-.sentence.invisible[annotation-id] {
-  display: none;
+.sentence.invisible[annotation-id],
+.d-none {
+  display: none !important;
 }

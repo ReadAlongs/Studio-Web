@@ -187,7 +187,11 @@ export class ReadAlongComponent {
   current_page;
   hasTextTranslations: boolean = false;
   @State() images: { [key: string]: string | null };
-  @State() translations: { [key: string]: string[] };
+  /**
+   * key: sentence-id
+   * value: id of annotations/translation
+   */
+  @State() sentenceAnnotations: { [key: string]: string[] };
   latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders
   assetsStatus: ASSETS_STATUS = {
     AUDIO: LOADING,
@@ -1056,7 +1060,7 @@ export class ReadAlongComponent {
       this.assetsStatus.RAS = ERROR_PARSING;
     } else {
       this.images = {};
-      this.translations = {};
+      this.sentenceAnnotations = {};
       for (const [i, page] of this.parsed_text.entries()) {
         if ("img" in page) {
           var imageURL = this.urlTransform(page.img);
@@ -1101,8 +1105,8 @@ export class ReadAlongComponent {
                   if (sentence.id && sentenceIsAligned(sentence)) {
                     translation[sentence.id] = [];
 
-                    this.translations = {
-                      ...this.translations,
+                    this.sentenceAnnotations = {
+                      ...this.sentenceAnnotations,
                       ...translation,
                     };
                   } else {
@@ -1111,14 +1115,14 @@ export class ReadAlongComponent {
                         "sentence-id",
                       );
                       translation[sentenceID] =
-                        this.translations[sentenceID] ?? [];
+                        this.sentenceAnnotations[sentenceID] ?? [];
                       translation[sentenceID].push(
                         sentence.hasAttribute("annotation-id")
                           ? sentence.getAttribute("annotation-id")
                           : sentence.id,
                       );
-                      this.translations = {
-                        ...this.translations,
+                      this.sentenceAnnotations = {
+                        ...this.sentenceAnnotations,
                         ...translation,
                       };
                     }
@@ -1417,10 +1421,13 @@ export class ReadAlongComponent {
       }),
     ];
     const sentenceID = sentence_element.getAttribute("sentence-id");
-    newTranslation[sentenceID] = this.translations[sentenceID].filter(
+    newTranslation[sentenceID] = this.sentenceAnnotations[sentenceID].filter(
       (s) => s != ID && s != sentence_element.getAttribute("annotation-id"),
     );
-    this.translations = { ...this.translations, ...newTranslation };
+    this.sentenceAnnotations = {
+      ...this.sentenceAnnotations,
+      ...newTranslation,
+    };
   }
 
   updateTranslation(sentence_id: string, text: string) {
@@ -1467,7 +1474,9 @@ export class ReadAlongComponent {
     annotation.id =
       sentence_id +
       (layerID ? "an" : "tr") +
-      (1 + this.translations[sentence_id].length).toString().padStart(2, "0");
+      (1 + this.sentenceAnnotations[sentence_id].length)
+        .toString()
+        .padStart(2, "0");
     annotation.setAttribute("sentence-id", sentence_id);
     if (layerID) {
       annotation.setAttribute("annotation-id", layerID);
@@ -1488,14 +1497,18 @@ export class ReadAlongComponent {
         return page;
       }),
     ];
-    const translation = this.translations[sentence_element.id];
+    const translation = this.sentenceAnnotations[sentence_element.id];
     translation.push(layerID ?? annotation.id);
-    this.translations = {
-      ...this.translations,
+    this.sentenceAnnotations = {
+      ...this.sentenceAnnotations,
       [sentence_element.id]: translation,
     };
     this.latestTranslation = "#" + annotation.id;
   }
+
+  /**
+   *
+   */
   updateAnnotationMeta() {
     const annotationLabels = [
       this.annotations.reduce(
@@ -1515,10 +1528,12 @@ export class ReadAlongComponent {
         ),
       ],
       "annotations-labels": annotationLabels,
-      ...annotationLabels,
+      ...localeAnnotationLabel,
     };
   }
-
+  /**
+   *
+   */
   createNewAnnotationLayer() {
     const name = (
       this.el.shadowRoot.querySelector(
@@ -1551,14 +1566,23 @@ export class ReadAlongComponent {
       ) as HTMLInputElement
     ).value = "";
   }
+  /**
+   *
+   * @param id
+   * @returns boolean
+   */
   hasAnnotationLayer(id: string): boolean {
     let layerFound = false;
-    for (let translation of Object.values(this.translations)) {
+    for (let translation of Object.values(this.sentenceAnnotations)) {
       layerFound = translation.includes(id);
       if (layerFound) break;
     }
     return layerFound;
   }
+  /**
+   *
+   * @param id
+   */
   deleteAnnotationLayer(id: string) {
     //only delete when there is no instance of the layer
 
@@ -1568,6 +1592,22 @@ export class ReadAlongComponent {
       );
       this.updateAnnotationMeta();
     }
+  }
+  /**
+   *
+   * @param el Element
+   */
+
+  toggleAnnotationMenuItemMode(el: Element) {
+    el.parentElement.childNodes.forEach((childNode) => {
+      if (childNode.nodeType === Node.ELEMENT_NODE) {
+        const elem = childNode as Element;
+        const className = elem.className;
+        elem.className = className.includes("d-none")
+          ? className.replace("d-none", "")
+          : className + " d-none";
+      }
+    });
   }
   /**********
    * RENDER *
@@ -1911,7 +1951,11 @@ export class ReadAlongComponent {
           })
         }
         {(() => {
-          if (this.mode === "EDIT" && this.translations && this.annotations) {
+          if (
+            this.mode === "EDIT" &&
+            this.sentenceAnnotations &&
+            this.annotations
+          ) {
             if (
               !isAnnotationSentence &&
               sentenceIsAligned(props.sentenceData)
@@ -1937,10 +1981,12 @@ export class ReadAlongComponent {
                     }}
                     disabled={
                       (this.annotations.length === 0 &&
-                        this.translations[props.sentenceData.id].length == 1) ||
+                        this.sentenceAnnotations[props.sentenceData.id]
+                          .length == 1) ||
                       (this.annotations.length > 0 &&
                         this.annotations.length ===
-                          this.translations[props.sentenceData.id].length)
+                          this.sentenceAnnotations[props.sentenceData.id]
+                            .length)
                     }
                   >
                     <i class="material-icons">add</i>
@@ -1969,7 +2015,9 @@ export class ReadAlongComponent {
                       </li>
                       {this.annotations.map((annotation) => {
                         if (
-                          this.translations[sentenceID].includes(annotation.id)
+                          this.sentenceAnnotations[sentenceID].includes(
+                            annotation.id,
+                          )
                         )
                           return <span></span>;
                         return (
@@ -2461,7 +2509,12 @@ export class ReadAlongComponent {
     return (
       <div
         id="annotationsMenu"
-        class={"annotations-menu  theme--" + this.theme}
+        class={
+          "annotations-menu  theme--" +
+          this.theme +
+          "  background--" +
+          this.theme
+        }
       >
         {/*<h3 class={"theme--" + this.theme}> {this.getI18nString("annotation-layers")}</h3> */}
         {this.annotations.map((annotation) => (
@@ -2479,22 +2532,86 @@ export class ReadAlongComponent {
               </i>{" "}
               {annotation.name}
             </button>
-            {!this.hasAnnotationLayer(annotation.id) && (
+            {this.mode === "EDIT" && (
               <button
-                data-test-id={"remove-annotation-" + annotation.id}
+                data-test-id={"edit-annotation-" + annotation.id}
                 class={
                   "ripple theme--" +
                   this.theme +
                   " background--" +
                   this.theme +
-                  " icon-only annotation__layer__button__remove"
+                  " icon-only annotation__layer__button__edit"
                 }
-                title={this.getI18nString("delete-layer")}
-                onClick={() => this.deleteAnnotationLayer(annotation.id)}
+                title={this.getI18nString("edit-layer")}
+                onClick={(e) => {
+                  this.toggleAnnotationMenuItemMode(e.currentTarget as Element);
+                }}
               >
-                <i class="material-icons-outlined">delete</i>
+                <i class="material-icons-outlined">edit</i>
               </button>
             )}
+            {this.mode === "EDIT" &&
+              !this.hasAnnotationLayer(annotation.id) && (
+                <button
+                  data-test-id={"remove-annotation-" + annotation.id}
+                  class={
+                    "ripple theme--" +
+                    this.theme +
+                    " background--" +
+                    this.theme +
+                    " icon-only annotation__layer__button__remove"
+                  }
+                  title={this.getI18nString("delete-layer")}
+                  onClick={() => this.deleteAnnotationLayer(annotation.id)}
+                >
+                  <i class="material-icons-outlined">delete</i>
+                </button>
+              )}
+            <span class="d-none">
+              <input
+                type="text"
+                value={annotation.name}
+                class={"edit-annotation"}
+                data-test-id={"edit-annotation-name-" + annotation.id}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    (
+                      (e.currentTarget as Element).parentElement.querySelector(
+                        "button.annotation__layer__button__save",
+                      ) as HTMLElement
+                    ).click();
+                  }
+                }}
+              />
+              <button
+                data-test-id={"save-annotation-" + annotation.id}
+                class={
+                  "ripple theme--" +
+                  this.theme +
+                  " background--" +
+                  this.theme +
+                  " icon-only annotation__layer__button__save"
+                }
+                title={this.getI18nString("save-layer")}
+                onClick={(e) => {
+                  this.annotations = [
+                    ...this.annotations.map((ann) => {
+                      if (ann.id === annotation.id) {
+                        ann.name = (
+                          e.currentTarget as Element
+                        ).parentElement.querySelector("input").value;
+                      }
+                      return ann;
+                    }),
+                  ];
+                  this.toggleAnnotationMenuItemMode(
+                    (e.currentTarget as Element).parentElement,
+                  );
+                }}
+              >
+                <i class="material-icons-outlined">save</i>
+              </button>
+            </span>
           </span>
         ))}
         <button
@@ -2505,7 +2622,7 @@ export class ReadAlongComponent {
           <i class="material-icons-outlined">layers</i> All
         </button>
         {this.mode === "EDIT" && (
-          <span>
+          <span class={" background--" + this.theme}>
             <input
               type="text"
               id="newAnnotationLayerName"
