@@ -59,7 +59,7 @@ export class DemoComponent implements OnDestroy, OnInit {
     this.unsubscribe$.complete();
     // Save translations, images and all other edits to the studio service when we exit
     if (this.studioService.b64Inputs$.value[1]) {
-      await this.downloadService.updateTranslations(
+      await this.downloadService.syncWithReadAlong(
         this.studioService.b64Inputs$.value[1],
         this.readalong,
       );

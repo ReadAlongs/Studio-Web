@@ -20,7 +20,8 @@
     padding: em(5) em(8);
   }
 
-  & button {
+  & button,
+  & span {
     display: flex;
     justify-content: flex-start;
     align-content: baseline;
@@ -34,9 +35,27 @@
       border-radius: 0;
       margin-right: em(5);
     }
+
+    button {
+      @extend %border--strong--right;
+      @extend %border--strong--left;
+      width: 100%;
+    }
+
+    button.annotation__layer__button__remove {
+      color: $color-important;
+    }
+
+    button.icon-only {
+      min-width: em(2);
+      display: inline;
+      max-width: em(32);
+    }
   }
 }
+
 /* hide annotated sentence when not selected */
-.sentence.invisible[annotation-id] {
-  display: none;
+.sentence.invisible[annotation-id],
+.d-none {
+  display: none !important;
 }
