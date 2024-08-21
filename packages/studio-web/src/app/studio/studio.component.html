@@ -9,40 +9,36 @@
     label="Step 1"
   >
     <section>
-      <div class="container mb-2">
-        <div class="row justify-content-center mb-5">
-          <div class="col-6">
-            <p i18n="Description of app">
-              This is a tool to help you make your own interactive 'readalong'
-              that highlights words as they are spoken. Have a look at
-              <a
-                href="https://www.eastcree.org/cree/en/lessons/read-along/northern-dialect/when-the-beaver-had-a-round-tail/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <mat-icon inline style="vertical-align: middle"
-                  >launch</mat-icon
-                >
-                this example in East Cree</a
-              >
-              to get a better idea of what these are.
-            </p>
-            <p i18n="Get started">
-              To get started making your own, click on the tour button below,
-              and follow the steps.
-            </p>
-            <div class="row mt-5 justify-content-center">
-              <button
-                i18n="Take the tour"
-                class="mb-4 col center text-center plausible-event-name=Tour"
-                mat-raised-button
-                color="primary"
-                (click)="startTour()"
-              >
-                Take the tour!
-              </button>
-            </div>
-          </div>
+      <div class="container mb-3">
+        <p i18n="Description of app">
+          This is a tool to help you make your own interactive 'readalong' that
+          highlights words as they are spoken. Have a look at
+          <a
+            href="https://www.eastcree.org/cree/en/lessons/read-along/northern-dialect/when-the-beaver-had-a-round-tail/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <mat-icon inline style="vertical-align: middle">launch</mat-icon>
+            this example in East Cree</a
+          >
+          to get a better idea of what these are.
+        </p>
+        <p i18n="Get started">
+          To get started making your own, click on the tour button below, and
+          follow the steps.
+        </p>
+        <div class="row center mt-0 justify-content-center">
+          <div class="col-3"></div>
+          <button
+            i18n="Take the tour"
+            class="mb-3 col-6 center text-center plausible-event-name=Tour"
+            mat-raised-button
+            color="primary"
+            (click)="startTour()"
+          >
+            Take the tour!
+          </button>
+          <div class="col-3"></div>
         </div>
       </div>
     </section>
