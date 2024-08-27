@@ -1,8 +1,8 @@
 <section class="container mt-1"></section>
 <section id="editor">
-  <div class="container mb-2 mt-5">
-    <div class="row justify-content-center mb-5">
-      <div class="col-6">
+  <div class="container mt-4">
+    <div class="row mb-3">
+      <div class="col-8">
         <h1 i18n="Welcome message for app editor" id="welcome-header">
           Welcome to the ReadAlong Studio Editor
         </h1>
@@ -10,10 +10,10 @@
           This is a tool to help you edit your existing 'readalongs'. To get
           started, click on the tour button below, and follow the steps.
         </p>
-        <div class="row mt-5 justify-content-center">
+        <div class="row mt-0 justify-content-center">
           <button
             i18n="Take the tour"
-            class="mb-4 col center text-center plausible-event-name=Tour"
+            class="mb-4 col-9 center text-center plausible-event-name=Tour"
             mat-raised-button
             color="primary"
             (click)="startTour()"
@@ -22,7 +22,7 @@
           </button>
         </div>
       </div>
-      <div class="col-6" *ngIf="editorService.uploadFormGroup.valid">
+      <div class="col-4" *ngIf="editorService.uploadFormGroup.valid">
         <ras-shared-download
           (downloadButtonClicked)="download($event)"
         ></ras-shared-download>
