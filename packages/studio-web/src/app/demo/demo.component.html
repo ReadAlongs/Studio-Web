@@ -1,7 +1,7 @@
 <section>
   <div class="container" *ngIf="studioService.render$ | async">
     <div class="row">
-      <div class="col-9">
+      <div class="col col-md-6 col-lg-9">
         <h2
           id="readalong-congratulations"
           i18n="Congratulations message"
@@ -10,7 +10,7 @@
           Congratulations! Here's your ReadAlong!
         </h2>
       </div>
-      <div class="col-3">
+      <div class="col col-md-6 col-lg-3">
         <ras-shared-download
           (downloadButtonClicked)="download($event)"
         ></ras-shared-download>
@@ -38,7 +38,7 @@
             [(ngModel)]="studioService.slots.title"
             [ngStyle]="{
               'width.ch': studioService.slots.title.length,
-              'min-width.ch': 20
+              'min-width.ch': 20,
             }"
             style="border: none"
             placeholder="Enter your title here"
@@ -49,7 +49,7 @@
             [(ngModel)]="studioService.slots.subtitle"
             [ngStyle]="{
               'width.ch': studioService.slots.subtitle.length,
-              'min-width.ch': 20
+              'min-width.ch': 20,
             }"
             style="border: none"
             placeholder="Enter your subtitle here"
