@@ -29,9 +29,9 @@
     "spa": "Español",
     "close": "Cerrar",
     "annotations-tooltip": "Anotaciones",
-    "edit-layer": "Cambiar el nombre del título de la anotación",
-    "delete-layer": "Eliminar el título de la anotación",
-    "save-layer": "Guardar el título de la anotación",
-    "create-layer": "Crear un título de anotación"
+    "edit-layer": "Cambiar la capa de anotación",
+    "delete-layer": "Eliminar la capa de anotación",
+    "save-layer": "Guardar la capa de anotación",
+    "create-layer": "Crear una capa de anotación"
   }
 }
