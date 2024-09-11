@@ -29,9 +29,9 @@
     "spa": "Espagnol",
     "close": "Fermer",
     "annotations-tooltip": "Annotations",
-    "edit-layer": "Renommer le titre de l'annotation",
-    "delete-layer": "Supprimer le titre de l'annotation",
-    "save-layer": "Enregistrer le titre de l'annotation",
-    "create-layer": "Créer un titre d'annotation"
+    "edit-layer": "Renommer la couche d'annotation",
+    "delete-layer": "Supprimer la couche d'annotation",
+    "save-layer": "Enregistrer la couche d'annotation",
+    "create-layer": "Créer une couche d'annotation"
   }
 }

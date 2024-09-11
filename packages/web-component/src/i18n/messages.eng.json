@@ -29,9 +29,9 @@
     "spa": "Spanish",
     "close": "Close",
     "annotations-tooltip": "Annotations",
-    "edit-layer": "Rename annotation title",
-    "delete-layer": "Remove annotation title",
-    "save-layer": "Save annotation title",
-    "create-layer": "Create an annotation title"
+    "edit-layer": "Rename annotation layer",
+    "delete-layer": "Remove annotation layer",
+    "save-layer": "Save annotation layer",
+    "create-layer": "Create an annotation layer"
   }
 }
