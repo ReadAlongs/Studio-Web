@@ -17,6 +17,7 @@
     "full-screen-tooltip": "Modo pantalla completa",
     "translation-tooltip": "Active o desactive las traducciones",
     "add-translation": "Añada una traducción, transliteración o glosa",
+    "remove-translation": "Eliminar esta traducción, transliteración o glosa",
     "configuration-tooltip": "Preferencias",
     "settings": "Mis preferencias",
     "page-animation": "Transiciónes de página animadas",
@@ -27,6 +28,10 @@
     "fra": "Francés",
     "spa": "Español",
     "close": "Cerrar",
-    "annotations-tooltip": "Anotaciones"
+    "annotations-tooltip": "Anotaciones",
+    "edit-layer": "Cambiar la capa de anotación",
+    "delete-layer": "Eliminar la capa de anotación",
+    "save-layer": "Guardar la capa de anotación",
+    "create-layer": "Crear una capa de anotación"
   }
 }

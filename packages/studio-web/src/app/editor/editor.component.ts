@@ -24,6 +24,7 @@ import {
   readalong_add_translation_step,
   readalong_add_image_step,
   readalong_editor_fix_text,
+  readalong_add_annotations_step,
 } from "../shepherd.steps";
 import { ShepherdService } from "../shepherd.service";
 import { EditorService } from "./editor.service";
@@ -341,52 +342,57 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe(async (indexFile) => {
           await this.onRasFileSelected({ target: { files: [indexFile] } });
-          console.log(
-            document
-              .querySelector("#wavesurferContainer")
-              ?.querySelector(".segment-content"),
-            document
-              .querySelector("#readalongContainer")
-              ?.querySelector("read-along"),
-          );
-          this.shepherdService.next();
-          readalong_add_image_step["attachTo"] = {
-            element: document
-              .querySelector("#readalongContainer")
-              ?.querySelector("read-along")
-              ?.shadowRoot?.querySelector("div.drop-area"),
-            on: "bottom",
-          };
-          readalong_add_translation_step["attachTo"] = {
-            element: document
-              .querySelector("#readalongContainer")
-              ?.querySelector("read-along")
-              ?.shadowRoot?.querySelector("div.sentence"),
-            on: "bottom",
-          };
-          readalong_editor_audio_wav["attachTo"] = {
-            element: document
-              .querySelector("#wavesurferContainer")
-              ?.querySelector(".wavesurfer-segment"),
-            on: "top",
-          };
-          readalong_editor_fix_text["attachTo"] = {
-            element: document
-              .querySelector("#wavesurferContainer")
-              ?.querySelector(".segment-content"),
-            on: "bottom-start",
-          };
-          this.shepherdService.addSteps([
-            readalong_editor_file_loaded,
-            readalong_add_image_step,
-            readalong_add_translation_step,
-            readalong_editor_audio_toolbar,
-            readalong_editor_audio_toolbar_zoom,
-            readalong_editor_audio_wav,
-            readalong_editor_fix_text,
-            readalong_export_step,
-          ]);
-          this.shepherdService.start();
+          setTimeout(() => {
+            //wait for DOM changes to propagate
+
+            this.shepherdService.next();
+            readalong_add_image_step["attachTo"] = {
+              element: document
+                .querySelector("#readalongContainer")
+                ?.querySelector("read-along")
+                ?.shadowRoot?.querySelector("div.drop-area"),
+              on: "bottom",
+            };
+            readalong_add_translation_step["attachTo"] = {
+              element: document
+                .querySelector("#readalongContainer")
+                ?.querySelector("read-along")
+                ?.shadowRoot?.querySelector("div.sentence"),
+              on: "bottom",
+            };
+
+            readalong_add_annotations_step["attachTo"] = {
+              element: document
+                .querySelector("#readalongContainer")
+                ?.querySelector("read-along")
+                ?.shadowRoot?.querySelector("#toggleAnnotations"),
+              on: "bottom",
+            };
+            readalong_editor_audio_wav["attachTo"] = {
+              element: document
+                .querySelector("#wavesurferContainer")
+                ?.querySelector(".wavesurfer-segment"),
+              on: "top",
+            };
+            readalong_editor_fix_text["attachTo"] = {
+              element: document
+                .querySelector("#wavesurferContainer")
+                ?.querySelector(".segment-content"),
+              on: "bottom-start",
+            };
+            this.shepherdService.addSteps([
+              readalong_editor_file_loaded,
+              readalong_add_image_step,
+              readalong_add_translation_step,
+              readalong_add_annotations_step,
+              readalong_editor_audio_toolbar,
+              readalong_editor_audio_toolbar_zoom,
+              readalong_editor_audio_wav,
+              readalong_editor_fix_text,
+              readalong_export_step,
+            ]);
+            this.shepherdService.start();
+          }, 500);
         });
     };
     this.shepherdService.modal = true;

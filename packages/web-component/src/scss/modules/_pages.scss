@@ -213,3 +213,26 @@ $max-height: 98vh;
     min-width: 80%;
   }
 }
+
+.read-along-container[data-mode="EDIT"] {
+  .sentence {
+    &__text[dirty] {
+      background-color: #ffffce;
+    }
+
+    > &__text:active,
+    > &__text:focus {
+      caret: #ff7a18 underscore;
+    }
+
+    &__translation__button__remove {
+      color: $color-important;
+      padding-bottom: 0;
+      margin-bottom: 0;
+
+      i {
+        font-size: 16px !important;
+      }
+    }
+  }
+}
