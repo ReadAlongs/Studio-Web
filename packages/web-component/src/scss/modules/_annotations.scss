@@ -20,7 +20,8 @@
     padding: em(5) em(8);
   }
 
-  & button {
+  & button,
+  & span {
     display: flex;
     justify-content: flex-start;
     align-content: baseline;
@@ -34,9 +35,109 @@
       border-radius: 0;
       margin-right: em(5);
     }
+
+    button {
+      @extend %border--strong--right;
+      @extend %border--strong--left;
+      width: 100%;
+    }
+
+    button.annotation__layer__button__remove {
+      color: $color-important;
+    }
+
+    button.icon-only {
+      min-width: em(2);
+      display: inline;
+      max-width: em(32);
+    }
   }
 }
+
+.sentence[annotation-id] {
+  label {
+    visibility: hidden;
+    color: #aaa;
+    font-size: 0.7em;
+    font-variant: small-caps;
+    margin-left: 0.5em;
+    min-width: 50px;
+    display: inline-block;
+  }
+
+  .sentence__text {
+    min-width: 200px;
+    border-radius: 0;
+    display: inline-block;
+    border-bottom: 1px solid $color-background;
+  }
+}
+
+.read-along-container[data-mode="EDIT"] {
+  .annotation-menu {
+    border: 1px solid #777;
+    margin: 0;
+    padding: 0;
+    z-index: z("nav");
+    width: -moz-fit-content;
+    width: fit-content;
+    z-index: z("modal");
+
+    &.invisible {
+      display: none;
+    }
+
+    li {
+      margin: 0;
+      padding: 0.1em 1em;
+      list-style-type: none;
+      border-top: 1px solid #777;
+
+      button .material-icons-outlined {
+        font-size: inherit;
+        border-radius: 0;
+        margin-right: em(5);
+      }
+    }
+
+    li:first-of-type {
+      justify-content: end;
+      border: 0;
+      display: flex;
+
+      button {
+        color: $color-important;
+      }
+    }
+
+    .d-none {
+      display: none;
+    }
+  }
+
+  .theme--light .sentence[annotation-id]:hover,
+  .theme--light .sentence[annotation-id]:hover .background--light {
+    background-color: #eee;
+  }
+
+  .theme--dark .sentence[annotation-id]:hover,
+  .theme--dark .sentence[annotation-id]:hover .background--dark {
+    background-color: #717275;
+  }
+
+  .sentence[annotation-id]:hover {
+    label {
+      visibility: visible;
+    }
+
+    .sentence__text {
+      border-bottom: 1px solid #666;
+    }
+  }
+}
+
 /* hide annotated sentence when not selected */
-.sentence.invisible[annotation-id] {
-  display: none;
+.sentence.invisible[annotation-id],
+.d-none {
+  display: none !important;
 }

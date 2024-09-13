@@ -5,10 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { Alignment, InterfaceLanguage, ReadAlongMode, ScrollBehaviour } from "./index.d";
+import { Alignment, InterfaceLanguage, Page, RASMeta, ReadAlongMode, ScrollBehaviour } from "./index.d";
 import { Subject } from "rxjs";
 import { Element } from "@stencil/core";
-export { Alignment, InterfaceLanguage, ReadAlongMode, ScrollBehaviour } from "./index.d";
+export { Alignment, InterfaceLanguage, Page, RASMeta, ReadAlongMode, ScrollBehaviour } from "./index.d";
 export { Subject } from "rxjs";
 export { Element } from "@stencil/core";
 export namespace Components {
@@ -46,13 +46,17 @@ export namespace Components {
          */
         "getImages": () => Promise<object>;
         /**
+          * get Pages
+         */
+        "getMeta": () => Promise<RASMeta>;
+        /**
+          * get Pages
+         */
+        "getPages": () => Promise<Page[]>;
+        /**
           * Get ReadAlong Element
          */
         "getReadAlongElement": () => Promise<Element>;
-        /**
-          * Get Translations
-         */
-        "getTranslations": () => Promise<object>;
         /**
           * URL of the aligned text as readalong XML
          */

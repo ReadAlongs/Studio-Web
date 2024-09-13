@@ -67,6 +67,26 @@ Type: `Promise<object>`
 
 
 
+### `getMeta() => Promise<RASMeta>`
+
+get Pages
+
+#### Returns
+
+Type: `Promise<RASMeta>`
+
+
+
+### `getPages() => Promise<Page[]>`
+
+get Pages
+
+#### Returns
+
+Type: `Promise<Page[]>`
+
+
+
 ### `getReadAlongElement() => Promise<Element>`
 
 Get ReadAlong Element
@@ -74,16 +94,6 @@ Get ReadAlong Element
 #### Returns
 
 Type: `Promise<Element>`
-
-
-
-### `getTranslations() => Promise<object>`
-
-Get Translations
-
-#### Returns
-
-Type: `Promise<object>`
 
 
 

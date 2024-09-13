@@ -17,6 +17,7 @@
     "full-screen-tooltip": "Full screen mode",
     "translation-tooltip": "Toggle translations",
     "add-translation": "Add a translation, transliteration or gloss",
+    "remove-translation": "Remove this translation, transliteration or gloss",
     "configuration-tooltip": "Preferences",
     "settings": "My preferences",
     "page-animation": "Animated page transitions",
@@ -27,6 +28,10 @@
     "fra": "French",
     "spa": "Spanish",
     "close": "Close",
-    "annotations-tooltip": "Annotations"
+    "annotations-tooltip": "Annotations",
+    "edit-layer": "Rename annotation layer",
+    "delete-layer": "Remove annotation layer",
+    "save-layer": "Save annotation layer",
+    "create-layer": "Create an annotation layer"
   }
 }
