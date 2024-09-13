@@ -54,7 +54,8 @@
   }
 }
 
-.sentence[annotation-id] {
+.sentence[annotation-id],
+.sentence.editable__translation {
   label {
     visibility: hidden;
     color: #aaa;
@@ -125,7 +126,8 @@
     background-color: #717275;
   }
 
-  .sentence[annotation-id]:hover {
+  .sentence[annotation-id]:hover,
+  .sentence.editable__translation:hover {
     label {
       visibility: visible;
     }
