@@ -10,13 +10,15 @@ context("The Readalong Component", () => {
     cy.visit("/ej-fra/index-edit.html");
   });
 
-  it("should have editable translation buttons", () => {
+  it("insert/update/remove translation", () => {
     cy.wait(["@text", "@audio"]);
 
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
       cy.get("[data-test-id=annotation-layer]").should("have.length", 0);
+      cy.get("[data-cy=translation-toggle]").should("not.exist");
+      cy.get("[data-test-id=annotations-toggle]").should("exist");
       // Click first line add translation
       cy.get("[data-test-id=add-translation-button]").first().click();
       // Check translation line was added
@@ -32,20 +34,35 @@ context("The Readalong Component", () => {
       cy.get("[data-test-id=add-translation-button]").last().click();
       // Check it was added
       cy.get("[data-test-id=annotation-layer]").should("have.length", 2);
+      //annotation menu should disappear
+      cy.get("[data-test-id=annotations-toggle]").should("not.exist");
       // Remove the first line
       cy.get("[data-test-id^=remove-annotation-]")
         .first()
         .click({ force: true });
       // Check it was removed
       cy.get("[data-test-id=annotation-layer]").should("have.length", 1);
+      cy.get("[data-test-id=annotations-toggle]").should("not.exist");
+      cy.get("[data-cy=translation-toggle]").should("exist");
+      //remove all translations
+      cy.get("[data-test-id^=remove-annotation-]").click({
+        force: true,
+        multiple: true,
+      });
+      //check that annotation menu is back
+      cy.get("[data-test-id=annotations-toggle]").should("exist");
+      cy.get("[data-cy=translation-toggle]").should("not.exist");
     });
   });
-  it("add/remove annotations", () => {
+  it("insert/update/remove annotations", () => {
     cy.wait(["@text", "@audio"]);
 
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
+      //check that annotation menu is available
+      cy.get("[data-test-id=annotations-toggle]").should("exist");
+      cy.get("[data-cy=translation-toggle]").should("not.exist");
       cy.get("[data-test-id=annotation-layer]").should("have.length", 0);
       // Click show the annotation menu
       cy.get("[data-test-id=annotations-toggle]").click();
@@ -97,6 +114,16 @@ context("The Readalong Component", () => {
       cy.get("[data-test-id=remove-annotation-english]").should("be.visible");
       cy.get("[data-test-id=remove-annotation-english]").click();
       cy.get("[data-test-id=remove-annotation-english]").should("not.exist");
+
+      cy.get("[data-test-id=annotations-toggle]").should("exist");
+      cy.get("[data-cy=translation-toggle]").should("not.exist");
+      //check that annotation menu
+      cy.get("[data-test-id=annotations-toggle]").should("exist");
+      cy.get("[data-cy=translation-toggle]").should("not.exist");
+      cy.get("[data-test-id=add-translation-button]").first().click();
+      //check that translation toggle is available
+      cy.get("[data-test-id=annotations-toggle]").should("not.exist");
+      cy.get("[data-cy=translation-toggle]").should("exist");
     });
   });
 });
