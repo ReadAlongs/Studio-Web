@@ -1428,6 +1428,9 @@ export class ReadAlongComponent {
       ...this.sentenceAnnotations,
       ...newTranslation,
     };
+    this.hasTextTranslations =
+      Object.values(this.sentenceAnnotations).filter((s) => s.length > 0)
+        .length > 0;
   }
 
   updateTranslation(sentence_id: string, text: string) {
