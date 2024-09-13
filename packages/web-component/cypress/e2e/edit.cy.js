@@ -117,7 +117,7 @@ context("The Readalong Component", () => {
 
       cy.get("[data-test-id=annotations-toggle]").should("exist");
       cy.get("[data-cy=translation-toggle]").should("not.exist");
-      //check that annotation menu
+      //check that annotation menu is available
       cy.get("[data-test-id=annotations-toggle]").should("exist");
       cy.get("[data-cy=translation-toggle]").should("not.exist");
       cy.get("[data-test-id=add-translation-button]").first().click();
