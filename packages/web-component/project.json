@@ -40,6 +40,7 @@
     "serve": {
       "executor": "@nxext/stencil:serve",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["build"],
       "options": {
         "projectType": "library",
         "tsConfig": "packages/web-component/tsconfig.lib.json",

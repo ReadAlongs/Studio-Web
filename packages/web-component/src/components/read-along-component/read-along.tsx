@@ -1531,7 +1531,7 @@ export class ReadAlongComponent {
   updateAnnotationMeta() {
     const annotationLabels = [
       this.annotations.reduce(
-        (result, row) => result + (result.length > 0 ? "," : "") + row.name,
+        (result, row) => result + (result.length > 0 ? ", " : "") + row.name,
         "",
       ),
     ];
@@ -1540,9 +1540,9 @@ export class ReadAlongComponent {
       annotationLabels;
     this.meta = {
       ...this.meta,
-      "annotations-id": [
+      "annotations-ids": [
         this.annotations.reduce(
-          (result, row) => result + (result.length > 0 ? "," : "") + row.id,
+          (result, row) => result + (result.length > 0 ? ", " : "") + row.id,
           "",
         ),
       ],
@@ -2371,7 +2371,8 @@ export class ReadAlongComponent {
 
       <div class="control-panel__buttons--right">
         {this.annotations.length > 0 ||
-        (this.mode === "EDIT" && !this.hasTextTranslations) ? (
+        (this.mode === "EDIT" && !this.hasTextTranslations) ||
+        this.annotations.length > 0 ? (
           <this.TextAnnotationsControl />
         ) : (
           this.hasTextTranslations && <this.TextTranslationDisplayControl />
