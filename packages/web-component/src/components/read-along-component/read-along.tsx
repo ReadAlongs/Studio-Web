@@ -1158,6 +1158,7 @@ export class ReadAlongComponent {
             });
           });
       }
+      console.log(this.meta, this.annotations);
       this.assetsStatus.RAS = LOADED;
     }
 
@@ -1540,7 +1541,7 @@ export class ReadAlongComponent {
       annotationLabels;
     this.meta = {
       ...this.meta,
-      "annotations-id": [
+      "annotations-ids": [
         this.annotations.reduce(
           (result, row) => result + (result.length > 0 ? ", " : "") + row.id,
           "",
