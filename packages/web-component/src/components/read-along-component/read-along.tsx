@@ -2371,7 +2371,8 @@ export class ReadAlongComponent {
 
       <div class="control-panel__buttons--right">
         {this.annotations.length > 0 ||
-        (this.mode === "EDIT" && !this.hasTextTranslations) ? (
+        (this.mode === "EDIT" && !this.hasTextTranslations) ||
+        this.annotations.length > 0 ? (
           <this.TextAnnotationsControl />
         ) : (
           this.hasTextTranslations && <this.TextTranslationDisplayControl />
