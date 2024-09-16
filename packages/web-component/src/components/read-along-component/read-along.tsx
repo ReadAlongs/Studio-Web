@@ -1158,7 +1158,6 @@ export class ReadAlongComponent {
             });
           });
       }
-      console.log(this.meta, this.annotations);
       this.assetsStatus.RAS = LOADED;
     }
 
