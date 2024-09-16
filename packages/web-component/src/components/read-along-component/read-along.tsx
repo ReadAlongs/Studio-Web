@@ -1531,7 +1531,7 @@ export class ReadAlongComponent {
   updateAnnotationMeta() {
     const annotationLabels = [
       this.annotations.reduce(
-        (result, row) => result + (result.length > 0 ? "," : "") + row.name,
+        (result, row) => result + (result.length > 0 ? ", " : "") + row.name,
         "",
       ),
     ];
@@ -1542,7 +1542,7 @@ export class ReadAlongComponent {
       ...this.meta,
       "annotations-id": [
         this.annotations.reduce(
-          (result, row) => result + (result.length > 0 ? "," : "") + row.id,
+          (result, row) => result + (result.length > 0 ? ", " : "") + row.id,
           "",
         ),
       ],
