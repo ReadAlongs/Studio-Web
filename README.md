@@ -184,6 +184,20 @@ to serve or import. In the instructions above, we actually show two methods you 
 
 ### Testing
 
+#### TL;DR
+
+    npm install
+    npx nx run-many --targets=serve-test-data,serve,test:once --projects=web-component
+    # Ctrl-C once "✔ All specs passed!  01:01  34  34" appears (34 specs as of writing)
+    npx nx test:once studio-web
+    # Expect "TOTAL: 25 SUCCESS" (25 tests as of writing)
+    npx nx extract-i18n studio-web
+    # Expect "Successfully ran...",
+    git diff -w
+    # Expect to see no changes to i18n/messages.json (except the missing final newline)
+    npx nx check-l10n studio-web
+    # Expect "Successfully ran..."
+
 #### Web-Component
 
 In three different terminal windows:
