@@ -15,7 +15,7 @@
     "dist/"
   ],
   "scripts": {
-    "bundle": "node b64Fonts.js && webpack --config webpack.config.js; packageVersion=$(npm view ../../node_modules/@readalongs/web-component version); timestamp=$(date \"+%Y-%m-%d+%H-%M-%S\") && cd ../studio-web && npm pkg set singleFileBundleVersion=\"${packageVersion}\" && npm pkg set singleFileBundleTimestamp=\"${timestamp}\"",
+    "bundle": "bash bundle.sh",
     "cy:run": "cypress run",
     "test:full-pipeline": "npm run serve-test-data & nx run serve & npm run wait-for-test-server && npm run test:once",
     "test:once": "cypress run",
