@@ -42,3 +42,9 @@ jobs:
             echo The zipped WordPress plugin packages/web-component/wordpress-plugin/read-along-web-app-loader.zip is out of date.; \
             false; \
           fi
+      - name: make sure bundling works
+        shell: bash
+        run: |
+          npx nx bundle web-component
+          git status
+          git diff --word-diff=porcelain --word-diff-regex=... --color | perl -ple 's/^(\x1b[^ -+]{0,6})? (.{81,})$/$1 . " " . substr($2, 0, 40) . " [... " . (length($2)-80) . " bytes ...] " . substr($2, -40)/ex'
