@@ -1,6 +1,8 @@
 import { title } from "process";
 import { environment } from "../environments/environment";
 import { text } from "stream/consumers";
+import Tour from "shepherd.js/src/types/tour";
+import Shepherd from "shepherd.js";
 
 export const intro_step: any = {
   title: $localize`Welcome to ReadAlong Studio`,
@@ -384,6 +386,14 @@ export const readalong_go_back_step: any = {
       classes: "shepherd-button-primary",
       text: $localize`Back`,
       type: "back",
+    },
+    {
+      classes: "shepherd-button-warning",
+      text: $localize`Editor`,
+      action: function () {
+        if (this) (this as unknown as Tour).complete();
+        window.location.hash = "#/editor?startTour=yes";
+      },
     },
     {
       classes: "shepherd-button-primary",
