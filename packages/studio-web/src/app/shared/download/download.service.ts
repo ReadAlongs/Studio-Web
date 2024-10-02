@@ -147,10 +147,10 @@ Please host all assets on your server, include the font and package imports defi
     }
   }
 
-  registerDownloadEvent(selectedOutputFormat: SupportedOutputs) {
+  registerDownloadEvent(selectedOutputFormat: SupportedOutputs, from: string) {
     const win = window;
-    (win as any).plausible("Download", {
-      props: { fileType: selectedOutputFormat },
+    (win as any).plausible(`Download`, {
+      props: { fileType: selectedOutputFormat, downloadSource: from },
     });
   }
 
@@ -206,6 +206,7 @@ Please host all assets on your server, include the font and package imports defi
     rasXML: Document,
     slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
+    from = "Studio",
   ) {
     if (selectedOutputFormat == SupportedOutputs.html) {
       var element = document.createElement("a");
@@ -222,7 +223,7 @@ Please host all assets on your server, include the font and package imports defi
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
-        this.registerDownloadEvent(selectedOutputFormat);
+        this.registerDownloadEvent(selectedOutputFormat, from);
       } else {
         this.toastr.error(
           "JS & Fonts Bundle did not get loaded",
@@ -366,6 +367,7 @@ Use the text editor to paste the snippet below in your WordPress page:
             timeOut: 30000,
           }),
       );
+      this.registerDownloadEvent(selectedOutputFormat, from);
     } else {
       let audio: HTMLAudioElement = new Audio(b64Audio);
       this.rasService
@@ -383,7 +385,7 @@ Use the text editor to paste the snippet below in your WordPress page:
         });
 
       audio.remove();
-      this.registerDownloadEvent(selectedOutputFormat);
+      this.registerDownloadEvent(selectedOutputFormat, from);
     }
   }
 

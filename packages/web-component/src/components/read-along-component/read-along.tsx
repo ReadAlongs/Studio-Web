@@ -2618,7 +2618,7 @@ export class ReadAlongComponent {
                   this.theme +
                   " background--" +
                   this.theme +
-                  " icon-only annotation__layer__button__save"
+                  " icon-only annotation__layer__button__save  plausible-event-name=Create-Annotation-Layer"
                 }
                 title={this.getI18nString("save-layer")}
                 onClick={(e) => {
