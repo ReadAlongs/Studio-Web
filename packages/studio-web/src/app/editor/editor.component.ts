@@ -145,6 +145,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.editorService.rasControl$.value,
         this.editorService.slots,
         this.readalong,
+        "Editor", //from
       );
     } else {
       this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
