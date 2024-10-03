@@ -5,6 +5,7 @@
   <span class="nav-spacer"></span>
   <div class="nav__buttons">
     <button
+      i18n="Studio"
       class="nav__button"
       mat-button
       [color]="currentURL === '/' ? 'accent' : ''"
@@ -14,6 +15,7 @@
     </button>
     <button
       id="goToEditor"
+      i18n="Editor"
       class="nav__button plausible-event-name=Editor"
       mat-button
       [color]="currentURL === '/editor' ? 'accent' : ''"
@@ -22,7 +24,12 @@
       <mat-icon>edit</mat-icon>
       Editor
     </button>
-    <button class="nav__button" mat-button (click)="openPrivacyDialog()">
+    <button
+      i18n="Privacy"
+      class="nav__button"
+      mat-button
+      (click)="openPrivacyDialog()"
+    >
       <mat-icon>policy</mat-icon>
       Privacy
     </button>

@@ -2,6 +2,9 @@
   "locale": "en",
   "translations": {
     "8299719445551358262": " ReadAlong Studio ",
+    "2788132200126415526": " Studio ",
+    "6206003705268841358": "{$START_TAG_MAT_ICON}edit{$CLOSE_TAG_MAT_ICON} Editor ",
+    "5204211903076352908": "{$START_TAG_MAT_ICON}policy{$CLOSE_TAG_MAT_ICON} Privacy ",
     "2148054857885504777": " Congratulations! Here's your ReadAlong! ",
     "880407735794041263": "Download failed.",
     "3790351978262872462": "Sorry!",
