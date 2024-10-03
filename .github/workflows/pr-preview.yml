@@ -1,6 +1,8 @@
 # .github/workflows/preview.yml
 name: Deploy PR previews
-concurrency: preview-${{ github.ref }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
   pull_request:
     types:
@@ -24,6 +26,9 @@ jobs:
         if: github.event.action != 'closed'
         run: |
           npm install
+      - name: Always test with the latest browserslist db
+        run: |
+          npx update-browserslist-db@latest
       - name: Build web-component
         if: github.event.action != 'closed'
         run: |

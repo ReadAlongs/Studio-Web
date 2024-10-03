@@ -1,5 +1,7 @@
 name: Deploy dev preview
-concurrency: dev-preview
+concurrency:
+  group: dev-preview
+  cancel-in-progress: true
 on:
   push:
     branches:
