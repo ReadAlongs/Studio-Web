@@ -1,4 +1,7 @@
 name: Run tests
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
   - push
   - workflow_call
@@ -7,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     # Stop the occasional rogue instance before the 6h GitHub limit
     timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,6 +21,22 @@ jobs:
           node-version: 20
       - name: Install everything
         run: npm install
+      - name: Always test with the latest browserslist db
+        run: |
+          npx update-browserslist-db@latest
+      - name: Commit browserslist db changes on dev branches
+        if: ${{ github.ref_type == 'branch' && ! github.ref_protected }}
+        run: |
+          if git diff --exit-code package-lock.json; then
+            echo "The browserslist db is up to date."
+          else
+            echo "The browserslist db is out of date."
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git config --global user.name "github-actions[bot]"
+            git add package-lock.json
+            git commit -m "chore: update browserslist db"
+            git push
+          fi
       - name: Ng test for studio-web
         run: |
           npx nx build web-component
