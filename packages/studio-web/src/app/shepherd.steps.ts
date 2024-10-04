@@ -1,6 +1,5 @@
-import { title } from "process";
 import { environment } from "../environments/environment";
-import { text } from "stream/consumers";
+import Tour from "shepherd.js/src/types/tour";
 
 export const intro_step: any = {
   title: $localize`Welcome to ReadAlong Studio`,
@@ -385,10 +384,11 @@ export const readalong_go_back_step: any = {
       text: $localize`Back`,
       type: "back",
     },
+
     {
       classes: "shepherd-button-primary",
-      text: $localize`Finish`,
-      type: "cancel",
+      text: $localize`Next`,
+      type: "next",
     },
   ],
   id: "readalong-back",
@@ -508,6 +508,7 @@ export const readalong_editor_audio_wav: any = {
     },
   ],
 };
+
 export const readalong_editor_fix_text: any = {
   title: $localize`Fix Spelling Errors`,
   text: $localize`You can also fix spelling errors by clicking on a word and editing it.`,
@@ -525,6 +526,35 @@ export const readalong_editor_fix_text: any = {
       classes: "shepherd-button-primary",
       text: $localize`Next`,
       type: "next",
+    },
+  ],
+};
+
+export const readalong_go_to_editor: any = {
+  title: $localize`Go to the Editor`,
+  text: $localize`Once you've downloaded your ReadAlong, you can reload it into the Editor to continue editing it.`,
+  attachTo: {
+    element: "#goToEditor",
+    on: "bottom",
+  },
+  buttons: [
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Back`,
+      type: "back",
+    },
+    {
+      classes: "shepherd-button-primary",
+      text: $localize`Finish`,
+      type: "cancel",
+    },
+    {
+      classes: "shepherd-button-warning",
+      text: $localize`Editor`,
+      action: function () {
+        if (this) (this as unknown as Tour).complete();
+        window.location.hash = "#/editor?startTour=yes";
+      },
     },
   ],
 };

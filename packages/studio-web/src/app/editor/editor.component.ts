@@ -113,6 +113,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       e.stopPropagation();
       segment.play();
     });
+
+    if (window.location.hash.endsWith("startTour=yes")) {
+      this.startTour();
+    }
   }
 
   ngOnInit(): void {}

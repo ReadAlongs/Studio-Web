@@ -32,6 +32,7 @@ import {
   readalong_go_back_step,
   text_file_step,
   text_write_step,
+  readalong_go_to_editor,
 } from "../shepherd.steps";
 import { DemoComponent } from "../demo/demo.component";
 import { UploadComponent } from "../upload/upload.component";
@@ -241,6 +242,7 @@ export class StudioComponent implements OnDestroy, OnInit {
                   ?.shadowRoot?.querySelector("#title__slot__container"),
                 on: "bottom",
               };
+
               this.shepherdService.next();
               // Strangely, adding steps actually removes all previous steps so we need to start the tour again here.
               this.shepherdService.addSteps([
@@ -252,6 +254,7 @@ export class StudioComponent implements OnDestroy, OnInit {
                 readalong_add_translation_step,
                 readalong_export_step,
                 readalong_go_back_step,
+                readalong_go_to_editor,
               ]);
               this.shepherdService.start();
             });
