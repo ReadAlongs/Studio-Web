@@ -274,8 +274,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     const serializer = new XMLSerializer();
     const xmlString = serializer
       .serializeToString(element)
-      .replace("arpabet=", "ARPABET=");
-    console.log(xmlString);
+      .replace("arpabet=", "ARPABET=")
+      .replace(/xmlns="[\w\/\:\.]*"/g, "");
+    //console.log(xmlString);
     this.editorService.rasControl$.setValue(
       parser.parseFromString(xmlString, "text/xml"),
     ); // re-parse as XML
