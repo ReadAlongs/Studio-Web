@@ -210,6 +210,7 @@ Please host all assets on your server, include the font and package imports defi
   ) {
     if (selectedOutputFormat == SupportedOutputs.html) {
       var element = document.createElement("a");
+      console.log(rasXML)
       const blob = await this.createSingleFileBlob(
         rasXML,
         readalong,

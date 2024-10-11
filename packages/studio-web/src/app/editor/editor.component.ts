@@ -44,7 +44,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   readalong: Components.ReadAlong;
 
   language: "eng" | "fra" | "spa" = "eng";
-
+  downloadRasValue: Document | null = null;
   unsubscribe$ = new Subject<void>();
   constructor(
     public b64Service: B64Service,
@@ -53,7 +53,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     public editorService: EditorService,
     private toastr: ToastrService,
     private downloadService: DownloadService,
-  ) {}
+  ) {
+
+    this.editorService.rasControl$.valueChanges.subscribe((doc) =>this.downloadRasValue = doc)
+  }
 
   async ngAfterViewInit(): Promise<void> {
     this.wavesurfer = WaveSurfer.create({
@@ -142,12 +145,15 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   download(download_type: SupportedOutputs) {
     if (
       this.editorService.audioB64Control$.value &&
-      this.editorService.rasControl$.value
+      this.editorService.rasControl$.value &&
+      this.downloadRasValue
     ) {
+      console.log(this.editorService.rasControl$.value)
       this.downloadService.download(
         download_type,
         this.editorService.audioB64Control$.value,
-        this.editorService.rasControl$.value,
+        // this.editorService.rasControl$.value,
+        this.downloadRasValue,
         this.editorService.slots,
         this.readalong,
         "Editor", //from
@@ -168,11 +174,16 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       changedSegment.innerText = text;
     }
     // Update XML text
-    if (this.editorService.rasControl$.value) {
-      changedSegment = this.editorService.rasControl$.value.getElementById(id);
+    let XML = this.editorService.rasControl$.value
+    if (XML) {
+      console.log(text)
+      changedSegment = XML.getElementById(id);
       if (changedSegment) {
-        changedSegment.innerText = text;
+        changedSegment.innerHTML = text;
       }
+      console.log(XML)
+      this.editorService.rasControl$.setValue(XML)
+      console.log(XML.getElementById(id))
     }
   }
 
@@ -251,6 +262,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   async parseReadalong(text: string): Promise<string | undefined> {
+    console.log('parsed')
+    console.log(text)
     const parser = new DOMParser();
 
     const readalong = parser.parseFromString(text, "text/html");
