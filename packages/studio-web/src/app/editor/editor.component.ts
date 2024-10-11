@@ -246,9 +246,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
 
   async parseReadalong(text: string): Promise<string | undefined> {
     const parser = new DOMParser();
+
     const readalong = parser.parseFromString(text, "text/html");
     const element = readalong.querySelector("read-along");
-
     if (element === undefined || element === null) {
       return undefined;
     }
@@ -257,16 +257,20 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     // Create missing body element
     const body = document.createElement("body");
     body.id = "t0b0";
-    const textNode = element.children[0];
-    if (textNode) {
-      while (textNode.hasChildNodes()) {
+    const textNode = element.querySelector("text");
+    if (textNode?.querySelector("body") == null) {
+      while (textNode?.hasChildNodes()) {
         // @ts-ignore
         body.appendChild(textNode.firstChild);
       }
-      textNode.appendChild(body);
-    }
+      textNode?.appendChild(body);
+    } /**/
     const serializer = new XMLSerializer();
-    const xmlString = serializer.serializeToString(element);
+    const xmlString = serializer
+      .serializeToString(element)
+      .replace("arpabet=", "ARPABET=")
+      .replace(/xmlns="[\w\/\:\.]*"/g, "");
+    //console.log(xmlString);
     this.editorService.rasControl$.setValue(
       parser.parseFromString(xmlString, "text/xml"),
     ); // re-parse as XML
