@@ -193,7 +193,7 @@ export class Segment {
       const contentEl = document.createElement("div");
       contentEl.className = "segment-content";
       contentEl.contentEditable = "true";
-      contentEl.innerText = this.data.text || "";
+      contentEl.innerHTML = this.data.text || "";
       this.contentEl = this.element.appendChild(contentEl);
       const css = {
         zIndex: 4,

@@ -144,6 +144,15 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       this.editorService.audioB64Control$.value &&
       this.editorService.rasControl$.value
     ) {
+      console.log("XML at download", this.editorService.rasControl$.value);
+      console.log("read-along at download", this.editorService.rasControl$.value.getElementsByTagName("read-along"));
+      console.log("text at download", this.editorService.rasControl$.value.getElementsByTagName("text"));
+      console.log("text selector at download", this.editorService.rasControl$.value.querySelector("text"));
+      console.log("w0 at download", this.editorService.rasControl$.value.getElementById("t0b0d0p0s0w0"));
+      console.log("s0 at download", this.editorService.rasControl$.value.getElementById("t0b0d0p0s0"));
+      console.log("w0 selector at download", this.editorService.rasControl$.value.querySelector("w[id='t0b0d0p0s0w0']"));
+      console.log("all w selector at download", this.editorService.rasControl$.value.querySelector("w"));
+      console.log("bogus at download", this.editorService.rasControl$.value.getElementById("bogus"));
       this.downloadService.download(
         download_type,
         this.editorService.audioB64Control$.value,
@@ -165,15 +174,19 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     let changedSegment =
       readalongContainerElement.shadowRoot?.getElementById(id);
     if (changedSegment) {
-      changedSegment.innerText = text;
+      changedSegment.innerHTML = text;
     }
+    console.log("changed shadowRoot segment", changedSegment);
     // Update XML text
     if (this.editorService.rasControl$.value) {
       changedSegment = this.editorService.rasControl$.value.getElementById(id);
       if (changedSegment) {
-        changedSegment.innerText = text;
+        changedSegment.innerHTML = text;
       }
+      console.log("changed rasControl segment", changedSegment);
     }
+    console.log("w0 after set", this.editorService.rasControl$.value?.getElementById("t0b0d0p0s0w0"));
+    console.log("rasControl$.value", this.editorService.rasControl$.value);
   }
 
   loadAudioIntoWavesurferElement() {
@@ -280,6 +293,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     this.editorService.rasControl$.setValue(
       parser.parseFromString(xmlString, "text/xml"),
     ); // re-parse as XML
+    console.log("parsed XML", this.editorService.rasControl$.value);
+    console.log("w0 at parsing", this.editorService.rasControl$.value?.getElementById("t0b0d0p0s0w0"));
 
     // Oh, there's an audio file, okay, try to load it
     const audio = element.getAttribute("audio");
