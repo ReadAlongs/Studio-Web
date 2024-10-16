@@ -103,7 +103,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         let changedSegment =
           readalongContainerElement.shadowRoot?.getElementById(segment.data.id);
         if (changedSegment) {
-          changedSegment.innerText = segment.data.text;
+          changedSegment.innerHTML = segment.data.text;
         }
         // Update XML text
         if (this.rasControl$.value) {
@@ -111,7 +111,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
             segment.data.id,
           );
           if (changedSegment) {
-            changedSegment.innerText = segment.data.text;
+            changedSegment.innerHTML = segment.data.text;
           }
         }
       }
