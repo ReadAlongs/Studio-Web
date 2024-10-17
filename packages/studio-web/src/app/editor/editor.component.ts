@@ -165,13 +165,13 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     let changedSegment =
       readalongContainerElement.shadowRoot?.getElementById(id);
     if (changedSegment) {
-      changedSegment.innerText = text;
+      changedSegment.innerHTML = text;
     }
     // Update XML text
     if (this.editorService.rasControl$.value) {
       changedSegment = this.editorService.rasControl$.value.getElementById(id);
       if (changedSegment) {
-        changedSegment.innerText = text;
+        changedSegment.innerHTML = text;
       }
     }
   }
