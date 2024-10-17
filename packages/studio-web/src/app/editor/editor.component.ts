@@ -153,6 +153,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       console.log("w0 selector at download", this.editorService.rasControl$.value.querySelector("w[id='t0b0d0p0s0w0']"));
       console.log("all w selector at download", this.editorService.rasControl$.value.querySelector("w"));
       console.log("bogus at download", this.editorService.rasControl$.value.getElementById("bogus"));
+      console.log("XML at download", this.editorService.rasControl$.value);
       this.downloadService.download(
         download_type,
         this.editorService.audioB64Control$.value,
