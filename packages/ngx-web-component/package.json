@@ -1,12 +1,12 @@
 {
   "name": "@readalongs/ngx-web-component",
   "type": "module",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "private": false,
   "peerDependencies": {
     "@angular/core": "^17",
     "@angular/common": "^17",
-    "@readalongs/web-component": "1.4.1"
+    "@readalongs/web-component": "1.5.1"
   },
   "nx": {
     "implicitDependencies": [
