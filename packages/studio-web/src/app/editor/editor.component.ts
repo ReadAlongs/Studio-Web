@@ -145,14 +145,40 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       this.editorService.rasControl$.value
     ) {
       console.log("XML at download", this.editorService.rasControl$.value);
-      console.log("read-along at download", this.editorService.rasControl$.value.getElementsByTagName("read-along"));
-      console.log("text at download", this.editorService.rasControl$.value.getElementsByTagName("text"));
-      console.log("text selector at download", this.editorService.rasControl$.value.querySelector("text"));
-      console.log("w0 at download", this.editorService.rasControl$.value.getElementById("t0b0d0p0s0w0"));
-      console.log("s0 at download", this.editorService.rasControl$.value.getElementById("t0b0d0p0s0"));
-      console.log("w0 selector at download", this.editorService.rasControl$.value.querySelector("w[id='t0b0d0p0s0w0']"));
-      console.log("all w selector at download", this.editorService.rasControl$.value.querySelector("w"));
-      console.log("bogus at download", this.editorService.rasControl$.value.getElementById("bogus"));
+      console.log(
+        "read-along at download",
+        this.editorService.rasControl$.value.getElementsByTagName("read-along"),
+      );
+      console.log(
+        "text at download",
+        this.editorService.rasControl$.value.getElementsByTagName("text"),
+      );
+      console.log(
+        "text selector at download",
+        this.editorService.rasControl$.value.querySelector("text"),
+      );
+      console.log(
+        "w0 at download",
+        this.editorService.rasControl$.value.getElementById("t0b0d0p0s0w0"),
+      );
+      console.log(
+        "s0 at download",
+        this.editorService.rasControl$.value.getElementById("t0b0d0p0s0"),
+      );
+      console.log(
+        "w0 selector at download",
+        this.editorService.rasControl$.value.querySelector(
+          "w[id='t0b0d0p0s0w0']",
+        ),
+      );
+      console.log(
+        "all w selector at download",
+        this.editorService.rasControl$.value.querySelector("w"),
+      );
+      console.log(
+        "bogus at download",
+        this.editorService.rasControl$.value.getElementById("bogus"),
+      );
       console.log("XML at download", this.editorService.rasControl$.value);
       this.downloadService.download(
         download_type,
@@ -175,18 +201,30 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     let changedSegment =
       readalongContainerElement.shadowRoot?.getElementById(id);
     if (changedSegment) {
-      changedSegment.innerHTML = text;
+      let clone = changedSegment.cloneNode(true);
+      clone.textContent = text;
+      changedSegment.replaceWith(clone);
     }
     console.log("changed shadowRoot segment", changedSegment);
     // Update XML text
     if (this.editorService.rasControl$.value) {
       changedSegment = this.editorService.rasControl$.value.getElementById(id);
       if (changedSegment) {
-        changedSegment.innerHTML = text;
+        let clone = changedSegment.cloneNode(true);
+        clone.textContent = text;
+        changedSegment.replaceWith(clone);
       }
       console.log("changed rasControl segment", changedSegment);
     }
-    console.log("w0 after set", this.editorService.rasControl$.value?.getElementById("t0b0d0p0s0w0"));
+    this.editorService.rasControl$.setValue(
+      this.editorService.rasControl$.value
+        ?.getRootNode()
+        .cloneNode(true) as Document,
+    );
+    console.log(
+      "w0 after set",
+      this.editorService.rasControl$.value?.getElementById("t0b0d0p0s0w0"),
+    );
     console.log("rasControl$.value", this.editorService.rasControl$.value);
   }
 
@@ -295,7 +333,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       parser.parseFromString(xmlString, "text/xml"),
     ); // re-parse as XML
     console.log("parsed XML", this.editorService.rasControl$.value);
-    console.log("w0 at parsing", this.editorService.rasControl$.value?.getElementById("t0b0d0p0s0w0"));
+    console.log(
+      "w0 at parsing",
+      this.editorService.rasControl$.value?.getElementById("t0b0d0p0s0w0"),
+    );
 
     // Oh, there's an audio file, okay, try to load it
     const audio = element.getAttribute("audio");

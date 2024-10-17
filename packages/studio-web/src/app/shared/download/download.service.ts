@@ -209,6 +209,17 @@ Please host all assets on your server, include the font and package imports defi
     from = "Studio",
   ) {
     if (selectedOutputFormat == SupportedOutputs.html) {
+      console.log("XML at download before sync", rasXML);
+      console.log(
+        "w0 at download before sync",
+        rasXML.getElementById("t0b0d0p0s0w0"),
+      );
+      await this.syncWithReadAlong(rasXML, readalong);
+      console.log("XML at download after sync", rasXML);
+      console.log(
+        "w0 at download after sync",
+        rasXML.getElementById("t0b0d0p0s0w0"),
+      );
       var element = document.createElement("a");
       const blob = await this.createSingleFileBlob(
         rasXML,
