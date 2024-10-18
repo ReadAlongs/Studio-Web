@@ -159,13 +159,13 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     let changedSegment =
       readalongContainerElement.shadowRoot?.getElementById(id);
     if (changedSegment) {
-      changedSegment.innerText = text;
+      changedSegment.textContent = text;
     }
     // Update XML text
     if (this.editorService.rasControl$.value) {
       changedSegment = this.editorService.rasControl$.value.getElementById(id);
       if (changedSegment) {
-        changedSegment.innerText = text;
+        changedSegment.textContent = text; // innerText is not supported for XML documents
       }
     }
   }
@@ -254,11 +254,11 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
 
     // Store the element as parsed XML
-    // Create missing body element
-    const body = document.createElement("body");
-    body.id = "t0b0";
-    const textNode = element.children[0];
-    if (textNode) {
+    // Create body element, which mysteriously gets removed from the text element.
+    let textNode = element.querySelector("text");
+    if (textNode && !textNode.querySelector("body")) {
+      const body = document.createElement("body");
+      body.id = "t0b0";
       while (textNode.hasChildNodes()) {
         // @ts-ignore
         body.appendChild(textNode.firstChild);
@@ -266,10 +266,15 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       textNode.appendChild(body);
     }
     const serializer = new XMLSerializer();
-    const xmlString = serializer.serializeToString(element);
+    const xmlString = serializer
+      .serializeToString(element)
+      .replace(/arpabet=/g, "ARPABET=") // Our DTD says ARPABET is upper case
+      .replace(/xmlns="[\w\/\:\.]*"/g, ""); // Our DTD does not accept xmlns that the parser inserts
+    //console.log(xmlString);
     this.editorService.rasControl$.setValue(
       parser.parseFromString(xmlString, "text/xml"),
     ); // re-parse as XML
+    //console.log(this.editorService.rasControl$.value);
 
     // Oh, there's an audio file, okay, try to load it
     const audio = element.getAttribute("audio");
