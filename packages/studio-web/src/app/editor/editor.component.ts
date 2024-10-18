@@ -245,6 +245,17 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   async parseReadalong(text: string): Promise<string | undefined> {
+    // This function is designed to parse three related things:
+    //  - An Offline HTML file with the read-along HTML element with attributes href
+    //    pointing to the .readalong file, and audio pointing to the audio file,
+    //    normally both base64 encoded.
+    //  - The .readalong XML file itself
+    //  - An HTML file with the read-along HTML element and its audio attribute, but
+    //    with the contents of the .readalong file included as descendant elements
+    //    of the read-along HTML element.
+    // This is why we look for audio and href attributes, and a text child element, but
+    // don't expect to always find them.
+
     const parser = new DOMParser();
     const readalong = parser.parseFromString(text, "text/html");
     const element = readalong.querySelector("read-along");
