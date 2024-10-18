@@ -3,7 +3,35 @@
     ReadAlong Studio
   </span>
   <span class="nav-spacer"></span>
-  <div class="nav__buttons">
+  <button class="d-md-none" mat-button [matMenuTriggerFor]="menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button
+      i18n="Studio"
+      mat-button
+      [color]="currentURL === '/' ? 'accent' : ''"
+      [routerLink]="''"
+    >
+      Studio
+    </button>
+    <button
+      id="goToEditor"
+      i18n="Editor"
+      class="plausible-event-name=Editor"
+      mat-button
+      [color]="currentURL === '/editor' ? 'accent' : ''"
+      [routerLink]="'editor'"
+    >
+      <mat-icon>edit</mat-icon>
+      Editor
+    </button>
+    <button i18n="Privacy" mat-button (click)="openPrivacyDialog()">
+      <mat-icon>policy</mat-icon>
+      Privacy
+    </button>
+  </mat-menu>
+  <div class="nav__buttons d-none d-md-block">
     <button
       i18n="Studio"
       class="nav__button"
