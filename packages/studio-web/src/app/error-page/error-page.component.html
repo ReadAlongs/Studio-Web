@@ -324,10 +324,14 @@
     </svg>
   </div>
   <div class="error__container" *ngIf="errorType === 'aligner'">
-    <h1 i18n="Language error heading" class="title">Aligner Error</h1>
+    <h1 i18n="Aligner error heading" class="title">Aligner Error</h1>
     <p i18n="Aligner error text">
       Failed to initialize the aligner. This may be the result of an
-      incompatible browser. Please
+      incompatible browser. Please:
+      <br />
+      1. try updating your browser,<br />
+      2. try with Chrome,<br />
+      3. if the problem persists, please
       <a href="{{ contactLink }}"
         ><mat-icon inline style="vertical-align: middle">mail</mat-icon> contact
         the developers</a

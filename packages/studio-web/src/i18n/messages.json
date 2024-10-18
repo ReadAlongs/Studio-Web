@@ -14,7 +14,7 @@
     "5701618810648052610": "Title",
     "1137319519199859335": "Subtitle",
     "6766123079913371250": "Aligner Error",
-    "1614347125196988603": " Failed to initialize the aligner. This may be the result of an incompatible browser. Please {$START_LINK}{$START_TAG_MAT_ICON}mail{$CLOSE_TAG_MAT_ICON} contact the developers{$CLOSE_LINK} and send them a complete copy of the error message below: ",
+    "1783511212412063790": " Failed to initialize the aligner. This may be the result of an incompatible browser. Please: {$LINE_BREAK} 1. try updating your browser,{$LINE_BREAK} 2. try with Chrome,{$LINE_BREAK} 3. if the problem persists, please {$START_LINK}{$START_TAG_MAT_ICON}mail{$CLOSE_TAG_MAT_ICON} contact the developers{$CLOSE_LINK} and send them a complete copy of the error message below: ",
     "8263673404941155539": "Server Error",
     "4441973805993808330": " Failed to retrieve the list of languages from the server. Please {$START_LINK}{$START_TAG_MAT_ICON}mail{$CLOSE_TAG_MAT_ICON} contact the developers{$CLOSE_LINK} and reload the page once the error is corrected. ",
     "7504412437394032605": " Whoops! Looks like you're lost! You weren't supposed to see this page. Please go back to the home page by clicking below. ",
