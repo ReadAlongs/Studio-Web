@@ -2,6 +2,9 @@
   "locale": "fr",
   "translations": {
     "8299719445551358262": "Studio ReadAlong",
+    "2788132200126415526": " Studio ",
+    "6206003705268841358": "{$START_TAG_MAT_ICON}edit{$CLOSE_TAG_MAT_ICON} Éditeur ",
+    "5204211903076352908": "{$START_TAG_MAT_ICON}policy{$CLOSE_TAG_MAT_ICON} Confidentialité ",
     "2148054857885504777": " Félicitations! Voici votre ReadAlong! ",
     "5701618810648052610": "Titre",
     "1137319519199859335": "Sous-titre",
