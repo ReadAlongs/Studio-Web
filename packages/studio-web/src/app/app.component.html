@@ -3,14 +3,44 @@
     ReadAlong Studio
   </span>
   <span class="nav-spacer"></span>
-  <div class="nav__buttons">
+  <button class="d-md-none" mat-button [matMenuTriggerFor]="menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button
+      mat-button
+      [color]="currentURL === '/' ? 'accent' : ''"
+      [routerLink]="''"
+    >
+      <mat-icon>home</mat-icon>
+      <span i18n="Studio">Studio</span>
+    </button>
+    <br />
+    <button
+      id="goToEditor"
+      class="plausible-event-name=Editor"
+      mat-button
+      [color]="currentURL === '/editor' ? 'accent' : ''"
+      [routerLink]="'editor'"
+    >
+      <mat-icon>edit</mat-icon>
+      <span i18n="Editor">Editor</span>
+    </button>
+    <br />
+    <button mat-button (click)="openPrivacyDialog()">
+      <mat-icon>policy</mat-icon>
+      <span i18n="Privacy">Privacy</span>
+    </button>
+  </mat-menu>
+  <div class="nav__buttons d-none d-md-block">
     <button
       class="nav__button"
       mat-button
       [color]="currentURL === '/' ? 'accent' : ''"
       [routerLink]="''"
     >
-      Studio
+      <mat-icon>home</mat-icon>
+      <span i18n="Studio">Studio</span>
     </button>
     <button
       id="goToEditor"
@@ -20,11 +50,11 @@
       [routerLink]="'editor'"
     >
       <mat-icon>edit</mat-icon>
-      Editor
+      <span i18n="Editor">Editor</span>
     </button>
     <button class="nav__button" mat-button (click)="openPrivacyDialog()">
       <mat-icon>policy</mat-icon>
-      Privacy
+      <span i18n="Privacy">Privacy</span>
     </button>
   </div>
 </mat-toolbar>

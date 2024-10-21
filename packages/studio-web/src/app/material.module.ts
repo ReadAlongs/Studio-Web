@@ -10,6 +10,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatStepperModule } from "@angular/material/stepper";
+import { MatMenuModule } from "@angular/material/menu";
 
 @NgModule({
   imports: [
@@ -23,6 +24,7 @@ import { MatStepperModule } from "@angular/material/stepper";
     MatIconModule,
     MatProgressBarModule,
     MatRadioModule,
+    MatMenuModule,
     MatButtonToggleModule,
   ],
   exports: [
@@ -36,6 +38,7 @@ import { MatStepperModule } from "@angular/material/stepper";
     MatIconModule,
     MatProgressBarModule,
     MatRadioModule,
+    MatMenuModule,
     MatButtonToggleModule,
   ],
 })
