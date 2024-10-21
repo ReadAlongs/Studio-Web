@@ -9,6 +9,7 @@
     "880407735794041263": "Download failed.",
     "3790351978262872462": "Sorry!",
     "1743078436798702107": " Welcome to the ReadAlong Studio Editor ",
+    "5946680664458019339": " This is a tool to help you edit your existing 'readalongs'. To get started, click on the tour button below, and follow the steps. ",
     "8366946611697584032": " Take the tour! ",
     "3903003521039334232": " Select an offline HTML ReadAlong file. ",
     "5192585697967841844": " To get this file, you should have created a ReadAlong using the {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} Studio{$CLOSE_LINK}, and then selected \"Offline HTML\" as the output. Or, you can use the Offline-HTML file included in the Web Bundle download format. ",
