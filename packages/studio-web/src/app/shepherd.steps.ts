@@ -550,7 +550,7 @@ export const readalong_go_to_editor: any = {
     },
     {
       classes: "shepherd-button-warning",
-      text: $localize`Editor`,
+      text: $localize`To the Editor`,
       action: function () {
         if (this) (this as unknown as Tour).complete();
         window.location.hash = "#/editor?startTour=yes";

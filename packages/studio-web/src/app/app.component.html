@@ -8,58 +8,53 @@
   </button>
   <mat-menu #menu="matMenu">
     <button
-      i18n="Studio"
       mat-button
       [color]="currentURL === '/' ? 'accent' : ''"
       [routerLink]="''"
     >
-      Studio
+      <mat-icon>home</mat-icon>
+      <span i18n="Studio">Studio</span>
     </button>
+    <br />
     <button
       id="goToEditor"
-      i18n="Editor"
       class="plausible-event-name=Editor"
       mat-button
       [color]="currentURL === '/editor' ? 'accent' : ''"
       [routerLink]="'editor'"
     >
       <mat-icon>edit</mat-icon>
-      Editor
+      <span i18n="Editor">Editor</span>
     </button>
-    <button i18n="Privacy" mat-button (click)="openPrivacyDialog()">
+    <br />
+    <button mat-button (click)="openPrivacyDialog()">
       <mat-icon>policy</mat-icon>
-      Privacy
+      <span i18n="Privacy">Privacy</span>
     </button>
   </mat-menu>
   <div class="nav__buttons d-none d-md-block">
     <button
-      i18n="Studio"
       class="nav__button"
       mat-button
       [color]="currentURL === '/' ? 'accent' : ''"
       [routerLink]="''"
     >
-      Studio
+      <mat-icon>home</mat-icon>
+      <span i18n="Studio">Studio</span>
     </button>
     <button
       id="goToEditor"
-      i18n="Editor"
       class="nav__button plausible-event-name=Editor"
       mat-button
       [color]="currentURL === '/editor' ? 'accent' : ''"
       [routerLink]="'editor'"
     >
       <mat-icon>edit</mat-icon>
-      Editor
+      <span i18n="Editor">Editor</span>
     </button>
-    <button
-      i18n="Privacy"
-      class="nav__button"
-      mat-button
-      (click)="openPrivacyDialog()"
-    >
+    <button class="nav__button" mat-button (click)="openPrivacyDialog()">
       <mat-icon>policy</mat-icon>
-      Privacy
+      <span i18n="Privacy">Privacy</span>
     </button>
   </div>
 </mat-toolbar>
