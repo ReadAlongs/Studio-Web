@@ -27,8 +27,9 @@ export class AppComponent implements OnDestroy, OnInit {
   openPrivacyDialog(): void {
     this.dialog.open(PrivacyDialog, {
       width: "50vw",
-      maxWidth: "50vw", // maxWidth is required to force material to use justify-content: flex-start
-      minWidth: "50vw",
+      maxWidth: "60vw", // maxWidth is required to force material to use justify-content: flex-start
+      minWidth: "60vw",
+      maxHeight: "95vh",
     });
   }
 
