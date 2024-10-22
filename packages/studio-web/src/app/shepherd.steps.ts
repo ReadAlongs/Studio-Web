@@ -337,7 +337,7 @@ export const readalong_export_step: any = {
   text:
     $localize`When you're happy with your ReadAlong, you can export it by selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: ` +
     "<ul><li>" +
-    $localize`<b>Offline HTML</b>: your ReadAlongs in a single-file HTML document that requires no web access to work,` +
+    $localize`<b>Offline HTML</b>: your ReadAlong in a single-file HTML document that requires no web access to work, which can also be re-opened in the Editor` +
     "</li><li>" +
     $localize`<b>Web Bundle</b>: all your ReadAlong files in a folder that can be hosted on a web server,` +
     "</li><li>" +
