@@ -35,9 +35,7 @@ export class B64Service {
         ),
       this.http
         .get(this.FONTS_BUNDLE_URL, { responseType: "blob" })
-        .pipe(
-          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob)),
-        ),
+        .pipe(switchMap((blob: Blob) => this.fileService.readFile$(blob))),
     ]);
   }
   utf8_to_b64(str: string) {
