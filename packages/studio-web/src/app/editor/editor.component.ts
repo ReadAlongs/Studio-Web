@@ -80,34 +80,27 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
 
     this.wavesurfer.on("segment-updated", async (segment, e) => {
-      // Each time a segment is updated we have to update it in both the demo ReadAlong
+      // Each time a segment is updated we have to update it in both the Preview ReadAlong
       // as well as the XML. This is faster than just editing the XML and asking the
       // ReadAlong to re-render, which would create all the new audio sprites again etc
       // when we are just editing a single element at a time.
       if (e.action == "contentEdited") {
-        this.setReadAlongText(segment.data.id, segment.data.text);
+        this.readalong.setRAElementTextWithId(
+          segment.data.id,
+          segment.data.text,
+        );
       }
       if (e.action == "resize") {
-        // Update Demo Alignments (uses milliseconds)
-        let alignments = await this.readalong.getAlignments();
+        // Update Preview Alignments (uses milliseconds)
+
         let dur = parseFloat(segment.end) - parseFloat(segment.start);
         let dur_ms = parseInt((dur * 1000).toFixed(0));
         let start_ms = parseInt((segment.start * 1000).toFixed(0));
-        alignments[segment.data.id] = [start_ms, dur_ms];
-        const new_al: Alignment = {};
-        new_al[segment.data.id] = [start_ms, dur_ms];
-        // Update XML alignments (uses seconds)
-        if (this.editorService.rasControl$.value) {
-          let changedSegment =
-            this.editorService.rasControl$.value.getElementById(
-              segment.data.id,
-            );
-          if (changedSegment) {
-            changedSegment.setAttribute("time", segment.start);
-            changedSegment.setAttribute("dur", dur.toString());
-          }
-        }
-        await this.readalong.updateSpriteAlignments(alignments);
+
+        const new_alignment: Alignment = {};
+        new_alignment[segment.data.id] = [start_ms, dur_ms];
+
+        await this.readalong.updateSpriteAlignments(new_alignment);
       }
     });
     this.wavesurfer.on("segment-click", (segment, e) => {
@@ -158,9 +151,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       });
     }
   }
-
+  //TODO: delete
   async setReadAlongText(id: string, text: string) {
-    // Update Demo text
+    // Update Preview text
     let readalongContainerElement = await this.readalong.getReadAlongElement();
     let changedSegment =
       readalongContainerElement.shadowRoot?.getElementById(id);
@@ -219,7 +212,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.editorService.slots.title = titleSlot.innerText;
         titleSlot.setAttribute("contenteditable", true);
         // Because we're just loading this from the single-file HTML, it's cumbersome to
-        // use Angular event input event listeners like we do in the demo
+        // use Angular event input event listeners like we do in the Preview
         titleSlot.addEventListener(
           "input",
           (ev: any) => (this.editorService.slots.title = ev.target?.innerHTML),

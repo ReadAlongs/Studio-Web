@@ -682,8 +682,29 @@ export class ReadAlongComponent {
   @Method()
   async updateSpriteAlignments(alignment: Alignment): Promise<void> {
     this.stop();
-    this.processed_alignment = alignment;
+    this.processed_alignment = { ...this.processed_alignment, ...alignment };
     this.attachScrollingLogicToAudio();
+
+    // Update XML alignments (uses seconds)
+    const id = Object.keys(alignment)[0];
+    const start = (alignment[id][0] / 1000).toFixed(3);
+    const duration = (alignment[id][1] / 1000).toFixed(3);
+
+    this.parsed_text = [
+      ...this.parsed_text.map((page: Page) => {
+        page.paragraphs = [
+          ...page.paragraphs.map((paragraph) => {
+            const changedSegment = paragraph.querySelector(`#${id}`);
+            if (changedSegment) {
+              changedSegment.setAttribute("time", start);
+              changedSegment.setAttribute("dur", duration);
+            }
+            return paragraph;
+          }),
+        ];
+        return page;
+      }),
+    ];
   }
 
   /**
@@ -1432,22 +1453,29 @@ export class ReadAlongComponent {
       Object.values(this.sentenceAnnotations).filter((s) => s.length > 0)
         .length > 0;
   }
-
-  updateTranslation(sentence_id: string, text: string) {
+  /**
+   * setRAElementTextWithId : update readalong text or translation
+   * @param id
+   * @param text
+   */
+  @Method()
+  setRAElementTextWithId(id: string, text: string): Promise<void> {
     this.parsed_text = [
       ...this.parsed_text.map((page) => {
-        if (sentence_id.includes(page.id)) {
-          page.paragraphs = page.paragraphs.map((para) => {
-            if (sentence_id.includes(para.id)) {
-              para.querySelector(`#${sentence_id}`).textContent =
-                text.trim().length < 1 ? "---" : text.trim();
-            }
-            return para;
-          });
-        }
+        page.paragraphs = page.paragraphs.map((para) => {
+          const element: Element | null = para.querySelector(`#${id}`);
+          if (element != null) {
+            element.textContent = text.trim().length < 1 ? "---" : text.trim();
+            console.log(id, element.textContent);
+          }
+          return para;
+        });
+
         return page;
       }),
     ];
+
+    return;
   }
 
   async handleFiles(event: any, pageIndex: number) {
@@ -1883,14 +1911,14 @@ export class ReadAlongComponent {
     if (this.mode === "EDIT") {
       if (isAnnotationSentence) {
         editingProps["onBlur"] = (e: any) => {
-          this.updateTranslation(sentenceID, e.currentTarget.innerText);
+          this.setRAElementTextWithId(sentenceID, e.currentTarget.innerText);
           e.currentTarget.removeAttribute("dirty");
         };
 
         editingProps["contentEditable"] = true;
         editingProps["onKeyDown"] = (event) => {
           if (event.key == "Enter") {
-            this.updateTranslation(
+            this.setRAElementTextWithId(
               sentenceID,
               event.currentTarget.innerText.trim(),
             );

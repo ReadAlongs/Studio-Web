@@ -97,6 +97,23 @@ Type: `Promise<Element>`
 
 
 
+### `setRAElementTextWithId(id: string, text: string) => Promise<void>`
+
+setRAElementTextWithId : update readalong text or translation
+
+#### Parameters
+
+| Name   | Type     | Description |
+| ------ | -------- | ----------- |
+| `id`   | `string` |             |
+| `text` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `updateSpriteAlignments(alignment: Alignment) => Promise<void>`
 
 Update Single Sprite

@@ -86,6 +86,12 @@ export namespace Components {
          */
         "scrollBehaviour": ScrollBehaviour;
         /**
+          * setRAElementTextWithId : update readalong text or translation
+          * @param id
+          * @param text
+         */
+        "setRAElementTextWithId": (id: string, text: string) => Promise<void>;
+        /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
         "svgOverlay": string;
