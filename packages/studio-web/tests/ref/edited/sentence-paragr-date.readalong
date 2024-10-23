@@ -1,0 +1,21 @@
+<read-along version="1.2">
+    <meta name="generator" content="@readalongs/studio (cli) 1.1.0" id="meta0"/>
+    <text xml:lang="und" fallback-langs="und" id="t0">
+        <body id="t0b0">
+            <div type="page" id="t0b0d0">
+                <p id="t0b0d0p0">
+                    <s id="t0b0d0p0s0"><w id="t0b0d0p0s0w0" ARPABET="T HH IY S" time="0.5000" dur="0.5700">This</w> <w id="t0b0d0p0s0w1" ARPABET="IY S" time="1.07" dur="0.13">is</w> <w id="t0b0d0p0s0w2" ARPABET="AA" time="1.2" dur="0.03">a</w> <w id="t0b0d0p0s0w3" ARPABET="T EY S T" time="1.23" dur="0.57">test</w>.</s><s do-not-align="true" id="t0b0d0p0s0" class="sentence__translation editable__translation" xml:lang="eng">Un vrai test.</s>
+                    <s id="t0b0d0p0s1"><w id="t0b0d0p0s1w0" ARPABET="S EY N T EY N CH EY" time="1.8" dur="0.56">Sentences</w>.</s><s do-not-align="true" id="t0b0d0p0s1" class="sentence__translation editable__translation" xml:lang="eng">Phrase.</s>
+                </p>
+                <p id="t0b0d0p1">
+                    <s id="t0b0d0p1s0"><w id="t0b0d0p1s0w0" ARPABET="P AA D AA G D AA P HH" time="2.36" dur="0.67">Paragraph</w>.</s>
+                </p>
+            <graphic url="image-sentence-paragr-20241023184608-0.png"/></div>
+            <div type="page" id="t0b0d1">
+                <p id="t0b0d1p0">
+                    <s id="t0b0d1p0s0"><w id="t0b0d1p0s0w0" ARPABET="P AA G EY" time="3.03" dur="0.37">Page</w>.</s>
+                </p>
+            </div>
+        </body>
+    </text>
+</read-along>
