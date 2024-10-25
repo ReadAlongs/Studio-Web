@@ -178,7 +178,7 @@ Please host all assets on your server, include the font and package imports defi
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
         <meta name="generator" content="@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}">
         <title>${slots.title}</title>
-        <link rel="stylesheet" href="${this.b64Service.jsAndFontsBundle$.value[1]}">
+        <style>${this.b64Service.jsAndFontsBundle$.value[1]}</style>
         <script src="${this.b64Service.jsAndFontsBundle$.value[0]}" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}"></script>
       </head>
       <body>
