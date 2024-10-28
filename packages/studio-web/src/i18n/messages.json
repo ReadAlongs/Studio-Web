@@ -66,7 +66,7 @@
     "8141623860318291592": "You can add a translation or extra bit of information to each sentence of your ReadAlong by clicking on the + icon here. If you later want to remove the translation, click on the − icon after adding your translation.",
     "6557490460418686205": "Export your ReadAlong",
     "9028584152057075057": "When you're happy with your ReadAlong, you can export it by selecting a download format and then clicking on the download button (down arrow). You can choose from the following formats: ",
-    "4472657645927557584": "<b>Offline HTML</b>: your ReadAlongs in a single-file HTML document that requires no web access to work,",
+    "3506037213830624636": "<b>Offline HTML</b>: your ReadAlong in a single-file HTML document that requires no web access to work, which can also be re-opened in the Editor",
     "5844675268488159665": "<b>Web Bundle</b>: all your ReadAlong files in a folder that can be hosted on a web server,",
     "154702087902896846": "<b>Elan and Praat files</b>: export formats used by documentary linguists,",
     "8526990109226924185": "<b>SRT and WebVTT subtitles</b>: export formats used to add subtitles to videos.",
