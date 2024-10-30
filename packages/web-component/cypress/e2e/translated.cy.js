@@ -22,16 +22,16 @@ context("Readalong Component with translation", () => {
         cy.get(".sentence__translation")
           .should("have.length.above", 0)
           .should("be.visible");
-        cy.get("[data-cy=translation-toggle]").should("be.visible");
+        cy.get("[data-test-id=translation-toggle]").should("be.visible");
       });
     });
 
     it(" toggle button testing", () => {
       cy.readalong().within(() => {
         cy.get(".sentence__translation").should("not.have.class", "invisible");
-        cy.get("[data-cy=translation-toggle]").click();
+        cy.get("[data-test-id=translation-toggle]").click();
         cy.get(".sentence__translation").should("have.class", "invisible");
-        cy.get("[data-cy=translation-toggle]").click();
+        cy.get("[data-test-id=translation-toggle]").click();
         cy.get(".sentence__translation").should("not.have.class", "invisible");
       });
     });

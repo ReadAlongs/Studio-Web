@@ -33,7 +33,7 @@ context("Readalong Component with annotation", () => {
     it(" toggle button testing", () => {
       cy.wait(["@text", "@audio"]);
       cy.readalong().within(() => {
-        cy.get("[data-cy=play-button]").should("be.enabled");
+        cy.get("[data-test-id=play-button]").should("be.enabled");
         cy.get("[annotation-id]").should("have.class", "invisible");
         cy.get("#annotationsMenu").should("not.exist");
         cy.get("[data-test-id=annotations-toggle]").click();

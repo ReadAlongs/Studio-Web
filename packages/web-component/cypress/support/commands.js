@@ -30,7 +30,7 @@ Cypress.Commands.add("readalongElement", () => {
 });
 
 Cypress.Commands.add("playReadAlong", () => {
-  cy.get("[data-cy=play-button]", { timeout: 10000 })
+  cy.get("[data-test-id=play-button]", { timeout: 10000 })
     .should("be.enabled")
     .click();
 });

@@ -25,7 +25,7 @@ context("The Readalong Component", () => {
     cy.readalong().within(() => {
       cy.playReadAlong();
       cy.wait(FOR_ERIC_TO_TALK_A_BIT);
-      cy.get("[data-cy=stop-button]").click();
+      cy.get("[data-test-id=stop-button]").click();
     });
   });
 
@@ -34,7 +34,7 @@ context("The Readalong Component", () => {
 
     cy.readalong().within(() => {
       //wait for initialization process to be completed
-      cy.get("[data-cy=play-button]").should("be.enabled");
+      cy.get("[data-test-id=play-button]").should("be.enabled");
       cy.get("span").contains("technologies").click();
     });
   });
@@ -45,21 +45,21 @@ context("The Readalong Component", () => {
 
       cy.readalong().within(() => {
         cy.playReadAlong();
-        cy.get("[data-cy=page-count__current]")
+        cy.get("[data-test-id=page-count__current]")
           .filter("*:visible")
           .invoke("text")
           .should("eq", "1");
 
-        cy.get("[data-cy=progress-bar]")
+        cy.get("[data-test-id=progress-bar]")
           .as("progress-bar")
           .then((el) => {
             // click 3/4 of the way in the readalong (should be second page)
             cy.get("@progress-bar").click(el.width() * 0.75, el.height() * 0.5);
           });
-        cy.get("[data-cy=stop-button]").click();
+        cy.get("[data-test-id=stop-button]").click();
         cy.wait(FOR_PAGE_TURN_ANIMATION);
 
-        cy.get("[data-cy=page-count__current]")
+        cy.get("[data-test-id=page-count__current]")
           .filter("*:visible")
           .invoke("text")
           .should("eq", "2");
@@ -74,12 +74,12 @@ context("The Readalong Component", () => {
       cy.wait("@audio").then(() => {
         cy.readalong().within(() => {
           //wait for initialization process to be completed
-          cy.get("[data-cy=play-button]").should("be.enabled");
+          cy.get("[data-test-id=play-button]").should("be.enabled");
           //word corpus and robuste should hidden
           cy.get("#t0b0d1p0s2w1").should("not.be.visible");
           cy.get("#t0b0d1p1s0w14").should("not.be.visible");
           //advance to about 61%
-          cy.get("[data-cy=progress-bar]")
+          cy.get("[data-test-id=progress-bar]")
             .as("progress-bar")
             .then((el) => {
               // click 3/4 of the way in the readalong (should be second page)
@@ -91,7 +91,7 @@ context("The Readalong Component", () => {
           //word corpus and robuste should now be visible
           cy.get("#t0b0d1p0s2w1").should("be.visible");
           cy.get("#t0b0d1p1s0w14").should("be.visible");
-          cy.get("[data-cy=play-button]")
+          cy.get("[data-test-id=play-button]")
             .click()
             .then(() => {
               cy.wait(FOR_PAGE_TURN_ANIMATION);

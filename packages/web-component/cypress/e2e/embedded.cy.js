@@ -21,7 +21,7 @@ context("The Readalong Component", () => {
     cy.readalong().within(() => {
       cy.playReadAlong();
       cy.wait(FOR_ERIC_TO_TALK_A_BIT);
-      cy.get("[data-cy=stop-button]").click();
+      cy.get("[data-test-id=stop-button]").click();
     });
   });
 
@@ -37,21 +37,21 @@ context("The Readalong Component", () => {
 
       cy.readalong().within(() => {
         cy.playReadAlong();
-        cy.get("[data-cy=page-count__current]")
+        cy.get("[data-test-id=page-count__current]")
           .filter("*:visible")
           .invoke("text")
           .should("eq", "1");
 
-        cy.get("[data-cy=progress-bar]")
+        cy.get("[data-test-id=progress-bar]")
           .as("progress-bar")
           .then((el) => {
             // click 3/4 of the way in the readalong (should be second page)
             cy.get("@progress-bar").click(el.width() * 0.75, el.height() * 0.5);
           });
-        cy.get("[data-cy=stop-button]").click();
+        cy.get("[data-test-id=stop-button]").click();
         cy.wait(FOR_PAGE_TURN_ANIMATION);
 
-        cy.get("[data-cy=page-count__current]")
+        cy.get("[data-test-id=page-count__current]")
           .filter("*:visible")
           .invoke("text")
           .should("eq", "2");
