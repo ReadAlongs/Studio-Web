@@ -1408,7 +1408,7 @@ export class ReadAlongComponent {
   RemoveImg = (props: { pageIndex: number }): Element => {
     return (
       <button
-        data-cy="delete-button"
+        data-test-id="delete-button"
         aria-label="Delete"
         title="Delete image"
         onClick={() => this.deleteImage(props.pageIndex)}
@@ -1469,9 +1469,9 @@ export class ReadAlongComponent {
   PageCount = (props: { pgCount: number; currentPage: number }): Element => (
     <div class={"page__counter color--" + this.theme}>
       {this.getI18nString("page")}{" "}
-      <span data-cy="page-count__current">{props.currentPage}</span>
+      <span data-test-id="page-count__current">{props.currentPage}</span>
       {" / "}
-      <span data-cy="page-count__total">{props.pgCount}</span>
+      <span data-test-id="page-count__total">{props.pgCount}</span>
     </div>
   );
 
@@ -1687,7 +1687,7 @@ export class ReadAlongComponent {
                   <button
                     title="Remove translation"
                     aria-label="Remove translation"
-                    data-cy="remove-translation-button"
+                    data-test-id="remove-translation-button"
                     onClick={() => this.removeLine(props.sentenceData)}
                     class="sentence__translation__button remove"
                   >
@@ -1695,7 +1695,7 @@ export class ReadAlongComponent {
                   </button>
                   <p
                     id={sentenceID + "translation"}
-                    data-cy="translation-line"
+                    data-test-id="translation-line"
                     class="sentence__text editable__translation"
                     onInput={(e: any) => {
                       this.updateTranslation(
@@ -1716,7 +1716,7 @@ export class ReadAlongComponent {
                 <button
                   title={this.getI18nString("add-translation")}
                   aria-label="Add translation"
-                  data-cy="add-translation-button"
+                  data-test-id="add-translation-button"
                   class="sentence__translation sentence__translation__button"
                   onClick={() => this.addLine(props.sentenceData)}
                 >
@@ -1805,7 +1805,7 @@ export class ReadAlongComponent {
 
   PlayControl = (): Element => (
     <button
-      data-cy="play-button"
+      data-test-id="play-button"
       disabled={!this.isReadyToPlay()}
       aria-label="Play"
       title={this.getI18nString("play-tooltip")}
@@ -1826,7 +1826,7 @@ export class ReadAlongComponent {
 
   ReplayControl = (): Element => (
     <button
-      data-cy="replay-button"
+      data-test-id="replay-button"
       disabled={this.hasLoaded < 2}
       aria-label="Rewind"
       title={this.getI18nString("rewind-tooltip")}
@@ -1844,7 +1844,7 @@ export class ReadAlongComponent {
 
   StopControl = (): Element => (
     <button
-      data-cy="stop-button"
+      data-test-id="stop-button"
       disabled={this.hasLoaded < 2}
       aria-label="Stop"
       title={this.getI18nString("stop-tooltip")}
@@ -1938,7 +1938,7 @@ export class ReadAlongComponent {
 
   TextTranslationDisplayControl = (): Element => (
     <button
-      data-cy="translation-toggle"
+      data-test-id="translation-toggle"
       aria-label="Toggle Translation"
       title={this.getI18nString("translation-tooltip")}
       onClick={() => this.toggleTextTranslation()}
@@ -1972,14 +1972,14 @@ export class ReadAlongComponent {
     </button>
   );
   ErrorMessage = (props: { msg: string; data_cy: string }): Element => (
-    <p data-cy={props.data_cy} class="alert status-error">
+    <p data-test-id={props.data_cy} class="alert status-error">
       <span class="material-icons">error_outline</span> {props.msg}
     </p>
   );
 
   ControlPanel = (): Element => (
     <div
-      data-cy="control-panel"
+      data-test-id="control-panel"
       class={
         "control-panel theme--" + this.theme + " background--" + this.theme
       }
@@ -2242,7 +2242,7 @@ export class ReadAlongComponent {
           onScroll={() => {
             this.handleScrollEvent();
           }}
-          data-cy="text-container"
+          data-test-id="text-container"
           class={
             "pages__container" +
             " theme--" +
@@ -2270,7 +2270,7 @@ export class ReadAlongComponent {
           <div
             onClick={(e) => this.goToSeekFromProgress(e)}
             id="all"
-            data-cy="progress-bar"
+            data-test-id="progress-bar"
             class={
               "overlay__container theme--" +
               this.theme +

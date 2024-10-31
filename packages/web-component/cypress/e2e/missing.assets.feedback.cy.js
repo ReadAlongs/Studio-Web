@@ -4,15 +4,15 @@ context("Readalong Component with missing assets", () => {
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
-      cy.get("[data-cy=text-container]").should(($el) => {
+      cy.get("[data-test-id=text-container]").should(($el) => {
         expect($el.children().length).equal(0, "has text");
       });
-      cy.get("[data-cy=AUDIO-error]").should("not.exist");
-      cy.get("[data-cy=alignment-error]").should("not.exist");
-      cy.get("[data-cy=control-panel]")
+      cy.get("[data-test-id=AUDIO-error]").should("not.exist");
+      cy.get("[data-test-id=alignment-error]").should("not.exist");
+      cy.get("[data-test-id=control-panel]")
         .should("have.length", 1)
         .should("be.visible");
-      cy.get("[data-cy=RAS-error]")
+      cy.get("[data-test-id=RAS-error]")
         .should(($el) => {
           expect($el.hasClass("fade")).equal(
             false,
@@ -25,7 +25,7 @@ context("Readalong Component with missing assets", () => {
           );
         })
         .should("be.visible");
-      cy.get("[data-cy=progress-bar]").should("have.length", 0);
+      cy.get("[data-test-id=progress-bar]").should("have.length", 0);
     });
   });
 
@@ -34,15 +34,15 @@ context("Readalong Component with missing assets", () => {
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
-      cy.get("[data-cy=text-container]").should(($el) => {
+      cy.get("[data-test-id=text-container]").should(($el) => {
         expect($el.children().length).equal(0, "has text");
       });
-      cy.get("[data-cy=AUDIO-error]").should("not.exist");
-      cy.get("[data-cy=alignment-error]").should("not.exist");
-      cy.get("[data-cy=control-panel]")
+      cy.get("[data-test-id=AUDIO-error]").should("not.exist");
+      cy.get("[data-test-id=alignment-error]").should("not.exist");
+      cy.get("[data-test-id=control-panel]")
         .should("have.length", 1)
         .should("be.visible");
-      cy.get("[data-cy=RAS-error]")
+      cy.get("[data-test-id=RAS-error]")
         .should(($el) => {
           expect($el.hasClass("fade")).equal(
             false,
@@ -55,7 +55,7 @@ context("Readalong Component with missing assets", () => {
           );
         })
         .should("be.visible");
-      cy.get("[data-cy=progress-bar]").should("have.length", 0);
+      cy.get("[data-test-id=progress-bar]").should("have.length", 0);
     });
   });
 
@@ -65,7 +65,7 @@ context("Readalong Component with missing assets", () => {
 
     cy.readalong().within(() => {
       cy.contains("Page");
-      cy.get("[data-cy=AUDIO-error]")
+      cy.get("[data-test-id=AUDIO-error]")
         .should(($el) => {
           expect($el.hasClass("fade")).equal(false);
           //check that message is visible
@@ -74,10 +74,10 @@ context("Readalong Component with missing assets", () => {
           );
         })
         .should("be.visible");
-      cy.get("[data-cy=control-panel]").should("have.length", 0);
-      cy.get("[data-cy=RAS-error]").should("not.exist");
-      cy.get("[data-cy=alignment-error]").should("not.exist");
-      cy.get("[data-cy=progress-bar]").should("have.length", 1);
+      cy.get("[data-test-id=control-panel]").should("have.length", 0);
+      cy.get("[data-test-id=RAS-error]").should("not.exist");
+      cy.get("[data-test-id=alignment-error]").should("not.exist");
+      cy.get("[data-test-id=progress-bar]").should("have.length", 1);
     });
   });
 
@@ -87,19 +87,19 @@ context("Readalong Component with missing assets", () => {
 
     cy.readalong().within(() => {
       cy.contains("Page");
-      cy.get("[data-cy=AUDIO-error]").should("not.exist");
-      cy.get("[data-cy=control-panel]")
+      cy.get("[data-test-id=AUDIO-error]").should("not.exist");
+      cy.get("[data-test-id=control-panel]")
         .should("have.length", 1)
         .should("be.visible");
-      cy.get("[data-cy=RAS-error]").should("not.exist");
-      cy.get("[data-cy=alignment-error]")
+      cy.get("[data-test-id=RAS-error]").should("not.exist");
+      cy.get("[data-test-id=alignment-error]")
         .should(($el) => {
           expect($el.hasClass("fade")).equal(false);
           // check that message is visible
           expect($el.text()).contains("Error: No alignments were found");
         })
         .should("be.visible");
-      cy.get("[data-cy=progress-bar]").should("have.length", 0);
+      cy.get("[data-test-id=progress-bar]").should("have.length", 0);
     });
   });
 
@@ -108,9 +108,9 @@ context("Readalong Component with missing assets", () => {
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {
-      cy.get("[data-cy=alignment-error]").should("not.exist");
-      cy.get("[data-cy=RAS-error]").should("be.visible");
-      cy.get("[data-cy=AUDIO-error]").should("be.visible");
+      cy.get("[data-test-id=alignment-error]").should("not.exist");
+      cy.get("[data-test-id=RAS-error]").should("be.visible");
+      cy.get("[data-test-id=AUDIO-error]").should("be.visible");
     });
   });
 });

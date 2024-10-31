@@ -14,21 +14,21 @@ context("The Readalong Component", () => {
 
     cy.readalong().within(() => {
       // Click first line add translation
-      cy.get("[data-cy=add-translation-button]").first().click();
+      cy.get("[data-test-id=add-translation-button]").first().click();
       // Check translation line was added
-      cy.get("[data-cy=translation-line]").should("have.length", 1);
+      cy.get("[data-test-id=translation-line]").should("have.length", 1);
       // Check you can type into the new translation line
-      cy.get("[data-cy=translation-line]").type("this is a test", {
+      cy.get("[data-test-id=translation-line]").type("this is a test", {
         force: true,
       });
       // Create a new translation line with the last sentence
-      cy.get("[data-cy=add-translation-button]").last().click();
+      cy.get("[data-test-id=add-translation-button]").last().click();
       // Check it was added
-      cy.get("[data-cy=translation-line]").should("have.length", 2);
+      cy.get("[data-test-id=translation-line]").should("have.length", 2);
       // Remove the first line
-      cy.get("[data-cy=remove-translation-button]").first().click();
+      cy.get("[data-test-id=remove-translation-button]").first().click();
       // Check it was removed
-      cy.get("[data-cy=translation-line]").should("have.length", 1);
+      cy.get("[data-test-id=translation-line]").should("have.length", 1);
     });
   });
 });

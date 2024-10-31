@@ -57,7 +57,7 @@ context("Testing end user enabled settings", () => {
       cy.wait(7000); //6740 timestamp of the first word on second page
       cy.get("#t0b0d1p0s0w0").should("not.be.visible");
 
-      cy.get("[data-cy=play-button]").should("be.visible");
+      cy.get("[data-test-id=play-button]").should("be.visible");
     });
   });
   it("can save user preference", () => {

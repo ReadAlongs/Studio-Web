@@ -10,7 +10,7 @@ context("Testing creator enabled settings", () => {
     cy.readalong().within(() => {
       cy.get("#t0b0d0p0s0w0").should("be.visible");
       cy.get("#t0b0d0p0s0trtext0").should("not.be.visible");
-      cy.get("[data-cy=translation-toggle]").should("be.visible");
+      cy.get("[data-test-id=translation-toggle]").should("be.visible");
     });
   });
 
@@ -20,7 +20,7 @@ context("Testing creator enabled settings", () => {
     cy.readalong().within(() => {
       cy.get("#t0b0d0p0s0w0").should("be.visible");
       cy.get("#t0b0d0p0s0trtext0").should("be.visible");
-      cy.get("[data-cy=translation-toggle]").should("be.visible");
+      cy.get("[data-test-id=translation-toggle]").should("be.visible");
     });
   });
 
