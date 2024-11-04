@@ -5,6 +5,7 @@ import { distinctUntilChanged } from "rxjs/operators";
 import {
   Component,
   Element,
+  Fragment,
   h,
   Listen,
   Method,
@@ -23,6 +24,7 @@ import {
   USER_PREFERENCE_VERSION,
   setUserPreferences,
   extractMeta,
+  sentenceIsAligned,
 } from "../../utils/utils";
 import {
   Alignment,
@@ -185,6 +187,7 @@ export class ReadAlongComponent {
   hasTextTranslations: boolean = false;
   @State() images: { [key: string]: string | null };
   @State() translations: { [key: string]: string | null };
+
   latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders
   assetsStatus: ASSETS_STATUS = {
     AUDIO: LOADING,
@@ -1065,7 +1068,9 @@ export class ReadAlongComponent {
             const paragraphs = (page as Page).paragraphs;
             const sentences = paragraphs[
               paragraphs.length - 1
-            ].querySelectorAll("s:not(.translation)"); //get non-translation sentences in the last paragraph
+            ].querySelectorAll(
+              "s:not(.translation), s:not(.sentence__translation)",
+            ); //get non-translation sentences in the last paragraph
             const word =
               sentences[sentences.length - 1].querySelector("w:last-of-type"); //get the last word of the last sentence
             this.endOfPageTags[word.id] = [
@@ -1074,6 +1079,40 @@ export class ReadAlongComponent {
             ];
             this.finalTaggedWord = word.id; // do not pause on the last word of the read-along
           } catch (err) {}
+
+          let lastAlignedSentenceId: string | null = null;
+          //get the translations
+          page.paragraphs
+            .map((paragraph) => paragraph.querySelectorAll("s"))
+            .forEach((sentences) => {
+              if (sentences.length) {
+                sentences.forEach((sentence) => {
+                  if (sentence.id && sentenceIsAligned(sentence)) {
+                    lastAlignedSentenceId = `${sentence.id}`;
+                  } else if (/translation/.test(sentence.className)) {
+                    const translation: { [key: string]: string } = {};
+                    if ((sentence as Element).hasAttribute("sentence-id")) {
+                      let sentenceID = (sentence as Element).getAttribute(
+                        "sentence-id",
+                      );
+
+                      translation[sentenceID] = sentence.textContent;
+                      this.translations = {
+                        ...this.translations,
+                        ...translation,
+                      };
+                    } else if (lastAlignedSentenceId != null) {
+                      translation[lastAlignedSentenceId] = sentence.textContent;
+                      lastAlignedSentenceId = null;
+                      this.translations = {
+                        ...this.translations,
+                        ...translation,
+                      };
+                    }
+                  }
+                });
+              }
+            });
         }
       }
       // this.parsed_text.map((page, i) => page.img ? [i, page.img] : [i, null])
@@ -1347,13 +1386,13 @@ export class ReadAlongComponent {
   }
 
   removeLine(sentence_element: Element) {
-    let newTranslation = {};
-    newTranslation[sentence_element.id] = null;
-    this.translations = { ...this.translations, ...newTranslation };
+    delete this.translations[sentence_element.id];
+    this.translations = { ...this.translations };
   }
 
   updateTranslation(sentence_id: string, text: string) {
     this.translations[sentence_id] = text;
+    //console.log(JSON.stringify(this.translations));
   }
 
   async handleFiles(event: any, pageIndex: number) {
@@ -1608,7 +1647,11 @@ export class ReadAlongComponent {
     if (props.sentenceData.hasAttribute("xml:lang")) {
       nodeProps["lang"] = props.sentenceData.getAttribute("xml:lang");
     }
-
+    if (
+      this.mode === "EDIT" &&
+      /translation/.test(props.sentenceData.getAttribute("class"))
+    )
+      return <Fragment></Fragment>;
     return (
       <div
         {...nodeProps}
@@ -1708,6 +1751,7 @@ export class ReadAlongComponent {
                       if (event.key == "Enter") event.preventDefault();
                     }}
                     data-placeholder={this.getI18nString("line-placeholder")}
+                    innerHTML={this.translations[sentenceID]}
                   ></p>
                 </span>
               );

@@ -61,7 +61,15 @@ Please host all assets on your server, include the font and package imports defi
     readalong: Components.ReadAlong,
   ): Promise<boolean> {
     const translations: any = await readalong.getTranslations();
+
     if (Object.keys(translations).length == 0) {
+      //if there are no translations
+      //remove all existing translations
+      doc
+        .querySelectorAll("s.translation, s.sentence__translation")
+        .forEach((sentence: Element) => {
+          sentence.remove();
+        });
       return false;
     } else {
       const sentence_nodes = doc.querySelectorAll(
@@ -73,8 +81,22 @@ Please host all assets on your server, include the font and package imports defi
           (t_node) => t_node.id,
         ),
       );
+      //update current text or remove deleted translation
+      doc
+        .querySelectorAll("s.translation, s.sentence__translation")
+        .forEach((sentence: Element) => {
+          const sentenceID: string = sentence.hasAttribute("sentence-id")
+            ? (sentence.getAttribute("sentence-id") as string)
+            : sentence.id;
+          if (sentenceID in translations) {
+            sentence.textContent = translations[sentenceID];
+          } else {
+            //remove deleted translations
+            sentence.remove();
+          }
+        });
+      // Add new translations
       sentence_nodes.forEach((sentence: Element) => {
-        // Add a translation
         if (
           sentence.id in translations &&
           !translation_node_ids.has(sentence.id)
@@ -82,7 +104,8 @@ Please host all assets on your server, include the font and package imports defi
           // No namespaces!! NO! NO! NO!
           let newSentence = document.createElementNS(null, "s");
           newSentence.setAttribute("do-not-align", "true");
-          newSentence.setAttribute("id", sentence.id);
+          newSentence.setAttribute("id", `${sentence.id}`);
+          newSentence.setAttribute("sentence-id", sentence.id);
           newSentence.setAttribute(
             "class",
             "sentence__translation editable__translation",
@@ -91,18 +114,8 @@ Please host all assets on your server, include the font and package imports defi
           newSentence.append(translations[sentence.id]);
           sentence.insertAdjacentElement("afterend", newSentence);
         }
-        // Remove a translation
-        if (
-          sentence.id in translations &&
-          translations[sentence.id] === null &&
-          translation_node_ids.has(sentence.id)
-        ) {
-          let elementToRemove = doc.querySelector(
-            `#${sentence.id}.sentence__translation`,
-          );
-          elementToRemove?.remove();
-        }
       });
+
       return true;
     }
   }

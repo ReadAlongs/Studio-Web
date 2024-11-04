@@ -1,15 +1,12 @@
 context("The Readalong Component", () => {
-  /**
-   * Wait for the audio and the SMIL to load.
-   */
-  const EXPECTED_LOADING_TIME = 2000; // ms
-
   beforeEach(() => {
+    cy.intercept(/\.readalong/).as("text");
+    cy.intercept(/\.m4a/).as("audio");
     cy.visit("/ej-fra/index-edit.html");
   });
 
   it("should have editable translation buttons", () => {
-    cy.wait(EXPECTED_LOADING_TIME);
+    cy.wait(["@text", "@audio"]);
     cy.readalongElement().should("be.visible");
 
     cy.readalong().within(() => {

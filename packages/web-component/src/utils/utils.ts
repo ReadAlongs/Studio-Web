@@ -309,3 +309,7 @@ export const setUserPreferences = (userPref: UserPreferences) => {
     JSON.stringify(userPref),
   );
 };
+
+export const sentenceIsAligned = (sentence: Element): boolean => {
+  return sentence.innerHTML.includes("</w>");
+};
