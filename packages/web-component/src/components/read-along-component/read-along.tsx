@@ -1603,6 +1603,7 @@ export class ReadAlongComponent {
     attributes: NamedNodeMap;
   }): Element => (
     <div
+      {...props.attributes}
       class={
         "paragraph sentence__container theme--" +
         this.theme +
@@ -1639,7 +1640,7 @@ export class ReadAlongComponent {
     }
     let nodeProps = {};
     //attributes of sentence you want to retain
-    for (const attr of ["annotation-id", "do-not-align", "lang"]) {
+    for (const attr of ["annotation-id", "do-not-align", "lang", "id"]) {
       if (props.sentenceData.hasAttribute(attr)) {
         nodeProps[attr] = props.sentenceData.getAttribute(attr);
       }
