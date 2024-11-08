@@ -387,6 +387,9 @@ Use the text editor to paste the snippet below in your WordPress page:
       this.registerDownloadEvent(selectedOutputFormat, from);
     } else {
       let audio: HTMLAudioElement = new Audio(b64Audio);
+      // - update .readalong file translation
+      await this.updateTranslations(rasXML, readalong);
+
       this.rasService
         .convertRasFormat$(
           {
