@@ -48,7 +48,7 @@ jobs:
           start: |
             npx nx serve web-component
             npx nx serve-test-data web-component
-          wait-on: "http://localhost:3333/build/web-component.esm.js"
+          wait-on: sleep 15 # there is no reliable URL to wait for...
           command: npx nx test:once web-component
       - name: Check that i18n and l10n are up to date
         run: |
