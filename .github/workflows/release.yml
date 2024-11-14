@@ -31,6 +31,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@readalongs"
       - run: npm install
+      - run: npx update-browserslist-db@latest
       - name: Build and bundle
         run: |
           npx nx build web-component
