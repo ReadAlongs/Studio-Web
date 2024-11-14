@@ -26,7 +26,8 @@ jobs:
         if: github.event.action != 'closed'
         run: |
           npm install
-      - name: Always test with the latest browserslist db
+      - name: Always preview with the latest browserslist db
+        if: github.event.action != 'closed'
         run: |
           npx update-browserslist-db@latest
       - name: Build web-component

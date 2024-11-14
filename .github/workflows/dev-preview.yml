@@ -19,9 +19,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install
-        run: |
-          npm install
+      - run: npm install
+      - run: npx update-browserslist-db@latest
       - name: Build web-component
         run: |
           npx nx build web-component

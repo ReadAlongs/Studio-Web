@@ -13,6 +13,7 @@ jobs:
         with:
           node-version: 20
       - run: npm install --verbose
+      - run: npx update-browserslist-db@latest
       - name: Ng test for studio-web
         run: |
           npx nx build web-component
