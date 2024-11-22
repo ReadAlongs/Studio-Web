@@ -9,7 +9,10 @@
     "helpme": "echo This project is part of a monorepo managed using nx. Run the targets in project.json using npx nx target studio-web at the root of the monorepo.",
     "ng": "ng",
     "test:ng": "ng test",
-    "test:once": "ng test --watch=false --browsers ChromeHeadlessCI"
+    "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
+    "e2e": "playwright test",
+    "nyc": "nyc --reporter=html --reporter=text-summary playwright test ",
+    "e2e-ui": "playwright test --ui"
   },
   "private": true,
   "singleFileBundleVersion": "1.5.2",

@@ -1,0 +1,15 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "all": false,
+  "include": ["src/app/*.ts"],
+  "exclude": [
+    "**/*spec.ts",
+    "**/*config.ts",
+    "**/*lang.ts",
+    "src/@types/audio-recorder-polyfill/mpeg-encoder/index.d.ts"
+  ],
+  "reporter": ["html", "text-summary"],
+  "sourceMap": true,
+  "instrument": true,
+  "require": ["ts-node/register"]
+}
