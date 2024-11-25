@@ -26,9 +26,15 @@ export const testMakeAReadAlong = async (page: Page) => {
       .click();
     await page.getByTestId("ras-audio-fileselector").click({ force: true });
     await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
+    await expect(async () => {
+      await expect(
+        page.getByTestId("next-step"),
+        "model is loaded",
+      ).not.toBeDisabled();
 
-    //create the readalong
-    await page.getByTestId("next-step").click({ force: true });
+      //create the readalong
+      await page.getByTestId("next-step").click();
+    }).toPass();
 
     //wait for edit page to load
     await expect(async () => {
@@ -104,9 +110,12 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
       "The aligner feature is not stable for webkit",
     );
     //await page.coverage.startJSCoverage();
-    const waitForSoundSwallowerModel = page.waitForResponse(/noisedict\.txt/);
+
     await page.goto("/", { waitUntil: "load" });
-    await waitForSoundSwallowerModel;
+    await expect(
+      page.getByTestId("next-step"),
+      "Soundswallower model has loaded",
+    ).not.toBeDisabled();
   });
 };
 

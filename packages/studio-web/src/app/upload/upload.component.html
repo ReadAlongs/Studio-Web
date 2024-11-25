@@ -363,7 +363,7 @@
           i18n="Next button"
           id="next-step"
           class="mt-4 plausible-event-name=CreateReadalong"
-          [disabled]="loading"
+          [disabled]="loading || !isLoaded"
           mat-raised-button
           color="primary"
           type="submit"

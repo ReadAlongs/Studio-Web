@@ -88,6 +88,11 @@ export class UploadComponent implements OnDestroy, OnInit {
       .subscribe((textString) =>
         this.uploadService.$currentText.next(textString),
       );
+    this.ssjsService.modelLoaded
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((loaded) => {
+        this.isLoaded = loaded;
+      });
   }
 
   async ngOnInit() {
