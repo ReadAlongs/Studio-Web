@@ -1,0 +1,10 @@
+#!/bin/bash
+#build the web-component
+npx nx build web-component
+# delete previous version
+rm -rf packages/web-component/wordpress-plugin/read-along-web-app-loader/js/*
+rm -rf packages/web-component/wordpress-plugin/read-along-web-app-loader.zip
+#add build to plugin and make zip
+cp dist/packages/web-component/dist/web-component/* packages/web-component/wordpress-plugin/read-along-web-app-loader/js/
+cd packages/web-component/wordpress-plugin/
+zip a -r ./read-along-web-app-loader.zip  ./read-along-web-app-loader
