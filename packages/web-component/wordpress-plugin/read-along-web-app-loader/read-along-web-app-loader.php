@@ -12,7 +12,7 @@
  * Plugin Name:       Read-Along Web App Loader
  * Plugin URI:        https://github.com/ReadAlongs/Studio-Web/
  * Description:       This plugin loads the script and styles needed to activate the &lt;read-along&gt; tag in a Word Press site
- * Version:           1.4.0
+ * Version:           1.5.0
  * Author:            Delasie Torkornoo
  * License:           MIT
  * License URI:       https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE
@@ -26,8 +26,8 @@ if (!defined("WPINC")) {
 /**
  * Currently plugin version.
  */
-define("Read_Along_Web_App_Loader_VERSION", "1.4.0");
-define("Read_Along_Web_App_VERSION", "1.4.0");
+define("Read_Along_Web_App_Loader_VERSION", "1.5.0");
+define("Read_Along_Web_App_VERSION", "1.5.x");
 class ReadAlongWebAppLoader
 {
   /**

@@ -37,6 +37,8 @@ There are two ways to generate a read-along. The online web app (download the we
 3. Configure the read-along web app component in your WordPress block editor
 
 == Changelog ==
+= 1.5.0=
+* default read-along app version bumped to 1.5.0
 = 1.4.0=
 * default read-along app version bumped to 1.4.0
 = 1.3.2 =
