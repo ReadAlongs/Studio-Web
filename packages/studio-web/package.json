@@ -11,10 +11,12 @@
     "test:ng": "ng test",
     "test:once": "ng test --watch=false --browsers ChromeHeadlessCI",
     "e2e": "playwright test",
-    "nyc": "nyc --reporter=html --reporter=text-summary playwright test ",
     "e2e-ui": "playwright test --ui"
   },
   "private": true,
   "singleFileBundleVersion": "1.5.2",
-  "singleFileBundleTimestamp": "2024-11-18+11-19-49"
+  "singleFileBundleTimestamp": "2024-11-18+11-19-49",
+  "dependencies": {
+    "readalong-studio": "file:"
+  }
 }

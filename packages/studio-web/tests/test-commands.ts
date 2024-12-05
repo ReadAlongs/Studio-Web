@@ -56,7 +56,7 @@ export const testMakeAReadAlong = async (page: Page) => {
     await page
       .getByTestId("ra-subheader")
       .fill("by me", { force: true, timeout: 0 });
-
+    await expect(page.getByTestId("ra-subheader")).toHaveValue("by me");
     //add translations
 
     await page
@@ -73,15 +73,15 @@ export const testMakeAReadAlong = async (page: Page) => {
       .getByRole("button")
       .click({ force: true, timeout: 0 });
     //update translations
-
+    await expect(page.locator("#t0b0d0p0s0translation")).toBeEditable();
     await page
       .locator("#t0b0d0p0s0translation")
       .fill("Ceci est un test.", { force: true, timeout: 0 });
-
+    await expect(page.locator("#t0b0d0p0s1translation")).toBeEditable();
     await page
       .locator("#t0b0d0p0s1translation")
       .fill("Phrase.", { force: true, timeout: 0 });
-
+    await expect(page.locator("#t0b0d0p1s0translation")).toBeEditable();
     await page
       .locator("#t0b0d0p1s0translation")
       .fill("Paragraphe.", { force: true, timeout: 0 });
@@ -99,6 +99,9 @@ export const testMakeAReadAlong = async (page: Page) => {
     page.locator("#fileElem--t0b0d1").dispatchEvent("click");
     fileChooser = await fileChooserPromise;
     fileChooser.setFiles(testAssetsPath + "page2.png");
+    await expect(async () => {
+      await expect(page.locator("div.toast-message")).not.toBeVisible();
+    }).toPass();
   });
 };
 
@@ -109,7 +112,6 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
       browserName === "webkit",
       "The aligner feature is not stable for webkit",
     );
-    //await page.coverage.startJSCoverage();
 
     await page.goto("/", { waitUntil: "load" });
     await expect(
@@ -118,15 +120,3 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
     ).not.toBeDisabled();
   });
 };
-
-/*test.afterEach(async ({ page }) => {
-    const coverage = await page.coverage.stopJSCoverage();
-    for (const entry of coverage) {
-      if (entry.source) {
-        const converter = v8toIstanbul("", 0, { source: entry.source });
-        await converter.load();
-        converter.applyCoverage(entry.functions);
-        console.log(JSON.stringify(converter.toIstanbul()));
-      }
-    }
-  });*/

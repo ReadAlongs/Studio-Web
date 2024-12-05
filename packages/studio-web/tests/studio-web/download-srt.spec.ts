@@ -19,7 +19,7 @@ test("should Download SRT ( file format)", async ({ page, browserName }) => {
     download2.suggestedFilename(),
     "should have the expected filename",
   ).toMatch(/readalong\.srt/);
-  /* TODO: figure out spacing issue*/
+
   const filePath = await download2.path();
   const fileData = fs.readFileSync(filePath, { encoding: "utf8", flag: "r" });
   const refFileData = fs.readFileSync(`${testAssetsPath}/ref/readalong.srt`, {
