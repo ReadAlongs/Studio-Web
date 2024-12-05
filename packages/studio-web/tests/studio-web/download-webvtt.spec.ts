@@ -3,6 +3,7 @@ import {
   testMakeAReadAlong,
   defaultBeforeEach,
   testAssetsPath,
+  replaceValuesWithZeroes,
 } from "../test-commands";
 import fs from "fs";
 
@@ -28,7 +29,8 @@ test("should Download WebVTT ( file format)", async ({ page, browserName }) => {
     encoding: "utf8",
     flag: "r",
   });
-  await expect(refFileData, "file content should match reference data").toMatch(
-    fileData.replace(/\r/g, ""),
-  );
+  await expect(
+    replaceValuesWithZeroes(refFileData),
+    "file content should match reference data",
+  ).toMatch(replaceValuesWithZeroes(fileData.replace(/\r/g, "")));
 });

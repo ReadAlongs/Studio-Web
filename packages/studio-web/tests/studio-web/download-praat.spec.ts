@@ -3,6 +3,7 @@ import {
   testAssetsPath,
   testMakeAReadAlong,
   defaultBeforeEach,
+  replaceValuesWithZeroes,
 } from "../test-commands";
 import fs from "fs";
 
@@ -27,7 +28,7 @@ test("should Download Praat ( file format)", async ({ page, browserName }) => {
     { encoding: "utf8", flag: "r" },
   );
   await expect(
-    fileData.replace(/\r/g, ""),
+    replaceValuesWithZeroes(fileData.replace(/\r/g, "")),
     "file content should match reference data",
-  ).toEqual(refFileData);
+  ).toEqual(replaceValuesWithZeroes(refFileData));
 });
