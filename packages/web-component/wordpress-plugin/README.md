@@ -16,7 +16,7 @@ This page contains instructions on how to embed a read-along book in your WordPr
 
 You must have an administrator account on your WordPress site to install this plugin.
 
-### Manual Installation
+### Installation
 
 ![Manual Installation Screenshot](read-along-web-app-loader/assets/screenshot-manual-install.png)
 
@@ -27,15 +27,6 @@ You must have an administrator account on your WordPress site to install this pl
 5. Click **Upload Plugin**
 6. Choose File `read-along-web-app-loader.zip` and click **Install Now**
 7. Activate the plugin.
-
-### Installing from the Plugin Directory _(coming soon)_
-
-1. Login to your WordPress site
-2. Choose Plugins from the menu of the Dashboard
-3. Click **Add New Plugin**
-4. Search for `Read Along`
-5. Click **Install Now** when you find **Read Along Web App Loader**
-6. Click **Activate**
 
 ## Embedding a Read-Along in WordPress
 

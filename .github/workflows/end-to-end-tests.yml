@@ -46,7 +46,7 @@ jobs:
         run: |
           cd packages/web-component/wordpress-plugin
           unzip -d extract read-along-web-app-loader.zip
-          if ! diff -qr read-along-web-app-loader extract/read-along-web-app-loader; then \
+          if ! diff --exclude=js -qr read-along-web-app-loader extract/read-along-web-app-loader; then \
             echo The zipped WordPress plugin packages/web-component/wordpress-plugin/read-along-web-app-loader.zip is out of date.; \
             false; \
           fi

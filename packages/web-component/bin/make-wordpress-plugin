@@ -1,0 +1,5 @@
+#!/bin/bash
+# delete previous version
+cd packages/web-component/wordpress-plugin/ || exit
+rm -rf read-along-web-app-loader.zip
+zip a -r ./read-along-web-app-loader.zip ./read-along-web-app-loader

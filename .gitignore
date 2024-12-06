@@ -8,3 +8,4 @@ www
 .python-version
 *~
 **/version.ts
+packages/web-component/wordpress-plugin/read-along-web-app-loader/js/*
