@@ -9,3 +9,5 @@ www
 *~
 **/version.ts
 packages/web-component/wordpress-plugin/read-along-web-app-loader/js/*
+packages/studio-web/playwright-report
+**/test-results
