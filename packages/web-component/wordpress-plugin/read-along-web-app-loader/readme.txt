@@ -6,7 +6,7 @@ Tested up to: 6.5.2
 Stable tag: 1.4.0
 Requires PHP: 7.0
 License: MIT
-License URI: GPLv2 or later
+License https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE
 
 This WordPress plugin allows the deployment and activation of a Read-Along generated using https://github.com/ReadAlongs/ on WordPress sites.
 
