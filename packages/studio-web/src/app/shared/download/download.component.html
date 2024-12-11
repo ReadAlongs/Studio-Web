@@ -1,13 +1,17 @@
 <div class="download__buttons">
   <mat-form-field class="d-lg-block" appearance="fill">
     <mat-label i18n="Output format">Output Format</mat-label>
-    <mat-select [(ngModel)]="selectedOutputFormat">
+    <mat-select
+      data-test-id="download-formats"
+      [(ngModel)]="selectedOutputFormat"
+    >
       <mat-option *ngFor="let format of outputFormats" [value]="format.value">
         {{ format.display }}
       </mat-option>
     </mat-select>
   </mat-form-field>
   <button
+    data-test-id="download-ras"
     class="download"
     color="primary"
     (click)="download()"
