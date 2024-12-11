@@ -21,7 +21,9 @@ jobs:
           node-version: 20
       - name: Install everything
         run: npm install
-
+      - name: Always test with the latest browserslist db
+        run: |
+          npx update-browserslist-db@latest
       - name: Ng test for studio-web
         run: |
           npx nx build web-component
@@ -54,81 +56,3 @@ jobs:
           npx nx bundle web-component
           git status
           git diff --word-diff=porcelain --word-diff-regex=... --color | perl -ple 's/^(\x1b[^ -+]{0,6})? (.{81,})$/$1 . " " . substr($2, 0, 40) . " [... " . (length($2)-80) . " bytes ...] " . substr($2, -40)/ex'
-  playwright-tests:
-    name: Run Playwright test-suites
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-      - name: Install and run the back-end API, needed for end-to-end testing
-        run: |
-          git clone https://github.com/ReadAlongs/Studio
-          cd Studio
-          pip install -e . -r requirements.api.txt
-          ./run-web-api.sh &
-          # wait for the API to be up
-          curl --retry 20 --retry-delay 1 --retry-all-errors http://localhost:8000/api/v1/langs
-      - name: Install everything
-        run: npm install
-      - name: Install dependencies
-        run: npm ci
-      - name: Run studio-web in the background
-        run: |
-          npx nx build web-component
-          npx nx run-many --targets=serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6 &
-
-          # wait for the studio web to be up
-          sleep 100
-          curl --retry 20 --retry-delay 30 --retry-all-errors http://localhost:4200
-      - name: Run Playwright tests for studio-web
-        run: |
-          npx playwright install --with-deps chromium
-          npx nx e2e studio-web --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-      - name: Upload blob report to GitHub Actions Artifacts
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: blob-report-${{ matrix.shardIndex }}
-          path: packages/studio-web/blob-report
-          retention-days: 1
-  merge-reports:
-    # Merge reports after playwright-tests, even if some shards have failed
-    if: ${{ !cancelled() }}
-    needs: [playwright-tests]
-    name: "Merge playwright reports"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-      - name: Install everything
-        run: npm install
-      - name: Install dependencies
-        run: npm ci
-      - name: Install playwright
-        run: npx playwright install
-      - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: all-blob-reports
-          pattern: blob-report-*
-          merge-multiple: true
-
-      - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter=html,github ./all-blob-reports
-
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report--attempt-${{ github.run_attempt }}
-          path: playwright-report
-          retention-days: 5

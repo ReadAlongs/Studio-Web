@@ -38,24 +38,22 @@
             [(ngModel)]="studioService.slots.title"
             [ngStyle]="{
               'width.ch': studioService.slots.title.length,
-              'min-width.ch': 20
+              'min-width.ch': 20,
             }"
             style="border: none"
             placeholder="Enter your title here"
             slot="read-along-header"
-            data-test-id="ra-header"
           />
           <input
             #subtitle
             [(ngModel)]="studioService.slots.subtitle"
             [ngStyle]="{
               'width.ch': studioService.slots.subtitle.length,
-              'min-width.ch': 20
+              'min-width.ch': 20,
             }"
             style="border: none"
             placeholder="Enter your subtitle here"
             slot="read-along-subheader"
-            data-test-id="ra-subheader"
           />
         </read-along>
       </div>

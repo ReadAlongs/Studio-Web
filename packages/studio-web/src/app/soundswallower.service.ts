@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, from } from "rxjs";
+import { Observable, from } from "rxjs";
 import soundswallower_factory, {
   Segment,
   SoundSwallowerModule,
@@ -32,7 +32,7 @@ export enum BeamDefaults {
   providedIn: "root",
 })
 export class SoundswallowerService {
-  modelLoaded = new BehaviorSubject<boolean>(false);
+  modelLoaded = false;
   mode = BeamDefaults.strict;
   beamParams: { [key in BeamDefaults]: BeamSettings } = {
     strict: {
@@ -56,7 +56,7 @@ export class SoundswallowerService {
   async preload(): Promise<void> {
     const scratch = new soundswallower.Decoder();
     return scratch.initialize().finally(() => {
-      this.modelLoaded.next(true);
+      this.modelLoaded = true;
       scratch.delete();
     });
   }

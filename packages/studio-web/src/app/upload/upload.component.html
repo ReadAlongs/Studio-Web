@@ -22,7 +22,6 @@
               name="inputMethod"
               aria-label="Input Method"
               [value]="studioService.inputMethod.text"
-              data-test-id="text-btn-group"
             >
               <mat-button-toggle i18n="Label for text Write toggle" value="edit"
                 >Write</mat-button-toggle
@@ -83,7 +82,6 @@
                 (click)="downloadText()"
                 aria-label="Text download button"
                 class="pr-0"
-                data-test-id="text-download-btn"
               >
                 <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
               </button>
@@ -99,7 +97,6 @@
                 matInput
                 i18n-placeholder="Example input text"
                 placeholder="Ex. Hello my name is..."
-                data-test-id="ras-text-input"
               ></textarea>
             </mat-form-field>
           </div>
@@ -118,7 +115,6 @@
               name="inputMethod"
               aria-label="Input Method"
               [value]="studioService.inputMethod.audio"
-              data-test-id="audio-btn-group"
             >
               <mat-button-toggle i18n="Audio record button" value="mic"
                 >Record</mat-button-toggle
@@ -150,7 +146,6 @@
             type="file"
             id="updateAudio"
             accept=".mp3,.wav,.webm,.m4a"
-            data-test-id="ras-audio-fileselector"
           />
         </div>
         <div
@@ -170,7 +165,6 @@
               [color]="recording ? 'warn' : 'primary'"
               aria-label="Record button"
               [disabled]="starting_to_record"
-              data-test-id="ras-audio-recording-btn"
             >
               <mat-icon class="mat-icon-lg">mic</mat-icon>
               <span
@@ -344,11 +338,7 @@
                 <mat-label i18n="Label for language dropdown"
                   >Select Language</mat-label
                 >
-                <mat-select
-                  [formControl]="studioService.langControl$"
-                  required
-                  data-test-id="language-list"
-                >
+                <mat-select [formControl]="studioService.langControl$" required>
                   <mat-option *ngFor="let lang of langs" [value]="lang.code">
                     {{ lang.names["_"] }} - ({{ lang.code }})
                   </mat-option>
@@ -363,12 +353,11 @@
           i18n="Next button"
           id="next-step"
           class="mt-4 plausible-event-name=CreateReadalong"
-          [disabled]="loading || !isLoaded"
+          [disabled]="loading"
           mat-raised-button
           color="primary"
           type="submit"
           (click)="nextStep()"
-          data-test-id="next-step"
         >
           Go to the next step!
         </button>
