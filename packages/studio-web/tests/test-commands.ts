@@ -139,3 +139,35 @@ export const disablePlausible = async (page: Page) => {
     async () => await window.localStorage.setItem("plausible_ignore", "true"),
   );
 };
+
+/**
+ * Uploads single file html (setup editor test)
+ * @param page
+ */
+export const editorDefaultBeforeEach = async (page: Page) => {
+  test.step("upload single file html", async () => {
+    await page.goto("/", { waitUntil: "load" });
+    disablePlausible(page);
+    await page.getByRole("button", { name: /Editor/ }).click();
+    await page.locator("#updateRAS").waitFor({ state: "visible" });
+    let fileChooserPromise = page.waitForEvent("filechooser");
+    await page.locator("#updateRAS").click();
+    let fileChooser = await fileChooserPromise;
+    fileChooser.setFiles(testAssetsPath + "sentence-paragr.html");
+    await expect(
+      page.locator("#audioToolbar"),
+      "audio bar should exist",
+    ).toHaveCount(1);
+    //check readalong
+    await expect(
+      page.locator("#readalongContainer"),
+      "should check that readalong is loading",
+    ).not.toBeEmpty();
+    await expect(async () => {
+      await expect(
+        page.locator("#t0b0d0"),
+        "read along has been loaded",
+      ).toHaveCount(1);
+    }).toPass();
+  });
+};
