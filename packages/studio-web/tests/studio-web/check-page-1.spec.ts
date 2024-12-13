@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { testText, defaultBeforeEach } from "../test-commands";
+import { testText, disablePlausible } from "../test-commands";
 test.describe.configure({ mode: "parallel" });
 test.describe("test studio UI & UX", () => {
+  test.beforeEach(async ({ page }) => {
+    disablePlausible(page);
+  });
   test("should check UI (en)", async ({ page }) => {
     await page.goto("/");
     //tour button is visible

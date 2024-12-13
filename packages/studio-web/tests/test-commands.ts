@@ -114,6 +114,7 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
     );
 
     await page.goto("/", { waitUntil: "load" });
+    disablePlausible(page);
     await expect(
       page.getByTestId("next-step"),
       "Soundswallower model has loaded",
@@ -130,4 +131,11 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
  */
 export const replaceValuesWithZeroes = (text: string): string => {
   return text.replace(/\d/g, "0");
+};
+
+export const disablePlausible = async (page: Page) => {
+  //disable plausible
+  await page.evaluate(
+    async () => await window.localStorage.setItem("plausible_ignore", "true"),
+  );
 };
