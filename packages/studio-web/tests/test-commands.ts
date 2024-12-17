@@ -163,6 +163,7 @@ export const editorDefaultBeforeEach = async (page: Page) => {
       page.locator("#readalongContainer"),
       "should check that readalong is loading",
     ).not.toBeEmpty();
+    await page.locator("#t0b0d0").waitFor({ state: "visible" });
     await expect(async () => {
       await expect(
         page.locator("#t0b0d0"),
