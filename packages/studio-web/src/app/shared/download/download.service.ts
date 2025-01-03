@@ -165,10 +165,14 @@ Please host all assets on your server, include the font and package imports defi
   }
 
   registerDownloadEvent(selectedOutputFormat: SupportedOutputs, from: string) {
-    const win = window;
-    (win as any).plausible(`Download`, {
-      props: { fileType: selectedOutputFormat, downloadSource: from },
-    });
+    try {
+      const win = window;
+      (win as any).plausible(`Download`, {
+        props: { fileType: selectedOutputFormat, downloadSource: from },
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async createSingleFileBlob(
