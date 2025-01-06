@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 import { testAssetsPath, editorDefaultBeforeEach } from "../test-commands";
 test.describe.configure({ mode: "parallel" });
 
-test("should edit images (editor)", async ({ page }) => {
+test("should edit images (editor)", async ({ page, isMobile }) => {
   await expect(async () => {
-    await editorDefaultBeforeEach(page);
+    await editorDefaultBeforeEach(page, isMobile);
   }).toPass();
   await page.locator("#updateRAS").waitFor({ state: "visible" });
   await expect(

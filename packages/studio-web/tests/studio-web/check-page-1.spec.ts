@@ -2,11 +2,9 @@ import { test, expect } from "@playwright/test";
 import { testText, disablePlausible } from "../test-commands";
 test.describe.configure({ mode: "parallel" });
 test.describe("test studio UI & UX", () => {
-  test.beforeEach(async ({ page }) => {
-    disablePlausible(page);
-  });
   test("should check UI (en)", async ({ page }) => {
     await page.goto("/");
+    await disablePlausible(page);
     //tour button is visible
     await expect(page.getByText("Take the tour!")).toBeVisible();
     //check text button group
@@ -22,6 +20,7 @@ test.describe("test studio UI & UX", () => {
   });
   test("should check UI (fr)", async ({ page }) => {
     await page.goto("http://localhost:4203/");
+    await disablePlausible(page);
     //tour button is visible
     await expect(
       page.getByRole("button", { name: "Visite guidée" }),
@@ -39,6 +38,7 @@ test.describe("test studio UI & UX", () => {
   });
   test("should check UI (es)", async ({ page }) => {
     await page.goto("http://localhost:4204/");
+    await disablePlausible(page);
     //tour button is visible
     await expect(page.getByText("¡Siga el tour!")).toBeVisible();
     //check text button group
@@ -54,6 +54,7 @@ test.describe("test studio UI & UX", () => {
   });
   test("should input and save text", async ({ page }) => {
     await page.goto("/");
+    await disablePlausible(page);
     await expect(page.getByTestId("text-download-btn")).toBeDisabled();
     await page.getByTestId("ras-text-input").fill(testText);
     await expect(page.getByTestId("text-download-btn")).toBeEnabled();

@@ -1,9 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { testAssetsPath, disablePlausible } from "../test-commands";
 test.describe.configure({ mode: "parallel" });
-test("should check editor UI", async ({ page }) => {
+test("should check editor UI", async ({ page, isMobile }) => {
   await page.goto("/", { waitUntil: "load" });
-  disablePlausible(page);
+
+  await disablePlausible(page);
+  if (isMobile) {
+    await page.getByTestId("menu-toggle").click();
+  }
   await page.getByRole("button", { name: /Editor/ }).click();
   await expect(
     page.getByRole("button", { name: "Take the tour!" }),

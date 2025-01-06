@@ -4,9 +4,9 @@ import fs from "fs";
 import JSZip from "jszip";
 test.describe.configure({ mode: "parallel" });
 
-test("should edit alignment and words (editor)", async ({ page }) => {
+test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
   await expect(async () => {
-    await editorDefaultBeforeEach(page);
+    await editorDefaultBeforeEach(page, isMobile);
   }).toPass();
   await page.locator("#t0b0d0p0s0").waitFor({ state: "visible" });
   //first handle
@@ -14,6 +14,11 @@ test("should edit alignment and words (editor)", async ({ page }) => {
   await handle.scrollIntoViewIfNeeded();
   const segment = await page.getByTitle("0.840-1.070");
   await segment.click();
+  await page.locator("#wavesurferContainer").hover();
+  if (isMobile) {
+    await page.mouse.wheel(-130, 0);
+  }
+
   const segBoxPreChange = await segment.boundingBox();
   //move the handle to the left to about 0.5
   await handle.hover();
@@ -21,22 +26,24 @@ test("should edit alignment and words (editor)", async ({ page }) => {
   if (segBoxPreChange)
     await page.mouse.move(segBoxPreChange.x - 100, segBoxPreChange.y);
   await page.mouse.up();
+
   //validate the new segment width
-  await expect(
-    page.getByTitle("0.506-1.070"),
-    "should have new time code",
-  ).toHaveCount(1);
-  const segBoxPostChange = await page.getByTitle("0.506-1.070").boundingBox();
+
+  const segBoxPostChange = await page
+    .locator("segment.wavesurfer-segment")
+    .first()
+    .boundingBox();
   if (segBoxPostChange && segBoxPreChange)
     expect(
       segBoxPostChange.width,
       "should be wider than the original segment",
     ).toBeGreaterThan(segBoxPreChange.width);
-  await page.getByTitle("0.506-1.070").click();
+  await page.locator("segment.wavesurfer-segment").first().click();
   await expect(
     page.getByTitle("-2.360").locator("div"),
     "should contain word `Sentence`",
   ).toContainText("Sentence");
+
   const text = await page.getByTitle("-2.360").locator("div");
   await text.scrollIntoViewIfNeeded();
   await text.click();
@@ -45,6 +52,11 @@ test("should edit alignment and words (editor)", async ({ page }) => {
     page.getByTitle("-2.360").locator("div"),
     "should now contain word `Sentences`",
   ).toContainText("Sentences");
+
+  const newStartTime = await page
+    .locator("segment.wavesurfer-segment")
+    .first()
+    .evaluate((seg) => (seg as HTMLElement).title.substring(0, 4));
 
   //check web bundle output
   await page.locator("#mat-select-value-3").click();
@@ -68,8 +80,11 @@ test("should edit alignment and words (editor)", async ({ page }) => {
     "readalong file should reflect new spelling",
   ).toMatch(/>Sentences</);
   await expect
-    .soft(readalongContent, "readalong file should reflect new alignment")
-    .toMatch(/time="0\.5\d+" dur="0\.5\d+"/);
+    .soft(
+      readalongContent,
+      "readalong file should reflect new alignment start time" + newStartTime,
+    )
+    .toMatch(new RegExp(`time="${newStartTime.replace(".", "\\.")}\\d+" `));
 
   //check SRT
   await page.locator("#mat-select-value-3").click();
@@ -86,8 +101,11 @@ test("should edit alignment and words (editor)", async ({ page }) => {
     /Sentences/,
   );
   await expect
-    .soft(fileData, "SRT file should reflect new alignment")
-    .toMatch(/00\,5\d+\s-->/);
+    .soft(
+      fileData,
+      "SRT file should reflect new alignment start time " + newStartTime,
+    )
+    .toMatch(new RegExp(`${newStartTime.replace(".", ",")}\\d+\\s-->`));
   //check WEBVTT
   await page.locator("#mat-select-value-3").click();
   await page.getByRole("option", { name: "WebVTT Subtitles" }).click();
@@ -100,8 +118,11 @@ test("should edit alignment and words (editor)", async ({ page }) => {
     /Sentences/,
   );
   await expect
-    .soft(fileData, "WEBVTT file should reflect new alignment")
-    .toMatch(/00\.5\d+\s-->/);
+    .soft(
+      fileData,
+      "WEBVTT file should reflect new alignment start time " + newStartTime,
+    )
+    .toMatch(new RegExp(`${newStartTime.replace(".", "\\.")}\\d+\\s-->`));
   //check PRAAT
   await page.locator("#mat-select-value-3").click();
   await page.getByRole("option", { name: "Praat TextGrid" }).click();
@@ -114,8 +135,13 @@ test("should edit alignment and words (editor)", async ({ page }) => {
     /text = "Sentences"/,
   );
   await expect
-    .soft(fileData, "PRAAT file should reflect new alignment")
-    .toMatch(/xmin = 0\.5\d+/);
+    .soft(
+      fileData,
+      "PRAAT file should reflect new alignment start time " + newStartTime,
+    )
+    .toMatch(
+      new RegExp(`xmin\\s=\\s${newStartTime.replace(".", "\\.")}\\d+\\\s`),
+    );
   //check elan
   await page.locator("#mat-select-value-3").click();
   await page.getByRole("option", { name: "Elan File" }).click();
@@ -128,6 +154,9 @@ test("should edit alignment and words (editor)", async ({ page }) => {
     /<ANNOTATION_VALUE>Sentences<\/ANNOTATION_VALUE>/,
   );
   await expect
-    .soft(fileData, "ELAN file should reflect new alignment")
-    .toMatch(/TIME_VALUE="5\d+"/);
+    .soft(
+      fileData,
+      "ELAN file should reflect new alignment start time " + newStartTime,
+    )
+    .toMatch(new RegExp(`TIME_VALUE="${newStartTime.substring(2)}\\d+" `));
 });

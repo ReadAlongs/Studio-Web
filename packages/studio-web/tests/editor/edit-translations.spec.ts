@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { testAssetsPath, editorDefaultBeforeEach } from "../test-commands";
+import { editorDefaultBeforeEach } from "../test-commands";
 test.describe.configure({ mode: "parallel" });
 
-test("should edit translations (editor)", async ({ page }) => {
+test("should edit translations (editor)", async ({ page, isMobile }) => {
   await expect(async () => {
-    await editorDefaultBeforeEach(page);
+    await editorDefaultBeforeEach(page, isMobile);
   }).toPass();
   await page.locator("#t0b0d0p0s0translation").waitFor({ state: "visible" });
   //edit first sentence translation

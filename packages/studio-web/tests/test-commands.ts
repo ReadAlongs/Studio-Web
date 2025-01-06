@@ -112,13 +112,15 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
       browserName === "webkit",
       "The aligner feature is not stable for webkit",
     );
+    await expect(async () => {
+      await page.goto("/", { waitUntil: "load" });
+      await expect(
+        page.getByTestId("next-step"),
+        "Soundswallower model has loaded",
+      ).not.toBeDisabled();
 
-    await page.goto("/", { waitUntil: "load" });
-    disablePlausible(page);
-    await expect(
-      page.getByTestId("next-step"),
-      "Soundswallower model has loaded",
-    ).not.toBeDisabled();
+      await disablePlausible(page);
+    }).toPass();
   });
 };
 
@@ -144,11 +146,18 @@ export const disablePlausible = async (page: Page) => {
  * Uploads single file html (setup editor test)
  * @param page
  */
-export const editorDefaultBeforeEach = async (page: Page) => {
+export const editorDefaultBeforeEach = async (
+  page: Page,
+  isMobile: boolean,
+) => {
   test.step("upload single file html", async () => {
     await page.goto("/", { waitUntil: "load" });
     disablePlausible(page);
+    if (isMobile) {
+      await page.getByTestId("menu-toggle").click();
+    }
     await page.getByRole("button", { name: /Editor/ }).click();
+
     await page.locator("#updateRAS").waitFor({ state: "visible" });
     let fileChooserPromise = page.waitForEvent("filechooser");
     await page.locator("#updateRAS").click();
