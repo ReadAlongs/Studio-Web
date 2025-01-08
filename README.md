@@ -31,14 +31,18 @@ This mono repo, formerly called Web-Component, now called Studio-Web, combines f
       - [Studio-Web](#studio-web)
       - [Understanding where the components come from when you run locally](#understanding-where-the-components-come-from-when-you-run-locally)
     - [Testing](#testing)
+      - [TL;DR](#tldr)
       - [Web-Component](#web-component-1)
       - [Studio-Web](#studio-web-1)
+        - [End-to-End tests](#end-to-end-tests)
     - [Internationalization (i18n) and localization (l10n)](#internationalization-i18n-and-localization-l10n)
-    - [Build \& Publish](#build--publish-the-web-component)
+    - [Build \& Publish the Web Component](#build--publish-the-web-component)
       - [Preparing to publish the Web Component \& Angular Wrapper](#preparing-to-publish-the-web-component--angular-wrapper)
       - [Web Component \& Angular Wrapper - via a tag push](#web-component--angular-wrapper---via-a-tag-push)
       - [Web Component \& Angular Wrapper - manually - please don't do this!](#web-component--angular-wrapper---manually---please-dont-do-this)
-    - [Build \& Deploy the Studio-Web App](#build--deploy-the-studio-web-app)
+    - [Build \& Deploy the Studio-Web app](#build--deploy-the-studio-web-app)
+      - [Automated Deployment](#automated-deployment)
+      - [Build Studio-Web and deploy it somewhere else](#build-studio-web-and-deploy-it-somewhere-else)
   - [Maintainers](#maintainers)
   - [Contributing](#contributing)
   - [Acknowledgements](#acknowledgements)
@@ -189,6 +193,10 @@ to serve or import. In the instructions above, we actually show two methods you 
     npm install
     npx nx run-many --targets=serve-test-data,serve,test:once --projects=web-component
     # Ctrl-C once "✔ All specs passed!  01:01  34  34" appears (34 specs as of writing)
+    npx playwright install --with-deps firefox chromium webkit
+    npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
+    npx nx e2e studio-web
+    #Expect "47 passed (4.6m)" (47 tests as of writing)
     npx nx test:once studio-web
     # Expect "TOTAL: 25 SUCCESS" (25 tests as of writing)
     npx nx extract-i18n studio-web
@@ -224,9 +232,28 @@ Alternatively run together as:
 #### Studio-Web
 
 To run the unit tests for Studio-Web, first build `web-component` in one of the ways listed
-above (or just `npx nx build web-component`) if you have not already done so, and then run:
+above (or just `npx nx build web-component`) if you have not already done so, and then
+run:
 
     npx nx test:once studio-web
+
+##### End-to-End tests
+
+To run the end-to-end tests for Studio-Web, please check the following:
+
+- Ensure that you have built the `web-component` (run `npx nx build web-component`)
+- Check that `studio-cli` is installed and running (run `npx nx serve-web-api studio-web`)
+- Confirm that `studio-web` is up and running (run `npx nx run-many --targets=serve,serve-fr,serve-es --projects=studio-web --parallel 3`). Your browser must be able to load `http://localhost:4200/` before you proceed.
+- Verify that `playwright` is installed and configured (run `npx playwright install --with-deps firefox chromium webkit`)
+
+Alternatively run together as:
+
+    npx playwright install --with-deps firefox chromium webkit &&  npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
+
+Once you have confirmed that everything is online and working run:
+`npx nx e2e studio-web` and wait for the report.
+
+**PS**: If you want to run a spec interactively you can run `npx nx e2e-ui studio-web` to get playwright interactive user interface.
 
 ### Internationalization (i18n) and localization (l10n)
 
