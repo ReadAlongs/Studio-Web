@@ -112,12 +112,15 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
       browserName === "webkit",
       "The aligner feature is not stable for webkit",
     );
+    await expect(async () => {
+      await page.goto("/", { waitUntil: "load" });
+      await expect(
+        page.getByTestId("next-step"),
+        "Soundswallower model has loaded",
+      ).not.toBeDisabled();
 
-    await page.goto("/", { waitUntil: "load" });
-    await expect(
-      page.getByTestId("next-step"),
-      "Soundswallower model has loaded",
-    ).not.toBeDisabled();
+      await disablePlausible(page);
+    }).toPass();
   });
 };
 
@@ -130,4 +133,51 @@ export const defaultBeforeEach = async (page: Page, browserName: string) => {
  */
 export const replaceValuesWithZeroes = (text: string): string => {
   return text.replace(/\d/g, "0");
+};
+
+export const disablePlausible = async (page: Page) => {
+  //disable plausible
+  await page.evaluate(
+    async () => await window.localStorage.setItem("plausible_ignore", "true"),
+  );
+};
+
+/**
+ * Uploads single file html (setup editor test)
+ * @param page
+ */
+export const editorDefaultBeforeEach = async (
+  page: Page,
+  isMobile: boolean,
+) => {
+  test.step("upload single file html", async () => {
+    await page.goto("/", { waitUntil: "load" });
+    disablePlausible(page);
+    if (isMobile) {
+      await page.getByTestId("menu-toggle").click();
+    }
+    await page.getByRole("button", { name: /Editor/ }).click();
+
+    await page.locator("#updateRAS").waitFor({ state: "visible" });
+    let fileChooserPromise = page.waitForEvent("filechooser");
+    await page.locator("#updateRAS").click();
+    let fileChooser = await fileChooserPromise;
+    fileChooser.setFiles(testAssetsPath + "sentence-paragr.html");
+    await expect(
+      page.locator("#audioToolbar"),
+      "audio bar should exist",
+    ).toHaveCount(1);
+    //check readalong
+    await expect(
+      page.locator("#readalongContainer"),
+      "should check that readalong is loading",
+    ).not.toBeEmpty();
+    await page.locator("#t0b0d0").waitFor({ state: "visible" });
+    await expect(async () => {
+      await expect(
+        page.locator("#t0b0d0"),
+        "read along has been loaded",
+      ).toHaveCount(1);
+    }).toPass();
+  });
 };

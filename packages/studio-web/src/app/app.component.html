@@ -3,7 +3,12 @@
     ReadAlong Studio
   </span>
   <span class="nav-spacer"></span>
-  <button class="d-md-none" mat-button [matMenuTriggerFor]="menu">
+  <button
+    class="d-md-none"
+    data-test-id="menu-toggle"
+    mat-button
+    [matMenuTriggerFor]="menu"
+  >
     <mat-icon>menu</mat-icon>
   </button>
   <mat-menu #menu="matMenu">

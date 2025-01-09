@@ -127,7 +127,7 @@ server, so we don't generate bogus traffic.
 ### Change an alignment
 
 - click on "This" in the web-c preview
-  - Expect the audio playback cue to be betwee 0.7 s and 1.0 s in the web-c preview
+  - Expect the audio playback cue to be between 0.7 s and 1.0 s in the web-c preview
 - Drag the start of "This" to 0.5 s in the Audio Toolbar
 - click on "This" in the web-c preview
   - Expect the audio playback cue to be at 0.5 s in the web-c preview
