@@ -6,7 +6,8 @@ on:
   - push
   - workflow_call
 jobs:
-  test-suites:
+  web-component-suites:
+    name: Web-Component tests and utilities verification
     runs-on: ubuntu-latest
     # Stop the occasional rogue instance before the 6h GitHub limit
     timeout-minutes: 15
@@ -22,10 +23,6 @@ jobs:
       - name: Install everything
         run: npm install
 
-      - name: Ng test for studio-web
-        run: |
-          npx nx build web-component
-          npx nx test:once studio-web
       - name: Cypress run for web-component
         uses: cypress-io/github-action@v6
         with:
@@ -54,15 +51,15 @@ jobs:
           npx nx bundle web-component
           git status
           git diff --word-diff=porcelain --word-diff-regex=... --color | perl -ple 's/^(\x1b[^ -+]{0,6})? (.{81,})$/$1 . " " . substr($2, 0, 40) . " [... " . (length($2)-80) . " bytes ...] " . substr($2, -40)/ex'
-  playwright-tests:
-    name: Run Playwright test-suites
+  studio-e2e-tests:
+    name: Studio Web test-suites
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+        shardIndex: [1, 2, 3]
+        shardTotal: [3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -80,14 +77,18 @@ jobs:
         run: npm install
       - name: Install dependencies
         run: npm ci
+      - name: Ng test for studio-web
+        run: |
+          npx nx build web-component
+          npx nx test:once studio-web
       - name: Run studio-web in the background
         run: |
           npx nx build web-component
           npx nx run-many --targets=serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6 &
 
           # wait for the studio web to be up
-          sleep 100
-          curl --retry 20 --retry-delay 30 --retry-all-errors http://localhost:4200
+          sleep 50
+          curl --retry 20 --retry-delay 10 --retry-all-errors http://localhost:4200 > /dev/null
       - name: Run Playwright tests for studio-web
         run: |
           npx playwright install --with-deps chromium
@@ -102,8 +103,8 @@ jobs:
   merge-reports:
     # Merge reports after playwright-tests, even if some shards have failed
     if: ${{ !cancelled() }}
-    needs: [playwright-tests]
-    name: "Merge playwright reports"
+    needs: [studio-e2e-tests]
+    name: "Merge playwright reports from studio-web end-to-end tests"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -123,10 +124,10 @@ jobs:
           pattern: blob-report-*
           merge-multiple: true
 
-      - name: Merge into HTML Report
+      - name: Merge into a single HTML Report
         run: npx playwright merge-reports --reporter=html,github ./all-blob-reports
 
-      - name: Upload HTML report
+      - name: Upload single HTML report
         uses: actions/upload-artifact@v4
         with:
           name: html-report--attempt-${{ github.run_attempt }}

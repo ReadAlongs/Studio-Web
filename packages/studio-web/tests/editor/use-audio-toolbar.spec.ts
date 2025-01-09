@@ -12,13 +12,16 @@ test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
   //first handle
   const handle = await page.getByTitle("-1.070").locator("handle").first();
   await handle.scrollIntoViewIfNeeded();
+  await page.mouse.wheel(0, 50);
+
   const segment = await page.getByTitle("0.840-1.070");
   await segment.click();
   await page.locator("#wavesurferContainer").hover();
   if (isMobile) {
+    console.log("scrolling for mobile");
     await page.mouse.wheel(-130, 0);
   }
-
+  await expect(handle, "handle bar should be in view").toBeVisible();
   const segBoxPreChange = await segment.boundingBox();
   //move the handle to the left to about 0.5
   await handle.hover();
