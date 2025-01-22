@@ -1,6 +1,7 @@
 {
   "name": "@readalongs/ngx-web-component",
   "type": "module",
+  "license": "MIT",
   "version": "1.5.2",
   "private": false,
   "peerDependencies": {

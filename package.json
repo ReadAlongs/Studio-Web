@@ -1,5 +1,6 @@
 {
   "name": "root",
+  "license": "(MIT AND BSD-3-Clause)",
   "private": true,
   "devDependencies": {
     "@angular-builders/custom-webpack": "^17",
