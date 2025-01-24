@@ -334,10 +334,25 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     }
     if (this.studioService.inputMethod.text === "edit") {
       if (this.studioService.$textInput.value) {
-        let inputText = new Blob([this.studioService.$textInput.value], {
-          type: "text/plain",
-        });
-        this.studioService.textControl$.setValue(inputText);
+        const inputLength = this.studioService.$textInput.value.length;
+        if (inputLength > this.maxTxtSizeKB * 1024) {
+          this.toastr.error(
+            $localize`Text too large. Max size: ` +
+              this.maxTxtSizeKB +
+              $localize` KB.` +
+              $localize` Current size: ` +
+              Math.ceil(inputLength / 1024) +
+              $localize` KB.`,
+            $localize`Sorry!`,
+            { timeOut: 15000 },
+          );
+          return;
+        } else {
+          let inputText = new Blob([this.studioService.$textInput.value], {
+            type: "text/plain",
+          });
+          this.studioService.textControl$.setValue(inputText);
+        }
       } else {
         this.toastr.error(
           $localize`Please enter text to align.`,
@@ -527,8 +542,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           : this.maxTxtSizeKB;
       if (file.size > maxSizeKB * 1024) {
         this.toastr.error(
-          $localize`File too large. Max size: ` + maxSizeKB + $localize` KB`,
+          $localize`File too large. Max size: ` + maxSizeKB + $localize` KB.`,
           $localize`Sorry!`,
+          { timeOut: 15000 },
         );
         this.textInputElement.nativeElement.value = "";
       } else {
