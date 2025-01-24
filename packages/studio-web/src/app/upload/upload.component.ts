@@ -59,8 +59,10 @@ export class UploadComponent implements OnDestroy, OnInit {
   contactLink = environment.packageJson.contact;
   progressMode: ProgressBarMode = "indeterminate";
   progressValue = 0;
-  maxTxtSizeKB = 250; // Max 250 KB plain text file size
-  maxRasSizeKB = 250; // Max 250 KB .readalong XML text size
+  // Max plain text file size: 40KB is OK but takes around 15-20s on Heroku
+  maxTxtSizeKB = 40;
+  // Max .readalong XML text size: text * 5 is a rough heuristic; the XML is much bloated from the text.
+  maxRasSizeKB = 200;
   @ViewChild("textInputElement") textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
 
