@@ -154,6 +154,9 @@
     "1983793909601149790": "Por favor inténtelo de nuevo o seleccione un fichero pre-grabado.",
     "3896053555277429649": "Por favor seleccione un idioma o la opción predeterminada",
     "8052409322099101104": "Ningún idioma seleccionado",
+    "2970892766726423212": "El texto es demasiado grande. Tamaño máximo: ",
+    "1227277325872790936": " KB.",
+    "4346774921429520933": " Tamaño actual: ",
     "3533349926767927338": "Por favor entre el texto que quiere alinear.",
     "7881212750036563398": "Sin texto",
     "3578398528078428417": "Por favor seleccione un fichero de texto.",
@@ -170,7 +173,6 @@
     "1326685349515945581": " procesado pero no cargado. Su audio se mantendrá en su computadora.",
     "6899344040225872362": "¡Genial!",
     "7895338145504956239": "Fichero demasiado grande. Tamaño máximo: ",
-    "5997429059663319535": " KB",
     "2722548994886578004": " procesado. El texto se cargará mediante una conexión encriptada cuando pase al próximo paso."
   }
 }
