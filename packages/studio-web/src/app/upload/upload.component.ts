@@ -333,6 +333,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       return;
     }
     if (this.studioService.inputMethod.text === "edit") {
+      this.studioService.textControl$.setValue(null);
       if (this.studioService.$textInput.value) {
         const inputLength = this.studioService.$textInput.value.length;
         if (inputLength > this.maxTxtSizeKB * 1024) {
@@ -393,9 +394,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           this.studioService.textControl$.value.name
             .toLowerCase()
             .endsWith(".readalong"))
-      )
+      ) {
         input_type = "application/readalong+xml";
-      else input_type = "text/plain";
+      } else {
+        input_type = "text/plain";
+      }
       // Create request (text is possibly read from a file later...)
       let body: ReadAlongRequest = {
         text_languages: [
