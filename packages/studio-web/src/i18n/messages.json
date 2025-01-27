@@ -154,7 +154,8 @@
     "1983793909601149790": "Please try again, or select a pre-recorded file.",
     "3896053555277429649": "Please select a language or choose the default option",
     "8052409322099101104": "No language selected",
-    "2970892766726423212": "Text too large. Max size: ",
+    "6423301374041491740": "Text too large. ",
+    "8484763613240787586": "Max size: ",
     "1227277325872790936": " KB.",
     "4346774921429520933": " Current size: ",
     "3533349926767927338": "Please enter text to align.",
@@ -172,7 +173,8 @@
     "7719309746449095739": "File ",
     "1326685349515945581": " processed, but not uploaded. Your audio will stay on your computer.",
     "6899344040225872362": "Great!",
-    "7895338145504956239": "File too large. Max size: ",
+    "1957629163103268830": ".readalong file too large. ",
+    "6695070918205441013": "Text file too large. ",
     "2722548994886578004": " processed. It will be uploaded through an encrypted connection when you go to the next step."
   }
 }

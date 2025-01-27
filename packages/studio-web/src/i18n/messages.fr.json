@@ -154,7 +154,8 @@
     "1983793909601149790": "Prière de réessayer ou de choisir un fichier pré-enregistré.",
     "3896053555277429649": "Prière de choisir une langue ou l'option par défaut",
     "8052409322099101104": "Pas de langue choisie",
-    "2970892766726423212": "Texte trop long. Limite: ",
+    "6423301374041491740": "Texte trop long. ",
+    "8484763613240787586": "Limite: ",
     "1227277325872790936": " Ko.",
     "4346774921429520933": " Taille actuelle: ",
     "3533349926767927338": "Prière de saisir le texte à aligner.",
@@ -172,7 +173,8 @@
     "7719309746449095739": "Fichier ",
     "1326685349515945581": " lu, mais pas téléversé. Votre audio restera sur votre ordinateur.",
     "6899344040225872362": "Bravo!",
-    "7895338145504956239": "Fichier trop lourd. Poids maximal: ",
+    "1957629163103268830": "Fichier .readalong trop gros. ",
+    "6695070918205441013": "Fichier texte trop gros. ",
     "2722548994886578004": " lu. Il sera téléversé à l'aide d'une connexion chiffrée quand vous passerez à la prochaine étape."
   }
 }

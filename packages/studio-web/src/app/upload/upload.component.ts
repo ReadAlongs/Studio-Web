@@ -337,7 +337,8 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         const inputLength = this.studioService.$textInput.value.length;
         if (inputLength > this.maxTxtSizeKB * 1024) {
           this.toastr.error(
-            $localize`Text too large. Max size: ` +
+            $localize`Text too large. ` +
+              $localize`Max size: ` +
               this.maxTxtSizeKB +
               $localize` KB.` +
               $localize` Current size: ` +
@@ -536,13 +537,21 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         { timeOut: 10000 },
       );
     } else if (type === "text") {
-      let maxSizeKB =
-        file.name.split(".").pop() === "readalong"
-          ? this.maxRasSizeKB
-          : this.maxTxtSizeKB;
+      let maxSizeKB;
+      let fileTooBigMessage;
+      if (file.name.split(".").pop() === "readalong") {
+        maxSizeKB = this.maxRasSizeKB;
+        fileTooBigMessage = $localize`.readalong file too large. `;
+      } else {
+        maxSizeKB = this.maxTxtSizeKB;
+        fileTooBigMessage = $localize`Text file too large. `;
+      }
       if (file.size > maxSizeKB * 1024) {
         this.toastr.error(
-          $localize`File too large. Max size: ` + maxSizeKB + $localize` KB.`,
+          fileTooBigMessage +
+            $localize`Max size: ` +
+            maxSizeKB +
+            $localize` KB.`,
           $localize`Sorry!`,
           { timeOut: 15000 },
         );
