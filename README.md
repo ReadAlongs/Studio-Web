@@ -290,6 +290,12 @@ Publication to npmjs is mostly automated via the tag-triggered `release.yml` CI 
 
 The publication of the web component and its angular wrapper has been automated in the `release.yml` CI workflow. The workflow will be triggered when you push the tag vX.Y.Z tag created above.
 
+#### Post publication step
+
+After publishing a new web component version, please update the two `readalongs/text/bundle.*`
+files and the versions in the two bundle URLs listed in `readalongs/text/make_package.py` in
+[ReadAlongs/Studio](/ReadAlongs/Studio).
+
 #### Web Component & Angular Wrapper - manually - please don't do this!
 
 **WARNING**: only use this process if the release workflow is broken.
