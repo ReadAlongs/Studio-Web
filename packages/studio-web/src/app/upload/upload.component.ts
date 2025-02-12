@@ -63,6 +63,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   maxTxtSizeKB = 40;
   // Max .readalong XML text size: text * 5 is a rough heuristic; the XML is much bloated from the text.
   maxRasSizeKB = 200;
+  currentToast: number;
   @ViewChild("textInputElement") textInputElement: ElementRef;
   @Output() stepChange = new EventEmitter<any[]>();
 
@@ -87,9 +88,11 @@ export class UploadComponent implements OnDestroy, OnInit {
       .subscribe((textBlob) => this.uploadService.$currentText.next(textBlob));
     this.studioService.$textInput
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((textString) =>
-        this.uploadService.$currentText.next(textString),
-      );
+      .subscribe((textString) => {
+        //provides user with warning if text size is above limit
+        if (this.checkIsTextSizeBelowLimit())
+          this.uploadService.$currentText.next(textString);
+      });
     this.ssjsService.modelLoaded
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((loaded) => {
@@ -323,6 +326,30 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     this.studioService.inputMethod.text = event.value;
   }
 
+  checkIsTextSizeBelowLimit(): boolean {
+    if (this.studioService.$textInput.value) {
+      const inputLength = this.studioService.$textInput.value.length;
+      if (this.currentToast) {
+        this.toastr.clear(this.currentToast);
+      }
+      if (inputLength > this.maxTxtSizeKB * 1024) {
+        this.currentToast = this.toastr.error(
+          $localize`Text too large. ` +
+            $localize`Max size: ` +
+            this.maxTxtSizeKB +
+            $localize` KB.` +
+            $localize` Current size: ` +
+            Math.ceil(inputLength / 1024) +
+            $localize` KB.`,
+          $localize`Sorry!`,
+          { timeOut: 15000 },
+        ).toastId;
+        return false;
+      }
+    }
+    return true;
+  }
+
   nextStep() {
     if (this.studioService.langControl$.value === "") {
       this.toastr.error(
@@ -336,24 +363,13 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.studioService.textControl$.setValue(null);
       if (this.studioService.$textInput.value) {
         const inputLength = this.studioService.$textInput.value.length;
-        if (inputLength > this.maxTxtSizeKB * 1024) {
-          this.toastr.error(
-            $localize`Text too large. ` +
-              $localize`Max size: ` +
-              this.maxTxtSizeKB +
-              $localize` KB.` +
-              $localize` Current size: ` +
-              Math.ceil(inputLength / 1024) +
-              $localize` KB.`,
-            $localize`Sorry!`,
-            { timeOut: 15000 },
-          );
-          return;
-        } else {
+        if (this.checkIsTextSizeBelowLimit()) {
           let inputText = new Blob([this.studioService.$textInput.value], {
             type: "text/plain",
           });
           this.studioService.textControl$.setValue(inputText);
+        } else {
+          return;
         }
       } else {
         this.toastr.error(
