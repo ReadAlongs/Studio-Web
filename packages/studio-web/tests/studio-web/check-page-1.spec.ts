@@ -1,5 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { testText, disablePlausible } from "../test-commands";
+import {
+  testText,
+  disablePlausible,
+  testAssetsPath,
+  testMp3Path,
+} from "../test-commands";
+import fs from "fs";
+
 test.describe.configure({ mode: "parallel" });
 test.describe("test studio UI & UX", () => {
   test("should check UI (en)", async ({ page }) => {
@@ -66,5 +73,73 @@ test.describe("test studio UI & UX", () => {
       download2.suggestedFilename(),
       "should have the expected filename",
     ).toMatch(/ras-text-\d+\.txt/);
+  });
+
+  test("should validate input text size", async ({ page }) => {
+    await page.goto("/", { waitUntil: "load" });
+    await disablePlausible(page);
+    await expect(async () => {
+      await expect(page.getByTestId("next-step")).toBeEnabled();
+    }).toPass();
+
+    const textAboveLimit = fs.readFileSync(
+      `${testAssetsPath}/ras-text-50kb.txt`,
+      { encoding: "utf8", flag: "r" },
+    );
+    await page.getByTestId("ras-text-input").fill(textAboveLimit);
+
+    await expect(
+      page.locator("#toast-container").locator(".toast-error").first(),
+    ).toBeVisible({ timeout: 25000 });
+
+    await page
+      .getByTestId("audio-btn-group")
+      .getByRole("button", { name: "File" })
+      .click();
+    await page.getByTestId("ras-audio-fileselector").click();
+    await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
+    await page.getByTestId("next-step").click();
+    await expect(
+      page.locator("#toast-container").locator(".toast-error").first(),
+    ).toBeVisible();
+  });
+  test("should validate input text file size", async ({ page }) => {
+    await page.goto("/", { waitUntil: "load" });
+    await disablePlausible(page);
+    await expect(async () => {
+      await expect(page.getByTestId("next-step")).toBeEnabled();
+    }).toPass();
+
+    await page
+      .getByTestId("text-btn-group")
+      .getByRole("button", { name: "File" })
+      .click();
+    await page.locator("#updateText").click();
+    await page
+      .locator("#updateText")
+      .setInputFiles(testAssetsPath + "/ras-text-37kb.txt");
+
+    await expect(
+      page.locator("#toast-container").locator(".toast-error"),
+    ).toHaveCount(0);
+    await page.locator("#updateText").click();
+    await page
+      .locator("#updateText")
+      .setInputFiles(testAssetsPath + "/ras-text-50kb.txt");
+
+    await expect(
+      page.locator("#toast-container").locator(".toast-error"),
+    ).toBeVisible();
+
+    await page
+      .getByTestId("audio-btn-group")
+      .getByRole("button", { name: "File" })
+      .click();
+    await page.getByTestId("ras-audio-fileselector").click();
+    await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
+    await page.getByTestId("next-step").click();
+    await expect(
+      page.locator("#toast-container").locator(".toast-error"),
+    ).toBeVisible();
   });
 });
