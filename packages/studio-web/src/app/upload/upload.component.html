@@ -10,7 +10,7 @@
   </div>
   <div class="container">
     <div class="row g-2 mb-3">
-      <div id="text-section" class="col-12 col-md-6 p-3 border bg-light">
+      <div id="text-section" class="col-12 col-md-6 p-3 pb-0 border bg-light">
         <div class="d-flex flex-row justify-content-between">
           <div class="p-0">
             <h1 i18n="Title for text box" class="title">Text</h1>
@@ -96,9 +96,16 @@
                 (ngModelChange)="studioService.$textInput.next($event)"
                 id="textInput"
                 class="border rounded b-0 p-0 bg-light"
+                rows="8"
                 matInput
                 i18n-placeholder="Example input text"
-                placeholder="Ex. Hello my name is..."
+                placeholder="Ex. Hello my name is...
+Sentence two.
+
+Paragraph two.
+
+
+Page two."
                 data-test-id="ras-text-input"
               ></textarea>
             </mat-form-field>
