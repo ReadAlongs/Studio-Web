@@ -30,6 +30,7 @@ import { EditorService } from "./editor.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
+import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -46,6 +47,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   language: "eng" | "fra" | "spa" = "eng";
 
   unsubscribe$ = new Subject<void>();
+  hasFile = false;
   constructor(
     public b64Service: B64Service,
     private fileService: FileService,
@@ -53,7 +55,12 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     public editorService: EditorService,
     private toastr: ToastrService,
     private downloadService: DownloadService,
-  ) {}
+    private wcStylingService: WcStylingService,
+  ) {
+    this.wcStylingService.$wcStyleInput.subscribe((css) =>
+      this.updateWCStyle(css),
+    );
+  }
 
   async ngAfterViewInit(): Promise<void> {
     this.wavesurfer = WaveSurfer.create({
@@ -135,8 +142,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           this.readalong,
           this.editorService.slots,
           this.editorService.audioB64Control$.value,
+          this.wcStylingService.$wcStyleInput.getValue(),
         );
     }
+    this.hasFile = false;
   }
 
   download(download_type: SupportedOutputs) {
@@ -151,6 +160,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.editorService.slots,
         this.readalong,
         "Editor", //from
+        this.wcStylingService.$wcStyleInput.getValue(),
       );
     } else {
       this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
@@ -198,6 +208,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     const readalong = await this.parseReadalong(text);
     this.loadAudioIntoWavesurferElement();
     this.renderReadalong(readalong);
+    this.hasFile = true;
   }
 
   async renderReadalong(readalongBody: string | undefined) {
@@ -320,6 +331,24 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.parseReadalong(text2);
       }
     }
+
+    // stylesheet linked
+    const css = element.getAttribute("css-url");
+    if (css !== null) {
+      if (css.startsWith("data:text/css;base64,")) {
+        this.wcStylingService.$wcStyleInput.next(
+          this.b64Service.b64_to_utf8(css.substring(css.indexOf(",") + 1)),
+        );
+      } else {
+        const reply = await fetch(css);
+        // Did that work? Great!
+        if (reply.ok) {
+          reply.text().then((cssText) => {
+            this.wcStylingService.$wcStyleInput.next(cssText);
+          });
+        }
+      }
+    }
     return readalong.querySelector("body")?.innerHTML;
   }
 
@@ -420,5 +449,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       readalong_editor_choose_file,
     ]);
     this.shepherdService.start();
+  }
+  async updateWCStyle($event: string) {
+    this.readalong?.setCss(
+      `data:text/css;base64,${this.b64Service.utf8_to_b64($event ?? "")}`,
+    );
   }
 }

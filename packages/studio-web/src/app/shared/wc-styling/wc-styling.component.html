@@ -1,0 +1,215 @@
+<div id="style-section" class="col-12 p-3 border bg-light">
+  <div class="d-flex flex-row justify-content-between">
+    <div class="p-0">
+      <h1 i18n="Title for style box" class="title">
+        Optional:
+        <a
+          rel="noopener"
+          href="https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component#css-customization"
+          target="_blank"
+        >
+          Styling</a
+        >
+        <button class="nav__button" mat-button (click)="openHelpDialog()">
+          <mat-icon>help</mat-icon>
+          help
+        </button>
+      </h1>
+    </div>
+    <div class="p-0">
+      <mat-button-toggle-group
+        appearance="legacy"
+        (change)="toggleStyleInput($event)"
+        name="inputMethod"
+        aria-label="Input Method"
+        [value]="$inputType"
+      >
+        <mat-button-toggle i18n="Label for style Write toggle" value="edit"
+          >Write</mat-button-toggle
+        >
+        <mat-button-toggle i18n="Lable for style File toggle" value="upload"
+          >File</mat-button-toggle
+        >
+      </mat-button-toggle-group>
+    </div>
+  </div>
+  <div *ngIf="$inputType === 'upload'">
+    <div class="row">
+      <div class="mt-4 mb-3">
+        <!-- <div class="container"> -->
+        <label
+          i18n="Instructions for uploading style"
+          for="updateStyle"
+          class="form-label"
+          >Select a style sheet file (.css)</label
+        >
+        <input
+          #styleInputElement
+          (change)="onFileSelected($event)"
+          class="form-control"
+          name="text"
+          type="file"
+          id="updateStyle"
+          accept=".css"
+        />
+        <!-- </div> -->
+      </div>
+    </div>
+  </div>
+  <div *ngIf="$inputType === 'edit'">
+    <div class="d-flex flex-row justify-content-between p-0">
+      <span class="p-0"
+        ><h2 i18n="Title for style writing box" class="subtitle">
+          Write or paste your style here
+        </h2></span
+      >
+      <button mat-button (click)="updateStyle()">
+        <mat-icon class="mat-icon-lg">sync</mat-icon>
+        Apply
+      </button>
+      <span class="p-0 align-right" align="right">
+        <button
+          i18n="Style download button"
+          mat-button
+          [disabled]="!($styleText | async)"
+          (click)="downloadStyle()"
+          aria-label="Style download button"
+          class="pr-0"
+        >
+          <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
+        </button>
+      </span>
+    </div>
+    <div class="row">
+      <div class="mt-4 mb-3">
+        <!-- <div class="container"> -->
+        <label
+          i18n="Instructions for uploading font"
+          for="defaultFont"
+          class="form-label"
+          >Select an optional font (.woff2)</label
+        >
+        <input
+          #fontInputElement
+          (change)="onFontSelected($event)"
+          class="form-control"
+          name="text"
+          type="file"
+          id="defaultFont"
+          accept=".woff2,.woff,.ttf"
+        />
+        <!-- </div> -->
+      </div>
+    </div>
+    <div class="row">
+      <mat-form-field class="col-12 p-0 b-0">
+        <textarea
+          [ngModel]="$styleText | async"
+          (ngModelChange)="$styleText.next($event)"
+          id="styleInput"
+          class="border rounded b-0 p-0 bg-light"
+          matInput
+          placeholder='/**
+change color of the read along
+**/
+
+.theme--light.sentence__word,
+.theme--light.sentence__text {
+    color: rgba(80, 70, 70, .9) !important;
+}
+
+.theme--dark.sentence__word,
+.theme--dark.sentence__text {
+    color: rgba(220, 200, 200, 0.9) !important;
+}
+
+/**
+change color of the page counter
+**/
+.theme--dark .page__counter {
+    color: rgba(220, 200, 200, 0.9) !important;
+}
+
+.theme--light .page__counter {
+    color: rgba(50, 40, 40, .8) !important;
+}
+/**
+change scrollbar color
+**/
+.theme--light.pages__container {
+    scrollbar-color: rgba(220, 200, 200, 0.9) rgba(220, 200, 200, 0.2) !important;
+}
+.theme--dark.pages__container {
+    scrollbar-color: rgba(220, 200, 200, 0.9) rgba(80, 70, 70, .7) !important;
+}
+
+/**
+change background color and text color
+**/
+.theme--light.page__container,
+.theme--light.page__col__image,
+.page__container,
+.theme--light.settings {
+    background-color: rgb(250, 240, 240) !important;
+    color: rgba(80, 70, 70, .8) !important;
+}
+
+.theme--dark.page__container,
+.theme--dark.page__col__image,
+.page__container,
+.theme--dark.settings {
+    background-color: rgb(100, 90, 90) !important;
+    color: rgba(180, 170, 170, .8) !important;
+}
+
+/**
+set backgrounds
+**/
+.background--dark {
+    background: rgb(100, 90, 90) !important;
+}
+
+.background--light {
+    background: rgb(250, 240, 240) !important;
+}
+
+/** control panel section **/
+/**
+change button color
+**/
+
+.theme--light.ripple,
+.color--light {
+    color: rgba(120, 100, 100, 0.9) !important;
+}
+/** style playback speed button **/
+.theme--light input[type="range"] {
+    accent-color: rgba(150, 140, 140, 0.9) !important;
+    background-color: rgba(220, 200, 200, 0.9) !important;
+}
+
+.theme--light input[type="range"]::-webkit-slider-runnable-track,
+input[type="range"]::-moz-range-track {
+    background-color: rgba(220, 200, 200, 0.1) !important;
+}
+
+.theme--dark.ripple,
+.color--dark {
+    color: rgba(220, 200, 200, 0.9) !important;
+}
+
+.theme--dark input[type="range"] {
+    accent-color: rgba(150, 140, 140, 0.9) !important;
+    background-color: rgba(220, 200, 200, 0.5) !important;
+}
+
+.theme--dark input[type="range"]::-webkit-slider-runnable-track,
+input[type="range"]::-moz-range-track {
+    background-color: rgba(220, 200, 200, 0.5) !important;
+}
+'
+        ></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+</div>
