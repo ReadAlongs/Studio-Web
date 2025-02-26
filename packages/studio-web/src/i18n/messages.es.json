@@ -163,6 +163,7 @@
     "4812680719296626428": "Puede ser que su texto contenga caracteres impronunciables o números. Por favor verifique que todas las palabras están escritas en letras, por ejemplo escriba «cuarenta y dos» en vez de «42».",
     "858432719856825432": "Problemas de mapeo de pronunciación.",
     "9193890791359394027": "El procesamiento del texto falló.",
+    "9070810625387377245": "El alineamento falló incluso con parámetros relajados. Por favor verifique la calidad de su texto y audio y asegúrese de que coinciden bien.",
     "544933231530929418": "El alineamiento falló.",
     "3261201046681499271": "Hmm, esto es más difícil de lo habitual, espere mientras lo intentamos de nuevo.",
     "1549389605329660619": "Esto es realmente difícil. Lo intentaremos una última vez, pero puede llevar mucho tiempo y producir malos resultados. Asegúrese de que su texto coincida con su audio y que haya el menor ruido de fondo posible.",

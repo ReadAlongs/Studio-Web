@@ -163,6 +163,7 @@
     "4812680719296626428": "Your text may contain unpronounceable characters or numbers.\nPlease check it to make sure all words are spelled out completely, e.g. write \"42\" as \"forty two\".",
     "858432719856825432": "Pronunciation mapping issues.",
     "9193890791359394027": "Text processing failed.",
+    "9070810625387377245": "Unable to align even with loose alignment parameters. Please check your text and audio for quality and make sure they are a good match.",
     "544933231530929418": "Alignment failed.",
     "3261201046681499271": "Hmm, this is harder than usual, please wait while we try again.",
     "1549389605329660619": "This is really difficult. We'll try one last time, but it might take a long time and produce poor results. Please make sure your text matches your audio and that there is as little background noise as possible.",
