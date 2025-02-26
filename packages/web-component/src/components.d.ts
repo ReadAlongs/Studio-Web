@@ -96,6 +96,11 @@ export namespace Components {
          */
         "scrollBehaviour": ScrollBehaviour;
         /**
+          * Update stylesheet
+          * @param url
+         */
+        "setCss": (url: any) => Promise<void>;
+        /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
         "svgOverlay": string;

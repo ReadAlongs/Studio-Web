@@ -87,6 +87,22 @@ Type: `Promise<object>`
 
 
 
+### `setCss(url: any) => Promise<void>`
+
+Update stylesheet
+
+#### Parameters
+
+| Name  | Type  | Description |
+| ----- | ----- | ----------- |
+| `url` | `any` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `updateSpriteAlignments(alignment: Alignment) => Promise<void>`
 
 Update Single Sprite

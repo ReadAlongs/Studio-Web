@@ -115,7 +115,7 @@ export class ReadAlongComponent {
   /**
    * Optional custom Stylesheet to override defaults
    */
-  @Prop() cssUrl?: string;
+  @Prop({ mutable: true }) cssUrl?: string;
 
   /**
    * DEPRECATED
@@ -726,7 +726,14 @@ export class ReadAlongComponent {
       this.theme = "light";
     }
   }
-
+  /**
+   * Update stylesheet
+   * @param url
+   */
+  @Method()
+  async setCss(url) {
+    this.cssUrl = url;
+  }
   /**
    * Return the Sentence Container of Word
    * Currently the 3rd parent up the tree node
