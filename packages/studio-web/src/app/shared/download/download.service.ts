@@ -180,10 +180,15 @@ Please host all assets on your server, include the font and package imports defi
     readalong: Components.ReadAlong,
     slots: ReadAlongSlots,
     b64Audio: string,
+    cssText: string | null,
   ) {
     await this.updateImages(rasDoc, true, "image", readalong);
     await this.updateTranslations(rasDoc, readalong);
     let rasB64 = this.b64Service.xmlToB64(rasDoc);
+    let b64Css = "";
+    if (cssText) {
+      b64Css = `\n      css-url="data:text/css;base64,${this.b64Service.utf8_to_b64(cssText)}"`;
+    }
     if (this.b64Service.jsAndFontsBundle$.value !== null) {
       let blob = new Blob(
         [
@@ -231,7 +236,7 @@ Please host all assets on your server, include the font and package imports defi
                   version="${environment.packageJson.singleFileBundleVersion}"
                   href="data:application/readalong+xml;base64,${rasB64}"
                   audio="${b64Audio}"
-                  image-assets-folder=""
+                  image-assets-folder=""${b64Css}
                 >
                   <span slot="read-along-header">${slots.title}</span>
                   <span slot="read-along-subheader">${slots.subtitle}</span>
@@ -271,6 +276,7 @@ Please host all assets on your server, include the font and package imports defi
         readalong,
         slots,
         b64Audio,
+        cssText,
       );
       if (blob) {
         const basename = this.createRASBasename(slots.title);
@@ -301,6 +307,7 @@ Please host all assets on your server, include the font and package imports defi
         readalong,
         slots,
         b64Audio,
+        cssText,
       );
       const basename = this.createRASBasename(slots.title);
 
@@ -348,6 +355,12 @@ Please host all assets on your server, include the font and package imports defi
         .serializeToString(rasXML)
         .replace("?><read", "?>\n<read");
       const rasFile = new Blob([xmlString], { type: "application/xml" });
+      let pathCss = "";
+      if (cssText) {
+        const cssFile = new Blob([cssText], { type: "text/css" });
+        assetsFolder?.file(`${basename}.css`, cssFile);
+        pathCss = ` css-url="assets/${basename}.css"`;
+      }
       assetsFolder?.file(`${basename}.readalong`, rasFile);
       // - add index.html file
       const sampleHtml = `
@@ -370,7 +383,7 @@ Please host all assets on your server, include the font and package imports defi
               audio="assets/${basename}.${audioExtension}"
               theme="light"
               language="eng"
-              image-assets-folder="assets/"
+              image-assets-folder="assets/"${pathCss}
             >
               <span slot='read-along-header'>${slots.title}</span>
               <span slot='read-along-subheader'>${slots.subtitle}</span>

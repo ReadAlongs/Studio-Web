@@ -1,0 +1,162 @@
+<div class="style-helper">
+  <p>
+    To customize the look and feel of your read-along, you need to upload or
+    write some Cascading Style Sheets in the styling section.
+  </p>
+  <p>
+    We are providing a table below to help you customize. Please note that your
+    design must include both the light (<code>.theme--light</code>) and dark
+    (<code>.theme--dark</code>) themes
+  </p>
+
+  <h2>Common classes</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Class</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>
+          <code>.sentence__word</code>
+        </th>
+        <td>The aligned text</td>
+      </tr>
+      <tr>
+        <th>
+          <code>.sentence__word.reading</code>
+        </th>
+        <td>The aligned text being read</td>
+      </tr>
+      <tr>
+        <th>
+          <code>.sentence__text</code>
+        </th>
+        <td>The unaligned text</td>
+      </tr>
+      <tr>
+        <th>
+          <code>.sentence__translation</code>
+        </th>
+        <td>The translated text</td>
+      </tr>
+      <tr>
+        <th>
+          <code>.sentence</code>
+        </th>
+        <td>The sentence container</td>
+      </tr>
+      <tr>
+        <th>
+          <code>.paragraph</code>
+        </th>
+        <td>The paragraph containing the</td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>Sample Style</h2>
+  <!-- prettier-ignore -->
+  <pre>
+    <span class="comment">
+    /**
+    change color of the read along
+    **/</span>
+
+    <span class="css-class">.theme--light.sentence__word,
+    .theme--light.sentence__text</span> &#123;
+        color: rgba(80, 70, 70, .9) !important;
+    &#125;
+
+    <span class="css-class">.theme--dark.sentence__word,
+    .theme--dark.sentence__text</span> &#123;
+        color: rgba(220, 200, 200, 0.9) !important;
+    &#125;
+<span class="comment">
+    /**
+    change color of the page counter
+    **/</span>
+    <span class="css-class">.theme--dark .page__counter</span> &#123;
+        color: rgba(220, 200, 200, 0.9) !important;
+    &#125;
+
+    <span class="css-class">.theme--light .page__counter</span> &#123;
+        color: rgba(50, 40, 40, .8) !important;
+    &#125;
+    <span class="comment">/**
+    change scrollbar color
+    **/</span>
+    <span class="css-class">.theme--light.pages__container</span> &#123;
+        scrollbar-color: rgba(220, 200, 200, 0.9) rgba(220, 200, 200, 0.2) !important;
+    &#125;
+    <span class="css-class">.theme--dark.pages__container</span> &#123;
+        scrollbar-color: rgba(220, 200, 200, 0.9) rgba(80, 70, 70, .7) !important;
+    &#125;
+
+    <span class="comment">/**
+    change background color and text color
+    **/</span>
+    <span class="css-class">.theme--light.page__container,
+    .theme--light.page__col__image,
+    .page__container,
+    .theme--light.settings</span> &#123;
+        background-color: rgb(250, 240, 240) !important;
+        color: rgba(80, 70, 70, .8) !important;
+    &#125;
+
+    <span class="css-class">.theme--dark.page__container,
+    .theme--dark.page__col__image,
+    .page__container,
+    .theme--dark.settings</span> &#123;
+        background-color: rgb(100, 90, 90) !important;
+        color: rgba(180, 170, 170, .8) !important;
+    &#125;
+
+    <span class="comment">/**
+    set backgrounds
+    **/</span>
+    <span class="css-class">.background--dark</span> &#123;
+        background: rgb(100, 90, 90) !important;
+    &#125;
+
+    <span class="css-class">.background--light</span> &#123;
+        background: rgb(250, 240, 240) !important;
+    &#125;
+
+    <span class="comment">/** control panel section **/
+    /**
+    change button color
+    **/</span>
+
+    <span class="css-class">.theme--light.ripple,
+    .color--light</span> &#123;
+        color: rgba(120, 100, 100, 0.9) !important;
+    &#125;
+    <span class="comment">/** style playback speed button **/</span>
+    <span class="css-class">.theme--light input[type="range"]</span> &#123;
+        accent-color: rgba(150, 140, 140, 0.9) !important;
+        background-color: rgba(220, 200, 200, 0.9) !important;
+    &#125;
+
+    <span class="css-class">.theme--light input[type="range"]::-webkit-slider-runnable-track,
+    input[type="range"]::-moz-range-track</span> &#123;
+        background-color: rgba(220, 200, 200, 0.1) !important;
+    &#125;
+
+    <span class="css-class">.theme--dark.ripple,
+    .color--dark</span> &#123;
+        color: rgba(220, 200, 200, 0.9) !important;
+    &#125;
+
+    <span class="css-class">.theme--dark input[type="range"]</span> &#123;
+        accent-color: rgba(150, 140, 140, 0.9) !important;
+        background-color: rgba(220, 200, 200, 0.5) !important;
+    &#125;
+
+    <span class="css-class">.theme--dark input[type="range"]::-webkit-slider-runnable-track,
+    input[type="range"]::-moz-range-track</span> &#123;
+        background-color: rgba(220, 200, 200, 0.5) !important;
+    &#125;
+  </pre>
+</div>
