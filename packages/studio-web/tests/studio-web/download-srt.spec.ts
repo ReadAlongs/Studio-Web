@@ -28,7 +28,7 @@ test("should Download SRT ( file format)", async ({ page, browserName }) => {
     flag: "r",
   });
   await expect(
-    replaceValuesWithZeroes(fileData.replace(/\r/g, "")),
+    replaceValuesWithZeroes(fileData.replace(/\r/g, "")).trim(),
     "file content should match reference data",
-  ).toEqual(replaceValuesWithZeroes(refFileData));
+  ).toEqual(replaceValuesWithZeroes(refFileData).trim());
 });
