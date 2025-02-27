@@ -65,6 +65,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     this.wcStylingService.$wcStyleInput.subscribe((css) =>
       this.updateWCStyle(css),
     );
+    this.wcStylingService.$wcStyleFonts.subscribe((font) =>
+      this.addWCCustomFont(font),
+    );
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -145,7 +148,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           this.readalong,
           this.editorService.slots,
           this.editorService.audioB64Control$.value,
-          this.wcStylingService.$wcStyleInput.getValue(),
+          this.wcStylingService,
         );
     }
     this.hasFile = false;
@@ -163,7 +166,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.editorService.slots,
         this.readalong,
         "Editor", //from
-        this.wcStylingService.$wcStyleInput.getValue(),
+        this.wcStylingService,
       );
     } else {
       this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
@@ -270,6 +273,12 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       // Make Editable
       rasElement.setAttribute("mode", "EDIT");
       this.readalong = rasElement;
+      //set custom fonts
+      if (this.wcStylingService.$wcStyleFonts.getValue().length) {
+        this.readalong.addCustomFont(
+          this.wcStylingService.$wcStyleFonts.getValue(),
+        );
+      }
       const currentWord$ = await this.readalong.getCurrentWord();
       const alignments = await this.readalong.getAlignments();
       // Subscribe to the current word of the readalong and center the wavesurfer element on it
@@ -371,6 +380,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
 
     // stylesheet linked
+
     const css = element.getAttribute("css-url");
     if (css !== null) {
       if (css.startsWith("data:text/css;base64,")) {
@@ -386,6 +396,15 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           });
         }
       }
+    } else {
+      this.wcStylingService.$wcStyleInput.next("");
+    }
+    //check for custom fonts
+    const customFont = readalong.querySelector("#ra-wc-custom-font");
+    if (customFont !== null) {
+      this.wcStylingService.$wcStyleFonts.next(customFont.innerHTML);
+    } else {
+      this.wcStylingService.$wcStyleFonts.next("");
     }
     return readalong.querySelector("body")?.innerHTML;
   }
@@ -492,5 +511,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     this.readalong?.setCss(
       `data:text/css;base64,${this.b64Service.utf8_to_b64($event ?? "")}`,
     );
+  }
+  async addWCCustomFont($font: string) {
+    this.readalong?.addCustomFont($font);
   }
 }

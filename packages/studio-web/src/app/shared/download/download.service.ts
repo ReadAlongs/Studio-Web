@@ -17,6 +17,7 @@ import {
   SupportedOutputs,
 } from "../../ras.service";
 import { Components } from "@readalongs/web-component/loader";
+import { WcStylingService } from "../wc-styling/wc-styling.service";
 
 interface Image {
   path: string;
@@ -180,12 +181,14 @@ Please host all assets on your server, include the font and package imports defi
     readalong: Components.ReadAlong,
     slots: ReadAlongSlots,
     b64Audio: string,
-    cssText: string | null,
+    wcStylingService: WcStylingService,
   ) {
     await this.updateImages(rasDoc, true, "image", readalong);
     await this.updateTranslations(rasDoc, readalong);
     let rasB64 = this.b64Service.xmlToB64(rasDoc);
     let b64Css = "";
+    const cssText = wcStylingService.$wcStyleInput.getValue();
+    const customFont = wcStylingService.$wcStyleFonts.getValue();
     if (cssText) {
       b64Css = `\n      css-url="data:text/css;base64,${this.b64Service.utf8_to_b64(cssText)}"`;
     }
@@ -227,6 +230,7 @@ Please host all assets on your server, include the font and package imports defi
                 <style>
             ${this.b64Service.jsAndFontsBundle$.value[1]}
                 </style>
+                <style id="ra-wc-custom-font" type="text/css">${customFont}</style>
                 <script name="@readalongs/web-component" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}">
             ${this.b64Service.jsAndFontsBundle$.value[0]}
                 </script>
@@ -268,7 +272,10 @@ Please host all assets on your server, include the font and package imports defi
     slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
     from: "Studio" | "Editor" = "Studio",
+    wcStylingService: WcStylingService,
   ) {
+    const cssText = wcStylingService.$wcStyleInput.getValue();
+    const customFont = wcStylingService.$wcStyleFonts.getValue();
     if (selectedOutputFormat == SupportedOutputs.html) {
       var element = document.createElement("a");
       const blob = await this.createSingleFileBlob(
@@ -276,7 +283,7 @@ Please host all assets on your server, include the font and package imports defi
         readalong,
         slots,
         b64Audio,
-        cssText,
+        wcStylingService,
       );
       if (blob) {
         const basename = this.createRASBasename(slots.title);
@@ -307,7 +314,7 @@ Please host all assets on your server, include the font and package imports defi
         readalong,
         slots,
         b64Audio,
-        cssText,
+        wcStylingService,
       );
       const basename = this.createRASBasename(slots.title);
 
@@ -357,7 +364,7 @@ Please host all assets on your server, include the font and package imports defi
       const rasFile = new Blob([xmlString], { type: "application/xml" });
       let pathCss = "";
       if (cssText) {
-        const cssFile = new Blob([cssText], { type: "text/css" });
+        const cssFile = new Blob([customFont + cssText], { type: "text/css" });
         assetsFolder?.file(`${basename}.css`, cssFile);
         pathCss = ` css-url="assets/${basename}.css"`;
       }

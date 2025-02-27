@@ -180,15 +180,20 @@ and modify only the UI. Use the web inspector of your browser to find the classe
 }
 ```
 
-Here is a list of classes you want to override:
+Here is a list of minimum classes you want to override:
 
 - .sentence\_\_word.theme--light
 - .sentence\_\_word.theme--light.reading
 - .sentence\_\_text.theme--light
+- .sentence\_\_word.theme--dark
+- .sentence\_\_word.theme--dark.reading
+- .sentence\_\_text.theme--dark
 - .sentence\_\_translation
 - .sentence
 - .paragraph
 - .page\_\_container.theme--light (to set page background)
+
+[look at this sample stylesheet for idea](../studio-web/tests/fixtures/sentence-paragr-cust-css.css)
 
 ## XML customizations
 
