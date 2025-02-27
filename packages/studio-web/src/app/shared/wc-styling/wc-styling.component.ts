@@ -36,9 +36,8 @@ export class WcStylingComponent implements OnDestroy, OnInit {
     if (file.size > 10048576) {
       //10MB
       this.toastr.error(
-        $localize`File
-        ${file.name} could not be processed `,
-        $localize`File is too big`,
+        $localize`File ` + file.name + $localize` could not be processed.`,
+        $localize`File is too big.`,
         { timeOut: 2000 },
       );
 
@@ -55,15 +54,14 @@ export class WcStylingComponent implements OnDestroy, OnInit {
         );
         this.updateStyle();
         this.toastr.success(
-          $localize`File ` + file.name + $localize` processed. `,
+          $localize`File ` + file.name + $localize` processed.`,
           $localize`Great!`,
           { timeOut: 10000 },
         );
       })
       .catch((err) => {
         this.toastr.error(
-          $localize`Font
-        ${file.name} could not be processed `,
+          $localize`File ` + file.name + $localize` could not be processed.`,
           err,
           { timeOut: 2000 },
         );
@@ -75,9 +73,8 @@ export class WcStylingComponent implements OnDestroy, OnInit {
     if (file.size > 1048576) {
       //1MB
       this.toastr.error(
-        $localize`File
-        ${file.name} could not be processed `,
-        $localize`File is too big`,
+        $localize`File ` + file.name + $localize` could not be processed.`,
+        $localize`File is too big.`,
         { timeOut: 2000 },
       );
 
@@ -93,15 +90,15 @@ export class WcStylingComponent implements OnDestroy, OnInit {
         this.toastr.success(
           $localize`File ` +
             file.name +
-            $localize` processed. Content added to the text box.`,
+            $localize` processed.` +
+            $localize` Content loaded in the text box.`,
           $localize`Great!`,
           { timeOut: 10000 },
         );
       })
       .catch((err) => {
         this.toastr.error(
-          $localize`File
-        ${file.name} could not be processed `,
+          $localize`File ` + file.name + $localize` could not be processed.`,
           err,
           { timeOut: 2000 },
         );
