@@ -27,6 +27,22 @@
 
 ## Methods
 
+### `addCustomFont(fontData: string) => Promise<void>`
+
+Add custom font
+
+#### Parameters
+
+| Name       | Type     | Description |
+| ---------- | -------- | ----------- |
+| `fontData` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `changeTheme() => Promise<void>`
 
 Change theme

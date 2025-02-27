@@ -21,6 +21,7 @@ export class WcStylingComponent implements OnDestroy, OnInit {
   $fontDeclaration = new BehaviorSubject<string>("");
   $inputType = "edit";
   unsubscribe$ = new Subject<void>();
+  collapsed = true;
   @ViewChild("styleInputElement") styleInputElement: ElementRef;
   @ViewChild("fontInputElement") fontInputElement: ElementRef;
 
@@ -29,7 +30,21 @@ export class WcStylingComponent implements OnDestroy, OnInit {
     private wcStylingService: WcStylingService,
     private dialog: MatDialog,
     private b64Service: B64Service,
-  ) {}
+  ) {
+    //when a new file is uploaded
+    this.wcStylingService.$wcStyleInput.subscribe((css) => {
+      if (css !== this.$styleText.getValue()) {
+        this.$styleText.next(css);
+        this.collapsed = false;
+      }
+    });
+    this.wcStylingService.$wcStyleFonts.subscribe((font) => {
+      if (font !== this.$fontDeclaration.getValue()) {
+        this.$fontDeclaration.next(font);
+        this.collapsed = false;
+      }
+    });
+  }
   onFontSelected(event: any) {
     const file: File = event.target.files[0];
     const type = file.name.split(".").pop();
@@ -50,7 +65,7 @@ export class WcStylingComponent implements OnDestroy, OnInit {
         this.$fontDeclaration.next(
           this.$fontDeclaration.getValue() +
             (this.$fontDeclaration.getValue().length > 1 ? ", " : "") +
-            `url(${(data as string).replace("application/octet-stream", type == "ttf" ? "font/ttf" : "application/x-font-" + type + ";charset=utf-8")}) format('${type?.replace("ttf", "truetype")}')`,
+            `url(${(data as string).replace("application/octet-stream", type == "ttf" ? "application/x-ttf;charset=utf-8" : "application/x-font-" + type + ";charset=utf-8")}) format('${type?.replace("ttf", "truetype")}')`,
         );
         this.updateStyle();
         this.toastr.success(
@@ -112,9 +127,14 @@ export class WcStylingComponent implements OnDestroy, OnInit {
 @font-face {
     font-family: "RADefault";
     src: ${this.$fontDeclaration.getValue()};
+    font-weight: normal;
+    font-style: normal;
 }
 /* Replace aligned text font*/
-.sentence__word {
+span.theme--light.sentence__word,
+span.theme--light.sentence__text,
+span.theme--dark.sentence__word,
+span.theme--dark.sentence__text {
     font-family: RADefault, BCSans, "Noto Sans", Verdana, Arial, sans-serif !important;
   }
 `
@@ -122,8 +142,17 @@ export class WcStylingComponent implements OnDestroy, OnInit {
   }
   updateStyle() {
     this.wcStylingService.$wcStyleInput.next(
-      this.getFontDeclarations() + this.$styleText.getValue(),
+      (this.$fontDeclaration.getValue().length > 1
+        ? `/* Replace aligned text font*/
+span.theme--light.sentence__word,
+span.theme--light.sentence__text,
+span.theme--dark.sentence__word,
+span.theme--dark.sentence__text {
+    font-family: RADefault, BCSans, "Noto Sans", Verdana, Arial, sans-serif !important;
+  }`
+        : "") + this.$styleText.getValue(),
     );
+    this.wcStylingService.$wcStyleFonts.next(this.getFontDeclarations());
   }
 
   downloadStyle() {
@@ -143,16 +172,16 @@ export class WcStylingComponent implements OnDestroy, OnInit {
   }
   toggleStyleInput(event: any) {
     this.$inputType = event.value;
+    this.collapsed = false;
   }
   async ngOnInit() {
     this.wcStylingService.$wcStyleInput
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((css) => {
-        if (
-          this.$styleText.getValue().length < 1 &&
-          this.$fontDeclaration.getValue().length == 0
-        )
+        if (this.$styleText.getValue().length < 1) {
           this.$styleText.next(css);
+          this.collapsed = css.length < 1;
+        }
       });
   }
 
