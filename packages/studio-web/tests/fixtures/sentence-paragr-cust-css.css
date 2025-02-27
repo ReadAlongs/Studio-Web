@@ -1,98 +1,123 @@
+:root,
+#read-along-container {
+  --theme-light-foreground: rgb(80, 70, 70) !important;
+  --theme-light-background: rgb(250, 240, 240) !important;
+  --theme-light-system-background: rgb(240, 230, 230) !important;
+  --theme-light-system-foreground: rgb(70, 60, 60) !important;
+  --theme-dark-foreground: rgb(250, 242, 242) !important;
+  --theme-dark-background: rgb(90, 80, 80) !important;
+  --theme-dark-system-background: rgb(80, 70, 70) !important;
+  --theme-dark-system-foreground: rgb(240, 232, 232) !important;
+}
+
 /**
-change color of the read along
+change the color of the read along
 **/
 
 .theme--light.sentence__word,
-.theme--light.sentence__text {
-  color: rgba(80, 70, 70, 0.9) !important;
+.theme--light.sentence__text,
+.theme--dark.sentence__word.reading,
+.theme--dark.sentence__word:hover {
+  color: var(--theme-light-foreground) !important;
 }
 
 .theme--dark.sentence__word,
-.theme--dark.sentence__text {
-  color: rgba(220, 200, 200, 0.9) !important;
+.theme--dark.sentence__text,
+.theme--light.sentence__word.reading,
+.theme--light.sentence__word:hover {
+  color: var(--theme-dark-foreground) !important;
 }
 
 /**
-change color of the page counter
+change the color of the page counter
 **/
 .theme--dark .page__counter {
-  color: rgba(220, 200, 200, 0.9) !important;
+  color: var(--theme-dark-foreground) !important;
 }
 
 .theme--light .page__counter {
-  color: rgba(50, 40, 40, 0.8) !important;
-}
-/**
-change scrollbar color
-**/
-.theme--light.pages__container {
-  scrollbar-color: rgba(220, 200, 200, 0.9) rgba(220, 200, 200, 0.2) !important;
-}
-.theme--dark.pages__container {
-  scrollbar-color: rgba(220, 200, 200, 0.9) rgba(80, 70, 70, 0.7) !important;
+  color: var(--theme-light-foreground) !important;
 }
 
 /**
-change background color and text color
+change the scrollbar color
+**/
+.theme--light.pages__container {
+  scrollbar-color: var(--theme-light-foreground)
+    var(--theme-light-system-background) !important;
+}
+
+.theme--dark.pages__container {
+  scrollbar-color: var(--theme-dark-foreground)
+    var(--theme-dark-system-background) !important;
+}
+
+/**
+change the background color and text color
 **/
 .theme--light.page__container,
 .theme--light.page__col__image,
 .page__container,
 .theme--light.settings {
-  background-color: rgb(250, 240, 240) !important;
-  color: rgba(80, 70, 70, 0.8) !important;
+  background-color: var(--theme-light-background) !important;
+  color: var(--theme-light-foreground) !important;
 }
 
 .theme--dark.page__container,
 .theme--dark.page__col__image,
 .page__container,
 .theme--dark.settings {
-  background-color: rgb(100, 90, 90) !important;
-  color: rgba(180, 170, 170, 0.8) !important;
+  background-color: var(--theme-dark-background) !important;
+  color: var(--theme-dark-foreground) !important;
 }
 
 /**
 set backgrounds
 **/
-.background--dark {
-  background: rgb(100, 90, 90) !important;
+.background--dark,
+.theme--light.sentence__word.reading,
+.theme--light.sentence__word:hover {
+  background: var(--theme-dark-system-background) !important;
 }
 
-.background--light {
-  background: rgb(250, 240, 240) !important;
+.background--light,
+.theme--dark.sentence__word.reading,
+.theme--dark.sentence__word:hover {
+  background: var(--theme-light-system-background) !important;
 }
 
 /** control panel section **/
 /**
-change button color
+change the button color
 **/
 
 .theme--light.ripple,
 .color--light {
-  color: rgba(120, 100, 100, 0.9) !important;
+  color: var(--theme-light-foreground) !important;
 }
+
 /** style playback speed button **/
 .theme--light input[type="range"] {
-  accent-color: rgba(150, 140, 140, 0.9) !important;
-  background-color: rgba(220, 200, 200, 0.9) !important;
+  accent-color: var(--theme-light-system-foreground) !important;
+  background-color: var(--theme-light-background) !important;
 }
 
 .theme--light input[type="range"]::-webkit-slider-runnable-track,
 input[type="range"]::-moz-range-track {
-  background-color: rgba(220, 200, 200, 0.1) !important;
+  background-color: var(--theme-light-system-background) !important;
 }
 
 .theme--dark.ripple,
 .color--dark {
-  color: rgba(220, 200, 200, 0.9) !important;
+  color: var(--theme-dark-system-foreground) !important;
 }
 
 .theme--dark input[type="range"] {
-  accent-color: rgba(150, 140, 140, 0.9) !important;
-  background-color: rgba(220, 200, 200, 0.5) !important;
+  accent-color: var(--theme-dark-system-foreground) !important;
+  background-color: var(--theme-dark-system-background) !important;
 }
 
 .theme--dark input[type="range"]::-webkit-slider-runnable-track,
 input[type="range"]::-moz-range-track {
-  background-color: rgba(220, 200, 200, 0.5) !important;
+  background-color: var(--theme-dark-system-foreground) !important;
 }

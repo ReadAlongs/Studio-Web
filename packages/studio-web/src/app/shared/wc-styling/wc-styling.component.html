@@ -1,6 +1,9 @@
-<div id="style-section" class="col-12 p-3 border bg-light">
-  <div class="d-flex flex-row justify-content-between">
-    <div class="p-0">
+<div
+  id="style-section"
+  [class]="'col-12 p-3 border bg-light' + (collapsed ? ' collapsed' : '')"
+>
+  <div class="d-flex flex-column flex-md-row justify-content-between">
+    <div class="p-0 order-1 order-md-0">
       <h1 i18n="Title for style box" class="title">
         Optional:
         <a
@@ -16,7 +19,7 @@
         </button>
       </h1>
     </div>
-    <div class="p-0">
+    <div class="p-0 order-2 order-md-1">
       <mat-button-toggle-group
         appearance="legacy"
         (change)="toggleStyleInput($event)"
@@ -31,6 +34,16 @@
           >File</mat-button-toggle
         >
       </mat-button-toggle-group>
+    </div>
+    <div class="p-0 order-0 order-md-2">
+      <button
+        mat-icon-button
+        (click)="collapsed = !collapsed"
+        data-test-id="toggle-css-box"
+      >
+        <mat-icon *ngIf="collapsed">keyboard_arrow_down</mat-icon
+        ><mat-icon *ngIf="!collapsed">keyboard_arrow_up</mat-icon>
+      </button>
     </div>
   </div>
   <div *ngIf="$inputType === 'upload'">
@@ -57,17 +70,19 @@
     </div>
   </div>
   <div *ngIf="$inputType === 'edit'">
-    <div class="d-flex flex-row justify-content-between p-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between p-0">
       <span class="p-0"
         ><h2 i18n="Title for style writing box" class="subtitle">
           Write or paste your style sheet here
         </h2></span
       >
-      <button mat-button (click)="updateStyle()">
-        <mat-icon class="mat-icon-lg">sync</mat-icon>
-        Apply
-      </button>
-      <span class="p-0 align-right" align="right">
+      <span class="p-0">
+        <button mat-button (click)="updateStyle()">
+          <mat-icon class="mat-icon-lg">sync</mat-icon>
+          Apply
+        </button></span
+      >
+      <span class="p-0">
         <button
           i18n="Style download button"
           mat-button
@@ -109,105 +124,41 @@
           id="styleInput"
           class="border rounded b-0 p-0 bg-light"
           matInput
-          placeholder='/**
-change color of the read along
+          placeholder="
+Click on the (?) help button above to see a sample stylesheet you can use:
+
+:root,
+#read-along-container {
+  --theme-light-foreground: rgb(80, 70, 70) !important;
+  --theme-light-background: rgb(250, 240, 240) !important;
+  --theme-light-system-background: rgb(240, 230, 230) !important;
+  --theme-light-system-foreground: rgb(70, 60, 60) !important;
+  --theme-dark-foreground: rgb(250, 242, 242) !important;
+  --theme-dark-background: rgb(90, 80, 80) !important;
+  --theme-dark-system-background: rgb(80, 70, 70) !important;
+  --theme-dark-system-foreground: rgb(240, 232, 232) !important;
+}
+
+/**
+change the color of the read along
 **/
 
 .theme--light.sentence__word,
-.theme--light.sentence__text {
-    color: rgba(80, 70, 70, .9) !important;
+.theme--light.sentence__text,
+.theme--dark.sentence__word.reading,
+.theme--dark.sentence__word:hover {
+  color: var(--theme-light-foreground) !important;
 }
 
 .theme--dark.sentence__word,
-.theme--dark.sentence__text {
-    color: rgba(220, 200, 200, 0.9) !important;
+.theme--dark.sentence__text,
+.theme--light.sentence__word.reading,
+.theme--light.sentence__word:hover {
+  color: var(--theme-dark-foreground) !important;
 }
 
-/**
-change color of the page counter
-**/
-.theme--dark .page__counter {
-    color: rgba(220, 200, 200, 0.9) !important;
-}
 
-.theme--light .page__counter {
-    color: rgba(50, 40, 40, .8) !important;
-}
-/**
-change scrollbar color
-**/
-.theme--light.pages__container {
-    scrollbar-color: rgba(220, 200, 200, 0.9) rgba(220, 200, 200, 0.2) !important;
-}
-.theme--dark.pages__container {
-    scrollbar-color: rgba(220, 200, 200, 0.9) rgba(80, 70, 70, .7) !important;
-}
-
-/**
-change background color and text color
-**/
-.theme--light.page__container,
-.theme--light.page__col__image,
-.page__container,
-.theme--light.settings {
-    background-color: rgb(250, 240, 240) !important;
-    color: rgba(80, 70, 70, .8) !important;
-}
-
-.theme--dark.page__container,
-.theme--dark.page__col__image,
-.page__container,
-.theme--dark.settings {
-    background-color: rgb(100, 90, 90) !important;
-    color: rgba(180, 170, 170, .8) !important;
-}
-
-/**
-set backgrounds
-**/
-.background--dark {
-    background: rgb(100, 90, 90) !important;
-}
-
-.background--light {
-    background: rgb(250, 240, 240) !important;
-}
-
-/** control panel section **/
-/**
-change button color
-**/
-
-.theme--light.ripple,
-.color--light {
-    color: rgba(120, 100, 100, 0.9) !important;
-}
-/** style playback speed button **/
-.theme--light input[type="range"] {
-    accent-color: rgba(150, 140, 140, 0.9) !important;
-    background-color: rgba(220, 200, 200, 0.9) !important;
-}
-
-.theme--light input[type="range"]::-webkit-slider-runnable-track,
-input[type="range"]::-moz-range-track {
-    background-color: rgba(220, 200, 200, 0.1) !important;
-}
-
-.theme--dark.ripple,
-.color--dark {
-    color: rgba(220, 200, 200, 0.9) !important;
-}
-
-.theme--dark input[type="range"] {
-    accent-color: rgba(150, 140, 140, 0.9) !important;
-    background-color: rgba(220, 200, 200, 0.5) !important;
-}
-
-.theme--dark input[type="range"]::-webkit-slider-runnable-track,
-input[type="range"]::-moz-range-track {
-    background-color: rgba(220, 200, 200, 0.5) !important;
-}
-'
+"
         ></textarea>
       </mat-form-field>
     </div>
