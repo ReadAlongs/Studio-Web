@@ -4,13 +4,10 @@ import { DownloadComponent } from "./download/download.component";
 import { BrowserModule } from "@angular/platform-browser";
 import { MaterialModule } from "../material.module";
 import { FormsModule } from "@angular/forms";
-import {
-  WcStylingComponent,
-  WCStylingHelper,
-} from "./wc-styling/wc-styling.component";
+import { WcStylingComponent } from "./wc-styling/wc-styling.component";
 @NgModule({
-  declarations: [DownloadComponent, WcStylingComponent], //WCStylingHelper],
+  declarations: [DownloadComponent, WcStylingComponent],
   imports: [BrowserModule, MaterialModule, FormsModule, CommonModule],
-  exports: [DownloadComponent, WcStylingComponent], // WCStylingHelper],
+  exports: [DownloadComponent, WcStylingComponent],
 })
 export class SharedModule {}

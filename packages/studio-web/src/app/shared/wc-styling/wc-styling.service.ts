@@ -5,4 +5,5 @@ import { BehaviorSubject } from "rxjs";
 })
 export class WcStylingService {
   $wcStyleInput = new BehaviorSubject<string>("");
+  $wcStyleFonts = new BehaviorSubject<string>("");
 }
