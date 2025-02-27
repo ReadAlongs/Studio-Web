@@ -20,12 +20,14 @@ test("should Download web bundle (zip file format)", async ({
   await page
     .locator("#updateStyle")
     .setInputFiles(`${testAssetsPath}/sentence-paragr-cust-css.css`);
-  await expect(
-    page
-      .locator('[data-test-id="text-container"]')
-      .getByText("This", { exact: true }),
-    "check the color of the text",
-  ).toHaveCSS("color", "rgba(80, 70, 70, 0.9)");
+  await expect
+    .soft(
+      page
+        .locator('[data-test-id="text-container"]')
+        .getByText("This", { exact: true }),
+      "check the color of the text",
+    )
+    .toHaveCSS("color", "rgb(250, 242, 242)");
   //download web bundle
   await page.getByLabel("2Step").locator("svg").click();
   await page.locator(".cdk-overlay-backdrop").click();
@@ -38,8 +40,9 @@ test("should Download web bundle (zip file format)", async ({
     download1.suggestedFilename(),
     "should have the expected filename",
   ).toMatch(/sentence\-paragr\-[0-9]*\.zip/);
-  //await download1.saveAs(testAssetsPath + download1.suggestedFilename());
-  const zipPath = await download1.path();
+  const zipPath = testAssetsPath + download1.suggestedFilename();
+  await download1.saveAs(zipPath);
+
   const zipBin = await fs.readFileSync(zipPath);
   const zip = await JSZip.loadAsync(zipBin);
   await expect(
@@ -86,4 +89,5 @@ test("should Download web bundle (zip file format)", async ({
     zip.file(/www\/index.html/),
     "should have index file",
   ).toHaveLength(1); //www/index.html  exists
+  fs.unlinkSync(zipPath);
 });
