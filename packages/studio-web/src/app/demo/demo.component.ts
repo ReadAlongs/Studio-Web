@@ -34,6 +34,9 @@ export class DemoComponent implements OnDestroy, OnInit {
     this.wcStylingService.$wcStyleInput.subscribe((css) =>
       this.updateWCStyle(css),
     );
+    this.wcStylingService.$wcStyleFonts.subscribe((font) =>
+      this.addWCCustomFont(font),
+    );
   }
 
   ngOnInit(): void {}
@@ -51,7 +54,7 @@ export class DemoComponent implements OnDestroy, OnInit {
         this.studioService.slots,
         this.readalong,
         "Studio",
-        this.wcStylingService.$wcStyleInput.getValue(),
+        this.wcStylingService,
       );
     } else {
       this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
@@ -81,5 +84,8 @@ export class DemoComponent implements OnDestroy, OnInit {
     this.readalong?.setCss(
       `data:text/css;base64,${this.b64Service.utf8_to_b64($event ?? "")}`,
     );
+  }
+  async addWCCustomFont($font: string) {
+    this.readalong?.addCustomFont($font);
   }
 }

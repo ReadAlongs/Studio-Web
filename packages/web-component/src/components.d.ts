@@ -14,6 +14,10 @@ export { Element } from "@stencil/core";
 export namespace Components {
     interface ReadAlong {
         /**
+          * Add custom font
+         */
+        "addCustomFont": (fontData: string) => Promise<void>;
+        /**
           * URL of the audio file
          */
         "audio": string;
