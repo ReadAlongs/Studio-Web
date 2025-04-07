@@ -67,4 +67,12 @@ export class B64Service {
       reader.readAsDataURL(blob);
     });
   }
+
+  indent(str: string, level: number) {
+    const indent = " ".repeat(level);
+    return str
+      .split("\n")
+      .map((line) => (line.trim() ? indent + line : line))
+      .join("\n");
+  }
 }
