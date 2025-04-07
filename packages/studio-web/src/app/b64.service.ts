@@ -30,9 +30,7 @@ export class B64Service {
     return forkJoin([
       this.http
         .get(this.JS_BUNDLE_URL, { responseType: "blob" })
-        .pipe(
-          switchMap((blob: Blob) => this.fileService.readFileAsData$(blob)),
-        ),
+        .pipe(switchMap((blob: Blob) => this.fileService.readFile$(blob))),
       this.http
         .get(this.FONTS_BUNDLE_URL, { responseType: "blob" })
         .pipe(switchMap((blob: Blob) => this.fileService.readFile$(blob))),
