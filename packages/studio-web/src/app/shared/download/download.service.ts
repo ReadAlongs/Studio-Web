@@ -220,10 +220,10 @@ Please host all assets on your server, include the font and package imports defi
                 <meta name="generator" content="@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}">
                 <title>${slots.title}</title>
                 <style>
-            ${this.b64Service.indent(this.b64Service.jsAndFontsBundle$.value[1], 6)}
+            ${this.b64Service.jsAndFontsBundle$.value[1]}
                 </style>
                 <script name="@readalongs/web-component" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}">
-            ${this.b64Service.indent(this.b64Service.jsAndFontsBundle$.value[0], 6)}
+            ${this.b64Service.jsAndFontsBundle$.value[0]}
                 </script>
               </head>
               <body>
