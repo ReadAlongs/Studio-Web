@@ -219,13 +219,22 @@ Please host all assets on your server, include the font and package imports defi
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
                 <meta name="generator" content="@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}">
                 <title>${slots.title}</title>
-                <style>${this.b64Service.jsAndFontsBundle$.value[1]}</style>
-                <script src="${this.b64Service.jsAndFontsBundle$.value[0]}" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}"></script>
+                <style>
+            ${this.b64Service.jsAndFontsBundle$.value[1]}
+                </style>
+                <script name="@readalongs/web-component" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}">
+            ${this.b64Service.jsAndFontsBundle$.value[0]}
+                </script>
               </head>
               <body>
-                <read-along version="${environment.packageJson.singleFileBundleVersion}"  href="data:application/readalong+xml;base64,${rasB64}" audio="${b64Audio}" image-assets-folder="">
-                <span slot="read-along-header">${slots.title}</span>
-                <span slot="read-along-subheader">${slots.subtitle}</span>
+                <read-along
+                  version="${environment.packageJson.singleFileBundleVersion}"
+                  href="data:application/readalong+xml;base64,${rasB64}"
+                  audio="${b64Audio}"
+                  image-assets-folder=""
+                >
+                  <span slot="read-along-header">${slots.title}</span>
+                  <span slot="read-along-subheader">${slots.subtitle}</span>
                 </read-along>
               </body>
             </html>
@@ -351,8 +360,14 @@ Please host all assets on your server, include the font and package imports defi
           </head>
 
           <body>
-            <!-- Here is how you declare the Web Component. Supported languages: en, fr -->
-            <read-along href="assets/${basename}.readalong" audio="assets/${basename}.${audioExtension}" theme="light" language="en" image-assets-folder="assets/">
+            <!-- Here is how you declare the Web Component. Supported languages: eng, fra, spa -->
+            <read-along
+              href="assets/${basename}.readalong"
+              audio="assets/${basename}.${audioExtension}"
+              theme="light"
+              language="eng"
+              image-assets-folder="assets/"
+            >
               <span slot='read-along-header'>${slots.title}</span>
               <span slot='read-along-subheader'>${slots.subtitle}</span>
             </read-along>
