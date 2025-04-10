@@ -23,7 +23,10 @@ export class B64Service {
     private fileService: FileService,
   ) {
     this.getBundle$().subscribe((bundle) => {
-      this.jsAndFontsBundle$.next(bundle);
+      this.jsAndFontsBundle$.next([
+        this.indent(bundle[0], 6), //apply the indentation to the js bundle
+        this.indent(bundle[1], 6),
+      ]);
     });
   }
   getBundle$(): Observable<[string, string]> {
@@ -31,6 +34,7 @@ export class B64Service {
       this.http
         .get(this.JS_BUNDLE_URL, { responseType: "blob" })
         .pipe(switchMap((blob: Blob) => this.fileService.readFile$(blob))),
+
       this.http
         .get(this.FONTS_BUNDLE_URL, { responseType: "blob" })
         .pipe(switchMap((blob: Blob) => this.fileService.readFile$(blob))),
@@ -70,6 +74,7 @@ export class B64Service {
 
   indent(str: string, level: number) {
     const indent = " ".repeat(level);
+
     return str
       .split("\n")
       .map((line) => (line.trim() ? indent + line : line))
