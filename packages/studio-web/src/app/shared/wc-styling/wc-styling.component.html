@@ -1,0 +1,166 @@
+<div
+  id="style-section"
+  [class]="'col-12 p-3 border bg-light' + (collapsed ? ' collapsed' : '')"
+>
+  <div class="d-flex flex-column flex-md-row justify-content-between">
+    <div class="p-0 order-1 order-md-0">
+      <h1 i18n="Title for style box" class="title">
+        Optional:
+        <a
+          rel="noopener"
+          href="https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component#css-customization"
+          target="_blank"
+        >
+          Styling</a
+        >
+        <button class="nav__button" mat-button (click)="openHelpDialog()">
+          <mat-icon>help</mat-icon>
+          help
+        </button>
+      </h1>
+    </div>
+    <div class="p-0 order-2 order-md-1">
+      <mat-button-toggle-group
+        appearance="legacy"
+        (change)="toggleStyleInput($event)"
+        name="inputMethod"
+        aria-label="Input Method"
+        [value]="$inputType"
+      >
+        <mat-button-toggle i18n="Label for style Write toggle" value="edit"
+          >Write</mat-button-toggle
+        >
+        <mat-button-toggle i18n="Lable for style File toggle" value="upload"
+          >File</mat-button-toggle
+        >
+      </mat-button-toggle-group>
+    </div>
+    <div class="p-0 order-0 order-md-2">
+      <button
+        mat-icon-button
+        (click)="collapsed = !collapsed"
+        data-test-id="toggle-css-box"
+      >
+        <mat-icon *ngIf="collapsed">keyboard_arrow_down</mat-icon
+        ><mat-icon *ngIf="!collapsed">keyboard_arrow_up</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="$inputType === 'upload'">
+    <div class="row">
+      <div class="mt-4 mb-3">
+        <!-- <div class="container"> -->
+        <label
+          i18n="Instructions for uploading style"
+          for="updateStyle"
+          class="form-label"
+          >Select a style sheet file (.css)</label
+        >
+        <input
+          #styleInputElement
+          (change)="onFileSelected($event)"
+          class="form-control"
+          name="text"
+          type="file"
+          id="updateStyle"
+          accept=".css"
+        />
+        <!-- </div> -->
+      </div>
+    </div>
+  </div>
+  <div *ngIf="$inputType === 'edit'">
+    <div class="d-flex flex-column flex-md-row justify-content-between p-0">
+      <span class="p-0"
+        ><h2 i18n="Title for style writing box" class="subtitle">
+          Write or paste your style sheet here
+        </h2></span
+      >
+      <span class="p-0">
+        <button mat-button (click)="updateStyle()">
+          <mat-icon class="mat-icon-lg">sync</mat-icon>
+          Apply
+        </button></span
+      >
+      <span class="p-0">
+        <button
+          i18n="Style download button"
+          mat-button
+          [disabled]="!($styleText | async)"
+          (click)="downloadStyle()"
+          aria-label="Style download button"
+          class="pr-0"
+        >
+          <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
+        </button>
+      </span>
+    </div>
+    <div class="row">
+      <div class="mt-4 mb-3">
+        <!-- <div class="container"> -->
+        <label
+          i18n="Instructions for uploading font"
+          for="defaultFont"
+          class="form-label"
+          >Optional: use a custom font (.woff2)</label
+        >
+        <input
+          #fontInputElement
+          (change)="onFontSelected($event)"
+          class="form-control"
+          name="text"
+          type="file"
+          id="defaultFont"
+          accept=".woff2,.woff,.ttf"
+        />
+        <!-- </div> -->
+      </div>
+    </div>
+    <div class="row">
+      <mat-form-field class="col-12 p-0 b-0">
+        <textarea
+          [ngModel]="$styleText | async"
+          (ngModelChange)="$styleText.next($event)"
+          id="styleInput"
+          class="border rounded b-0 p-0 bg-light"
+          matInput
+          placeholder="
+Click on the (?) help button above to see a sample stylesheet you can use:
+
+:root,
+#read-along-container {
+  --theme-light-foreground: rgb(80, 70, 70) !important;
+  --theme-light-background: rgb(250, 240, 240) !important;
+  --theme-light-system-background: rgb(240, 230, 230) !important;
+  --theme-light-system-foreground: rgb(70, 60, 60) !important;
+  --theme-dark-foreground: rgb(250, 242, 242) !important;
+  --theme-dark-background: rgb(90, 80, 80) !important;
+  --theme-dark-system-background: rgb(80, 70, 70) !important;
+  --theme-dark-system-foreground: rgb(240, 232, 232) !important;
+}
+
+/**
+change the color of the read along
+**/
+
+.theme--light.sentence__word,
+.theme--light.sentence__text,
+.theme--dark.sentence__word.reading,
+.theme--dark.sentence__word:hover {
+  color: var(--theme-light-foreground) !important;
+}
+
+.theme--dark.sentence__word,
+.theme--dark.sentence__text,
+.theme--light.sentence__word.reading,
+.theme--light.sentence__word:hover {
+  color: var(--theme-dark-foreground) !important;
+}
+
+
+"
+        ></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+</div>

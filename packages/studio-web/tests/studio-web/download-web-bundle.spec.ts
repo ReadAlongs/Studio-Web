@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { testMakeAReadAlong, defaultBeforeEach } from "../test-commands";
+import {
+  testMakeAReadAlong,
+  defaultBeforeEach,
+  testAssetsPath,
+} from "../test-commands";
 import fs from "fs";
 import JSZip from "jszip";
 
@@ -11,12 +15,24 @@ test("should Download web bundle (zip file format)", async ({
 
   await defaultBeforeEach(page, browserName);
   await testMakeAReadAlong(page);
-
+  //add custom style
+  await page.getByRole("button", { name: "File" }).click();
+  await page
+    .locator("#updateStyle")
+    .setInputFiles(`${testAssetsPath}/sentence-paragr-cust-css.css`);
+  await expect
+    .soft(
+      page
+        .locator('[data-test-id="text-container"]')
+        .getByText("This", { exact: true }),
+      "check the color of the text",
+    )
+    .toHaveCSS("color", "rgb(250, 242, 242)");
   //download web bundle
-  await page.getByLabel("2Step").locator("svg").click();
-  await page.locator(".cdk-overlay-backdrop").click();
-  await page.locator("#mat-select-value-3").click();
-  await page.getByRole("option", { name: "Web Bundle" }).click();
+  await page.getByLabel("2Step").locator("svg").click({ force: true });
+  await page.locator(".cdk-overlay-backdrop").click({ force: true });
+  await page.locator("#mat-select-value-3").click({ force: true });
+  await page.getByRole("option", { name: "Web Bundle" }).click({ force: true });
   const download1Promise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
   const download1 = await download1Promise;
@@ -24,8 +40,9 @@ test("should Download web bundle (zip file format)", async ({
     download1.suggestedFilename(),
     "should have the expected filename",
   ).toMatch(/sentence\-paragr\-[0-9]*\.zip/);
-  //await download1.saveAs(testAssetsPath + download1.suggestedFilename());
-  const zipPath = await download1.path();
+  const zipPath = testAssetsPath + download1.suggestedFilename();
+  await download1.saveAs(zipPath);
+
   const zipBin = await fs.readFileSync(zipPath);
   const zip = await JSZip.loadAsync(zipBin);
   await expect(
@@ -53,6 +70,10 @@ test("should Download web bundle (zip file format)", async ({
     "should have wav file",
   ).toHaveLength(1); //www/assets audio exists
   await expect(
+    zip.file(/www\/assets\/sentence\-paragr\-[0-9]*\.css/),
+    "should have stylesheet file",
+  ).toHaveLength(1); //www/assets audio exists
+  await expect(
     zip.file(/www\/assets\/image-sentence\-paragr\-[0-9\-]*\.png/),
     "should have image files",
   ).toHaveLength(2); //www/assets image exists
@@ -68,4 +89,5 @@ test("should Download web bundle (zip file format)", async ({
     zip.file(/www\/index.html/),
     "should have index file",
   ).toHaveLength(1); //www/index.html  exists
+  fs.unlinkSync(zipPath);
 });
