@@ -22,7 +22,7 @@ export const testMakeAReadAlong = async (page: Page) => {
 
     await page
       .getByTestId("audio-btn-group")
-      .getByRole("button", { name: "File" })
+      .getByRole("radio", { name: "File" })
       .click();
     await page.getByTestId("ras-audio-fileselector").click({ force: true });
     await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
@@ -38,9 +38,7 @@ export const testMakeAReadAlong = async (page: Page) => {
 
     //wait for edit page to load
     await expect(async () => {
-      await expect(page.getByTestId("ra-header")).toBeVisible({
-        timeout: 0,
-      });
+      await expect(page.getByTestId("ra-header")).toBeVisible({ timeout: 0 });
       await expect(page.getByTestId("ra-header")).toBeEditable();
       //edit the headers
 
@@ -57,21 +55,12 @@ export const testMakeAReadAlong = async (page: Page) => {
       .getByTestId("ra-subheader")
       .fill("by me", { force: true, timeout: 0 });
     await expect(page.getByTestId("ra-subheader")).toHaveValue("by me");
+
     //add translations
+    await page.locator("#t0b0d0p0s0").getByRole("button").click({ timeout: 0 });
+    await page.locator("#t0b0d0p0s1").getByRole("button").click({ timeout: 0 });
+    await page.locator("#t0b0d0p1s0").getByRole("button").click({ timeout: 0 });
 
-    await page
-      .locator("#t0b0d0p0s0")
-      .getByRole("button")
-      .click({ force: true, timeout: 0 });
-
-    await page
-      .locator("#t0b0d0p0s1")
-      .getByRole("button")
-      .click({ force: true, timeout: 0 });
-    await page
-      .locator("#t0b0d0p1s0")
-      .getByRole("button")
-      .click({ force: true, timeout: 0 });
     //update translations
     await expect(page.locator("#t0b0d0p0s0translation")).toBeEditable();
     await page

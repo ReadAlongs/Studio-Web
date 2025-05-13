@@ -14,7 +14,7 @@ test("should make read along", async ({ page, browserName }) => {
   await expect(page.getByTestId("text-download-btn")).toBeVisible();
   await page
     .getByTestId("audio-btn-group")
-    .getByRole("button", { name: "File" })
+    .getByRole("radio", { name: "File" })
     .click();
   await page.getByTestId("ras-audio-fileselector").click();
   await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
