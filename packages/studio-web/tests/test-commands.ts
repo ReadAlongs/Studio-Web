@@ -22,7 +22,7 @@ export const testMakeAReadAlong = async (page: Page) => {
 
     await page
       .getByTestId("audio-btn-group")
-      .getByRole("button", { name: "File" })
+      .getByRole("radio", { name: "File" })
       .click();
     await page.getByTestId("ras-audio-fileselector").click({ force: true });
     await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);

@@ -94,7 +94,7 @@ test.describe("test studio UI & UX", () => {
 
     await page
       .getByTestId("audio-btn-group")
-      .getByRole("button", { name: "File" })
+      .getByRole("radio", { name: "File" })
       .click();
     await page.getByTestId("ras-audio-fileselector").click();
     await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
@@ -112,7 +112,7 @@ test.describe("test studio UI & UX", () => {
 
     await page
       .getByTestId("text-btn-group")
-      .getByRole("button", { name: "File" })
+      .getByRole("radio", { name: "File" })
       .click();
     await page.locator("#updateText").click();
     await page
@@ -133,7 +133,7 @@ test.describe("test studio UI & UX", () => {
 
     await page
       .getByTestId("audio-btn-group")
-      .getByRole("button", { name: "File" })
+      .getByRole("radio", { name: "File" })
       .click();
     await page.getByTestId("ras-audio-fileselector").click();
     await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
