@@ -5,8 +5,8 @@
   "version": "1.5.2",
   "private": false,
   "peerDependencies": {
-    "@angular/core": "^17",
-    "@angular/common": "^17",
+    "@angular/core": "^18",
+    "@angular/common": "^18",
     "@readalongs/web-component": "1.5.2"
   },
   "nx": {
