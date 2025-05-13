@@ -1,9 +1,11 @@
+@use "utilities/functions";
+
 .slot {
   &__header {
-    margin-bottom: em(5);
+    margin-bottom: functions.em(5);
   }
   &__subheader {
     margin-top: 0;
-    margin-left: em(16);
+    margin-left: functions.em(16);
   }
 }

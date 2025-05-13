@@ -1,3 +1,9 @@
+@use "sass:map";
+@use "utilities/colors";
+@use "utilities/typography";
+@use "utilities/config";
+@use "utilities/functions";
+
 @viewport {
   width: device-width;
 }
@@ -8,7 +14,7 @@ button {
 }
 
 html {
-  background-color: $color-background;
+  background-color: colors.$color-background;
   box-sizing: border-box;
   height: 100%;
 }
@@ -22,8 +28,8 @@ html {
 
 body {
   -webkit-font-smoothing: antialiased;
-  color: $color-text;
-  font-family: $font-family-default;
+  color: colors.$color-text;
+  font-family: typography.$font-family-default;
   min-height: 100%;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -32,7 +38,7 @@ body {
 
 a {
   background: transparent;
-  color: $color-link;
+  color: colors.$color-link;
   text-decoration: none;
   transition: color 0.2s;
   outline: none;
@@ -55,7 +61,7 @@ h4,
 h5,
 h6 {
   // font-family: $font-family-display;
-  font-family: $font-family-accent;
+  font-family: typography.$font-family-accent;
   font-weight: normal;
 }
 
@@ -66,30 +72,30 @@ span,
 button,
 div,
 a {
-  font-family: $font-family-display;
+  font-family: typography.$font-family-display;
 }
 
 /* Scrollbar */
 
-@each $theme, $value in $ui-themes {
+@each $theme, $value in colors.$ui-themes {
   /* Width */
   .theme--#{$theme}::-webkit-scrollbar {
-    width: em(8);
-    height: em(8);
+    width: functions.em(8);
+    height: functions.em(8);
   }
   /* Track */
   .theme--#{$theme}::-webkit-scrollbar-track {
-    // box-shadow: inset 0 0 em(5) map-get($value, primary);
-    background: map-get($value, primary);
+    // box-shadow: inset 0 0 functions.em(5) map-get($value, primary);
+    background: map.get($value, primary);
     // @extend %border--strong--left;
     // @extend %border--strong--right;
   }
   /* Handle */
   .theme--#{$theme}::-webkit-scrollbar-thumb {
-    background: map-get($value, text);
-    border-radius: em(5);
-    height: em(10);
-    width: em(10);
+    background: map.get($value, text);
+    border-radius: functions.em(5);
+    height: functions.em(10);
+    width: functions.em(10);
   }
 }
 
@@ -114,9 +120,9 @@ a {
   border-radius: 5px;
 }
 
-@each $name, $value in $font-sizes {
+@each $name, $value in typography.$font-sizes {
   .font-#{$name} {
-    font-size: em($value);
+    font-size: functions.em($value);
   }
 }
 
@@ -136,18 +142,18 @@ table {
 }
 
 .container {
-  max-width: em(map-get($breakpoints, xlarge));
+  max-width: functions.em(map.get(config.$breakpoints, xlarge));
 }
 
-@each $theme, $value in $ui-themes {
+@each $theme, $value in colors.$ui-themes {
   .background--#{$theme} {
-    background: map-get($value, primary);
+    background: map.get($value, primary);
   }
   .stop-color--#{$theme} {
-    fill: map-get($value, primary);
+    fill: map.get($value, primary);
   }
   .color--#{$theme} {
-    color: map-get($value, text);
+    color: map.get($value, text);
   }
 }
 
@@ -159,13 +165,13 @@ table {
 $space: 0;
 @while $space <=50 {
   .top-#{$space} {
-    top: em($space);
+    top: functions.em($space);
   }
   .left-#{$space} {
-    left: em($space);
+    left: functions.em($space);
   }
   .right-#{$space} {
-    right: em($space);
+    right: functions.em($space);
   }
   $space: $space + 5;
 }

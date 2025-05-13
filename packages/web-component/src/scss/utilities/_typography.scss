@@ -1,3 +1,4 @@
+@use "sass:map";
 // Typography
 // $base-font-size
 //
@@ -18,7 +19,7 @@ $font-sizes: (
 // Default font-size for basic text
 //
 // $default-text-font-size - {number}
-$default-text-font-size: map-get($font-sizes, md);
+$default-text-font-size: map.get($font-sizes, md);
 // $base-line-height
 //
 // Base line-height in used in _mixins.scss
@@ -81,8 +82,9 @@ $font-family-serif: "Georgia", "Cambria", "Times New Roman", "Times", serif;
 // Define font stack used for monospaced copy.
 //
 // $font-family-monospace - {list}
-$font-family-monospace: "Inconsolata", "Menlo", "Consolas",
-  "Bitstream Vera Sans Mono", "Courier", monospace;
+$font-family-monospace:
+  "Inconsolata", "Menlo", "Consolas", "Bitstream Vera Sans Mono", "Courier",
+  monospace;
 $font-family-education: "Fredoka One", "Roboto", sans-serif;
 $font-family-serious: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
 $font-family-serious-accent: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;

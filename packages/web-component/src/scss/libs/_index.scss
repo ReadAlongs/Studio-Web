@@ -12,4 +12,4 @@
 // Can always be included as it only renders css if the
 // variable $pesticide-debug is set to "true"
 
-@import 'pesticide';
+@use 'pesticide';

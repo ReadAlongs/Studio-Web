@@ -1,3 +1,7 @@
+@use "utilities/config";
+@use "utilities/extends";
+@use "utilities/functions";
+
 .settings-background {
   position: fixed;
   top: 0;
@@ -5,19 +9,19 @@
   height: 100vh;
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.075);
-  z-index: z("overlay");
+  z-index: functions.z("overlay");
   -webkit-backdrop-filter: blur(5px) !important;
   backdrop-filter: blur(5px) !important;
 }
 .settings {
-  height: $page-size + 0vh;
-  max-height: $page-size + 0vh;
-  width: $setting-width;
-  max-width: $setting-width;
+  height: config.$page-size + 0vh;
+  max-height: config.$page-size + 0vh;
+  width: config.$setting-width;
+  max-width: config.$setting-width;
   position: fixed;
-  z-index: z("modal");
+  z-index: functions.z("modal");
   top: 15vh;
-  left: calc(calc(100% - $setting-width) / 2);
+  left: calc(calc(100% - config.$setting-width) / 2);
 
   overflow-x: hidden;
 

@@ -1,3 +1,5 @@
+@use "utilities/functions";
+
 [contenteditable][data-placeholder]:empty:before {
   content: attr(data-placeholder);
   position: absolute;
@@ -58,7 +60,7 @@ p {
 #img-remover {
   margin: 60px;
   position: absolute;
-  z-index: z("nav");
+  z-index: functions.z("nav");
   border-radius: 50px;
   color: red;
 }

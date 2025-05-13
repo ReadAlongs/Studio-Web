@@ -1,8 +1,15 @@
+@use "colors";
+@use "functions";
+@use "typography";
+@use "mixins";
+@use "sass:meta";
+@use "sass:map";
+
 %themed-bg {
   &.theme {
-    @each $theme, $value in $ui-themes {
+    @each $theme, $value in colors.$ui-themes {
       &--#{$theme} {
-        background-color: map-deep-get($ui-themes, $theme, primary);
+        background-color: map.get($value, primary);
       }
     }
   }
@@ -10,27 +17,27 @@
 
 %basic-text {
   line-height: 1.5;
-  border-radius: em(5);
+  border-radius: functions.em(5);
   position: relative;
-  padding: em(1);
-  font-size: em($default-text-font-size);
+  padding: functions.em(1);
+  font-size: functions.em(typography.$default-text-font-size);
 }
 
 %themed-text {
   &.theme {
-    @each $theme, $value in $ui-themes {
+    @each $theme, $value in colors.$ui-themes {
       &--#{$theme} {
-        color: map-deep-get($ui-themes, $theme, text);
+        color: map.get($value, text);
       }
     }
   }
   &--strong {
     &.theme {
-      @each $theme, $value in $ui-themes {
+      @each $theme, $value in colors.$ui-themes {
         &--#{$theme} {
-          @include word-button-colors(
-            map-deep-get($ui-themes, $theme, secondary),
-            map-deep-get($ui-themes, $theme, text--secondary)
+          @include mixins.word-button-colors(
+            map.get($value, secondary),
+            map.get($value, text--secondary)
           );
         }
       }
@@ -38,11 +45,11 @@
   }
   &--stronger {
     &.theme {
-      @each $theme, $value in $ui-themes {
+      @each $theme, $value in colors.$ui-themes {
         &--#{$theme} {
-          @include word-button-colors(
-            map-deep-get($ui-themes, $theme, accent),
-            map-deep-get($ui-themes, $theme, text--accent)
+          @include mixins.word-button-colors(
+            map.get($value, accent),
+            map.get($value, text--accent)
           );
         }
       }
@@ -52,9 +59,9 @@
 
 %border--dotted {
   &.theme {
-    @each $theme, $value in $ui-themes {
+    @each $theme, $value in colors.$ui-themes {
       &--#{$theme} {
-        border: em(0.75) dotted map-deep-get($ui-themes, $theme, secondary);
+        border: functions.em(0.75) dotted map.get($value, secondary);
       }
     }
   }
@@ -62,52 +69,44 @@
 
 %border--strong {
   &.theme {
-    @each $theme, $value in $ui-themes {
+    @each $theme, $value in colors.$ui-themes {
       &--#{$theme} {
-        border: em(0.75) solid map-deep-get($ui-themes, $theme, secondary);
+        border: functions.em(0.75) solid map.get($value, secondary);
       }
     }
   }
   &--left {
     &.theme {
-      @each $theme, $value in $ui-themes {
+      @each $theme, $value in colors.$ui-themes {
         &--#{$theme} {
-          border-left: em(0.75)
-            solid
-            map-deep-get($ui-themes, $theme, secondary);
+          border-left: functions.em(0.75) solid map.get($value, secondary);
         }
       }
     }
   }
   &--right {
     &.theme {
-      @each $theme, $value in $ui-themes {
+      @each $theme, $value in colors.$ui-themes {
         &--#{$theme} {
-          border-right: em(0.75)
-            solid
-            map-deep-get($ui-themes, $theme, secondary);
+          border-right: functions.em(0.75) solid map.get($value, secondary);
         }
       }
     }
   }
   &--top {
     &.theme {
-      @each $theme, $value in $ui-themes {
+      @each $theme, $value in colors.$ui-themes {
         &--#{$theme} {
-          border-top: em(0.75)
-            solid
-            map-deep-get($ui-themes, $theme, secondary);
+          border-top: functions.em(0.75) solid map.get($value, secondary);
         }
       }
     }
   }
   &--bottom {
     &.theme {
-      @each $theme, $value in $ui-themes {
+      @each $theme, $value in colors.$ui-themes {
         &--#{$theme} {
-          border-bottom: em(0.75)
-            solid
-            map-deep-get($ui-themes, $theme, secondary);
+          border-bottom: functions.em(0.75) solid map.get($value, secondary);
         }
       }
     }

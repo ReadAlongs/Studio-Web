@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // NRC ReadAlong Colour Palette
 
 // descriptive colors
@@ -15,21 +17,21 @@ $iron: #dadbdf;
 $regent-grey: #808c99;
 $pale-sky: #6b717f;
 $midnight-blue: #036;
-$black: darken(#08090e, 2%);
+$black: color.adjust(#08090e, $lightness: -2%, $space: hsl);
 $white: #fff;
 
 $ui-themes: (
   light: (
     primary: $white,
-    secondary: darken($white, 50%),
-    accent: darken($white, 60%),
+    secondary: color.adjust($white, $lightness: -50%, $space: hsl),
+    accent: color.adjust($white, $lightness: -60%, $space: hsl),
     text: $black,
     text--secondary: $white,
     text--accent: $white,
   ),
   dark: (
-    primary: lighten($black, 30%),
-    secondary: darken($white, 35%),
+    primary: color.adjust($black, $lightness: 30%, $space: hsl),
+    secondary: color.adjust($white, $lightness: -35%, $space: hsl),
     accent: $white,
     text: $white,
     text--secondary: $white,

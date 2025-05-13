@@ -1,3 +1,6 @@
+@use "utilities/extends";
+@use "utilities/functions";
+
 #annotationsMenu {
   @extend %border--strong--bottom;
   @extend %border--strong--left;
@@ -5,19 +8,19 @@
   @extend %border--strong--top;
   position: absolute;
   bottom: 4em;
-  right: em(5);
-  z-index: z("modal");
+  right: functions.em(5);
+  z-index: functions.z("modal");
   width: fit-content;
   width: -moz-fit-content;
   display: flex;
   flex-direction: column;
-  border-radius: em(5);
+  border-radius: functions.em(5);
 
   & h3 {
     @extend %border--strong--bottom;
 
-    margin: em(5) 0;
-    padding: em(5) em(8);
+    margin: functions.em(5) 0;
+    padding: functions.em(5) functions.em(8);
   }
 
   & button {
@@ -27,12 +30,12 @@
     font-size: medium;
     @extend %border--strong--bottom;
     @extend %border--strong--top;
-    padding: em(8);
+    padding: functions.em(8);
 
     & .material-icons-outlined {
       font-size: inherit;
       border-radius: 0;
-      margin-right: em(5);
+      margin-right: functions.em(5);
     }
   }
 }

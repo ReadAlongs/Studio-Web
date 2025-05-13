@@ -1,6 +1,9 @@
-// Functions
-
+@use "sass:map";
+@use "sass:meta";
 @use "sass:math";
+
+@use "typography";
+@use "config";
 
 // Unit Conversion
 
@@ -26,11 +29,11 @@
 // @returns   - number
 // @source    - http://www.pjmccormick.com/sweet-sass-function-convert-px-em
 
-@function em($target, $context: $base-font-size) {
-  @if not unitless($target) {
+@function em($target, $context: typography.$base-font-size) {
+  @if not math.is-unitless($target) {
     $target: strip-units($target);
   }
-  @if not unitless($context) {
+  @if not math.is-unitless($context) {
     $context: strip-units($context);
   }
   @if $target == 0 {
@@ -48,11 +51,11 @@
 // @returns   - number
 // @source    - http://www.pjmccormick.com/sweet-sass-function-convert-px-em
 
-@function rem($target, $context: $base-font-size) {
-  @if not unitless($target) {
+@function rem($target, $context: typography.$base-font-size) {
+  @if not math.is-unitless($target) {
     $target: strip-units($target);
   }
-  @if not unitless($context) {
+  @if not math.is-unitless($context) {
     $context: strip-units($context);
   }
   @if $target == 0 {
@@ -71,11 +74,11 @@
 // @returns   - number
 // @source    - http://www.pjmccormick.com/sweet-sass-function-convert-px-em
 
-@function px($target, $context: $base-font-size) {
-  @if not unitless($target) {
+@function px($target, $context: typography.$base-font-size) {
+  @if not math.is-unitless($target) {
     $pxval: strip-units($target);
   }
-  @if not unitless($context) {
+  @if not math.is-unitless($context) {
     $base: strip-units($context);
   }
   @if $target == 0 {
@@ -96,10 +99,10 @@
 
 @function map-has-nested-keys($map, $keys...) {
   @each $key in $keys {
-    @if not map-has-key($map, $key) {
+    @if not map.has-key($map, $key) {
       @return false;
     }
-    $map: map-get($map, $key);
+    $map: map.get($map, $key);
   }
   @return true;
 }
@@ -112,7 +115,7 @@
 
 @function map-deep-get($map, $keys...) {
   @each $key in $keys {
-    $map: map-get($map, $key);
+    $map: map.get($map, $key);
   }
   @return $map;
 }
@@ -124,10 +127,10 @@
 // @source    - http://www.sitepoint.com/extra-map-functions-sass/
 
 @function z($indexes...) {
-  @if not map-has-nested-keys($zindex, $indexes...) {
-    @warn 'No index found for `#{inspect($indexes...)}` in $zindex map. Property omitted.';
+  @if not map-has-nested-keys(config.$zindex, $indexes...) {
+    @warn 'No index found for `#{meta.inspect($indexes...)}` in $zindex map. Property omitted.';
   }
-  @return map-deep-get($zindex, $indexes...);
+  @return map-deep-get(config.$zindex, $indexes...);
 }
 
 // bp()
@@ -138,7 +141,7 @@
 
 @function bp($point...) {
   @if not map-has-nested-keys($breakpoints, $point...) {
-    @warn 'No breakpoint found for `#{inspect($point...)}` in $breakpoints map. Property omitted.';
+    @warn 'No breakpoint found for `#{meta.inspect($point...)}` in $breakpoints map. Property omitted.';
   }
   @return map-deep-get($breakpoints, $point...);
 }
