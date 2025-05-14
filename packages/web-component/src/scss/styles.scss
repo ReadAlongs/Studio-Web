@@ -11,6 +11,7 @@
 // Email:   mina@mina.codes
 // Date:    10/25/15
 // ==========================================================================
+
 // CSS Debugging
 //
 // Toggle layout debugging with CSS Pesticide.
@@ -18,12 +19,16 @@
 // $pesticide-debug-outline - {boolean} adds outlines to all elements.
 // $pesticide-debug-depth - {boolean} adds shadows to all elements.
 // @source - http://pesticide.io/
-$pesticide-debug-outline: false;
-$pesticide-debug-depth: false;
+@use "libs/pesticide" with (
+  $pesticide-debug-outline: false,
+  $pesticide-debug-depth: false
+);
+
 // ==========================================================================
 // $Libs
 // ==========================================================================
 @use "libs/index";
+
 // ==========================================================================
 // $Utilities
 // ==========================================================================
