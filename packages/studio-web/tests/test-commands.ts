@@ -55,10 +55,9 @@ export const testMakeAReadAlong = async (page: Page) => {
       .getByTestId("ra-subheader")
       .fill("by me", { force: true, timeout: 0 });
     await expect(page.getByTestId("ra-subheader")).toHaveValue("by me");
+
     //add translations
-
     await page.locator("#t0b0d0p0s0").getByRole("button").click({ timeout: 0 });
-
     await page.locator("#t0b0d0p0s1").getByRole("button").click({ timeout: 0 });
     await page.locator("#t0b0d0p1s0").getByRole("button").click({ timeout: 0 });
 
