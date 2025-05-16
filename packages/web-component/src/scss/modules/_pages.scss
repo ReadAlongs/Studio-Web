@@ -1,9 +1,13 @@
+@use "utilities/config";
+@use "utilities/extends";
+@use "utilities/functions";
+
 $max-height: 98vh;
 
 .pages {
   &__container {
     overflow: auto;
-    max-height: $page-size + 0vh;
+    max-height: config.$page-size + 0vh;
     height: 100%;
     max-width: 100%;
     width: 100%;
@@ -15,7 +19,7 @@ $max-height: 98vh;
     @extend %border--strong--top;
     @extend %border--strong--left;
     @extend %border--strong--right;
-    border-radius: em(5) em(5) 0 0;
+    border-radius: functions.em(5) functions.em(5) 0 0;
     transition: margin-right 0.5s;
   }
 }
@@ -44,9 +48,9 @@ $max-height: 98vh;
 
   &__counter {
     grid-area: page-no;
-    margin: em(10) 0 0 em(15);
+    margin: functions.em(10) 0 0 functions.em(15);
     text-align: right;
-    padding-right: em(15);
+    padding-right: functions.em(15);
     max-height: 5rem;
   }
 
@@ -62,7 +66,7 @@ $max-height: 98vh;
       @extend %themed-bg;
 
       img {
-        max-height: $page-size + 0vh;
+        max-height: config.$page-size + 0vh;
         max-width: 95%;
         object-fit: contain;
       }
@@ -92,7 +96,7 @@ $max-height: 98vh;
 
   & .page__col__image {
     & img {
-      max-height: calc($page-size * 0.6) + 0vh !important;
+      max-height: calc(config.$page-size * 0.6) + 0vh !important;
     }
   }
 
@@ -119,18 +123,18 @@ $max-height: 98vh;
   &__container {
     overflow-y: auto;
     min-width: 40%;
-    padding-bottom: em(12);
+    padding-bottom: functions.em(12);
   }
 }
 
 .sentence {
-  margin: 0 em(24);
+  margin: 0 functions.em(24);
   text-align: left;
   max-width: 90%;
   @extend %themed-bg;
 
   &__container {
-    margin: em(60) em(10) em(60) em(10);
+    margin: functions.em(60) functions.em(10) functions.em(60) functions.em(10);
     scroll-behavior: smooth;
     max-width: 100%;
     position: relative;
@@ -205,7 +209,7 @@ $max-height: 98vh;
   margin: 0 auto;
   overflow-y: hidden;
   overflow-x: hidden;
-  padding: em(5);
+  padding: functions.em(5);
   position: relative;
 
   &--fullscreen {

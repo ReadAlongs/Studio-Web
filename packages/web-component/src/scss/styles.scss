@@ -11,6 +11,7 @@
 // Email:   mina@mina.codes
 // Date:    10/25/15
 // ==========================================================================
+
 // CSS Debugging
 //
 // Toggle layout debugging with CSS Pesticide.
@@ -18,33 +19,37 @@
 // $pesticide-debug-outline - {boolean} adds outlines to all elements.
 // $pesticide-debug-depth - {boolean} adds shadows to all elements.
 // @source - http://pesticide.io/
-$pesticide-debug-outline: false;
-$pesticide-debug-depth: false;
+@use "libs/pesticide" with (
+  $pesticide-debug-outline: false,
+  $pesticide-debug-depth: false
+);
+
 // ==========================================================================
 // $Libs
 // ==========================================================================
-@import "libs/index";
+@use "libs/index";
+
 // ==========================================================================
 // $Utilities
 // ==========================================================================
-@import "utilities/index";
+@use "utilities/index" as index2;
 // ==========================================================================
 // $Base
 // ==========================================================================
-@import "base/index";
+@use "base/index" as index3;
 // ==========================================================================
 // $Modules
 // ==========================================================================
-@import "modules/index";
+@use "modules/index" as index4;
 // ==========================================================================
 // $States
 // ==========================================================================
-@import "states/index";
+@use "states/index" as index5;
 // ==========================================================================
 // $Fonts
 // ==========================================================================
-@import "utilities/fonts";
+@use "utilities/fonts";
 // ==========================================================================
 // $Shame
 // ==========================================================================
-@import "shame";
+@use "shame";

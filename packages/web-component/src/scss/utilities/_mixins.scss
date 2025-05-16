@@ -1,3 +1,6 @@
+@use "sass:list";
+@use "functions";
+
 // Mixins
 
 // Reset List
@@ -196,7 +199,7 @@
 @mixin border-colors($map) {
   @each $theme, $color in $map {
     &.border-#{$theme} {
-      border: em(1) solid $color !important;
+      border: functions.em(1) solid $color !important;
     }
   }
 }
@@ -207,9 +210,9 @@
 //
 
 @mixin animate-palette($map) {
-  $no-of-colors: length($map);
+  $no-of-colors: list.length($map);
   @each $name, $color in $map {
-    $i: index($map, $name $color);
+    $i: list.index($map, $name $color);
     $percent: ($i / $no-of-colors) * 100;
     &#{$percent}% {
       fill: $color;

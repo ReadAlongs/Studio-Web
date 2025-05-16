@@ -1,3 +1,5 @@
+@use "sass:map";
+@use "sass:meta";
 // ==========================================================================
 // $FONT-FACE
 // ==========================================================================
@@ -33,16 +35,16 @@
   -webkit-font-smoothing: antialiased;
 }
 
-@if variable-exists(google-fonts-url) {
+@if meta.variable-exists(google-fonts-url) {
   @import url($google-fonts-url);
 }
 
-@if variable-exists(typefaces) {
+@if meta.variable-exists(typefaces) {
   @each $file, $option in $typefaces {
     @font-face {
-      font-family: map-get(map-get($typefaces, $file), family);
-      font-style: map-get(map-get($typefaces, $file), style);
-      font-weight: map-get(map-get($typefaces, $file), weight);
+      font-family: map.get(map.get($typefaces, $file), family);
+      font-style: map.get(map.get($typefaces, $file), style);
+      font-weight: map.get(map.get($typefaces, $file), weight);
       src:
         url("../fonts/#{$file}.ttf") format("truetype"),
         url("../fonts/#{$file}.woff") format("woff"),

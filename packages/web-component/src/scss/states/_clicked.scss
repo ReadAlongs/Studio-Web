@@ -1,5 +1,10 @@
 /* Ripple effect */
 
+@use "utilities/colors";
+@use "utilities/extends";
+@use "utilities/functions";
+@use "sass:map";
+
 %transition {
   transition: background 0.4s;
   &:active {
@@ -9,7 +14,7 @@
 
 %ripple {
   background-position: center;
-  padding: em(1);
+  padding: functions.em(1);
   @extend %transition;
   @extend %themed-text;
 
@@ -38,11 +43,11 @@
   left: 0;
   height: 100%;
   width: 0;
-  // border-radius: em(5);
+  // border-radius: functions.em(5);
 
-  @each $theme, $value in $ui-themes {
+  @each $theme, $value in colors.$ui-themes {
     &.theme--#{$theme} {
-      background-color: rgba(map-deep-get($ui-themes, $theme, secondary), 0.2);
+      background-color: rgba(map.get($value, secondary), 0.2);
     }
   }
 }
