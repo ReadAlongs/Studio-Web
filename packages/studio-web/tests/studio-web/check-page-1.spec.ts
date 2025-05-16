@@ -39,7 +39,7 @@ test.describe("test studio UI & UX", () => {
     //check the language list
     await expect(page.getByTestId("language-list")).toBeDisabled();
     await page
-      .getByRole("radio", { name: "Sélectionner une languge spécifique" })
+      .getByRole("radio", { name: "Sélectionner une langue spécifique" })
       .check();
     await expect(page.getByTestId("language-list")).toBeEnabled();
   });
