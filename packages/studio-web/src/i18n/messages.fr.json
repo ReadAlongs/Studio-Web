@@ -134,7 +134,7 @@
     "7273199130532280751": " Facultatif: Modifier les paramètres de langue ",
     "643724100310033610": " La plupart du temps, la valeur par défaut sélectionnée ci-dessous est adéquate. Mais vous pouvez aussi choisir une langue spécifique si elle est prise en charge pour de meilleurs résultats. Si votre langue fonctionne mal avec l'option par défaut et n'est pas prise en charge, jetez un coup d'œil sur {$START_LINK}{$START_TAG_MAT_ICON}launch{$CLOSE_TAG_MAT_ICON} cette série de billets de blogue{$CLOSE_LINK} pour comprendre comment ajouter votre langue à la liste, ou {$START_LINK_1}{$START_TAG_MAT_ICON}mail{$CLOSE_TAG_MAT_ICON} contactez-nous{$CLOSE_LINK} pour plus d'informations! ",
     "7777031358286609836": "Option par défaut (devrait fonctionner avec la plupart des langues)",
-    "4382352341548079905": "Sélectionner une languge spécifique",
+    "4382352341548079905": "Sélectionner une langue spécifique",
     "487077452159084336": "Selectionner une langue",
     "939318510937943024": " Prochaine étape! ",
     "4812680719296626428": "Il pourrait y avoir des caractères non prononçables ou des chiffres dans votre texte. Prière d'écrire en toutes lettres, par exemple, « quarante deux » au lieu de « 42 ».",
