@@ -5,7 +5,7 @@ test("should Download ELAN ( file format)", async ({ page, browserName }) => {
   await defaultBeforeEach(page, browserName);
   await testMakeAReadAlong(page);
 
-  await page.locator("#mat-select-value-3").click();
+  await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "Elan File" }).click();
   const download2Promise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
