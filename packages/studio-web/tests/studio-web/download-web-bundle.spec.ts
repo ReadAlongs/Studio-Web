@@ -15,7 +15,7 @@ test("should Download web bundle (zip file format)", async ({
   //download web bundle
   await page.getByLabel("2Step").locator("svg").click();
   await page.locator(".cdk-overlay-backdrop").click();
-  await page.locator("#mat-select-value-3").click();
+  await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "Web Bundle" }).click();
   const download1Promise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
