@@ -62,7 +62,7 @@ test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
     .evaluate((seg) => (seg as HTMLElement).title.substring(0, 4));
 
   //check web bundle output
-  await page.locator("#mat-select-value-3").click();
+  await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "Web Bundle" }).click();
   let downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
@@ -90,7 +90,7 @@ test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
     .toMatch(new RegExp(`time="${newStartTime.replace(".", "\\.")}\\d+" `));
 
   //check SRT
-  await page.locator("#mat-select-value-3").click();
+  await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "SRT Subtitles" }).click();
   downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
@@ -110,7 +110,7 @@ test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
     )
     .toMatch(new RegExp(`${newStartTime.replace(".", ",")}\\d+\\s-->`));
   //check WEBVTT
-  await page.locator("#mat-select-value-3").click();
+  await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "WebVTT Subtitles" }).click();
   downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
@@ -127,7 +127,7 @@ test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
     )
     .toMatch(new RegExp(`${newStartTime.replace(".", "\\.")}\\d+\\s-->`));
   //check PRAAT
-  await page.locator("#mat-select-value-3").click();
+  await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "Praat TextGrid" }).click();
   downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
@@ -146,7 +146,7 @@ test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
       new RegExp(`xmin\\s=\\s${newStartTime.replace(".", "\\.")}\\d+\\\s`),
     );
   //check elan
-  await page.locator("#mat-select-value-3").click();
+  await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "Elan File" }).click();
   downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-ras").click();
