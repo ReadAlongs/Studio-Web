@@ -151,6 +151,7 @@ Page two."
             >Use pre-recorded audio from an MP3 or WAV file.</label
           >
           <input
+            #audioFileUpload
             (change)="onFileSelected('audio', $event)"
             class="form-control"
             name="audio"

@@ -65,6 +65,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   maxRasSizeKB = 200;
   currentToast: number;
   @ViewChild("textInputElement") textInputElement: ElementRef;
+  @ViewChild("audioFileUpload") audioFileUpload: ElementRef<HTMLFormElement>;
   @Output() stepChange = new EventEmitter<any[]>();
 
   unsubscribe$ = new Subject<void>();
@@ -277,6 +278,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   deleteRecording() {
+    this.audioFileUpload.nativeElement.value = "";
     this.studioService.audioControl$.setValue(null);
   }
 
