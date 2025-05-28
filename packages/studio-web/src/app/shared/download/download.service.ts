@@ -263,7 +263,7 @@ Please host all assets on your server, include the font and package imports defi
     rasXML: Document,
     slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
-    from = "Studio",
+    from: "Studio" | "Editor" = "Studio",
   ) {
     if (selectedOutputFormat == SupportedOutputs.html) {
       var element = document.createElement("a");
@@ -330,13 +330,18 @@ Please host all assets on your server, include the font and package imports defi
       for (let image of images) {
         assetsFolder?.file(image.path, image.blob);
       }
+
       // - add plain text file
-      if (this.uploadService.$currentText.value !== null) {
+      if (from === "Studio" && this.uploadService.$currentText.value !== null) {
         innerFolder?.file(
           `${basename}.txt`,
           this.uploadService.$currentText.value,
         );
       }
+      if (from === "Editor") {
+        innerFolder?.file(`${basename}.txt`, this.rasXMLToText(rasXML));
+      }
+
       // - add .readalong file
       await this.updateTranslations(rasXML, readalong);
 
@@ -475,5 +480,51 @@ Use the text editor to paste the snippet below in your WordPress page:
         },
       );
     }
+  }
+
+  // Converts the Readalong XML document to text.
+  private rasXMLToText(rasXML: Document): string {
+    // Convert the tree structure of the XML document to a flat list
+    // of relevant elements. Returns an array containing all three parts
+    // of a document: pages, paragraphs and sentences.
+    //
+    // For example the returned array `[div p s s p s s div p s]` represents:
+    //  - Page 1 with 2 paragraphs each with 2 sentences,
+    //  - Page 2 has 1 paragraph with 1 sentence.
+    const blocks = Array.from(
+      rasXML.querySelectorAll(
+        "div[type=page]:not([do-not-align='true']), " +
+          "div[type=page]:not([do-not-align='true']) p:not([do-not-align='true']), " +
+          "div[type=page]:not([do-not-align='true']) p:not([do-not-align='true']) s:not([do-not-align='true'])",
+      ),
+    );
+
+    const nl = "\n";
+    const pageBreak = nl + nl;
+    const paraBreak = nl;
+
+    // We use the elements to output the appropriate text representation.
+    const output: string[] = [];
+    let state: "page" | "sen" = "page";
+    blocks.forEach((block) => {
+      const tag = block.tagName.toLocaleLowerCase();
+      switch (true) {
+        case tag === "div" && state != "page":
+          state = "page";
+          output.push(pageBreak);
+          break;
+
+        case tag === "p" && state != "page":
+          output.push(paraBreak);
+          break;
+
+        case tag === "s":
+          state = "sen";
+          output.push(block.textContent ?? "", nl);
+          break;
+      }
+    });
+
+    return output.join("");
   }
 }
