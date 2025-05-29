@@ -7,6 +7,7 @@ import { Router } from "@angular/router";
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.sass"],
+  standalone: false,
 })
 export class AppComponent implements OnDestroy, OnInit {
   unsubscribe$ = new Subject<void>();
@@ -44,6 +45,7 @@ export class AppComponent implements OnDestroy, OnInit {
 @Component({
   selector: "privacy-dialog",
   templateUrl: "privacy-dialog.html",
+  standalone: false,
 })
 export class PrivacyDialog {
   analyticsExcluded =
