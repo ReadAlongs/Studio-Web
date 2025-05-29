@@ -47,6 +47,7 @@ import { StudioService } from "../studio/studio.service";
   selector: "app-upload",
   templateUrl: "./upload.component.html",
   styleUrls: ["./upload.component.sass"],
+  standalone: false,
 })
 export class UploadComponent implements OnDestroy, OnInit {
   isLoaded = false;

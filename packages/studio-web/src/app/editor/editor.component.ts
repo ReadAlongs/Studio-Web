@@ -34,6 +34,7 @@ import { ToastrService } from "ngx-toastr";
   selector: "app-editor",
   templateUrl: "./editor.component.html",
   styleUrls: ["./editor.component.sass"],
+  standalone: false,
 })
 export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;

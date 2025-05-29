@@ -5,6 +5,7 @@ import { SupportedOutputs } from "../../ras.service";
   selector: "ras-shared-download",
   templateUrl: "./download.component.html",
   styleUrl: "./download.component.sass",
+  standalone: false,
 })
 export class DownloadComponent {
   @Output() downloadButtonClicked = new EventEmitter<SupportedOutputs>();
