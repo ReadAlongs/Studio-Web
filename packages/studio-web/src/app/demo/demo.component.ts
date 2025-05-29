@@ -13,6 +13,7 @@ import { ToastrService } from "ngx-toastr";
   selector: "app-demo",
   templateUrl: "./demo.component.html",
   styleUrls: ["./demo.component.sass"],
+  standalone: false,
 })
 export class DemoComponent implements OnDestroy, OnInit {
   @ViewChild("readalong") readalong!: Components.ReadAlong;
