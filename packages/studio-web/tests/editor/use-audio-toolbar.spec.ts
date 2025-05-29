@@ -5,6 +5,10 @@ import JSZip from "jszip";
 test.describe.configure({ mode: "parallel" });
 
 test("should edit alignment and words (editor)", async ({ page, isMobile }) => {
+  // See issue #405 - this test is flaky with Mobile Chrome. Disabled until
+  // it can be stabilized.
+  test.skip(Boolean(isMobile), "skipping flaky Mobile Chrome test.");
+
   await expect(async () => {
     await editorDefaultBeforeEach(page, isMobile);
   }).toPass();
