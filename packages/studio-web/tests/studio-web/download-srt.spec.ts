@@ -19,7 +19,7 @@ test("should Download SRT ( file format)", async ({ page, browserName }) => {
   await expect(
     download2.suggestedFilename(),
     "should have the expected filename",
-  ).toMatch(/readalong\.srt/);
+  ).toMatch(/sentence\-paragr\-[0-9]*\.srt/);
 
   const filePath = await download2.path();
   const fileData = fs.readFileSync(filePath, { encoding: "utf8", flag: "r" });
