@@ -83,7 +83,8 @@
         "outputPath": "dist/packages/web-component",
         "dev": true,
         "watch": true,
-        "serve": true
+        "serve": true,
+        "esm": true
       }
     },
     "dev": {
