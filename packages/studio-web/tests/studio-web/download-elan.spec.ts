@@ -13,5 +13,5 @@ test("should Download ELAN ( file format)", async ({ page, browserName }) => {
   await expect(
     download2.suggestedFilename(),
     "should have the expected filename",
-  ).toMatch(/readalong\.eaf/);
+  ).toMatch(/sentence\-paragr\-[0-9]*\.eaf/);
 });

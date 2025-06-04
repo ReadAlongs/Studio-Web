@@ -250,8 +250,7 @@ Please host all assets on your server, include the font and package imports defi
   }
 
   createRASBasename(title: string) {
-    const timestamp = new Date()
-      .toISOString()
+    const timestamp = dateToLocalISO(new Date())
       .replace(/[^0-9]/g, "")
       .slice(0, -3);
     return (title ? slugify(title, 15) : "readalong") + `-${timestamp}`;
@@ -439,6 +438,8 @@ Use the text editor to paste the snippet below in your WordPress page:
       );
       this.registerDownloadEvent(selectedOutputFormat, from);
     } else {
+      const basename = this.createRASBasename(slots.title);
+
       let audio: HTMLAudioElement = new Audio(b64Audio);
       // - update .readalong file translation
       await this.updateTranslations(rasXML, readalong);
@@ -453,7 +454,7 @@ Use the text editor to paste the snippet below in your WordPress page:
         )
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe({
-          next: (x: Blob) => saveAs(x, `readalong.${selectedOutputFormat}`),
+          next: (x: Blob) => saveAs(x, `${basename}.${selectedOutputFormat}`),
           error: (err: HttpErrorResponse) => this.reportRasError(err),
         });
 
@@ -527,4 +528,16 @@ Use the text editor to paste the snippet below in your WordPress page:
 
     return output.join("");
   }
+}
+
+// Converts the date to an ISO string set to the user's local timezone.
+//
+// Date.toISOString() returns a string with the time set to UTC. This code is
+// extracted from the following stack overflow question:
+//   https://stackoverflow.com/questions/12413243/javascript-date-format-like-iso-but-local
+function dateToLocalISO(date: Date) {
+  const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+  const localInMs = date.getTime() - offsetMs;
+  const dateLocal = new Date(localInMs);
+  return dateLocal.toISOString();
 }

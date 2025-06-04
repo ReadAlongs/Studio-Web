@@ -19,7 +19,7 @@ test("should Download Praat ( file format)", async ({ page, browserName }) => {
   await expect(
     download2.suggestedFilename(),
     "should have the expected filename",
-  ).toMatch(/readalong\.textgrid/);
+  ).toMatch(/sentence\-paragr\-[0-9]*\.textgrid/);
   /* check output*/
   const filePath = await download2.path();
   const fileData = fs.readFileSync(filePath, { encoding: "utf8", flag: "r" });
