@@ -1,31 +1,56 @@
 <div
+  #styleSection
   id="style-section"
-  [class]="'col-12 p-3 border bg-light' + (collapsed ? ' collapsed' : '')"
+  [class]="
+    'col p-3  bg-light' + ((collapsed$ | async) ? ' collapsed' : ' ms-xl-5')
+  "
 >
-  <div class="d-flex flex-column flex-md-row justify-content-between">
-    <div class="p-0 order-1 order-md-0">
-      <h1 i18n="Title for style box" class="title">
-        Optional:
+  <div class="d-flex flex-column flex-md-row justify-content-between header">
+    <div class="p-0 order-0 order-md-0">
+      <button
+        mat-icon-button
+        (click)="toggleCollapse()"
+        data-test-id="toggle-css-box"
+      >
+        <span class="d-none d-xl-inline">
+          <mat-icon *ngIf="collapsed$ | async">code</mat-icon>
+          <mat-icon *ngIf="!(collapsed$ | async)">chevron_right</mat-icon>
+        </span>
+        <span class="d-xl-none">
+          <mat-icon *ngIf="collapsed$ | async">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="!(collapsed$ | async)">keyboard_arrow_up</mat-icon>
+        </span>
+      </button>
+    </div>
+    <div
+      *ngIf="collapsed$ | async"
+      class="p-0 order-1 order-md-1 helper-text"
+      (click)="collapsed$.next(false)"
+    >
+      <h1 i18n="Advanced styling" class="title">Advanced styling</h1>
+    </div>
+    <div class="ms-5 ms-md-0 p-0 order-1 order-md-1">
+      <h1 class="title">
         <a
           rel="noopener"
           href="https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component#css-customization"
           target="_blank"
         >
-          Styling</a
+          <span i18n="Advanced styling">Advanced Styling</span></a
         >
         <button class="nav__button" mat-button (click)="openHelpDialog()">
           <mat-icon>help</mat-icon>
-          help
+          <span i18n="Help">Help</span>
         </button>
       </h1>
     </div>
-    <div class="p-0 order-2 order-md-1">
+    <div class="ms-5 ms-md-0 p-0 order-2 order-md-2">
       <mat-button-toggle-group
         appearance="legacy"
         (change)="toggleStyleInput($event)"
         name="inputMethod"
         aria-label="Input Method"
-        [value]="$inputType"
+        [value]="inputType"
       >
         <mat-button-toggle i18n="Label for style Write toggle" value="edit"
           >Write</mat-button-toggle
@@ -35,18 +60,8 @@
         >
       </mat-button-toggle-group>
     </div>
-    <div class="p-0 order-0 order-md-2">
-      <button
-        mat-icon-button
-        (click)="collapsed = !collapsed"
-        data-test-id="toggle-css-box"
-      >
-        <mat-icon *ngIf="collapsed">keyboard_arrow_down</mat-icon
-        ><mat-icon *ngIf="!collapsed">keyboard_arrow_up</mat-icon>
-      </button>
-    </div>
   </div>
-  <div *ngIf="$inputType === 'upload'">
+  <div *ngIf="inputType === 'upload'">
     <div class="row">
       <div class="mt-4 mb-3">
         <!-- <div class="container"> -->
@@ -69,34 +84,37 @@
       </div>
     </div>
   </div>
-  <div *ngIf="$inputType === 'edit'">
+  <div *ngIf="inputType === 'edit'">
     <div class="d-flex flex-column flex-md-row justify-content-between p-0">
-      <span class="p-0"
-        ><h2 i18n="Title for style writing box" class="subtitle">
+      <span class="ms-5 ms-md-0 p-0">
+        <h2
+          i18n="Title for style writing box"
+          class="subtitle mt-3 text-center"
+        >
           Write or paste your style sheet here
-        </h2></span
+        </h2>
+      </span>
+
+      <span
+        class="ms-5 ms-md-0 p-0 d-flex justify-content-between flex-row flex-lg-column"
       >
-      <span class="p-0">
-        <button mat-button (click)="updateStyle()">
-          <mat-icon class="mat-icon-lg">sync</mat-icon>
-          Apply
-        </button></span
-      >
-      <span class="p-0">
         <button
           i18n="Style download button"
           mat-button
-          [disabled]="!($styleText | async)"
+          [disabled]="!(styleText$ | async)"
           (click)="downloadStyle()"
           aria-label="Style download button"
           class="pr-0"
         >
-          <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
+          <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy</button
+        ><button mat-button (click)="updateStyle()">
+          <mat-icon class="mat-icon-lg">sync</mat-icon>
+          Apply
         </button>
       </span>
     </div>
     <div class="row">
-      <div class="mt-4 mb-3">
+      <div class="mt-4 mb-3 ms-5 ms-md-0">
         <!-- <div class="container"> -->
         <label
           i18n="Instructions for uploading font"
@@ -117,10 +135,10 @@
       </div>
     </div>
     <div class="row">
-      <mat-form-field class="col-12 p-0 b-0">
+      <mat-form-field class="col-12 p-0 b-0 ms-5 ms-md-0">
         <textarea
-          [ngModel]="$styleText | async"
-          (ngModelChange)="$styleText.next($event)"
+          [ngModel]="styleText$ | async"
+          (ngModelChange)="styleText$.next($event)"
           id="styleInput"
           class="border rounded b-0 p-0 bg-light"
           matInput

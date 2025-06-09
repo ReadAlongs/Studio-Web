@@ -6,3 +6,24 @@
 
 .row
   --bs-gutter-x: 0
+
+#readalongContainer
+  margin: 0 2.5vw
+
+@media screen and (min-width:1200px)
+  div > #handle
+    position: absolute
+    width: 13px
+    height: 85vh
+    max-height: calc( 55vh + 100px)
+    background-color: rgba(0,0,0,0.7)
+    border: 3px solid #eee
+    border-width: 0 5px
+    margin-right: 1em
+    margin-top: 1em
+    cursor: col-resize
+    z-index: 1000
+
+  app-wc-styling:has(#style-section.collapsed)
+    width: 100px
+

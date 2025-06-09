@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { testAssetsPath, disablePlausible } from "../test-commands";
 import fs from "fs";
+import { hasUncaughtExceptionCaptureCallback } from "process";
 test.describe.configure({ mode: "parallel" });
 test.beforeEach(async ({ page, isMobile }) => {
   await page.goto("/", { waitUntil: "load" });
@@ -31,14 +32,17 @@ test.beforeEach(async ({ page, isMobile }) => {
       "read along has been loaded",
     ).toHaveCount(1);
   }).toPass();
-  await expect(async () => {
-    await expect(
-      page.locator("#styleInput"),
-      "read along css has been loaded",
-    ).toHaveCount(1);
-  }).toPass();
 });
 test("should edit css (editor)", async ({ page, isMobile }) => {
+  await expect(
+    page.locator("#style-section"),
+    "css editor to be hidden",
+  ).toHaveClass(/\bcollapsed\b/);
+  await page.getByTestId("toggle-css-box").click();
+  await expect(
+    page.locator("#style-section"),
+    "css editor to be visible",
+  ).not.toHaveClass(/\bcollapsed\b/);
   await expect(page.locator("#styleInput"), "has style data").toHaveValue(
     /\.theme--light/,
   );

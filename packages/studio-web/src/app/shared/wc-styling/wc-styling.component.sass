@@ -1,8 +1,7 @@
 #styleInput
   border: 1px solid #222
-  min-height: 35vh
   font-family: 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
-
+  min-height: 35vh
 .collapsed
   max-height: 8em
   overflow: hidden
@@ -37,3 +36,37 @@ h2
   font-family: 'Courier new'
   font-size: 1.4em
   line-height: 1.5em
+
+@media only screen and (max-width:1200px)
+  #style-section
+    width: 95vw
+    margin-left: 2.5vw
+
+    div.header > div.helper-text
+      display: none !important
+
+@media only screen and (min-width:1200px)
+  #style-section
+    transform: rotate(0deg) translateX(0%)
+    height: 70vh
+    transition: height 1s
+    width: 100%
+
+  #style-section.collapsed
+    transform: rotate(90deg)
+    transform-origin: bottom left
+    width: 85em
+    max-height: 4.7em
+    transition: transform 1s
+    max-width: calc( 55vh + 100px)
+
+    div.header > div
+      display: none
+
+    div.header > div:first-of-type, div.header > div.helper-text
+      display: inline-block
+      cursor: pointer
+
+
+    div.justify-content-between
+      justify-content: flex-start !important

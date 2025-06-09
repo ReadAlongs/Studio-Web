@@ -15,15 +15,17 @@ import { B64Service } from "../../b64.service";
   selector: "app-wc-styling",
   templateUrl: "./wc-styling.component.html",
   styleUrl: "./wc-styling.component.sass",
+  standalone: false,
 })
 export class WcStylingComponent implements OnDestroy, OnInit {
-  $styleText = new BehaviorSubject<string>("");
-  $fontDeclaration = new BehaviorSubject<string>("");
-  $inputType = "edit";
+  styleText$ = new BehaviorSubject<string>("");
+  fontDeclaration$ = new BehaviorSubject<string>("");
+  inputType = "edit";
   unsubscribe$ = new Subject<void>();
-  collapsed = true;
+  collapsed$ = new BehaviorSubject<boolean>(true);
   @ViewChild("styleInputElement") styleInputElement: ElementRef;
   @ViewChild("fontInputElement") fontInputElement: ElementRef;
+  @ViewChild("styleSection") styleSection: ElementRef;
 
   constructor(
     private toastr: ToastrService,
@@ -33,15 +35,15 @@ export class WcStylingComponent implements OnDestroy, OnInit {
   ) {
     //when a new file is uploaded
     this.wcStylingService.$wcStyleInput.subscribe((css) => {
-      if (css !== this.$styleText.getValue()) {
-        this.$styleText.next(css);
-        this.collapsed = false;
+      if (css !== this.styleText$.getValue()) {
+        this.styleText$.next(css);
+        //this.collapsed = false;
       }
     });
     this.wcStylingService.$wcStyleFonts.subscribe((font) => {
-      if (font !== this.$fontDeclaration.getValue()) {
-        this.$fontDeclaration.next(font);
-        this.collapsed = false;
+      if (font !== this.fontDeclaration$.getValue()) {
+        this.fontDeclaration$.next(font);
+        //this.collapsed = false;
       }
     });
   }
@@ -62,9 +64,9 @@ export class WcStylingComponent implements OnDestroy, OnInit {
     this.b64Service
       .blobToB64(file)
       .then((data) => {
-        this.$fontDeclaration.next(
-          this.$fontDeclaration.getValue() +
-            (this.$fontDeclaration.getValue().length > 1 ? ", " : "") +
+        this.fontDeclaration$.next(
+          this.fontDeclaration$.getValue() +
+            (this.fontDeclaration$.getValue().length > 1 ? ", " : "") +
             `url(${(data as string).replace("application/octet-stream", type == "ttf" ? "application/x-ttf;charset=utf-8" : "application/x-font-" + type + ";charset=utf-8")}) format('${type?.replace("ttf", "truetype")}')`,
         );
         this.updateStyle();
@@ -99,9 +101,9 @@ export class WcStylingComponent implements OnDestroy, OnInit {
     file
       .text()
       .then((val) => {
-        this.$styleText.next(val);
+        this.styleText$.next(val);
         this.wcStylingService.$wcStyleInput.next(val);
-        this.$inputType = "edit";
+        this.inputType = "edit";
         this.toastr.success(
           $localize`File ` +
             file.name +
@@ -120,13 +122,13 @@ export class WcStylingComponent implements OnDestroy, OnInit {
       });
   }
   getFontDeclarations(): string {
-    return this.$fontDeclaration.getValue().length > 1
+    return this.fontDeclaration$.getValue().length > 1
       ? `@charset "utf-8";
 
 /* Define default font */
 @font-face {
     font-family: "RADefault";
-    src: ${this.$fontDeclaration.getValue()};
+    src: ${this.fontDeclaration$.getValue()};
     font-weight: normal;
     font-style: normal;
 }
@@ -142,7 +144,7 @@ span.theme--dark.sentence__text {
   }
   updateStyle() {
     this.wcStylingService.$wcStyleInput.next(
-      (this.$fontDeclaration.getValue().length > 1
+      (this.fontDeclaration$.getValue().length > 1
         ? `/* Replace aligned text font*/
 span.theme--light.sentence__word,
 span.theme--light.sentence__text,
@@ -150,14 +152,14 @@ span.theme--dark.sentence__word,
 span.theme--dark.sentence__text {
     font-family: RADefault, BCSans, "Noto Sans", Verdana, Arial, sans-serif !important;
   }`
-        : "") + this.$styleText.getValue(),
+        : "") + this.styleText$.getValue(),
     );
     this.wcStylingService.$wcStyleFonts.next(this.getFontDeclarations());
   }
 
   downloadStyle() {
-    if (this.$styleText) {
-      let textBlob = new Blob([this.$styleText.getValue()], {
+    if (this.styleText$) {
+      let textBlob = new Blob([this.styleText$.getValue()], {
         type: "text/css",
       });
       var url = window.URL.createObjectURL(textBlob);
@@ -171,16 +173,16 @@ span.theme--dark.sentence__text {
     }
   }
   toggleStyleInput(event: any) {
-    this.$inputType = event.value;
-    this.collapsed = false;
+    this.inputType = event.value;
+    this.collapsed$.next(false);
   }
   async ngOnInit() {
     this.wcStylingService.$wcStyleInput
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((css) => {
-        if (this.$styleText.getValue().length < 1) {
-          this.$styleText.next(css);
-          this.collapsed = css.length < 1;
+        if (this.styleText$.getValue().length < 1) {
+          this.styleText$.next(css);
+          this.collapsed$.next(css.length < 1);
         }
       });
   }
@@ -195,6 +197,9 @@ span.theme--dark.sentence__text {
       maxWidth: "80vw", // maxWidth is required to force material to use justify-content: flex-start
       minWidth: "50vw",
     });
+  }
+  toggleCollapse() {
+    this.collapsed$.next(!this.collapsed$.getValue());
   }
 }
 

@@ -32,6 +32,7 @@ import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
 import { validateFileType } from "../utils/utils";
 import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
+import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -42,7 +43,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
   wavesurfer: WaveSurfer;
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
-
+  @ViewChild("handle") handleElement!: ElementRef;
+  @ViewChild("styleWindow") styleElement!: WcStylingComponent;
   readalong: Components.ReadAlong;
 
   language: "eng" | "fra" | "spa" = "eng";
@@ -130,6 +132,38 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
 
     if (window.location.hash.endsWith("startTour=yes")) {
       this.startTour();
+    }
+    if (this.handleElement) {
+      (this.handleElement.nativeElement as HTMLElement).addEventListener(
+        "drag",
+        (ev: DragEvent) => {
+          console.log("[DEBUG] dragged");
+          if (this.styleElement.collapsed$.getValue()) {
+            this.resetStyleWindowSize();
+            return;
+          }
+          if (ev.x < 600) return; // do not let the read along be squeezed past 600px width
+          // When the handle is dragged, we want to resize the readalong and style containers
+          const styleEle = this.styleElement?.styleSection
+            .nativeElement as HTMLElement;
+          const readAlong = this.readalongContainerElement
+            ?.nativeElement as HTMLElement;
+          if (styleEle?.style) {
+            styleEle.style.width = `calc(100vw - ${ev.x}px)`;
+          }
+
+          if (readAlong?.style) {
+            readAlong.style.width = `${ev.x}px`;
+          }
+        },
+      );
+      this.styleElement.collapsed$.subscribe((collapsed) => {
+        if (collapsed) {
+          this.resetStyleWindowSize();
+        }
+      });
+    } else {
+      this.resetStyleWindowSize();
     }
   }
 
@@ -514,5 +548,19 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   }
   async addWCCustomFont($font: string) {
     this.readalong?.addCustomFont($font);
+  }
+  resetStyleWindowSize() {
+    const styleEle = this.styleElement?.styleSection
+      .nativeElement as HTMLElement;
+    const readAlong = this.readalongContainerElement
+      ?.nativeElement as HTMLElement;
+
+    if (window.innerWidth > 1199) {
+      styleEle.style.width = `65vh`;
+      readAlong.style.width = `70vw`;
+    } else {
+      styleEle.style.width = `95vw`;
+      readAlong.style.width = `95vw`;
+    }
   }
 }
