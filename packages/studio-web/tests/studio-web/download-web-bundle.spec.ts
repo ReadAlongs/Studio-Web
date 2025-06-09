@@ -16,7 +16,7 @@ test("should Download web bundle (zip file format)", async ({
   await defaultBeforeEach(page, browserName);
   await testMakeAReadAlong(page);
   //add custom style
-  await page.getByRole("button", { name: "File" }).click();
+  await page.getByRole("radio", { name: "File" }).click();
   await page
     .locator("#updateStyle")
     .setInputFiles(`${testAssetsPath}/sentence-paragr-cust-css.css`);

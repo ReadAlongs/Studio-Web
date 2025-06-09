@@ -37,11 +37,11 @@ test("should Download web bundle (zip file format) from the Editor", async ({
   const zipPath = await download1.path();
   const zipBin = await fs.readFileSync(zipPath);
   const zip = await JSZip.loadAsync(zipBin);
-  verifyWebBundle(zip);
+  await verifyWebBundle(zip);
 });
 
 // verify web-bundle contents used by tests in editor.
-function verifyWebBundle(zip: JSZip) {
+async function verifyWebBundle(zip: JSZip) {
   expect(
     zip.folder(/Offline-HTML/),
     "should have Offline-HTML folder",
