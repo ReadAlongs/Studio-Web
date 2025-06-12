@@ -1,0 +1,69 @@
+#styleInput
+  border: 1px solid #222
+  font-family: 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
+  min-height: 35vh
+.collapsed
+  max-height: 8em
+  overflow: hidden
+  @media (min-width: 960px)
+    max-height: 5em
+
+pre
+  color: var(--bs-code-color)
+  padding: 1em
+  margin: .5em
+  font-size: 1.1em
+
+.style-helper
+  padding: 1em
+  max-height: 98vh
+  overflow-y: auto
+
+code
+  white-space: pre
+
+h2
+  margin-top: 2em
+
+.comment
+  color: #696
+
+.css-class
+  color: #ffe66d
+
+.css-block
+  background: rgba(0,0,0,0.8)
+  font-family: 'Courier new'
+  font-size: 1.4em
+  line-height: 1.5em
+
+@media only screen and (max-width:1200px)
+  #style-section
+    width: 95vw
+    margin-left: 2.5vw
+
+@media only screen and (min-width:1200px)
+  #style-section
+    transform: rotate(0deg) translateX(0%)
+    height: 70vh
+    transition: height 1s
+    width: 100%
+
+  #style-section.collapsed
+    transform: rotate(90deg)
+    transform-origin: bottom left
+    width: 85em
+    max-height: 4.7em
+    transition: transform 1s
+    max-width: calc( 55vh + 100px)
+
+    div.header > div
+      display: none
+
+    div.header > div:first-of-type, div.header > div.helper-text
+      display: inline-block
+      cursor: pointer
+
+
+    div.justify-content-between
+      justify-content: flex-start !important
