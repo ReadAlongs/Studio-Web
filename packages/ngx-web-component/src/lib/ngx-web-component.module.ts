@@ -6,8 +6,7 @@ import { defineCustomElements } from "@readalongs/web-component/loader";
 defineCustomElements();
 
 @NgModule({
-  imports: [CommonModule],
-  declarations: [...DIRECTIVES],
+  imports: [CommonModule, ...DIRECTIVES],
   exports: [...DIRECTIVES],
 })
 export class NgxRAWebComponentModule {}

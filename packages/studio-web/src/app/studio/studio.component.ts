@@ -45,6 +45,7 @@ import { StudioService } from "./studio.service";
   selector: "studio-component",
   templateUrl: "./studio.component.html",
   styleUrls: ["./studio.component.sass"],
+  standalone: false,
 })
 export class StudioComponent implements OnDestroy, OnInit {
   title = "readalong-studio";
