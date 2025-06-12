@@ -50,11 +50,20 @@ h2
     width: 100%
 
   #style-section.collapsed
-    transform: rotate(90deg) translateX(45%) translateY(200%)
-    width: 85vh
+    transform: rotate(90deg)
+    transform-origin: bottom left
+    width: 85em
     max-height: 4.7em
     transition: transform 1s
     max-width: calc( 55vh + 100px)
 
-    #styleTypeBtn
+    div.header > div
       display: none
+
+    div.header > div:first-of-type, div.header > div.helper-text
+      display: inline-block
+      cursor: pointer
+
+
+    div.justify-content-between
+      justify-content: flex-start !important

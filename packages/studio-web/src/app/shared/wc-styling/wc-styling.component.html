@@ -3,7 +3,7 @@
   id="style-section"
   [class]="'col p-3  bg-light' + (collapsed ? ' collapsed' : ' ms-xl-5')"
 >
-  <div class="d-flex flex-column flex-md-row justify-content-between">
+  <div class="d-flex flex-column flex-md-row justify-content-between header">
     <div class="p-0 order-0 order-md-0">
       <button
         mat-icon-button
@@ -20,9 +20,16 @@
         </span>
       </button>
     </div>
+    <div
+      *ngIf="collapsed"
+      class="p-0 order-1 order-md-1 helper-text"
+      (click)="collapsed = false"
+    >
+      <h1 i18n="Advanced styling" class="title">Advanced styling</h1>
+    </div>
     <div class="p-0 order-1 order-md-1">
       <h1 i18n="Title for style box" class="title">
-        Optional:
+        Advanced
         <a
           rel="noopener"
           href="https://github.com/ReadAlongs/Studio-Web/tree/main/packages/web-component#css-customization"
@@ -36,7 +43,7 @@
         </button>
       </h1>
     </div>
-    <div class="p-0 order-2 order-md-2" id="styleTypeBtn">
+    <div class="p-0 order-2 order-md-2">
       <mat-button-toggle-group
         appearance="legacy"
         (change)="toggleStyleInput($event)"

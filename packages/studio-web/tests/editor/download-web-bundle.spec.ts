@@ -24,6 +24,27 @@ test("should Download web bundle (zip file format) from the Editor", async ({
   let fileChooser = await fileChooserPromise;
   await fileChooser.setFiles(testAssetsPath + "sentence-paragr.html");
 
+  //add custom style
+  await page.getByTestId("toggle-css-box").click();
+  await page.getByRole("radio", { name: "File" }).click();
+  fileChooserPromise = page.waitForEvent("filechooser");
+  await page.locator("#updateStyle").click();
+  fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles(`${testAssetsPath}/sentence-paragr-cust-css.css`);
+  await expect(async () =>
+    expect(page.locator("#styleInput"), "has style data").toHaveValue(
+      /\.theme--light/,
+    ),
+  ).toPass();
+  await page.getByRole("button", { name: "Apply" }).click();
+  await expect
+    .soft(
+      page
+        .locator('[data-test-id="text-container"]')
+        .getByText("This", { exact: true }),
+      "check the color of the text",
+    )
+    .toHaveCSS("color", "rgb(80, 70, 70)");
   // Test download web-bundle functionality
   await page.getByTestId("download-formats").click();
   await page.getByRole("option", { name: "Web Bundle" }).click();
@@ -74,4 +95,8 @@ async function verifyWebBundle(zip: JSZip) {
     1,
   );
   expect(zip.file(/www\/index.html/), "should have index file").toHaveLength(1);
+  await expect(
+    zip.file(/www\/assets\/sentence\-paragr\-[0-9]*\.css/),
+    "should have stylesheet file",
+  ).toHaveLength(1); //www/assets audio exists
 }
