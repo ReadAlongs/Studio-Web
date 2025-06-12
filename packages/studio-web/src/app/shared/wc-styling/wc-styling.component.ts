@@ -24,6 +24,7 @@ export class WcStylingComponent implements OnDestroy, OnInit {
   collapsed = true;
   @ViewChild("styleInputElement") styleInputElement: ElementRef;
   @ViewChild("fontInputElement") fontInputElement: ElementRef;
+  @ViewChild("styleSection") styleSection: ElementRef;
 
   constructor(
     private toastr: ToastrService,
@@ -35,13 +36,13 @@ export class WcStylingComponent implements OnDestroy, OnInit {
     this.wcStylingService.$wcStyleInput.subscribe((css) => {
       if (css !== this.$styleText.getValue()) {
         this.$styleText.next(css);
-        this.collapsed = false;
+        //this.collapsed = false;
       }
     });
     this.wcStylingService.$wcStyleFonts.subscribe((font) => {
       if (font !== this.$fontDeclaration.getValue()) {
         this.$fontDeclaration.next(font);
-        this.collapsed = false;
+        //this.collapsed = false;
       }
     });
   }

@@ -1,9 +1,26 @@
 <div
+  #styleSection
   id="style-section"
-  [class]="'col-12 p-3 border bg-light' + (collapsed ? ' collapsed' : '')"
+  [class]="'col p-3  bg-light' + (collapsed ? ' collapsed' : ' ms-xl-5')"
 >
   <div class="d-flex flex-column flex-md-row justify-content-between">
-    <div class="p-0 order-1 order-md-0">
+    <div class="p-0 order-0 order-md-0">
+      <button
+        mat-icon-button
+        (click)="collapsed = !collapsed"
+        data-test-id="toggle-css-box"
+      >
+        <span class="d-none d-xl-inline">
+          <mat-icon *ngIf="collapsed">code</mat-icon>
+          <mat-icon *ngIf="!collapsed">chevron_right</mat-icon>
+        </span>
+        <span class="d-xl-none">
+          <mat-icon *ngIf="collapsed">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="!collapsed">keyboard_arrow_up</mat-icon>
+        </span>
+      </button>
+    </div>
+    <div class="p-0 order-1 order-md-1">
       <h1 i18n="Title for style box" class="title">
         Optional:
         <a
@@ -19,7 +36,7 @@
         </button>
       </h1>
     </div>
-    <div class="p-0 order-2 order-md-1">
+    <div class="p-0 order-2 order-md-2" id="styleTypeBtn">
       <mat-button-toggle-group
         appearance="legacy"
         (change)="toggleStyleInput($event)"
@@ -34,16 +51,6 @@
           >File</mat-button-toggle
         >
       </mat-button-toggle-group>
-    </div>
-    <div class="p-0 order-0 order-md-2">
-      <button
-        mat-icon-button
-        (click)="collapsed = !collapsed"
-        data-test-id="toggle-css-box"
-      >
-        <mat-icon *ngIf="collapsed">keyboard_arrow_down</mat-icon
-        ><mat-icon *ngIf="!collapsed">keyboard_arrow_up</mat-icon>
-      </button>
     </div>
   </div>
   <div *ngIf="$inputType === 'upload'">
@@ -70,19 +77,17 @@
     </div>
   </div>
   <div *ngIf="$inputType === 'edit'">
-    <div class="d-flex flex-column flex-md-row justify-content-between p-0">
-      <span class="p-0"
-        ><h2 i18n="Title for style writing box" class="subtitle">
+    <div class="d-flex flex-row justify-content-between p-0">
+      <span class="p-0">
+        <h2
+          i18n="Title for style writing box"
+          class="subtitle mt-3 text-center"
+        >
           Write or paste your style sheet here
-        </h2></span
-      >
-      <span class="p-0">
-        <button mat-button (click)="updateStyle()">
-          <mat-icon class="mat-icon-lg">sync</mat-icon>
-          Apply
-        </button></span
-      >
-      <span class="p-0">
+        </h2>
+      </span>
+
+      <span class="p-0 d-flex justify-content-between flex-row flex-lg-column">
         <button
           i18n="Style download button"
           mat-button
@@ -91,7 +96,10 @@
           aria-label="Style download button"
           class="pr-0"
         >
-          <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
+          <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy</button
+        ><button mat-button (click)="updateStyle()">
+          <mat-icon class="mat-icon-lg">sync</mat-icon>
+          Apply
         </button>
       </span>
     </div>
