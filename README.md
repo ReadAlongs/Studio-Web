@@ -2,7 +2,7 @@
 
 [![Publish Status](https://github.com/readalongs/Studio-Web/actions/workflows/release.yml/badge.svg)](https://github.com/ReadAlongs/Studio-Web/actions)
 [![Test Status](https://github.com/readalongs/Studio-Web/actions/workflows/end-to-end-tests.yml/badge.svg?branch=main)](https://github.com/ReadAlongs/Studio-Web/actions)
-[![GitHub license](https://img.shields.io/github/license/ReadAlongs/Studio-Web)](https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/Licence-MIT-green)](https://github.com/ReadAlongs/Studio-Web/blob/main/LICENSE)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/ReadAlongs/Studio-Web)
 [![web-component release](https://img.shields.io/npm/v/@readalongs/web-component)](https://www.npmjs.com/package/@readalongs/web-component)
 [![ngx-web-component release](https://img.shields.io/npm/v/@readalongs/ngx-web-component)](https://www.npmjs.com/package/@readalongs/ngx-web-component)
