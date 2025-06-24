@@ -1395,18 +1395,24 @@ export class ReadAlongComponent {
     //console.log(JSON.stringify(this.translations));
   }
 
-  async handleFiles(event: any, pageIndex: number) {
-    // const reader = new FileReader()
-    let imageURL = URL.createObjectURL(event);
-    let newImage = {};
-    newImage[pageIndex] = imageURL;
-    this.images = { ...this.images, ...newImage }; // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
+  handleImageFile(file: File, pageIndex: number) {
+    // verify the user has uploaded an  image file.
+    if (!file.type.startsWith("image/")) {
+      return;
+    }
+
+    this.images[pageIndex] = URL.createObjectURL(file);
+    this.images = { ...this.images }; // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
   deleteImage(pageIndex: number) {
-    let newImage = {};
-    newImage[pageIndex] = null;
-    this.images = { ...this.images, ...newImage }; // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
+    // release memory allocated by createObjectURL
+    if (this.images[pageIndex].startsWith("blob:")) {
+      URL.revokeObjectURL(this.images[pageIndex]);
+    }
+
+    delete this.images[pageIndex];
+    this.images = { ...this.images }; // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
   /**********
@@ -1485,9 +1491,10 @@ export class ReadAlongComponent {
               class="fileElem"
               id={"fileElem--" + props.pageID}
               accept="image/*"
-              onChange={($event: any) =>
-                this.handleFiles($event.target.files[0], props.pageIndex)
-              }
+              onChange={($event: Event) => {
+                const el = $event.target as HTMLInputElement;
+                this.handleImageFile(el.files[0], props.pageIndex);
+              }}
             />
             <label class="button" htmlFor={"fileElem--" + props.pageID}>
               {this.getI18nString("choose-file")}
@@ -1514,33 +1521,29 @@ export class ReadAlongComponent {
     </div>
   );
 
-  ImgContainer = (props: { pageIndex: number; pageID: string }): Element => (
-    <div class="image__container">
-      <span id="image-container">
-        {this.mode === "EDIT" &&
-        props.pageIndex in this.images &&
-        this.images[props.pageIndex] !== null ? (
-          <this.RemoveImg pageIndex={props.pageIndex} />
-        ) : null}
-        {
-          /* Display an Img if it exists on the page */
-          props.pageIndex in this.images &&
-          this.images[props.pageIndex] !== null ? (
-            <this.Img imgURL={this.images[props.pageIndex]} />
-          ) : null
-        }
-      </span>
-      {this.mode === "EDIT" &&
-      !(
-        props.pageIndex in this.images && this.images[props.pageIndex] !== null
-      ) ? (
-        <this.ImgPlaceHolder
-          pageID={props.pageID}
-          pageIndex={props.pageIndex}
-        />
-      ) : null}
-    </div>
-  );
+  ImgContainer = (props: { pageIndex: number; pageID: string }): Element => {
+    const hasImage =
+      props.pageIndex in this.images && this.images[props.pageIndex] !== null;
+
+    return (
+      <div class="image__container">
+        <span id="image-container">
+          {this.mode === "EDIT" && hasImage && (
+            <this.RemoveImg pageIndex={props.pageIndex} />
+          )}
+          {hasImage && (
+            <this.Img imgURL={this.images[props.pageIndex] as string} />
+          )}
+        </span>
+        {this.mode === "EDIT" && !hasImage && (
+          <this.ImgPlaceHolder
+            pageID={props.pageID}
+            pageIndex={props.pageIndex}
+          />
+        )}
+      </div>
+    );
+  };
 
   /**
    * Page element
