@@ -8,7 +8,11 @@
   --bs-gutter-x: 0
 
 #readalongContainer
-  margin: 0 2.5vw
+  margin: 0 auto
+
+#styleWindow
+  justify-content: start
+  margin: 0 auto
 
 @media screen and (min-width:1200px)
   div > #handle
@@ -23,7 +27,8 @@
     margin-top: 1em
     cursor: col-resize
     z-index: 1000
-
+    display: block
+  #styleWindow
+    margin: 0
   app-wc-styling:has(#style-section.collapsed)
     width: 100px
-
