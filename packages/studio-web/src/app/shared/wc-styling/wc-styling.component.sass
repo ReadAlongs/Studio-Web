@@ -1,10 +1,13 @@
+mat-dialog-actions.mat-mdc-dialog-actions
+  justify-content: flex-end !important
+
 #styleInput
   border: 1px solid #222
   font-family: 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
   min-height: 35vh
 .collapsed
   max-height: 8em
-  overflow: hidden
+  overflow: hidden !important
   @media (min-width: 960px)
     max-height: 5em
 
@@ -14,16 +17,8 @@ pre
   margin: .5em
   font-size: 1.1em
 
-.style-helper
-  padding: 1em
-  max-height: 98vh
-  overflow-y: auto
-
 code
   white-space: pre
-
-h2
-  margin-top: 2em
 
 .comment
   color: #696
@@ -40,10 +35,10 @@ h2
 @media only screen and (max-width:1200px)
   #style-section
     width: 95vw
-    margin-left: 2.5vw
+    margin: auto
 
     div.header > div.helper-text
-      display: none !important
+      text-align: left
 
 @media only screen and (min-width:1200px)
   #style-section
@@ -67,6 +62,9 @@ h2
       display: inline-block
       cursor: pointer
 
-
     div.justify-content-between
       justify-content: flex-start !important
+
+@media only screen and (min-width:1200px) and (max-width:1900px)
+  .flex-md-row
+    flex-direction: column !important

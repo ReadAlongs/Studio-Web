@@ -8,14 +8,21 @@
   --bs-gutter-x: 0
 
 #readalongContainer
-  margin: 0 2.5vw
+  margin: 0 auto
+
+#styleWindow
+  justify-content: start
+  margin: 0 auto
+
+@media screen and (min-width:1200px) and (max-width:1500px)
+  .full-height
+    max-height: 95vmin
 
 @media screen and (min-width:1200px)
   div > #handle
-    position: absolute
+    position: relative
     width: 13px
-    height: 85vh
-    max-height: calc( 55vh + 100px)
+    height: 100%
     background-color: rgba(0,0,0,0.7)
     border: 3px solid #eee
     border-width: 0 5px
@@ -23,7 +30,12 @@
     margin-top: 1em
     cursor: col-resize
     z-index: 1000
+    display: block
+  #styleWindow
+    margin: 0
+    max-height: 95vh
+    overflow-y: auto
 
   app-wc-styling:has(#style-section.collapsed)
     width: 100px
-
+    overflow: hidden !important

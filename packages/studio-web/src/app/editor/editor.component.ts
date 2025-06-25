@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
 
-import { takeUntil, Subject, take } from "rxjs";
+import { takeUntil, Subject, take, fromEvent, debounceTime } from "rxjs";
 import {
   AfterViewInit,
   Component,
@@ -70,6 +70,14 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     this.wcStylingService.$wcStyleFonts.subscribe((font) =>
       this.addWCCustomFont(font),
     );
+    fromEvent(window, "resize")
+      .pipe(debounceTime(100), takeUntil(this.unsubscribe$)) // wait for 1 second after the last resize event
+      .subscribe(() => {
+        // When the window is resized, we want to reset the style window size
+        // so that it does not get squeezed too small
+        console.log("[DEBUG] window resized");
+        this.resetStyleWindowSize();
+      });
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -134,37 +142,39 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       this.startTour();
     }
     if (this.handleElement) {
-      (this.handleElement.nativeElement as HTMLElement).addEventListener(
-        "drag",
-        (ev: DragEvent) => {
+      fromEvent(this.handleElement.nativeElement, "dragend")
+        .pipe(takeUntil(this.unsubscribe$), debounceTime(100))
+        .subscribe((event) => {
+          const ev = event as DragEvent;
           console.log("[DEBUG] dragged");
           if (this.styleElement.collapsed$.getValue()) {
             this.resetStyleWindowSize();
             return;
           }
-          if (ev.x < 600) return; // do not let the read along be squeezed past 600px width
+          if (ev.x < 600) {
+            return;
+          } // do not let the read along be squeezed past 600px width
+          if (window.innerWidth - ev.x < 400) return; // do not let the style window be squeezed past 600px width)
           // When the handle is dragged, we want to resize the readalong and style containers
           const styleEle = this.styleElement?.styleSection
             .nativeElement as HTMLElement;
           const readAlong = this.readalongContainerElement
             ?.nativeElement as HTMLElement;
           if (styleEle?.style) {
-            styleEle.style.width = `calc(100vw - ${ev.x}px)`;
+            styleEle.style.width = `calc(100vw - ${ev.x + 50}px)`;
           }
 
           if (readAlong?.style) {
             readAlong.style.width = `${ev.x}px`;
           }
-        },
-      );
-      this.styleElement.collapsed$.subscribe((collapsed) => {
-        if (collapsed) {
-          this.resetStyleWindowSize();
-        }
-      });
+        });
     } else {
       this.resetStyleWindowSize();
     }
+    this.styleElement.collapsed$.subscribe((collapsed) => {
+      // When the style element is collapsed, we want to reset the style window size
+      this.resetStyleWindowSize();
+    });
   }
 
   ngOnInit(): void {}
@@ -263,6 +273,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   async loadRasFile(file: File | Blob) {
+    //reset css
+    this.wcStylingService.$wcStyleInput.next("");
+    this.wcStylingService.$wcStyleFonts.next("");
     const text = await file.text();
     const readalong = await this.parseReadalong(text);
     this.loadAudioIntoWavesurferElement();
@@ -556,7 +569,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       ?.nativeElement as HTMLElement;
 
     if (window.innerWidth > 1199) {
-      styleEle.style.width = `65vh`;
+      styleEle.style.width = this.styleElement.collapsed$.value
+        ? `65vh`
+        : "calc(30vw - 50px)";
       readAlong.style.width = `70vw`;
     } else {
       styleEle.style.width = `95vw`;

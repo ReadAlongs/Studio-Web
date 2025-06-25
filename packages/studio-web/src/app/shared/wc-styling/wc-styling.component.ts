@@ -8,8 +8,13 @@ import {
 import { ToastrService } from "ngx-toastr";
 import { BehaviorSubject, Subject, takeUntil } from "rxjs";
 import { WcStylingService } from "./wc-styling.service";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import {
+  MatDialog,
+  MatDialogRef,
+  MatDialogModule,
+} from "@angular/material/dialog";
 import { B64Service } from "../../b64.service";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
   selector: "app-wc-styling",
@@ -207,7 +212,11 @@ span.theme--dark.sentence__text {
   selector: "wc-styling-helper",
   templateUrl: "./wc-styling-helper.html",
   styleUrl: "./wc-styling.component.sass",
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class WCStylingHelper {
   constructor(public dialogRef: MatDialogRef<WCStylingHelper>) {}
+  closeDialog(): void {
+    this.dialogRef.close();
+  }
 }

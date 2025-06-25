@@ -9,7 +9,9 @@ test.beforeEach(async ({ page, isMobile }) => {
   if (isMobile) {
     await page.getByTestId("menu-toggle").click();
   }
-  await page.getByRole("button", { name: /Editor/ }).click();
+  await page
+    .getByRole(isMobile ? "menuitem" : "button", { name: /Editor/ })
+    .click();
 
   await page.locator("#updateRAS").waitFor({ state: "visible" });
   let fileChooserPromise = page.waitForEvent("filechooser");
