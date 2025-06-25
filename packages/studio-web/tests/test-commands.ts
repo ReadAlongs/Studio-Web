@@ -1,6 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
 import process from "process";
-import { __awaiter } from "tslib";
 
 export const testAssetsPath = process.cwd().includes("packages")
   ? "tests/fixtures/" // for nx
