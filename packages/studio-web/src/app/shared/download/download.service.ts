@@ -240,7 +240,8 @@ Please host all assets on your server, include the font and package imports defi
                   version="${environment.packageJson.singleFileBundleVersion}"
                   href="data:application/readalong+xml;base64,${rasB64}"
                   audio="${b64Audio}"
-                  image-assets-folder=""${b64Css}
+                  image-assets-folder=""
+                  ${b64Css}
                 >
                   <span slot="read-along-header">${slots.title}</span>
                   <span slot="read-along-subheader">${slots.subtitle}</span>
@@ -390,7 +391,8 @@ Please host all assets on your server, include the font and package imports defi
               audio="assets/${basename}.${audioExtension}"
               theme="light"
               language="eng"
-              image-assets-folder="assets/"${pathCss}
+              image-assets-folder="assets/"
+              ${pathCss}
             >
               <span slot='read-along-header'>${slots.title}</span>
               <span slot='read-along-subheader'>${slots.subtitle}</span>

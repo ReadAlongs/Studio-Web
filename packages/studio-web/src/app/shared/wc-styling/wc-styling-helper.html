@@ -1,70 +1,72 @@
-<div class="style-helper">
-  <p>
-    To customize the look and feel of your read-along, you need to upload or
-    write some Cascading Style Sheets in the styling section.
-  </p>
-  <p>
-    We are providing a table below to help you customize. Please note that your
-    design must include both the light (<code>.theme--light</code>) and dark
-    (<code>.theme--dark</code>) themes.
-  </p>
+<h2 mat-dialog-title i18n="Advanced styling">Advanced styling</h2>
+<mat-dialog-content class="mat-typography">
+  <div class="style-helper">
+    <p>
+      To customize the look and feel of your read-along, you need to upload or
+      write some Cascading Style Sheets in the styling section.
+    </p>
+    <p>
+      We are providing a table below to help you customize. Please note that
+      your design must include both the light (<code>.theme--light</code>) and
+      dark (<code>.theme--dark</code>) themes.
+    </p>
 
-  <h2>Common classes</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Class</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th>
-          <code>.sentence__word</code>
-        </th>
-        <td>The aligned text</td>
-      </tr>
-      <tr>
-        <th>
-          <code>.sentence__word.reading</code>
-        </th>
-        <td>The aligned text being read</td>
-      </tr>
-      <tr>
-        <th>
-          <code>.sentence__text</code>
-        </th>
-        <td>The unaligned text</td>
-      </tr>
-      <tr>
-        <th>
-          <code>.sentence__translation</code>
-        </th>
-        <td>The translated text</td>
-      </tr>
-      <tr>
-        <th>
-          <code>.sentence</code>
-        </th>
-        <td>The sentence container</td>
-      </tr>
-      <tr>
-        <th>
-          <code>.paragraph</code>
-        </th>
-        <td>The paragraph containing the</td>
-      </tr>
-    </tbody>
-  </table>
-  <h2>Sample Style</h2>
-  <!-- prettier-ignore -->
+    <h2>Common classes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Class</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>
+            <code>.sentence__word</code>
+          </th>
+          <td>The aligned text</td>
+        </tr>
+        <tr>
+          <th>
+            <code>.sentence__word.reading</code>
+          </th>
+          <td>The aligned text being read</td>
+        </tr>
+        <tr>
+          <th>
+            <code>.sentence__text</code>
+          </th>
+          <td>The unaligned text</td>
+        </tr>
+        <tr>
+          <th>
+            <code>.sentence__translation</code>
+          </th>
+          <td>The translated text</td>
+        </tr>
+        <tr>
+          <th>
+            <code>.sentence</code>
+          </th>
+          <td>The sentence container</td>
+        </tr>
+        <tr>
+          <th>
+            <code>.paragraph</code>
+          </th>
+          <td>The paragraph containing the</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Sample Style</h2>
+    <!-- prettier-ignore -->
 
-  <pre class="css-block">
+    <pre class="css-block">
 <span class="comment">
 /**
   define your colors and variables
-**/  
-</span>    
+**/
+</span>
     <span class="css-class">
 :root,
 #read-along-container</span> &#123;
@@ -205,4 +207,8 @@ input[type="range"]::-moz-range-track</span> &#123;
 &#125;
 
   </pre>
-</div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close i18n="Close">Close</button>
+</mat-dialog-actions>
