@@ -7,6 +7,12 @@ export const environment = {
   production: false,
   apiBaseURL: "http://localhost:8000/api/v1",
   packageJson: packageJson,
+
+  languages: {
+    en: "http://localhost:4200/",
+    fr: "http://localhost:4203/",
+    es: "http://localhost:4204/",
+  },
 };
 
 /*

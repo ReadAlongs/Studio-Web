@@ -13,6 +13,10 @@ export class AppComponent implements OnDestroy, OnInit {
   unsubscribe$ = new Subject<void>();
   version = environment.packageJson.singleFileBundleVersion;
   currentURL = "/";
+
+  languages = environment.languages;
+  currentLanguage: string = "en";
+
   constructor(
     private dialog: MatDialog,
     public router: Router,
@@ -23,6 +27,28 @@ export class AppComponent implements OnDestroy, OnInit {
         this.currentURL = event.url;
       }
     });
+
+    // support for En/Fr switch with PR preview functionality.
+    let pathname = location.pathname;
+    if (pathname.startsWith("/pr-preview/")) {
+      const prPreviewPath = pathname.split("/").slice(1, 3).join("/");
+      this.languages.en = this.languages.en + prPreviewPath + "/";
+      this.languages.fr = this.languages.fr.replace(
+        "fr/",
+        prPreviewPath + "/fr/",
+      );
+      this.languages.es = this.languages.es.replace(
+        "es/",
+        prPreviewPath + "/es/",
+      );
+    }
+
+    // Use the location information to determine the site's current language.
+    const lookupKey = `${location.protocol}//${location.host}${pathname}`;
+    const lookup = Object.entries(this.languages).filter(
+      ([_, url]) => url === lookupKey,
+    );
+    this.currentLanguage = lookup.length == 1 ? lookup[0][0] : "en";
   }
 
   openPrivacyDialog(): void {
