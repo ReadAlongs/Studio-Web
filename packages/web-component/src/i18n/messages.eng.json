@@ -6,6 +6,7 @@
     "loading-error": "Error: the <FILETYPE> file \"<FILENAME>\" could not be loaded.",
     "parse-error": "Error: the <FILETYPE> file \"<FILENAME>\" could not be parsed.",
     "alignment-error": "Error: No alignments were found.",
+    "image-error": "Error: the file \"<FILENAME>\" is not an image file.",
     "loading": "Loading...",
     "line-placeholder": "Type your text here",
     "upload-image": "Upload an image for this page",
