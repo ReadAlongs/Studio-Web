@@ -42,6 +42,7 @@ import { UploadService } from "../upload.service";
 import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 import { StudioService } from "../studio/studio.service";
+import { validateFileType } from "../utils/utils";
 
 @Component({
   selector: "app-upload",
@@ -68,6 +69,11 @@ export class UploadComponent implements OnDestroy, OnInit {
   @ViewChild("textInputElement") textInputElement: ElementRef;
   @ViewChild("audioFileUpload") audioFileUpload: ElementRef<HTMLFormElement>;
   @Output() stepChange = new EventEmitter<any[]>();
+
+  // value passed to input[type=file] accept's attribute which expects
+  // a comma separated list of file extensions or mime types.
+  textUploadAccepts = ".txt,.xml,.readalong";
+  audioUploadAccepts = ".mp3,.wav,.webm,.m4a";
 
   unsubscribe$ = new Subject<void>();
   private route: ActivatedRoute;
@@ -541,53 +547,82 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     }
   }
 
-  onFileSelected(type: any, event: any) {
-    const file: File = event.target.files[0];
-    if (type === "audio") {
-      if (file.type == "video/webm") {
-        // No, it is audio, because we say so.
-        const audioFile = new File([file], file.name, { type: "audio/webm" });
-        this.studioService.audioControl$.setValue(audioFile);
-      } else {
-        this.studioService.audioControl$.setValue(file);
-      }
+  onAudioFileSelected(event: Event) {
+    const el = event.target as HTMLInputElement;
+    if (!el.files || el.files.length !== 1) {
+      return;
+    }
+
+    const file: File = el.files[0];
+    if (!validateFileType(file, this.audioUploadAccepts)) {
+      this.toastr.error(
+        $localize`The file "${file.name}:fileName:" is not a compatible audio file.`,
+        $localize`Sorry!`,
+        { timeOut: 15000 },
+      );
+      el.value = "";
+      return;
+    }
+
+    if (file.type == "video/webm") {
+      // No, it is audio, because we say so.
+      const audioFile = new File([file], file.name, { type: "audio/webm" });
+      this.studioService.audioControl$.setValue(audioFile);
+    } else {
+      this.studioService.audioControl$.setValue(file);
+    }
+
+    this.toastr.success(
+      $localize`File ` +
+        file.name +
+        $localize` processed, but not uploaded. Your audio will stay on your computer.`,
+      $localize`Great!`,
+      { timeOut: 10000 },
+    );
+  }
+
+  onTextFileSelected(event: Event) {
+    const el = event.target as HTMLInputElement;
+    if (!el.files || el.files.length !== 1) {
+      return;
+    }
+
+    const file: File = el.files[0];
+    if (!validateFileType(file, this.textUploadAccepts)) {
+      this.toastr.error(
+        $localize`The file "${file.name}:fileName:" is not a compatible text file.`,
+        $localize`Sorry!`,
+        { timeOut: 15000 },
+      );
+      el.value = "";
+      return;
+    }
+
+    let maxSizeKB;
+    let fileTooBigMessage;
+    if (validateFileType(file, ".readalong,.xml")) {
+      maxSizeKB = this.maxRasSizeKB;
+      fileTooBigMessage = $localize`.readalong file too large. `;
+    } else {
+      maxSizeKB = this.maxTxtSizeKB;
+      fileTooBigMessage = $localize`Text file too large. `;
+    }
+    if (file.size > maxSizeKB * 1024) {
+      this.toastr.error(
+        fileTooBigMessage + $localize`Max size: ` + maxSizeKB + $localize` KB.`,
+        $localize`Sorry!`,
+        { timeOut: 15000 },
+      );
+      this.textInputElement.nativeElement.value = "";
+    } else {
+      this.studioService.textControl$.setValue(file);
       this.toastr.success(
         $localize`File ` +
           file.name +
-          $localize` processed, but not uploaded. Your audio will stay on your computer.`,
+          $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
         $localize`Great!`,
         { timeOut: 10000 },
       );
-    } else if (type === "text") {
-      let maxSizeKB;
-      let fileTooBigMessage;
-      if (file.name.split(".").pop() === "readalong") {
-        maxSizeKB = this.maxRasSizeKB;
-        fileTooBigMessage = $localize`.readalong file too large. `;
-      } else {
-        maxSizeKB = this.maxTxtSizeKB;
-        fileTooBigMessage = $localize`Text file too large. `;
-      }
-      if (file.size > maxSizeKB * 1024) {
-        this.toastr.error(
-          fileTooBigMessage +
-            $localize`Max size: ` +
-            maxSizeKB +
-            $localize` KB.`,
-          $localize`Sorry!`,
-          { timeOut: 15000 },
-        );
-        this.textInputElement.nativeElement.value = "";
-      } else {
-        this.studioService.textControl$.setValue(file);
-        this.toastr.success(
-          $localize`File ` +
-            file.name +
-            $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
-          $localize`Great!`,
-          { timeOut: 10000 },
-        );
-      }
     }
   }
 }

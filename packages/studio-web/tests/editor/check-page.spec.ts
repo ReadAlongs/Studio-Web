@@ -93,3 +93,31 @@ test("should check editor UI", async ({ page, isMobile }) => {
     "should have image on second page",
   ).toHaveCount(1);
 });
+
+test("should verify the uploaded file type", async ({ page, isMobile }) => {
+  await page.goto("/", { waitUntil: "load" });
+
+  await disablePlausible(page);
+  if (isMobile) {
+    await page.getByTestId("menu-toggle").click();
+  }
+  await page.getByRole("button", { name: /Editor/ }).click();
+  await expect(
+    page.getByRole("button", { name: "Take the tour!" }),
+    "Tour button is visible",
+  ).toBeVisible();
+
+  await expect(
+    page.locator("#updateRAS"),
+    "Choose file is visible",
+  ).toBeVisible();
+
+  let fileChooserPromise = page.waitForEvent("filechooser");
+  await page.locator("#updateRAS").click();
+  let fileChooser = await fileChooserPromise;
+  fileChooser.setFiles(testAssetsPath + "page1.png");
+
+  await expect(
+    page.locator("#toast-container").locator(".toast-error"),
+  ).toBeVisible();
+});
