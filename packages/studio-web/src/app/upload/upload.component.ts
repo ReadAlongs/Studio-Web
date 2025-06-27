@@ -550,6 +550,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   onAudioFileSelected(event: Event) {
     const el = event.target as HTMLInputElement;
     if (!el.files || el.files.length !== 1) {
+      this.studioService.audioControl$.setValue(null);
       return;
     }
 
@@ -584,6 +585,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   onTextFileSelected(event: Event) {
     const el = event.target as HTMLInputElement;
     if (!el.files || el.files.length !== 1) {
+      this.studioService.textControl$.setValue(null);
       return;
     }
 
