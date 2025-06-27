@@ -1,6 +1,7 @@
 # Ignore generated files that we commit
 packages/web-component/src/components.d.ts
 packages/web-component/src/components/read-along-component/readme.md
+packages/web-component/src/components/error-message/readme.md
 
 # Ignore files that we don't write ourselves or directly
 assets/
