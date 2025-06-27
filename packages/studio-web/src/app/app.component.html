@@ -61,6 +61,28 @@
       <mat-icon>policy</mat-icon>
       <span i18n="Privacy">Privacy</span>
     </button>
+
+    @if (currentLanguage === "en") {
+      <a
+        lang="fr"
+        mat-button
+        translate="no"
+        target="_blank"
+        href="{{ languages.fr }}"
+        >Français</a
+      >
+    }
+
+    @if (currentLanguage === "fr") {
+      <a
+        lang="en"
+        mat-button
+        translate="no"
+        target="_blank"
+        href="{{ languages.en }}"
+        >English</a
+      >
+    }
   </div>
 </mat-toolbar>
 <router-outlet></router-outlet>
