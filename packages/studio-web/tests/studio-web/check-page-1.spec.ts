@@ -114,7 +114,7 @@ test.describe("test studio UI & UX", () => {
       .getByTestId("text-btn-group")
       .getByRole("radio", { name: "File" })
       .click();
-    await page.locator("#updateText").click();
+
     await page
       .locator("#updateText")
       .setInputFiles(testAssetsPath + "/ras-text-37kb.txt");
@@ -122,7 +122,7 @@ test.describe("test studio UI & UX", () => {
     await expect(
       page.locator("#toast-container").locator(".toast-error"),
     ).toHaveCount(0);
-    await page.locator("#updateText").click();
+
     await page
       .locator("#updateText")
       .setInputFiles(testAssetsPath + "/ras-text-50kb.txt");
