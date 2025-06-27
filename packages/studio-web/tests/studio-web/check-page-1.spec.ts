@@ -142,4 +142,46 @@ test.describe("test studio UI & UX", () => {
       page.locator("#toast-container").locator(".toast-error"),
     ).toBeVisible();
   });
+
+  test("should validate upload text file type", async ({ page }) => {
+    await page.goto("/", { waitUntil: "load" });
+    await disablePlausible(page);
+    await expect(async () => {
+      await expect(page.getByTestId("next-step")).toBeEnabled();
+    }).toPass();
+
+    await page
+      .getByTestId("text-btn-group")
+      .getByRole("radio", { name: "File" })
+      .click();
+    await page.locator("#updateText").click();
+    await page
+      .locator("#updateText")
+      .setInputFiles(testAssetsPath + "/page1.png");
+
+    await expect(
+      page.locator("#toast-container").locator(".toast-error"),
+    ).toBeVisible();
+  });
+
+  test("should validate upload audio file type", async ({ page }) => {
+    await page.goto("/", { waitUntil: "load" });
+    await disablePlausible(page);
+    await expect(async () => {
+      await expect(page.getByTestId("next-step")).toBeEnabled();
+    }).toPass();
+
+    await page
+      .getByTestId("audio-btn-group")
+      .getByRole("radio", { name: "File" })
+      .click();
+    await page.locator("#updateAudio").click();
+    await page
+      .locator("#updateAudio")
+      .setInputFiles(testAssetsPath + "/page1.png");
+
+    await expect(
+      page.locator("#toast-container").locator(".toast-error"),
+    ).toBeVisible();
+  });
 });
