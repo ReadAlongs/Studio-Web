@@ -13,6 +13,7 @@
   -webkit-backdrop-filter: blur(5px) !important;
   backdrop-filter: blur(5px) !important;
 }
+
 .settings {
   height: config.$page-size + 0vh;
   max-height: config.$page-size + 0vh;
@@ -34,11 +35,13 @@
 
   h3 {
     border-bottom: 1px solid #ccc;
+
     & button {
       float: inline-start;
       margin-top: 0;
       margin-bottom: 0;
     }
+
     padding: 10px;
     margin: 0;
   }
@@ -84,18 +87,23 @@
     cursor: pointer;
     text-align: left;
     color: inherit;
+
     & select,
     & button {
       margin-right: 1em;
       width: 80px;
       text-align: justify;
+      background-color: transparent !important;
     }
+
     & button {
       margin: 0 1em 0 0;
       padding: 0 0.0625em;
     }
+
     margin: 0.5em 1em;
   }
+
   & > .footer {
     position: absolute;
     bottom: 0;
@@ -114,19 +122,23 @@
     & > div {
       flex-grow: 8;
     }
+
     & > button {
       border: 1px solid #ccc;
       padding: 0.25em 0.5em !important;
     }
+
     & > button:hover {
       background-color: rgba(0, 0, 0, 0.15);
       box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
     }
   }
+
   & button:disabled {
     background-color: rgba(200, 200, 200, 0.15);
     color: #ccc;
   }
+
   & p.version {
     padding: 1em;
     font-size: 0.7em;
@@ -134,26 +146,31 @@
     color: #ccc;
   }
 }
+
 .settings.theme--dark {
   color: #fff;
 }
+
 @media screen and (max-width: 385px) {
   .settings {
     width: 95vw;
     max-width: 95vw;
     left: 2.5vw;
     overflow: auto;
+
     & p {
       & select,
       & button {
         display: block;
         width: 80%;
       }
+
       margin-bottom: 1em;
       border-bottom: 1px solid #ccc;
     }
   }
 }
+
 button:focus,
 input:focus {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
