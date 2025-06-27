@@ -28,4 +28,24 @@ context("The Readalong Component", () => {
       cy.get("[data-test-id=translation-line]").should("have.length", 1);
     });
   });
+
+  it("should not allow non-image uploads", () => {
+    cy.wait(["@text", "@audio"]);
+    cy.readalongElement().should("be.visible");
+
+    cy.readalong().within(() => {
+      cy.get("[data-test-id=delete-button]").click();
+      cy.get("[for=fileElem--t0b0d0]").should("be.visible");
+      cy.get("#fileElem--t0b0d0").selectFile(
+        {
+          contents: Cypress.Buffer.from("file contents"),
+          fileName: "test-file.zip",
+          mimeType: "application/zip",
+        },
+        { force: true },
+      );
+
+      cy.get("[data-test-id=invalid-image-file]").should("be.visible");
+    });
+  });
 });
