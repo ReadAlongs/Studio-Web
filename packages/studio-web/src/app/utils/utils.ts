@@ -18,3 +18,39 @@ export const slugify = (str: string, character_limit: number = 0) => {
   }
   return slug;
 };
+
+/**
+ * Validates the file matches the expected file type.
+ *
+ * The accept parameter is a comma separated value as specified
+ * here: https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
+ */
+export function validateFileType(file: File, accept: string): boolean {
+  const accepts = accept
+    .toLowerCase()
+    .split(",")
+    .map((ext) => ext.trim())
+    .filter((ext) => ext);
+
+  // The file extension specification is defined as:
+  //  A string whose first character is a U+002E FULL STOP character (.)
+  const byExtension = accepts
+    .filter((ext) => ext.startsWith("."))
+    .some((ext) => file.name.toLowerCase().endsWith(ext));
+
+  // A valid MIME type string with no parameters (that does not contain U+003B (;))
+  const byMimeType = accepts
+    .filter((mimetype) => !mimetype.startsWith("."))
+    .filter((mimetype) => mimetype.indexOf("*") === -1)
+    .filter((mimetype) => mimetype.indexOf(";") === -1)
+    .some((mimetype) => file.type.toLowerCase() === mimetype);
+
+  // Only the following three strings are valid mimetype wildcards
+  const validWildcards = ["image/*", "video/*", "audio/*"];
+  const byMimeTypeWildcard = accepts
+    .filter((mimetype) => validWildcards.indexOf(mimetype) >= 0)
+    .map((mimetype) => mimetype.substring(0, mimetype.length - 1))
+    .some((mimetype) => file.type.toLowerCase().startsWith(mimetype));
+
+  return byExtension || byMimeType || byMimeTypeWildcard;
+}

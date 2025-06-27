@@ -48,12 +48,12 @@
               >
               <input
                 #textInputElement
-                (change)="onFileSelected('text', $event)"
+                (change)="onTextFileSelected($event)"
                 class="form-control"
                 name="text"
                 type="file"
                 id="updateText"
-                accept=".txt,.xml,.readalong"
+                accept="{{ textUploadAccepts }}"
               />
               <!-- </div> -->
             </div>
@@ -152,12 +152,12 @@ Page two."
           >
           <input
             #audioFileUpload
-            (change)="onFileSelected('audio', $event)"
+            (change)="onAudioFileSelected($event)"
             class="form-control"
             name="audio"
             type="file"
             id="updateAudio"
-            accept=".mp3,.wav,.webm,.m4a"
+            accept="{{ audioUploadAccepts }}"
             data-test-id="ras-audio-fileselector"
           />
         </div>
