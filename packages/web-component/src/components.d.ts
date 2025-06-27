@@ -12,6 +12,20 @@ export { Alignment, InterfaceLanguage, ReadAlongMode, ScrollBehaviour } from "./
 export { Subject } from "rxjs";
 export { Element } from "@stencil/core";
 export namespace Components {
+    interface ErrorMessage {
+        /**
+          * Cypress data-test-id value.
+         */
+        "data_cy": string;
+        /**
+          * The message to display to the user.
+         */
+        "msg": string;
+        /**
+          * The on-screen duration of the error message. Zero disables this functionality, the message remains on the screen.
+         */
+        "timeout"?: number;
+    }
     interface ReadAlong {
         /**
           * URL of the audio file
@@ -99,7 +113,28 @@ export namespace Components {
         "useAssetsFolder"?: boolean;
     }
 }
+export interface ErrorMessageCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLErrorMessageElement;
+}
 declare global {
+    interface HTMLErrorMessageElementEventMap {
+        "expired": any;
+    }
+    interface HTMLErrorMessageElement extends Components.ErrorMessage, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLErrorMessageElementEventMap>(type: K, listener: (this: HTMLErrorMessageElement, ev: ErrorMessageCustomEvent<HTMLErrorMessageElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLErrorMessageElementEventMap>(type: K, listener: (this: HTMLErrorMessageElement, ev: ErrorMessageCustomEvent<HTMLErrorMessageElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLErrorMessageElement: {
+        prototype: HTMLErrorMessageElement;
+        new (): HTMLErrorMessageElement;
+    };
     interface HTMLReadAlongElement extends Components.ReadAlong, HTMLStencilElement {
     }
     var HTMLReadAlongElement: {
@@ -107,10 +142,29 @@ declare global {
         new (): HTMLReadAlongElement;
     };
     interface HTMLElementTagNameMap {
+        "error-message": HTMLErrorMessageElement;
         "read-along": HTMLReadAlongElement;
     }
 }
 declare namespace LocalJSX {
+    interface ErrorMessage {
+        /**
+          * Cypress data-test-id value.
+         */
+        "data_cy"?: string;
+        /**
+          * The message to display to the user.
+         */
+        "msg"?: string;
+        /**
+          * Event get emitted when the timer expires.
+         */
+        "onExpired"?: (event: ErrorMessageCustomEvent<any>) => void;
+        /**
+          * The on-screen duration of the error message. Zero disables this functionality, the message remains on the screen.
+         */
+        "timeout"?: number;
+    }
     interface ReadAlong {
         /**
           * URL of the audio file
@@ -170,6 +224,7 @@ declare namespace LocalJSX {
         "useAssetsFolder"?: boolean;
     }
     interface IntrinsicElements {
+        "error-message": ErrorMessage;
         "read-along": ReadAlong;
     }
 }
@@ -177,6 +232,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
             "read-along": LocalJSX.ReadAlong & JSXBase.HTMLAttributes<HTMLReadAlongElement>;
         }
     }

@@ -50,6 +50,17 @@ interface ASSETS_STATUS {
   RAS: number;
 }
 
+// InvalidImageFile is used to track the information of non-image files selected
+// by the user. These are rendered as error messages.
+interface InvalidImageFile {
+  fileName: string;
+  pageIndex: number;
+}
+
+// The length of time an error message stays on the screen. 0 (and negative)
+// values disables this functionality.
+const DEFAULT_ERROR_TIMEOUT_MS = 50000;
+
 @Component({
   tag: "read-along",
   styleUrl: "../../scss/styles.scss",
@@ -114,7 +125,6 @@ export class ReadAlongComponent {
    * .readalong files should just contain base filenames
    * not the full paths to the images.
    */
-
   @Prop() useAssetsFolder?: boolean;
 
   /**
@@ -124,14 +134,12 @@ export class ReadAlongComponent {
    * image paths will not have a prefix added to them.
    * Use of the forward slash is optional.
    */
-
   @Prop() imageAssetsFolder: string = "assets/";
 
   /**
    * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
    *
    */
-
   @Prop() pageScrolling: "horizontal" | "vertical" = "horizontal";
 
   /**
@@ -186,6 +194,7 @@ export class ReadAlongComponent {
   current_page;
   hasTextTranslations: boolean = false;
   @State() images: { [key: string]: string | null };
+  @State() invalidImages: { [key: string]: InvalidImageFile } = {};
   @State() translations: { [key: string]: string | null };
 
   latestTranslation: string; // when a new translation line is added, this is populated with the added HTMLElement's ID which is queried and focused after the component re-renders
@@ -1397,8 +1406,20 @@ export class ReadAlongComponent {
 
   handleImageFile(file: File, pageIndex: number) {
     // verify the user has uploaded an  image file.
-    if (!file.type.startsWith("image/")) {
+    if (!file.type.toLowerCase().startsWith("image/")) {
+      this.invalidImages[pageIndex] = {
+        fileName: file.name,
+        pageIndex: pageIndex,
+      };
+      this.invalidImages = { ...this.invalidImages };
       return;
+    }
+
+    // forcibly remove the error message associated
+    // with this page.
+    if (pageIndex in this.invalidImages) {
+      delete this.invalidImages[pageIndex];
+      this.invalidImages = { ...this.invalidImages };
     }
 
     this.images[pageIndex] = URL.createObjectURL(file);
@@ -1493,7 +1514,12 @@ export class ReadAlongComponent {
               accept="image/*"
               onChange={($event: Event) => {
                 const el = $event.target as HTMLInputElement;
+                if (el.files.length === 0) {
+                  return;
+                }
+
                 this.handleImageFile(el.files[0], props.pageIndex);
+                el.value = "";
               }}
             />
             <label class="button" htmlFor={"fileElem--" + props.pageID}>
@@ -1531,9 +1557,7 @@ export class ReadAlongComponent {
           {this.mode === "EDIT" && hasImage && (
             <this.RemoveImg pageIndex={props.pageIndex} />
           )}
-          {hasImage && (
-            <this.Img imgURL={this.images[props.pageIndex] as string} />
-          )}
+          {hasImage && <this.Img imgURL={this.images[props.pageIndex]} />}
         </span>
         {this.mode === "EDIT" && !hasImage && (
           <this.ImgPlaceHolder
@@ -1925,7 +1949,7 @@ export class ReadAlongComponent {
         id="myRange"
         aria-labelledby="speed-slider-label"
         onInput={(v) => {
-          console.log("v", v);
+          //console.log("v", v);
           this.changePlayback(v);
         }}
       />
@@ -2018,11 +2042,6 @@ export class ReadAlongComponent {
         settings
       </i>
     </button>
-  );
-  ErrorMessage = (props: { msg: string; data_cy: string }): Element => (
-    <p data-test-id={props.data_cy} class="alert status-error">
-      <span class="material-icons">error_outline</span> {props.msg}
-    </p>
   );
 
   ControlPanel = (): Element => (
@@ -2249,14 +2268,11 @@ export class ReadAlongComponent {
             <slot name="read-along-subheader" />
           </h3>
         </div>
-
-        {Object.entries(this.assetsStatus).map((asset) => {
-          let assetType = asset[0];
-          let code = asset[1];
+        {Object.entries(this.assetsStatus).map(([assetType, code]) => {
           if (code === ERROR_PARSING) {
             let path = this.getPathFromAssetType(assetType);
             return (
-              <this.ErrorMessage
+              <error-message
                 msg={this.getI18nString("parse-error", {
                   FILETYPE: assetType,
                   FILENAME: path,
@@ -2268,7 +2284,7 @@ export class ReadAlongComponent {
           if (code === ERROR_LOADING) {
             let path = this.getPathFromAssetType(assetType);
             return (
-              <this.ErrorMessage
+              <error-message
                 msg={this.getI18nString("loading-error", {
                   FILETYPE: assetType,
                   FILENAME: path,
@@ -2280,11 +2296,31 @@ export class ReadAlongComponent {
         })}
 
         {this.alignment_failed && this.assetsStatus.RAS === LOADED && (
-          <this.ErrorMessage
+          <error-message
             msg={this.getI18nString("alignment-error")}
             data_cy="alignment-error"
           />
         )}
+
+        {this.assetsStatus.RAS === LOADED &&
+          Object.values(this.invalidImages).map((invalidImage) => {
+            return (
+              <error-message
+                msg={this.getI18nString("image-error", {
+                  FILENAME: invalidImage.fileName,
+                  PAGENUMBER: (invalidImage.pageIndex + 1).toString(),
+                })}
+                timeout={DEFAULT_ERROR_TIMEOUT_MS}
+                data_cy="invalid-image-file"
+                onExpired={() => {
+                  // we don't need to be reactive here, the error message
+                  // is no longer visible it is sufficient to remove
+                  // its entry from the invalidImages object.
+                  delete this.invalidImages[invalidImage.pageIndex];
+                }}
+              />
+            );
+          })}
 
         <div
           onScroll={() => {

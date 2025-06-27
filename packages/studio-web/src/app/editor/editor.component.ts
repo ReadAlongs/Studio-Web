@@ -30,6 +30,7 @@ import { EditorService } from "./editor.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
+import { validateFileType } from "../utils/utils";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -44,6 +45,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   readalong: Components.ReadAlong;
 
   language: "eng" | "fra" | "spa" = "eng";
+
+  // value passed to input[type=file] accept's attribute which expects
+  // a comma separated list of file extensions or mime types.
+  htmlUploadAccepts = ".html";
 
   unsubscribe$ = new Subject<void>();
   constructor(
@@ -74,9 +79,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
 
     // reload the temporary saved blob from the service
     if (this.editorService.temporaryBlob) {
-      this.onRasFileSelected({
-        target: { files: [this.editorService.temporaryBlob] },
-      });
+      this.loadRasFile(this.editorService.temporaryBlob);
     }
 
     this.wavesurfer.on("segment-updated", async (segment, e) => {
@@ -192,8 +195,27 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  async onRasFileSelected(event: any) {
-    let file: File = event.target.files[0];
+  onRasFileSelected(event: Event) {
+    const el = event.target as HTMLInputElement;
+    if (!el.files || el.files.length !== 1) {
+      return;
+    }
+
+    const file = el.files[0];
+    if (validateFileType(file, this.htmlUploadAccepts)) {
+      this.loadRasFile(file);
+      return;
+    }
+
+    this.toastr.error(
+      $localize`The file "${file.name}:fileName:" is not an HTML file.`,
+      $localize`Sorry!`,
+      { timeOut: 15000 },
+    );
+    el.value = "";
+  }
+
+  async loadRasFile(file: File | Blob) {
     const text = await file.text();
     const readalong = await this.parseReadalong(text);
     this.loadAudioIntoWavesurferElement();
@@ -362,7 +384,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         .returnFileFromPath$("assets/hello-world.offline.html")
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe(async (indexFile) => {
-          await this.onRasFileSelected({ target: { files: [indexFile] } });
+          await this.loadRasFile(indexFile);
           console.log(
             document
               .querySelector("#wavesurferContainer")

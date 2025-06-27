@@ -6,6 +6,7 @@
     "loading-error": "Error: el fichero <FILETYPE> \"<FILENAME>\" no se pudo cargar.",
     "parse-error": "Error: el fichero <FILETYPE> \"<FILENAME>\" no se pudo analizar.",
     "alignment-error": "Error: No se encontró ningún alineamiento.",
+    "image-error": "Error: el fichero \"<FILENAME>\" no es un archivo de imagen.",
     "loading": "Cargando...",
     "line-placeholder": "Escriba su texto aquí",
     "upload-image": "Cargue una imagen para esta página",

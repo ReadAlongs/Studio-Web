@@ -114,7 +114,7 @@ test.describe("test studio UI & UX", () => {
       .getByTestId("text-btn-group")
       .getByRole("radio", { name: "File" })
       .click();
-    await page.locator("#updateText").click();
+
     await page
       .locator("#updateText")
       .setInputFiles(testAssetsPath + "/ras-text-37kb.txt");
@@ -122,7 +122,7 @@ test.describe("test studio UI & UX", () => {
     await expect(
       page.locator("#toast-container").locator(".toast-error"),
     ).toHaveCount(0);
-    await page.locator("#updateText").click();
+
     await page
       .locator("#updateText")
       .setInputFiles(testAssetsPath + "/ras-text-50kb.txt");
@@ -138,6 +138,48 @@ test.describe("test studio UI & UX", () => {
     await page.getByTestId("ras-audio-fileselector").click();
     await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
     await page.getByTestId("next-step").click();
+    await expect(
+      page.locator("#toast-container").locator(".toast-error"),
+    ).toBeVisible();
+  });
+
+  test("should validate upload text file type", async ({ page }) => {
+    await page.goto("/", { waitUntil: "load" });
+    await disablePlausible(page);
+    await expect(async () => {
+      await expect(page.getByTestId("next-step")).toBeEnabled();
+    }).toPass();
+
+    await page
+      .getByTestId("text-btn-group")
+      .getByRole("radio", { name: "File" })
+      .click();
+    await page.locator("#updateText").click();
+    await page
+      .locator("#updateText")
+      .setInputFiles(testAssetsPath + "/page1.png");
+
+    await expect(
+      page.locator("#toast-container").locator(".toast-error"),
+    ).toBeVisible();
+  });
+
+  test("should validate upload audio file type", async ({ page }) => {
+    await page.goto("/", { waitUntil: "load" });
+    await disablePlausible(page);
+    await expect(async () => {
+      await expect(page.getByTestId("next-step")).toBeEnabled();
+    }).toPass();
+
+    await page
+      .getByTestId("audio-btn-group")
+      .getByRole("radio", { name: "File" })
+      .click();
+    await page.locator("#updateAudio").click();
+    await page
+      .locator("#updateAudio")
+      .setInputFiles(testAssetsPath + "/page1.png");
+
     await expect(
       page.locator("#toast-container").locator(".toast-error"),
     ).toBeVisible();

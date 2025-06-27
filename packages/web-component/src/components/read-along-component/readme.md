@@ -104,6 +104,19 @@ Type: `Promise<void>`
 
 
 
+## Dependencies
+
+### Depends on
+
+- [error-message](../error-message)
+
+### Graph
+```mermaid
+graph TD;
+  read-along --> error-message
+  style read-along fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

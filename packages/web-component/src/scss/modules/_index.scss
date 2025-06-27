@@ -64,14 +64,16 @@
 }
 
 .alert {
-  position: relative;
+  display: flex;
   padding: 1rem 1rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
   border-radius: 0.25rem;
 
   transition-delay: 2s;
-  transition: visibility 5s height 5s;
+  transition:
+    visibility 5s,
+    height 5s;
 }
 .alert.status-success {
   color: #0f5132;
@@ -92,4 +94,8 @@
   padding: 0 !important;
   margin: 0 !important;
   border: 0 !important;
+}
+
+.alert > span.material-icons {
+  padding-inline-end: 0.3em;
 }
