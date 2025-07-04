@@ -7,7 +7,9 @@ test("should do tour", async ({ page, isMobile }) => {
   if (isMobile) {
     await page.getByTestId("menu-toggle").click();
   }
-  await page.getByRole("button", { name: /Editor/ }).click();
+  await page
+    .getByRole(isMobile ? "menuitem" : "button", { name: /Editor/ })
+    .click();
   await expect(
     page.getByRole("button", { name: "Take the tour!" }),
     "Tour button is visible",
