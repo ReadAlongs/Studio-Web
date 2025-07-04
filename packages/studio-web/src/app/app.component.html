@@ -13,35 +13,46 @@
   </button>
   <mat-menu #menu="matMenu">
     <button
-      mat-button
-      [color]="currentURL === '/' ? 'accent' : ''"
+      mat-menu-item
+      [class]="currentURL() === '/' ? 'accent' : ''"
       [routerLink]="''"
     >
       <mat-icon>home</mat-icon>
       <span i18n="Studio">Studio</span>
     </button>
-    <br />
     <button
       id="goToEditor"
       class="plausible-event-name=Editor"
-      mat-button
-      [color]="currentURL === '/editor' ? 'accent' : ''"
+      mat-menu-item
+      [class]="currentURL() === '/editor' ? 'accent' : ''"
       [routerLink]="'editor'"
     >
       <mat-icon>edit</mat-icon>
       <span i18n="Editor">Editor</span>
     </button>
-    <br />
-    <button mat-button (click)="openPrivacyDialog()">
+    <button mat-menu-item (click)="openPrivacyDialog()">
       <mat-icon>policy</mat-icon>
       <span i18n="Privacy">Privacy</span>
     </button>
+    <mat-divider />
+    @for (lang of languages; track lang.code) {
+      <button
+        mat-menu-item
+        lang="{{ lang.code }}"
+        translate="no"
+        title="{{ lang.title }}"
+        (click)="switchLanguage(`${lang.url}#${currentURL()}`)"
+      >
+        <span class="text-icon">{{ lang.code }}</span>
+        <span>{{ lang.name }}</span>
+      </button>
+    }
   </mat-menu>
   <div class="nav__buttons d-none d-md-block">
     <button
       class="nav__button"
       mat-button
-      [color]="currentURL === '/' ? 'accent' : ''"
+      [color]="currentURL() === '/' ? 'accent' : ''"
       [routerLink]="''"
     >
       <mat-icon>home</mat-icon>
@@ -51,7 +62,7 @@
       id="goToEditor"
       class="nav__button plausible-event-name=Editor"
       mat-button
-      [color]="currentURL === '/editor' ? 'accent' : ''"
+      [color]="currentURL() === '/editor' ? 'accent' : ''"
       [routerLink]="'editor'"
     >
       <mat-icon>edit</mat-icon>
@@ -61,6 +72,23 @@
       <mat-icon>policy</mat-icon>
       <span i18n="Privacy">Privacy</span>
     </button>
+
+    <span class="mat-mdc-button">
+      @for (lang of languages; track lang.code) {
+        <a
+          lang="{{ lang.code }}"
+          translate="no"
+          target="_blank"
+          title="{{ lang.title }}"
+          href="{{ lang.url }}#{{ currentURL() }}"
+          class="language-selection"
+          >{{ lang.code }}</a
+        >
+        @if (!$last) {
+          |
+        }
+      }
+    </span>
   </div>
 </mat-toolbar>
 <router-outlet></router-outlet>
