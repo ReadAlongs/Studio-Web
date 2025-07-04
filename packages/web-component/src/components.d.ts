@@ -28,6 +28,10 @@ export namespace Components {
     }
     interface ReadAlong {
         /**
+          * Add custom font
+         */
+        "addCustomFont": (fontData: string) => Promise<void>;
+        /**
           * URL of the audio file
          */
         "audio": string;
@@ -95,6 +99,11 @@ export namespace Components {
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
          */
         "scrollBehaviour": ScrollBehaviour;
+        /**
+          * Update stylesheet
+          * @param url
+         */
+        "setCss": (url: any) => Promise<void>;
         /**
           * Overlay This is an SVG overlay to place over the progress bar
          */
