@@ -1,6 +1,6 @@
 import { Subject, takeUntil } from "rxjs";
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, signal } from "@angular/core";
 import { environment } from "../environments/environment";
 import { Router } from "@angular/router";
 @Component({
@@ -12,15 +12,23 @@ import { Router } from "@angular/router";
 export class AppComponent implements OnDestroy, OnInit {
   unsubscribe$ = new Subject<void>();
   version = environment.packageJson.singleFileBundleVersion;
-  currentURL = "/";
+  currentURL = signal("/");
+  languages: (typeof environment)["languages"];
+
   constructor(
     private dialog: MatDialog,
     public router: Router,
-  ) {}
+  ) {
+    const currentLanguage = $localize.locale ?? "en";
+    this.languages = environment.languages.filter(
+      (l) => l.code != currentLanguage,
+    );
+  }
+
   ngOnInit(): void {
     this.router.events.pipe(takeUntil(this.unsubscribe$)).subscribe((event) => {
       if (event.type === 1) {
-        this.currentURL = event.url;
+        this.currentURL.set(event.url);
       }
     });
   }
@@ -32,6 +40,10 @@ export class AppComponent implements OnDestroy, OnInit {
       minWidth: "60vw",
       maxHeight: "95vh",
     });
+  }
+
+  switchLanguage(url: string) {
+    window.open(url, "_blank");
   }
 
   ngOnDestroy(): void {

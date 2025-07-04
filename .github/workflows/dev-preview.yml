@@ -29,6 +29,7 @@ jobs:
           npx nx test:once studio-web
       - name: Build
         run: |
+          sed -r -i  's:readalong-studio.mothertongues.org/:readalong-studio.mothertongues.org/dev/:g' packages/studio-web/src/environments/environment.prod.ts
           npx nx build studio-web --configuration=production --base-href=/dev/
           npx nx build studio-web --configuration=production --base-href=/dev/ --localize=fr --deleteOutputPath=false
           npx nx build studio-web --configuration=production --base-href=/dev/ --localize=es --deleteOutputPath=false

@@ -7,6 +7,27 @@ export const environment = {
   production: false,
   apiBaseURL: "http://localhost:8000/api/v1",
   packageJson: packageJson,
+
+  languages: [
+    {
+      code: "en",
+      url: "http://localhost:4200/",
+      title: "Start a new session in English.",
+      name: "English",
+    },
+    {
+      code: "fr",
+      url: "http://localhost:4203/",
+      title: "Démarrer une nouvelle session en français.",
+      name: "Français",
+    },
+    {
+      code: "es",
+      url: "http://localhost:4204/",
+      title: "Iniciar una nueva sesión en español.",
+      name: "Español",
+    },
+  ],
 };
 
 /*

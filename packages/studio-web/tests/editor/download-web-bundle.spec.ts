@@ -13,7 +13,9 @@ test("should Download web bundle (zip file format) from the Editor", async ({
   if (isMobile) {
     await page.getByTestId("menu-toggle").click();
   }
-  await page.getByRole("button", { name: /Editor/ }).click();
+  await page
+    .getByRole(isMobile ? "menuitem" : "button", { name: /Editor/ })
+    .click();
 
   await expect(
     page.locator("#updateRAS"),
