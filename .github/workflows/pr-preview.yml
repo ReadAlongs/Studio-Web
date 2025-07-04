@@ -38,6 +38,7 @@ jobs:
       - name: Build
         if: github.event.action != 'closed'
         run: |
+          sed -r -i  's:readalong-studio.mothertongues.org/:readalong-studio.mothertongues.org/pr-preview/pr-${{github.event.number}}/:g' packages/studio-web/src/environments/environment.prod.ts
           npx nx build studio-web --base-href=/pr-preview/pr-${{github.event.number}}/ --configuration=production
           npx nx build studio-web --base-href=/pr-preview/pr-${{github.event.number}}/ --configuration=production --localize=fr --deleteOutputPath=false
           npx nx build studio-web --base-href=/pr-preview/pr-${{github.event.number}}/ --configuration=production --localize=es --deleteOutputPath=false
