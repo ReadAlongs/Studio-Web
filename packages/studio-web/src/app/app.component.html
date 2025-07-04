@@ -14,7 +14,7 @@
   <mat-menu #menu="matMenu">
     <button
       mat-menu-item
-      [class]="currentURL() === '/' ? 'accent' : ''"
+      [class]="currentURL() === '/' ? 'mat-accent mat-mdc-button' : ''"
       [routerLink]="''"
     >
       <mat-icon>home</mat-icon>
@@ -24,7 +24,7 @@
       id="goToEditor"
       class="plausible-event-name=Editor"
       mat-menu-item
-      [class]="currentURL() === '/editor' ? 'accent' : ''"
+      [class]="currentURL() === '/editor' ? 'mat-accent mat-mdc-button' : ''"
       [routerLink]="'editor'"
     >
       <mat-icon>edit</mat-icon>
@@ -43,8 +43,10 @@
         title="{{ lang.title }}"
         (click)="switchLanguage(`${lang.url}#${currentURL()}`)"
       >
-        <span class="text-icon">{{ lang.code }}</span>
-        <span>{{ lang.name }}</span>
+        <div style="display: flex">
+          <span class="mat-icon text-icon">{{ lang.code }}</span>
+          <span>{{ lang.name }}</span>
+        </div>
       </button>
     }
   </mat-menu>
