@@ -1,5 +1,5 @@
 import { ShepherdService } from "../shepherd.service";
-import { forkJoin, of, BehaviorSubject, Subject, take, takeUntil } from "rxjs";
+import { forkJoin, of, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
@@ -40,6 +40,7 @@ import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DownloadService } from "../shared/download/download.service";
 import { StudioService } from "./studio.service";
+import { environment } from "../../environments/environment";
 
 @Component({
   selector: "studio-component",
@@ -108,10 +109,13 @@ export class StudioComponent implements OnDestroy, OnInit {
     );
 
     // User Browser's default messaging to warn the user when they're about to leave the page
-    window.addEventListener("beforeunload", (e) => {
-      if (this.formIsDirty()) (e || window.event).returnValue = true;
-      return true;
-    });
+    if (environment.production) {
+      window.addEventListener("beforeunload", (e) => {
+        if (this.formIsDirty()) (e || window.event).returnValue = true;
+        return true;
+      });
+    }
+
     // Catch and report a catastrophic failure as soon as possible
     this.ssjsService
       .loadModule$()
