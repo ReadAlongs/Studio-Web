@@ -16,10 +16,11 @@
   ],
   "scripts": {
     "bundle": "bash bundle.sh",
-    "cy:run": "cypress run",
-    "test:full-pipeline": "npm run serve-test-data & nx run serve & npm run wait-for-test-server && npm run test:once",
-    "test:once": "cypress run",
-    "test:open": "cypress open",
+    "linter:maticon": "node b64Fonts.js --validate",
+    "cy:run": "npm run linter:maticon && cypress run",
+    "test:full-pipeline": "npm run linter:maticon && npm run serve-test-data & nx run serve & npm run wait-for-test-server && npm run test:once",
+    "test:once": "npm run linter:maticon && cypress run",
+    "test:open": "npm run linter:maticon && cypress open",
     "serve-test-data": "sirv --dev --cors --port 8941 test-data/",
     "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
   },
