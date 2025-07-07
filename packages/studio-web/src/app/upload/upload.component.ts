@@ -13,6 +13,8 @@ import {
   map,
   takeUntil,
   throwError,
+  firstValueFrom,
+  take,
 } from "rxjs";
 
 import {
@@ -437,16 +439,19 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           this.studioService.audioControl$.value as File,
           8000,
         ),
-        ras: this.fileService
-          .readFile$(this.studioService.textControl$.value)
-          .pipe(
-            switchMap((text: string): Observable<ReadAlong> => {
-              body.input = text;
-              this.progressMode = "determinate";
-              this.progressValue = 0;
-              return this.rasService.assembleReadalong$(body);
-            }),
-          ),
+        ras: firstValueFrom(
+          this.fileService
+            .readFile$(this.studioService.textControl$.value)
+            .pipe(
+              switchMap((text: string): Observable<ReadAlong> => {
+                body.input = text;
+                this.progressMode = "determinate";
+                this.progressValue = 0;
+                return this.rasService.assembleReadalong$(body);
+              }),
+              take(1),
+            ),
+        ),
       })
         .pipe(
           switchMap(
