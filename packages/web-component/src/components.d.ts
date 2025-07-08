@@ -23,6 +23,7 @@ export namespace Components {
         "msg": string;
         /**
           * The on-screen duration of the error message. Zero disables this functionality, the message remains on the screen.
+          * @default 0
          */
         "timeout"?: number;
     }
@@ -33,6 +34,7 @@ export namespace Components {
         "audio": string;
         /**
           * Auto Pause at end of every page
+          * @default false
          */
         "autoPauseAtEndOfPage"?: boolean;
         /**
@@ -45,6 +47,7 @@ export namespace Components {
         "cssUrl"?: string;
         /**
           * Show text translation  on at load time
+          * @default true
          */
         "displayTranslation": boolean;
         /**
@@ -73,26 +76,32 @@ export namespace Components {
         "href": string;
         /**
           * Define a path for where the image assets are located This should be used instead of use-assets-folder. Defaults to 'assets/'. The empty string means that image paths will not have a prefix added to them. Use of the forward slash is optional.
+          * @default "assets/"
          */
         "imageAssetsFolder": string;
         /**
           * Language  of the interface. In 639-3 code. Options are "eng" (English), "fra" (French) or "spa" (Spanish)
+          * @default "eng"
          */
         "language": InterfaceLanguage;
         /**
           * Choose mode of ReadAlong - either view (default) or edit
+          * @default "VIEW"
          */
         "mode": ReadAlongMode;
         /**
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
+          * @default "horizontal"
          */
         "pageScrolling": "horizontal" | "vertical";
         /**
           * Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.
+          * @default 15
          */
         "playbackRateRange": number;
         /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
+          * @default "smooth"
          */
         "scrollBehaviour": ScrollBehaviour;
         /**
@@ -101,6 +110,7 @@ export namespace Components {
         "svgOverlay": string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
+          * @default "light"
          */
         "theme": string;
         /**
@@ -162,6 +172,7 @@ declare namespace LocalJSX {
         "onExpired"?: (event: ErrorMessageCustomEvent<any>) => void;
         /**
           * The on-screen duration of the error message. Zero disables this functionality, the message remains on the screen.
+          * @default 0
          */
         "timeout"?: number;
     }
@@ -172,6 +183,7 @@ declare namespace LocalJSX {
         "audio"?: string;
         /**
           * Auto Pause at end of every page
+          * @default false
          */
         "autoPauseAtEndOfPage"?: boolean;
         /**
@@ -180,6 +192,7 @@ declare namespace LocalJSX {
         "cssUrl"?: string;
         /**
           * Show text translation  on at load time
+          * @default true
          */
         "displayTranslation"?: boolean;
         /**
@@ -188,26 +201,32 @@ declare namespace LocalJSX {
         "href"?: string;
         /**
           * Define a path for where the image assets are located This should be used instead of use-assets-folder. Defaults to 'assets/'. The empty string means that image paths will not have a prefix added to them. Use of the forward slash is optional.
+          * @default "assets/"
          */
         "imageAssetsFolder"?: string;
         /**
           * Language  of the interface. In 639-3 code. Options are "eng" (English), "fra" (French) or "spa" (Spanish)
+          * @default "eng"
          */
         "language"?: InterfaceLanguage;
         /**
           * Choose mode of ReadAlong - either view (default) or edit
+          * @default "VIEW"
          */
         "mode"?: ReadAlongMode;
         /**
           * Toggles the page scrolling from horizontal to vertical. Defaults to horizontal
+          * @default "horizontal"
          */
         "pageScrolling"?: "horizontal" | "vertical";
         /**
           * Control the range of the playback rate: allow speeds from 100 - playback-rate-range to 100 + playback-rate-range.
+          * @default 15
          */
         "playbackRateRange"?: number;
         /**
           * Select whether scrolling between pages should be "smooth" (default nicely animated, good for fast computers) or "auto" (choppy but much less compute intensive)
+          * @default "smooth"
          */
         "scrollBehaviour"?: ScrollBehaviour;
         /**
@@ -216,6 +235,7 @@ declare namespace LocalJSX {
         "svgOverlay"?: string;
         /**
           * Theme to use: ['light', 'dark'] defaults to 'dark'
+          * @default "light"
          */
         "theme"?: string;
         /**
