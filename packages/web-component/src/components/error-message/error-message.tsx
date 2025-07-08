@@ -1,4 +1,5 @@
 import { Component, Prop, h, Event, EventEmitter, State } from "@stencil/core";
+import { MatIcon } from "../../utils/mat-icon";
 
 @Component({
   tag: "error-message",
@@ -61,7 +62,7 @@ export class ErrorMessage {
 
     return (
       <p data-test-id={this.data_cy} class="alert status-error">
-        <span class="material-icons">error_outline</span> {this.msg}
+        <MatIcon>error_outline</MatIcon> {this.msg}
       </p>
     );
   }

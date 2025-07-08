@@ -40,6 +40,7 @@ import { web_component as eng_strings } from "../../i18n/messages.eng.json";
 import { web_component as fra_strings } from "../../i18n/messages.fra.json";
 import { web_component as spa_strings } from "../../i18n/messages.spa.json";
 import { PACKAGE_VERSION } from "../../version";
+import { MatIcon } from "../../utils/mat-icon";
 const LOADING = 0;
 const LOADED = 1;
 const ERROR_PARSING = 2;
@@ -1164,25 +1165,17 @@ export class ReadAlongComponent {
     const bcSansFontCssUrl =
       "https://unpkg.com/@bcgov/bc-sans@1.0.1/css/BCSans.css";
     const iconsFontCssUrl =
-      "https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined&display=swap";
-    let iconElement = document.querySelector(`link[href="${iconsFontCssUrl}"]`);
-    let fontElement = document.querySelector(
-      `link[href="${bcSansFontCssUrl}"]`,
-    );
+      "https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Outlined&display=swap";
 
-    // Only inject the element if it's not yet present
-    if (!iconElement) {
-      iconElement = document.createElement("link");
-      iconElement.setAttribute("rel", "stylesheet");
-      iconElement.setAttribute("href", iconsFontCssUrl);
-      document.head.appendChild(iconElement);
-    }
-    if (!fontElement) {
-      fontElement = document.createElement("link");
-      fontElement.setAttribute("rel", "stylesheet");
-      fontElement.setAttribute("href", bcSansFontCssUrl);
-      document.head.appendChild(fontElement);
-    }
+    [bcSansFontCssUrl, iconsFontCssUrl]
+      .filter((url) => !document.querySelector(`link[href="${url}"]`))
+      .forEach((url) => {
+        const el = document.createElement("link");
+        el.setAttribute("rel", "stylesheet");
+        el.setAttribute("href", url);
+        document.head.appendChild(el);
+      });
+
     this.processed_alignment = extractAlignment(this.parsed_text);
     this.alignment_failed = Object.keys(this.processed_alignment).length == 0;
     // load basic Howl
@@ -1481,7 +1474,7 @@ export class ReadAlongComponent {
         id="img-remover"
         class={"ripple theme--" + this.theme + " background--" + this.theme}
       >
-        <i class="material-icons">delete</i>
+        <MatIcon>delete</MatIcon>
       </button>
     );
   };
@@ -1762,7 +1755,7 @@ export class ReadAlongComponent {
                     onClick={() => this.removeLine(props.sentenceData)}
                     class="sentence__translation__button remove"
                   >
-                    <i class="material-icons">remove</i>
+                    <MatIcon>remove</MatIcon>
                   </button>
                   <p
                     id={sentenceID + "translation"}
@@ -1792,7 +1785,7 @@ export class ReadAlongComponent {
                   class="sentence__translation sentence__translation__button"
                   onClick={() => this.addLine(props.sentenceData)}
                 >
-                  <i class="material-icons">add</i>
+                  <MatIcon>add</MatIcon>
                 </button>
               );
             }
@@ -1892,7 +1885,7 @@ export class ReadAlongComponent {
       }
       tabindex={1}
     >
-      <i class="material-icons">{this.playing ? "pause" : "play_arrow"}</i>
+      {this.playing ? <MatIcon>pause</MatIcon> : <MatIcon>play_arrow</MatIcon>}
     </button>
   );
 
@@ -1910,7 +1903,7 @@ export class ReadAlongComponent {
         this.theme
       }
     >
-      <i class="material-icons">replay_5</i>
+      <MatIcon>replay_5</MatIcon>
     </button>
   );
 
@@ -1928,7 +1921,7 @@ export class ReadAlongComponent {
         this.theme
       }
     >
-      <i class="material-icons">stop</i>
+      <MatIcon>stop</MatIcon>
     </button>
   );
 
@@ -1967,7 +1960,7 @@ export class ReadAlongComponent {
         this.theme
       }
     >
-      <i class="material-icons-outlined">style</i>
+      <MatIcon outline>style</MatIcon>
     </button>
   );
 
@@ -1983,9 +1976,11 @@ export class ReadAlongComponent {
         this.theme
       }
     >
-      <i class="material-icons" aria-label="Full screen mode">
-        {this.fullscreen ? "fullscreen_exit" : "fullscreen"}
-      </i>
+      {this.fullscreen ? (
+        <MatIcon aria-label="Exit full screen mode">fullscreen_exit</MatIcon>
+      ) : (
+        <MatIcon aria-label="Full screen mode">fullscreen</MatIcon>
+      )}
     </button>
   );
 
@@ -2004,7 +1999,7 @@ export class ReadAlongComponent {
         this.theme
       }
     >
-      <i class="material-icons-outlined">layers</i>
+      <MatIcon outline>layers</MatIcon>
     </button>
   );
 
@@ -2021,7 +2016,7 @@ export class ReadAlongComponent {
         this.theme
       }
     >
-      <i class="material-icons-outlined">subtitles</i>
+      <MatIcon outline>subtitles</MatIcon>
     </button>
   );
 
@@ -2038,9 +2033,7 @@ export class ReadAlongComponent {
         this.theme
       }
     >
-      <i class="material-icons" aria-label="Show settings">
-        settings
-      </i>
+      <MatIcon aria-label="Show settings">settings</MatIcon>
     </button>
   );
 
@@ -2143,11 +2136,11 @@ export class ReadAlongComponent {
           title={this.getI18nString("page-animation")}
           data-test-id={"settings-scroll-behavior"}
         >
-          <i class="material-icons-outlined">
-            {this.scrollBehaviour === "smooth"
-              ? "check_box"
-              : "check_box_outline_blank"}
-          </i>
+          {this.scrollBehaviour === "smooth" ? (
+            <MatIcon outline>check_box</MatIcon>
+          ) : (
+            <MatIcon outline>check_box_outline_blank</MatIcon>
+          )}
         </button>
         {this.getI18nString("page-animation")}
       </p>
@@ -2168,11 +2161,11 @@ export class ReadAlongComponent {
           title={this.getI18nString("auto-pause")}
           data-test-id={"settings-auto-pause"}
         >
-          <i class="material-icons-outlined">
-            {this.autoPauseAtEndOfPage
-              ? "check_box"
-              : "check_box_outline_blank"}
-          </i>
+          {this.autoPauseAtEndOfPage ? (
+            <MatIcon outline>check_box</MatIcon>
+          ) : (
+            <MatIcon outline>check_box_outline_blank</MatIcon>
+          )}
         </button>
         {this.getI18nString("auto-pause")}
       </p>
@@ -2236,10 +2229,11 @@ export class ReadAlongComponent {
             class={"ripple theme--" + this.theme + " background--" + this.theme}
             onClick={() => this.toggleTextAnnotation(annotation.id)}
           >
-            <i class="material-icons-outlined">
-              {" "}
-              {annotation.isVisible ? "check_box" : "check_box_outline_blank"}
-            </i>{" "}
+            {annotation.isVisible ? (
+              <MatIcon outline>check_box</MatIcon>
+            ) : (
+              <MatIcon outline>check_box_outline_blank</MatIcon>
+            )}
             {annotation.name}
           </button>
         ))}
@@ -2248,7 +2242,7 @@ export class ReadAlongComponent {
           class={"ripple theme--" + this.theme + " background--" + this.theme}
           onClick={() => this.toggleTextAnnotation("*")}
         >
-          <i class="material-icons-outlined">layers</i> All
+          <MatIcon outline>layers</MatIcon> All
         </button>
       </div>
     );

@@ -16,10 +16,11 @@
   ],
   "scripts": {
     "bundle": "bash bundle.sh",
-    "cy:run": "cypress run",
-    "test:full-pipeline": "npm run serve-test-data & nx run serve & npm run wait-for-test-server && npm run test:once",
-    "test:once": "cypress run",
-    "test:open": "cypress open",
+    "linter:maticon": "node b64Fonts.js --validate",
+    "cy:run": "npm run linter:maticon && cypress run",
+    "test:full-pipeline": "npm run linter:maticon && npm run serve-test-data & nx run serve & npm run wait-for-test-server && npm run test:once",
+    "test:once": "npm run linter:maticon && cypress run",
+    "test:open": "npm run linter:maticon && cypress open",
     "serve-test-data": "sirv --dev --cors --port 8941 test-data/",
     "wait-for-test-server": "wait-on -i 2000 -v -t 30000 http://localhost:3333/build/web-component.esm.js"
   },
@@ -33,7 +34,8 @@
     "sirv-cli": "^2.0.2",
     "wait-on": "^7.2.0",
     "webpack-cli": "^5.1.4",
-    "woff2base64": "^2.0.0"
+    "woff2base64": "^2.0.0",
+    "css": "^3.0.0"
   },
   "license": "MIT",
   "gitHead": "0a6670c1d1b0aac11d5fab2d18f233585a6b867e"
