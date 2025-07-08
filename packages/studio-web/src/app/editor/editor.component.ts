@@ -1,6 +1,7 @@
 import WaveSurfer from "wavesurfer.js";
 
 import { takeUntil, Subject, take } from "rxjs";
+import DOMPurify from "dompurify";
 import {
   AfterViewInit,
   Component,
@@ -285,7 +286,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     // don't expect to always find them.
 
     const parser = new DOMParser();
-    const readalong = parser.parseFromString(text, "text/html");
+    const sanitizedText = DOMPurify.sanitize(text);
+    const readalong = parser.parseFromString(sanitizedText, "text/html");
     const element = readalong.querySelector("read-along");
 
     if (element === undefined || element === null) {

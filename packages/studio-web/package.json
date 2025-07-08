@@ -18,6 +18,7 @@
   "singleFileBundleVersion": "1.5.2",
   "singleFileBundleTimestamp": "2024-11-18+11-19-49",
   "dependencies": {
-    "readalong-studio": "file:"
+    "readalong-studio": "file:",
+    "dompurify": "^3.2.6"
   }
 }
