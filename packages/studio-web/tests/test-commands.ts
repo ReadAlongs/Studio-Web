@@ -57,23 +57,42 @@ export const testMakeAReadAlong = async (page: Page) => {
     await expect(page.getByTestId("ra-subheader")).toHaveValue("by me");
 
     //add translations
-    await page.locator("#t0b0d0p0s0").getByRole("button").click({ timeout: 0 });
-    await page.locator("#t0b0d0p0s1").getByRole("button").click({ timeout: 0 });
-    await page.locator("#t0b0d0p1s0").getByRole("button").click({ timeout: 0 });
+    await page
+      .locator("#t0b0d0p0s1")
+      .getByTestId("add-translation-button")
+      .waitFor({ state: "visible" });
+    await page
+      .locator("#t0b0d0p0s0")
+      .getByTestId("add-translation-button")
+      .click(); //{ force: true, timeout: 0 });
 
+    await page
+      .locator("#t0b0d0p0s1")
+      .getByTestId("add-translation-button")
+      .click(); //{ force: true, timeout: 0 });
+    await page
+      .locator("#t0b0d0p1s0")
+      .getByTestId("add-translation-button")
+      .click(); //{ force: true, timeout: 0 });
     //update translations
-    await expect(page.locator("#t0b0d0p0s0translation")).toBeEditable();
     await page
       .locator("#t0b0d0p0s0translation")
       .fill("Ceci est un test.", { force: true, timeout: 0 });
-    await expect(page.locator("#t0b0d0p0s1translation")).toBeEditable();
+    await expect
+      .soft(page.locator("#t0b0d0p0s0translation"))
+      .toContainText("Ceci est un test.");
     await page
       .locator("#t0b0d0p0s1translation")
       .fill("Phrase.", { force: true, timeout: 0 });
-    await expect(page.locator("#t0b0d0p1s0translation")).toBeEditable();
+    await expect
+      .soft(page.locator("#t0b0d0p0s1translation"))
+      .toContainText("Phrase.");
     await page
       .locator("#t0b0d0p1s0translation")
       .fill("Paragraphe.", { force: true, timeout: 0 });
+    await expect
+      .soft(page.locator("#t0b0d0p1s0translation"))
+      .toContainText("Paragraphe.");
 
     //upload a photo to page 1
     let fileChooserPromise = page.waitForEvent("filechooser");
@@ -88,6 +107,7 @@ export const testMakeAReadAlong = async (page: Page) => {
     page.locator("#fileElem--t0b0d1").dispatchEvent("click");
     fileChooser = await fileChooserPromise;
     fileChooser.setFiles(testAssetsPath + "page2.png");
+    await page.locator("div.toast-message").last().click({ force: true });
     await expect(async () => {
       await expect(page.locator("div.toast-message")).not.toBeVisible();
     }).toPass();
