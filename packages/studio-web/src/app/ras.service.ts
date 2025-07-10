@@ -1,4 +1,4 @@
-import { catchError, Observable, of, take } from "rxjs";
+import { map, Observable } from "rxjs";
 
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
@@ -72,7 +72,15 @@ export class RasService {
   }
 
   assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong> {
-    return this.http.post<ReadAlong>(this.baseURL + "/assemble", body);
+    return this.http.post<ReadAlong>(this.baseURL + "/assemble", body).pipe(
+      map((ras: ReadAlong) => {
+        if (!ras.processed_ras.startsWith("<?xml")) {
+          ras.processed_ras =
+            `<?xml version='1.0' encoding='utf-8'?>\n` + ras.processed_ras;
+        }
+        return ras;
+      }),
+    );
   }
   getLangs$(): Observable<Array<SupportedLanguage>> {
     return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs");

@@ -344,9 +344,9 @@ Please host all assets on your server, include the font and package imports defi
       // - add .readalong file
       await this.updateTranslations(rasXML, readalong);
 
-      const xmlString = this.xmlSerializer.serializeToString(
-        rasXML.documentElement,
-      );
+      const xmlString = this.xmlSerializer
+        .serializeToString(rasXML)
+        .replace("?><read", "?>\n<read");
       const rasFile = new Blob([xmlString], { type: "application/xml" });
       assetsFolder?.file(`${basename}.readalong`, rasFile);
       // - add index.html file
@@ -448,7 +448,7 @@ Use the text editor to paste the snippet below in your WordPress page:
         .convertRasFormat$(
           {
             dur: audio.duration,
-            ras: new XMLSerializer().serializeToString(rasXML.documentElement),
+            ras: new XMLSerializer().serializeToString(rasXML),
           },
           selectedOutputFormat,
         )
