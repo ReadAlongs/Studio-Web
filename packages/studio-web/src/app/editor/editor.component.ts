@@ -287,37 +287,63 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     const parser = new DOMParser();
     const readalong = parser.parseFromString(text, "text/html");
     const element = readalong.querySelector("read-along");
-
     if (element === undefined || element === null) {
       return undefined;
     }
 
-    // Store the element as parsed XML
-    // Create body element, which mysteriously gets removed from the text element.
-    let textNode = element.querySelector("text");
-    if (textNode && !textNode.querySelector("body")) {
-      const body = document.createElement("body");
-      body.id = "t0b0";
-      while (textNode.hasChildNodes()) {
-        // @ts-ignore
-        body.appendChild(textNode.firstChild);
+    // What is the appropriate source for the XML read along document? Either it was
+    // encoded in the element's href attribute, or included as a child element of the
+    // <read-along /> element.
+    //
+    // Prioritize the href implementation since it is more common.
+    const href = element.getAttribute("href");
+    if (href) {
+      const reply = await fetch(href);
+      if (reply.ok) {
+        // FIXME: potential zip-bombing?
+        let xmlString = await reply.text();
+        if (!xmlString.startsWith("<?xml")) {
+          xmlString = `<?xml version='1.0' encoding='utf-8'?>\n` + xmlString;
+        }
+
+        this.editorService.rasControl$.setValue(
+          parser.parseFromString(xmlString, "application/xml"),
+        );
       }
-      textNode.appendChild(body);
+    } else {
+      // Store the element as parsed XML
+      // Create body element, which gets removed from the text element. This occurs
+      // because the document was parsed with text/html mimetype which only allows
+      // a single <body /> element as a child of <html />.
+      let textNode = element.querySelector("text");
+      if (textNode && !textNode.querySelector("body")) {
+        const body = document.createElement("body");
+        body.id = "t0b0";
+        while (textNode.hasChildNodes()) {
+          // @ts-ignore
+          body.appendChild(textNode.firstChild);
+        }
+        textNode.appendChild(body);
+      }
+
+      // Similar issue, the document was parsed with a text/html mimetype, attributes
+      // in HTML are always lowercased.
+      const serializer = new XMLSerializer();
+      let xmlString = serializer
+        .serializeToString(element)
+        .replace(/arpabet=/g, "ARPABET=") // Our DTD says ARPABET is upper case
+        .replace(/xmlns="[\w\/\:\.]*"/g, ""); // Our DTD does not accept xmlns that the parser inserts
+      if (!xmlString.startsWith("<?xml")) {
+        xmlString = `<?xml version='1.0' encoding='utf-8'?>\n` + xmlString;
+      }
+
+      this.editorService.rasControl$.setValue(
+        parser.parseFromString(xmlString, "application/xml"),
+      ); // re-parse as XML
     }
-    const serializer = new XMLSerializer();
-    const xmlString = serializer
-      .serializeToString(element)
-      .replace(/arpabet=/g, "ARPABET=") // Our DTD says ARPABET is upper case
-      .replace(/xmlns="[\w\/\:\.]*"/g, ""); // Our DTD does not accept xmlns that the parser inserts
-    //console.log(xmlString);
-    this.editorService.rasControl$.setValue(
-      parser.parseFromString(xmlString, "text/xml"),
-    ); // re-parse as XML
-    //console.log(this.editorService.rasControl$.value);
 
     // Oh, there's an audio file, okay, try to load it
     const audio = element.getAttribute("audio");
-
     if (audio !== null) {
       const reply = await fetch(audio);
       // Did that work? Great!
@@ -328,20 +354,11 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         );
       }
     }
-    // Is read-along linked (including data URI) or embedded?
-    const href = element.getAttribute("href");
-    if (href === null) {
-      if (this.editorService.rasControl$.value) {
-        this.createSegments(this.editorService.rasControl$.value);
-      }
-    } else {
-      const reply = await fetch(href);
-      if (reply.ok) {
-        const text2 = await reply.text();
-        // FIXME: potential zip-bombing?
-        this.parseReadalong(text2);
-      }
+
+    if (this.editorService.rasControl$.value) {
+      this.createSegments(this.editorService.rasControl$.value);
     }
+
     return readalong.querySelector("body")?.innerHTML;
   }
 

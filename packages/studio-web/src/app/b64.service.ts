@@ -60,7 +60,11 @@ export class B64Service {
   }
 
   xmlToB64(xml: Document) {
-    return this.utf8_to_b64(new XMLSerializer().serializeToString(xml));
+    return this.utf8_to_b64(
+      new XMLSerializer()
+        .serializeToString(xml)
+        .replace("?><read", "?>\n<read"),
+    );
   }
 
   blobToB64(blob: any) {
