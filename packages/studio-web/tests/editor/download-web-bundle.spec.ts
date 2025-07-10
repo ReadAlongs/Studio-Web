@@ -39,11 +39,11 @@ test("should Download web bundle (zip file format) from the Editor", async ({
   const zipPath = await download1.path();
   const zipBin = await fs.readFileSync(zipPath);
   const zip = await JSZip.loadAsync(zipBin);
-  verifyWebBundle(zip);
+  await verifyWebBundle(zip);
 });
 
 // verify web-bundle contents used by tests in editor.
-function verifyWebBundle(zip: JSZip) {
+async function verifyWebBundle(zip: JSZip) {
   expect(
     zip.folder(/Offline-HTML/),
     "should have Offline-HTML folder",
@@ -76,4 +76,12 @@ function verifyWebBundle(zip: JSZip) {
     1,
   );
   expect(zip.file(/www\/index.html/), "should have index file").toHaveLength(1);
+
+  const xmlString = await zip
+    .file(/www\/assets\/sentence\-paragr\-[0-9]*\.readalong/)[0]
+    .async("text");
+  await expect(
+    xmlString,
+    "download file should contain XML declaration",
+  ).toMatch(/^<\?xml/);
 }

@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { testMakeAReadAlong, defaultBeforeEach } from "../test-commands";
+import { text } from "node:stream/consumers";
+import { JSDOM } from "jsdom";
 
 test("should Download default (single file format)", async ({
   page,
@@ -17,4 +19,18 @@ test("should Download default (single file format)", async ({
     download.suggestedFilename(),
     "should have the expected filename",
   ).toMatch(/sentence\-paragr\-[0-9]*\.html/);
+
+  //
+  const reader = await download.createReadStream();
+  const contentText = await text(reader);
+  const dom = new JSDOM(contentText);
+  const xmlString = dom.window.document
+    .getElementsByTagName("read-along")[0]
+    .getAttribute("href") as string;
+
+  const resp = await fetch(xmlString);
+  await expect(
+    await resp.text(),
+    "download file should contain XML declaration",
+  ).toMatch(/^<\?xml/);
 });
