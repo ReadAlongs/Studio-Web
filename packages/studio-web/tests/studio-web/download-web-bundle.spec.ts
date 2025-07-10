@@ -68,4 +68,12 @@ test("should Download web bundle (zip file format)", async ({
     zip.file(/www\/index.html/),
     "should have index file",
   ).toHaveLength(1); //www/index.html  exists
+
+  const xmlString = await zip
+    .file(/www\/assets\/sentence\-paragr\-[0-9]*\.readalong/)[0]
+    .async("text");
+  await expect(
+    xmlString,
+    "download file should contain XML declaration",
+  ).toMatch(/^<\?xml/);
 });
