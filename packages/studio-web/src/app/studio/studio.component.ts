@@ -170,30 +170,43 @@ export class StudioComponent implements OnDestroy, OnInit {
       },
     };
     this.shepherdService.keyboardNavigation = false;
-    text_file_step["when"] = {
-      show: () => {
+
+    const cachedTextInputMode = this.studioService.inputMethod.text;
+    const setTextInputMode = (mode: string) => {
+      return () => {
         if (this.upload) {
-          this.studioService.inputMethod.text = "upload";
+          this.studioService.inputMethod.text = mode;
         }
-      },
-      hide: () => {
-        if (this.upload) {
-          this.studioService.inputMethod.text = "edit";
-        }
-      },
+      };
     };
-    audio_file_step["when"] = {
-      show: () => {
-        if (this.upload) {
-          this.studioService.inputMethod.audio = "upload";
-        }
-      },
-      hide: () => {
-        if (this.upload) {
-          this.studioService.inputMethod.audio = "mic";
-        }
-      },
+
+    text_write_step.when = {
+      show: setTextInputMode("edit"),
+      hide: setTextInputMode(cachedTextInputMode),
     };
+    text_file_step.when = {
+      show: setTextInputMode("upload"),
+      hide: setTextInputMode(cachedTextInputMode),
+    };
+
+    const cachedAudioInputMode = this.studioService.inputMethod.audio;
+    const setAudioInputMode = (mode: string) => {
+      return () => {
+        if (this.upload) {
+          this.studioService.inputMethod.audio = mode;
+        }
+      };
+    };
+
+    audio_record_step.when = {
+      show: setAudioInputMode("mic"),
+      hide: setAudioInputMode(cachedAudioInputMode),
+    };
+    audio_file_step.when = {
+      show: setAudioInputMode("upload"),
+      hide: setAudioInputMode(cachedAudioInputMode),
+    };
+
     if (this.formIsDirty()) {
       step_one_final_step["text"] =
         $localize`Once you've done this, you can click the "next step" button here to let Studio build your ReadAlong! (This may take a few seconds.)` +
