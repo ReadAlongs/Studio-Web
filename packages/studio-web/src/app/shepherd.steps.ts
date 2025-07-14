@@ -425,7 +425,7 @@ export const readalong_editor_choose_file: any = {
     },
     {
       classes: "shepherd-button-warning",
-      text: $localize`Next`,
+      text: $localize`Next` + " " + $localize`(overwrites your data)`,
     },
   ],
 };
