@@ -385,14 +385,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe(async (indexFile) => {
           await this.loadRasFile(indexFile);
-          console.log(
-            document
-              .querySelector("#wavesurferContainer")
-              ?.querySelector(".segment-content"),
-            document
-              .querySelector("#readalongContainer")
-              ?.querySelector("read-along"),
-          );
           this.shepherdService.next();
           readalong_add_image_step["attachTo"] = {
             element: document
