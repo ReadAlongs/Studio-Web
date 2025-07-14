@@ -587,6 +587,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     );
   }
 
+  deleteTextUpload() {
+    this.textInputElement.nativeElement.value = "";
+    this.studioService.textControl$.setValue(null);
+  }
+
   onTextFileSelected(event: Event) {
     const el = event.target as HTMLInputElement;
     if (!el.files || el.files.length !== 1) {

@@ -58,6 +58,23 @@
               <!-- </div> -->
             </div>
           </div>
+          @if (studioService.textControl$.value !== null) {
+            <div class="row">
+              <div class="col-12 offset-xl-8 col-xl-4">
+                <button
+                  mat-button
+                  i18n="Text delete button"
+                  class="audioControl"
+                  (click)="deleteTextUpload()"
+                  color="warn"
+                  aria-label="Delete button"
+                >
+                  <mat-icon class="mat-icon-lg">delete</mat-icon>
+                  Delete
+                </button>
+              </div>
+            </div>
+          }
         </div>
         <div *ngIf="studioService.inputMethod.text === 'edit'">
           <div class="d-flex flex-row justify-content-between p-0">
