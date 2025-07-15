@@ -267,6 +267,8 @@ This will update `packages/studio-web/src/i18n/messages.json` with the English s
 Add or correct their translations in `messages.es.json` and `messages.fr.json`.
 (See `packages/studio-web/extract-i18n-lang.ts` for partial automation of that task.)
 
+    npx tsx packages/studio-web/extract-i18n-lang.ts --help
+
 Finally, run this check to confirm all the required strings are present in each language:
 
     npx nx check-l10n studio-web
