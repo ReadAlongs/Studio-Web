@@ -12,6 +12,7 @@ import {
   throwError,
   firstValueFrom,
   take,
+  filter,
 } from "rxjs";
 
 import {
@@ -67,8 +68,8 @@ export class UploadComponent implements OnInit {
   // Max .readalong XML text size: text * 5 is a rough heuristic; the XML is much bloated from the text.
   maxRasSizeKB = 200;
   currentToast: number;
-  @ViewChild("textInputElement") textInputElement: ElementRef;
   @ViewChild("audioFileUpload") audioFileUpload: ElementRef<HTMLFormElement>;
+  @ViewChild("textFileUpload") textFileUpload: ElementRef<HTMLFormElement>;
   @Output() stepChange = new EventEmitter<any[]>();
 
   // value passed to input[type=file] accept's attribute which expects
@@ -95,17 +96,48 @@ export class UploadComponent implements OnInit {
     this.studioService.textControl$.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((textBlob) => this.uploadService.$currentText.next(textBlob));
-    this.studioService.$textInput
-      .pipe(takeUntilDestroyed(this.destroyRef$))
-      .subscribe((textString) => {
-        //provides user with warning if text size is above limit
-        if (this.checkIsTextSizeBelowLimit())
-          this.uploadService.$currentText.next(textString);
-      });
     this.ssjsService.modelLoaded
       .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((loaded) => {
         this.isLoaded = loaded;
+      });
+
+    // If the textControl$ changes to a Blob or null, reset the
+    // input[type=file] value.
+    this.studioService.textControl$.valueChanges
+      .pipe(
+        takeUntilDestroyed(),
+        filter(() => Boolean(this.textFileUpload)),
+        filter((val) => !(val instanceof File)),
+      )
+      .subscribe(() => {
+        this.textFileUpload.nativeElement.value = "";
+      });
+
+    // If the audioControl$ changes to a Blob or null, reset the
+    // input[type=file] value.
+    this.studioService.audioControl$.valueChanges
+      .pipe(
+        takeUntilDestroyed(),
+        filter(() => Boolean(this.audioFileUpload)),
+        filter((val) => !(val instanceof File)),
+      )
+      .subscribe(() => {
+        this.audioFileUpload.nativeElement.value = "";
+      });
+
+    // As the user is entering text, validate the length of the string
+    // and set the textControl$ to the new value.
+    this.studioService.$textInput
+      .pipe(
+        takeUntilDestroyed(this.destroyRef$),
+        filter((val) => val !== ""),
+        filter(() => this.checkIsTextSizeBelowLimit()),
+      )
+      .subscribe((textString) => {
+        this.studioService.textControl$.setValue(
+          new Blob([textString], { type: "text/plain" }),
+        );
       });
   }
 
@@ -355,195 +387,220 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     return true;
   }
 
-  nextStep() {
-    if (this.studioService.langControl$.value === "") {
-      this.toastr.error(
-        $localize`Please select a language or choose the default option`,
-        $localize`No language selected`,
-        { timeOut: 15000 },
-      );
-      return;
+  private validateLangControl(): boolean {
+    if (this.studioService.langControl$.value) {
+      return true;
     }
-    if (this.studioService.inputMethod.text === "edit") {
-      this.studioService.textControl$.setValue(null);
-      if (this.studioService.$textInput.value) {
-        const inputLength = this.studioService.$textInput.value.length;
-        if (this.checkIsTextSizeBelowLimit()) {
-          let inputText = new Blob([this.studioService.$textInput.value], {
-            type: "text/plain",
-          });
-          this.studioService.textControl$.setValue(inputText);
-        } else {
-          return;
+
+    this.toastr.error(
+      $localize`Please select a language or choose the default option`,
+      $localize`No language selected`,
+      { timeOut: 15000 },
+    );
+    return false;
+  }
+
+  private validateTextControl(): boolean {
+    switch (this.studioService.inputMethod.text) {
+      case "edit":
+        if (this.studioService.$textInput.value) {
+          return this.checkIsTextSizeBelowLimit();
         }
-      } else {
+
         this.toastr.error(
           $localize`Please enter text to align.`,
           $localize`No text`,
           { timeOut: 15000 },
         );
-      }
-    } else {
-      if (this.studioService.textControl$.value === null) {
+        return false;
+
+      case "upload":
+        if (this.studioService.textControl$.value) {
+          return true;
+        }
+
         this.toastr.error(
           $localize`Please select a text file.`,
           $localize`No text`,
           { timeOut: 15000 },
         );
-      }
+        return false;
     }
-    if (!this.ssjsService.modelLoaded) {
-      this.toastr.error(
-        $localize`Sorry, the alignment model isn't loaded yet. Please wait a while and try again if you're on a slow connection. If the problem persists, please contact us.`,
-        $localize`No model loaded`,
-        { timeOut: 15000 },
-      );
-    } else if (
-      this.studioService.uploadFormGroup.valid &&
-      this.studioService.audioControl$.value !== null
-    ) {
-      // Show progress bar
-      this.loading = true;
-      this.progressMode = "query";
-      // Determine text type for API request
-      let input_type;
-      if (
-        this.studioService.inputMethod.text === "upload" &&
-        (this.studioService.textControl$.value.name
+
+    return true;
+  }
+
+  private validateAudioControl(): boolean {
+    if (this.studioService.audioControl$.value) {
+      return true;
+    }
+
+    this.toastr.error(
+      $localize`Please (re-)record some audio or select an audio file.`,
+      $localize`No audio`,
+      { timeOut: 15000 },
+    );
+    return false;
+  }
+
+  private validateAlignmentModel(): boolean {
+    if (this.ssjsService.modelLoaded) {
+      return true;
+    }
+
+    this.toastr.error(
+      $localize`Sorry, the alignment model isn't loaded yet. Please wait a while and try again if you're on a slow connection. If the problem persists, please contact us.`,
+      $localize`No model loaded`,
+      { timeOut: 15000 },
+    );
+    return false;
+  }
+
+  private validateUploadFormGroup(): boolean {
+    if (this.studioService.uploadFormGroup.valid) {
+      return true;
+    }
+    this.toastr.error(
+      $localize`Please select or write text, select or record audio data, and select the language.`,
+      $localize`Form not complete`,
+      { timeOut: 15000 },
+    );
+    return false;
+  }
+
+  nextStep() {
+    const isValid =
+      this.validateLangControl() &&
+      this.validateTextControl() &&
+      this.validateAlignmentModel() &&
+      this.validateAudioControl() &&
+      this.validateUploadFormGroup();
+    if (!isValid) {
+      return;
+    }
+
+    if (this.studioService.inputMethod.text === "edit") {
+      const inputText = new Blob([this.studioService.$textInput.value], {
+        type: "text/plain",
+      });
+      this.studioService.textControl$.setValue(inputText);
+    }
+
+    // Show progress bar
+    this.loading = true;
+    this.progressMode = "query";
+    // Determine text type for API request
+    let input_type;
+    if (
+      this.studioService.inputMethod.text === "upload" &&
+      this.studioService.textControl$.value instanceof File &&
+      (this.studioService.textControl$.value.name
+        .toLowerCase()
+        .endsWith(".xml") ||
+        this.studioService.textControl$.value.name
           .toLowerCase()
-          .endsWith(".xml") ||
-          this.studioService.textControl$.value.name
-            .toLowerCase()
-            .endsWith(".readalong"))
-      ) {
-        input_type = "application/readalong+xml";
-      } else {
-        input_type = "text/plain";
-      }
-      // Create request (text is possibly read from a file later...)
-      let body: ReadAlongRequest = {
-        text_languages: [
-          this.studioService.langControl$.value as string,
-          "und",
-        ],
-        type: input_type,
-      };
-      forkJoin({
-        audio: this.fileService.loadAudioBufferFromFile$(
-          this.studioService.audioControl$.value as File,
-          8000,
-        ),
-        ras: firstValueFrom(
-          this.fileService
-            .readFile$(this.studioService.textControl$.value)
-            .pipe(
-              switchMap((text: string): Observable<ReadAlong> => {
-                body.input = text;
-                this.progressMode = "determinate";
-                this.progressValue = 0;
-                return this.rasService.assembleReadalong$(body);
-              }),
-              take(1),
-            ),
-        ),
-      })
-        .pipe(
-          switchMap(
-            ({ audio, ras }: { audio: AudioBuffer; ras: ReadAlong }) => {
-              if (ras.log !== null) {
-                const fallbackRx = /^.*g2p.*$/gim;
-                const matches = ras.log.match(fallbackRx);
-                if (matches) {
-                  this.toastr.warning(
-                    matches.join("\n"),
-                    $localize`Possible text processing issues.`,
-                    { timeOut: 30000 },
-                  );
-                }
-              }
-              return this.ssjsService.align$(audio, ras as ReadAlong);
-            },
-          ),
-          catchError((err: Error) => {
-            // Catch all errors. If error message is "No alignment found" then gradually loosen the beam defaults.
-            // and then throw an error so that retry will get triggered. If it's any other type of error, just return
-            // an observable of it so that it bypasses retry.
-            if (err.message === "No alignment found") {
-              if (this.ssjsService.mode === BeamDefaults.strict) {
-                this.reportDifficultAlignment(err, this.ssjsService.mode);
-                this.ssjsService.mode = BeamDefaults.moderate;
-              } else if (this.ssjsService.mode === BeamDefaults.moderate) {
-                this.reportDifficultAlignment(err, this.ssjsService.mode);
-                this.ssjsService.mode = BeamDefaults.loose;
-              }
-              return throwError(() => err);
-            } else {
-              return of(err);
-            }
+          .endsWith(".readalong"))
+    ) {
+      input_type = "application/readalong+xml";
+    } else {
+      input_type = "text/plain";
+    }
+    // Create request (text is possibly read from a file later...)
+    let body: ReadAlongRequest = {
+      text_languages: [this.studioService.langControl$.value as string, "und"],
+      type: input_type,
+    };
+    forkJoin({
+      audio: this.fileService.loadAudioBufferFromFile$(
+        this.studioService.audioControl$.value as File,
+        8000,
+      ),
+      ras: firstValueFrom(
+        this.fileService.readFile$(this.studioService.textControl$.value!).pipe(
+          switchMap((text: string): Observable<ReadAlong> => {
+            body.input = text;
+            this.progressMode = "determinate";
+            this.progressValue = 0;
+            return this.rasService.assembleReadalong$(body);
           }),
-          retry(2),
-          // Here, we want to intercept the observable from the catchError operator above and throw a new error of it
-          map((possibleError) => {
-            if (
-              possibleError instanceof Error ||
-              possibleError instanceof HttpErrorResponse
-            ) {
-              throw possibleError;
-            } else {
-              return possibleError;
-            }
-          }),
-          takeUntilDestroyed(this.destroyRef$),
-          finalize(() => (this.ssjsService.mode = BeamDefaults.strict)),
-        )
-        .subscribe({
-          next: (progress) => {
-            if (progress.hypseg !== undefined) {
-              this.loading = false;
-              this.stepChange.emit([
-                "aligned",
-                this.studioService.audioControl$.value,
-                progress.xml,
-                progress.hypseg,
-              ]);
-            } else {
-              this.progressValue = Math.round(
-                (progress.pos / progress.length) * 100,
+          take(1),
+        ),
+      ),
+    })
+      .pipe(
+        switchMap(({ audio, ras }: { audio: AudioBuffer; ras: ReadAlong }) => {
+          if (ras.log !== null) {
+            const fallbackRx = /^.*g2p.*$/gim;
+            const matches = ras.log.match(fallbackRx);
+            if (matches) {
+              this.toastr.warning(
+                matches.join("\n"),
+                $localize`Possible text processing issues.`,
+                { timeOut: 30000 },
               );
             }
-          },
-          error: (err: Error) => {
-            this.loading = false;
-            if (err instanceof HttpErrorResponse) {
-              this.reportRasError(err);
-            } else if (err.message.includes("align")) {
-              this.reportUnpronounceableError(err);
-            } else {
-              this.reportAudioError(err);
+          }
+          return this.ssjsService.align$(audio, ras as ReadAlong);
+        }),
+        catchError((err: Error) => {
+          // Catch all errors. If error message is "No alignment found" then gradually loosen the beam defaults.
+          // and then throw an error so that retry will get triggered. If it's any other type of error, just return
+          // an observable of it so that it bypasses retry.
+          if (err.message === "No alignment found") {
+            if (this.ssjsService.mode === BeamDefaults.strict) {
+              this.reportDifficultAlignment(err, this.ssjsService.mode);
+              this.ssjsService.mode = BeamDefaults.moderate;
+            } else if (this.ssjsService.mode === BeamDefaults.moderate) {
+              this.reportDifficultAlignment(err, this.ssjsService.mode);
+              this.ssjsService.mode = BeamDefaults.loose;
             }
-          },
-        });
-    } else {
-      if (this.studioService.langControl$.value === null) {
-        this.toastr.error(
-          $localize`Please select a language.`,
-          $localize`No language`,
-          { timeOut: 15000 },
-        );
-      }
-      if (this.studioService.audioControl$.value === null) {
-        this.toastr.error(
-          $localize`Please (re-)record some audio or select an audio file.`,
-          $localize`No audio`,
-          { timeOut: 15000 },
-        );
-      }
-      this.toastr.error(
-        $localize`Please select or write text, select or record audio data, and select the language.`,
-        $localize`Form not complete`,
-        { timeOut: 15000 },
-      );
-    }
+            return throwError(() => err);
+          } else {
+            return of(err);
+          }
+        }),
+        retry(2),
+        // Here, we want to intercept the observable from the catchError operator above and throw a new error of it
+        map((possibleError) => {
+          if (
+            possibleError instanceof Error ||
+            possibleError instanceof HttpErrorResponse
+          ) {
+            throw possibleError;
+          } else {
+            return possibleError;
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef$),
+        finalize(() => (this.ssjsService.mode = BeamDefaults.strict)),
+      )
+      .subscribe({
+        next: (progress) => {
+          if (progress.hypseg !== undefined) {
+            this.loading = false;
+            this.stepChange.emit([
+              "aligned",
+              this.studioService.audioControl$.value,
+              progress.xml,
+              progress.hypseg,
+            ]);
+          } else {
+            this.progressValue = Math.round(
+              (progress.pos / progress.length) * 100,
+            );
+          }
+        },
+        error: (err: Error) => {
+          this.loading = false;
+          if (err instanceof HttpErrorResponse) {
+            this.reportRasError(err);
+          } else if (err.message.includes("align")) {
+            this.reportUnpronounceableError(err);
+          } else {
+            this.reportAudioError(err);
+          }
+        },
+      });
   }
 
   onAudioFileSelected(event: Event) {
@@ -582,7 +639,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   deleteTextUpload() {
-    this.textInputElement.nativeElement.value = "";
+    this.textFileUpload.nativeElement.value = "";
     this.studioService.textControl$.setValue(null);
   }
 
@@ -619,8 +676,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         $localize`Sorry!`,
         { timeOut: 15000 },
       );
-      this.textInputElement.nativeElement.value = "";
+      this.textFileUpload.nativeElement.value = "";
     } else {
+      // the file has been accepted, clear the user input text.
+      this.studioService.$textInput.next("");
+
       this.studioService.textControl$.setValue(file);
       this.toastr.success(
         $localize`File ` +

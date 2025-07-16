@@ -35,7 +35,7 @@
             </mat-button-toggle-group>
           </div>
         </div>
-        <div *ngIf="studioService.inputMethod.text === 'upload'">
+        <div [class.d-none]="studioService.inputMethod.text !== 'upload'">
           <div class="row">
             <div class="mt-4 mb-3">
               <!-- <div class="container"> -->
@@ -47,7 +47,7 @@
                 file (.readalong)</label
               >
               <input
-                #textInputElement
+                #textFileUpload
                 (change)="onTextFileSelected($event)"
                 class="form-control"
                 name="text"
@@ -155,7 +155,7 @@ Page two."
         </div>
 
         <div
-          *ngIf="studioService.inputMethod.audio === 'upload'"
+          [class.d-none]="studioService.inputMethod.audio !== 'upload'"
           class="row mb-3"
         >
           <h2 i18n="Title for upload box" class="subtitle">
@@ -289,6 +289,7 @@ Page two."
               mat-button
               color="warn"
               aria-label="Delete button"
+              data-test-id="ras-audio-fileselector-delete-btn"
             >
               <mat-icon class="mat-icon-lg">delete</mat-icon>
               Delete

@@ -47,7 +47,7 @@ import { UploadComponent } from "../upload/upload.component";
 import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DownloadService } from "../shared/download/download.service";
-import { StudioService } from "./studio.service";
+import { InputMethodType, StudioService } from "./studio.service";
 
 @Component({
   selector: "studio-component",
@@ -184,7 +184,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     this.shepherdService.keyboardNavigation = false;
 
     const cachedTextInputMode = this.studioService.inputMethod.text;
-    const setTextInputMode = (mode: string) => {
+    const setTextInputMode = (mode: InputMethodType["text"]) => {
       return () => {
         if (this.upload) {
           this.studioService.inputMethod.text = mode;
@@ -202,7 +202,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     };
 
     const cachedAudioInputMode = this.studioService.inputMethod.audio;
-    const setAudioInputMode = (mode: string) => {
+    const setAudioInputMode = (mode: InputMethodType["audio"]) => {
       return () => {
         if (this.upload) {
           this.studioService.inputMethod.audio = mode;
