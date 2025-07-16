@@ -58,7 +58,7 @@
     <div class="col col-lg-7">
 
     </div>
-    <div class="col-12 bg-fade  col-lg-5 pt-lg-5 d-lg-flex flex-row" *ngIf="hasFile">
+    <div class="col-12 bg-fade  col-lg-5 pt-lg-5 d-lg-flex flex-row" *ngIf="rasFileIsLoaded">
 
 
     </div>
@@ -67,7 +67,11 @@
     class="d-flex justify-content-center flex-column flex-xl-row flex-xl-nowrap bg-light mt-3 full-height"
   >
     <div id="readalongContainer" #readalongContainer></div>
-    <div [class.d-none]="!hasFile" [class.d-lg-flex]="hasFile" class="flex-row">
+    <div
+      [class.d-none]="!rasFileIsLoaded"
+      [class.d-lg-flex]="rasFileIsLoaded"
+      class="flex-row"
+    >
       <div
         class="m-0 p-0 handle me-xl-2 d-none d-xl-block"
         #handle

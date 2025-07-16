@@ -120,7 +120,9 @@
           </h3>
         </span>
 
-        <span class="ms-5 ms-md-0 p-0 pt-3 d-flex justify-content-end">
+        <span
+          class="ms-5 ms-md-0 p-0 pt-3 d-flex justify-content-end justify-content-xl-center"
+        >
           <button
             i18n="Style download button"
             mat-button
@@ -135,6 +137,22 @@
             Apply
           </button>
         </span>
+      </div>
+      <div *ngIf="canUseClipBoard" class="row">
+        <div class="col d-flex justify-content-center">
+          <button
+            mat-button
+            (click)="copyStyle()"
+            [disabled]="!(styleText$ | async)"
+          >
+            <mat-icon class="mat-icon-lg">content_copy</mat-icon
+            ><span i18n="copy">Copy</span>
+          </button>
+          <button mat-button (click)="pasteStyle()">
+            <mat-icon class="mat-icon-lg">content_paste</mat-icon
+            ><span i18n="copy">Paste</span>
+          </button>
+        </div>
       </div>
       <div class="row">
         <mat-form-field class="col-12 p-0 b-0 ms-5 ms-md-0">

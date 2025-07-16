@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { testAssetsPath, disablePlausible } from "../test-commands";
 import fs from "fs";
-import { hasUncaughtExceptionCaptureCallback } from "process";
+
 test.describe.configure({ mode: "parallel" });
 test.beforeEach(async ({ page, isMobile }) => {
+  //await context.grantPermissions(["clipboard-write", "clipboard-read"]);
   await page.goto("/", { waitUntil: "load" });
   disablePlausible(page);
   if (isMobile) {
@@ -28,14 +29,11 @@ test.beforeEach(async ({ page, isMobile }) => {
     "should check that readalong is loading",
   ).not.toBeEmpty();
   await page.locator("#t0b0d0").waitFor({ state: "visible" });
-  await expect(async () => {
-    await expect(
-      page.locator("#t0b0d0"),
-      "read along has been loaded",
-    ).toHaveCount(1);
-  }).toPass();
-});
-test("should edit css (editor)", async ({ page, isMobile }) => {
+
+  await expect(
+    page.locator("#t0b0d0"),
+    "read along has been loaded",
+  ).toHaveCount(1);
   await expect(
     page.locator("#style-section"),
     "css editor to be hidden",
@@ -45,9 +43,13 @@ test("should edit css (editor)", async ({ page, isMobile }) => {
     page.locator("#style-section"),
     "css editor to be visible",
   ).not.toHaveClass(/\bcollapsed\b/);
-  await expect(page.locator("#styleInput"), "has style data").toHaveValue(
-    /\.theme--light/,
-  );
+  await expect(async () => {
+    await expect(page.locator("#styleInput"), "has style data").toHaveValue(
+      /\.theme--light/,
+    );
+  }).toPass();
+});
+test("should edit css (editor)", async ({ page, isMobile }) => {
   await expect(
     page
       .locator('[data-test-id="text-container"]')
@@ -89,5 +91,64 @@ test("should edit css (editor)", async ({ page, isMobile }) => {
     "check that the css file export matches the original",
   ).toContain(
     ".theme--light.sentence__word,\n.theme--light.sentence__text {\n    color: rgba(180, 170, 70, .9) !important;\n}",
+  );
+});
+test("should use with custom font", async ({ page, isMobile }) => {
+  let fileChooserPromise = page.waitForEvent("filechooser");
+  await page.locator("#defaultFont").click();
+  let fileChooser = await fileChooserPromise;
+  fileChooser.setFiles(testAssetsPath + "cour.ttf");
+  await expect(
+    page.getByText("File cour.ttf processed."),
+    "font successfully loaded",
+  ).toBeVisible();
+});
+
+test("should paste in style", async ({ page, context }) => {
+  const style = fs.readFileSync(
+    testAssetsPath + "sentence-paragr-cust-css.css",
+    { encoding: "utf8", flag: "r" },
+  );
+  // Ensure clipboard permissions are granted
+  await context.grantPermissions(["clipboard-write", "clipboard-read"]);
+  await page.evaluate(async (text) => {
+    await navigator.clipboard.writeText(text);
+  }, style);
+  await page.getByRole("button", { name: "Paste" }).click();
+  // Wait for the style input to be updated after paste
+  await expect(
+    page.locator("#styleInput"),
+    "style input should not be empty",
+  ).not.toBeEmpty();
+  await expect
+    .poll(async () => await page.locator("#styleInput").inputValue(), {
+      message: "check that the style input has been replaced",
+    })
+    .toContain(style);
+});
+test("should load and copy style", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-write", "clipboard-read"]);
+  let fileChooserPromise = page.waitForEvent("filechooser");
+  await page.getByRole("radio", { name: "File" }).click();
+  await page
+    .locator("#updateStyle")
+    .waitFor({ state: "visible", timeout: 10000 });
+  await page.locator("#updateStyle").click();
+  let fileChooser = await fileChooserPromise;
+  fileChooser.setFiles(testAssetsPath + "sentence-paragr-cust-css.css");
+  await expect(
+    page.getByText(
+      "File sentence-paragr-cust-css.css processed. Content loaded in the text box.",
+    ),
+    "css successfully loaded",
+  ).toBeVisible();
+  await expect(
+    page.locator("#styleInput"),
+    "style input should not be empty",
+  ).not.toBeEmpty();
+  await page.getByRole("button", { name: "Copy" }).click();
+  const css = await page.evaluate(() => navigator.clipboard.readText());
+  await expect(css.length, "clipboard css should not be empty").toBeGreaterThan(
+    0,
   );
 });

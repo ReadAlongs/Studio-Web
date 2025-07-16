@@ -31,6 +31,7 @@ export class WcStylingComponent implements OnDestroy, OnInit {
   @ViewChild("styleInputElement") styleInputElement: ElementRef;
   @ViewChild("fontInputElement") fontInputElement: ElementRef;
   @ViewChild("styleSection") styleSection: ElementRef;
+  canUseClipBoard = false;
 
   constructor(
     private toastr: ToastrService,
@@ -51,6 +52,20 @@ export class WcStylingComponent implements OnDestroy, OnInit {
         //this.collapsed = false;
       }
     });
+    //check if clipboard access is allowed
+    navigator.permissions
+      .query({ name: "clipboard-write" as PermissionName })
+      .then((result) => {
+        if (result.state === "granted" || result.state === "prompt") {
+          this.canUseClipBoard = true;
+        } else {
+          this.canUseClipBoard = false;
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to query clipboard permissions", err);
+        this.canUseClipBoard = false;
+      });
   }
   onFontSelected(event: any) {
     const file: File = event.target.files[0];
@@ -107,6 +122,7 @@ export class WcStylingComponent implements OnDestroy, OnInit {
       .text()
       .then((val) => {
         this.styleText$.next(val);
+
         this.wcStylingService.$wcStyleInput.next(val);
         this.inputType = "edit";
         this.toastr.success(
@@ -179,7 +195,6 @@ span.theme--dark.sentence__text {
   }
   toggleStyleInput(event: any) {
     this.inputType = event.value;
-    this.collapsed$.next(false);
   }
   async ngOnInit() {
     this.wcStylingService.$wcStyleInput
@@ -205,6 +220,60 @@ span.theme--dark.sentence__text {
   }
   toggleCollapse() {
     this.collapsed$.next(!this.collapsed$.getValue());
+  }
+  pasteStyle() {
+    if (this.canUseClipBoard) {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          this.styleText$.next(text);
+          this.wcStylingService.$wcStyleInput.next(text);
+          this.inputType = "edit";
+          this.toastr.success(
+            $localize`Style sheet pasted from clipboard.`,
+            undefined,
+            { timeOut: 10000 },
+          );
+        })
+        .catch((err) => {
+          this.toastr.error($localize`Failed to read clipboard content.`, err, {
+            timeOut: 2000,
+          });
+        });
+    } else {
+      this.toastr.error(
+        $localize`Clipboard access is not allowed.`,
+        $localize`Error`,
+      );
+    }
+  }
+
+  copyStyle() {
+    if (this.canUseClipBoard) {
+      navigator.clipboard
+        .writeText(this.styleText$.getValue())
+        .then(() => {
+          this.toastr.success(
+            $localize`Style sheet copied to clipboard.`,
+            undefined,
+            { timeOut: 10000 },
+          );
+        })
+        .catch((err) => {
+          this.toastr.error(
+            $localize`Failed to copy style sheet to clipboard.`,
+            err,
+            {
+              timeOut: 2000,
+            },
+          );
+        });
+    } else {
+      this.toastr.error(
+        $localize`Clipboard access is not allowed.`,
+        $localize`Error`,
+      );
+    }
   }
 }
 

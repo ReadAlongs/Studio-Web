@@ -180,7 +180,7 @@ and modify only the UI. Use the web inspector of your browser to find the classe
 }
 ```
 
-Here is a list of minimum classes you want to override:
+Here is a list of the minimum classes you want to override:
 
 - .sentence\_\_word.theme--light
 - .sentence\_\_word.theme--light.reading
@@ -193,7 +193,7 @@ Here is a list of minimum classes you want to override:
 - .paragraph
 - .page\_\_container.theme--light (to set page background)
 
-[look at this sample stylesheet for idea](../studio-web/tests/fixtures/sentence-paragr-cust-css.css)
+[look at this sample stylesheet to get an idea of what is needed](../studio-web/tests/fixtures/sentence-paragr-cust-css.css)
 
 ## XML customizations
 
