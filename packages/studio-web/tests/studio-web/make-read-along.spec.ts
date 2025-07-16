@@ -20,7 +20,10 @@ test("should make read along", async ({ page, browserName }) => {
   await page.getByTestId("ras-audio-fileselector").setInputFiles(testMp3Path);
   await expect(page.getByLabel("Play")).toBeVisible();
   await expect(page.getByLabel("Audio save button")).toBeVisible();
-  await expect(page.getByLabel("Delete")).toBeVisible();
+  await expect(
+    page.getByTestId("ras-audio-fileselector-delete-btn"),
+  ).toBeVisible();
+
   //create the readalong
   await page.getByTestId("next-step").click();
   //edit the headers

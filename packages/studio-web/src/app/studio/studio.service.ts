@@ -8,6 +8,11 @@ export enum langMode {
   specific = "specific",
 }
 
+export interface InputMethodType {
+  audio: "mic" | "upload";
+  text: "edit" | "upload";
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -25,7 +30,7 @@ export class StudioService {
     { value: "und", disabled: this.langMode$.value !== "specific" },
     Validators.required,
   );
-  textControl$ = new FormControl<any>(null, Validators.required);
+  textControl$ = new FormControl<File | Blob | null>(null, Validators.required);
   audioControl$ = new FormControl<File | Blob | null>(
     null,
     Validators.required,
@@ -36,7 +41,7 @@ export class StudioService {
     text: this.textControl$,
     audio: this.audioControl$,
   });
-  inputMethod = {
+  inputMethod: InputMethodType = {
     audio: "mic",
     text: "edit",
   };
