@@ -3,5 +3,8 @@
   "compilerOptions": {
     "declarationMap": false
   },
-  "angularCompilerOptions": {}
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "compilationMode": "partial"
+  }
 }
