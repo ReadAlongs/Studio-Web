@@ -1,6 +1,6 @@
 {
   "name": "@readalongs/web-component",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "ReadAlong Web Component",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
