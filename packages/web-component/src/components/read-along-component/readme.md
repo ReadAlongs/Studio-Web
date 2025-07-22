@@ -27,6 +27,22 @@
 
 ## Methods
 
+### `addCustomFont(fontData: string) => Promise<void>`
+
+Add custom font
+
+#### Parameters
+
+| Name       | Type     | Description |
+| ---------- | -------- | ----------- |
+| `fontData` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `changeTheme() => Promise<void>`
 
 Change theme
@@ -84,6 +100,22 @@ Get Translations
 #### Returns
 
 Type: `Promise<object>`
+
+
+
+### `setCss(url: any) => Promise<void>`
+
+Update stylesheet
+
+#### Parameters
+
+| Name  | Type  | Description |
+| ----- | ----- | ----------- |
+| `url` | `any` |             |
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 

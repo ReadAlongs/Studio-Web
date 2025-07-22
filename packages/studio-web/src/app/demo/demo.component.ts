@@ -8,7 +8,7 @@ import { StudioService } from "../studio/studio.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
-
+import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
 @Component({
   selector: "app-demo",
   templateUrl: "./demo.component.html",
@@ -24,6 +24,7 @@ export class DemoComponent implements OnDestroy, OnInit {
     public studioService: StudioService,
     private downloadService: DownloadService,
     private toastr: ToastrService,
+    private wcStylingService: WcStylingService,
   ) {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
@@ -31,6 +32,12 @@ export class DemoComponent implements OnDestroy, OnInit {
     } else if ($localize.locale == "es") {
       this.language = "spa";
     }
+    this.wcStylingService.$wcStyleInput.subscribe((css) =>
+      this.updateWCStyle(css),
+    );
+    this.wcStylingService.$wcStyleFonts.subscribe((font) =>
+      this.addWCCustomFont(font),
+    );
   }
 
   ngOnInit(): void {}
@@ -47,6 +54,8 @@ export class DemoComponent implements OnDestroy, OnInit {
         this.studioService.b64Inputs$.value[1],
         this.studioService.slots,
         this.readalong,
+        "Studio",
+        this.wcStylingService,
       );
     } else {
       this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
@@ -71,5 +80,13 @@ export class DemoComponent implements OnDestroy, OnInit {
         this.readalong,
       );
     }
+  }
+  async updateWCStyle($event: string) {
+    this.readalong?.setCss(
+      `data:text/css;base64,${this.b64Service.utf8_to_b64($event ?? "")}`,
+    );
+  }
+  async addWCCustomFont($font: string) {
+    this.readalong?.addCustomFont($font);
   }
 }

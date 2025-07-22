@@ -134,7 +134,7 @@ export class StudioComponent implements OnDestroy, OnInit {
 
   async ngOnDestroy() {
     // step us back to the previously left step
-    this.studioService.lastStepperIndex = this.stepper.selectedIndex;
+    this.studioService.lastStepperIndex = this.stepper?.selectedIndex;
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }

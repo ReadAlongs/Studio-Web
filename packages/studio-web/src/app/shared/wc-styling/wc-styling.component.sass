@@ -1,0 +1,68 @@
+mat-dialog-actions.mat-mdc-dialog-actions
+  justify-content: flex-end !important
+
+#styleInput
+  border: 1px solid #222
+  font-family: 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
+  min-height: 35vh
+.collapsed
+  max-height: 8em
+  overflow: hidden !important
+  @media (min-width: 960px)
+    max-height: 5em
+
+pre
+  color: var(--bs-code-color)
+  padding: 1em
+  margin: .5em
+  font-size: 1.1em
+
+code
+  white-space: pre
+
+.comment
+  color: #696
+
+.css-class
+  color: #ffe66d
+
+.css-block
+  background: rgba(0,0,0,0.8)
+  font-family: 'Courier new'
+  font-size: 1.4em
+  line-height: 1.5em
+
+@media only screen and (max-width:1200px)
+  #style-section
+    width: 95vw
+    margin: auto
+
+    div.header > div.helper-text
+      text-align: left
+
+@media only screen and (min-width:1200px)
+  #style-section
+    transform: rotate(0deg) translateX(0%)
+    height: 70vh
+    width: 100%
+
+  #style-section.collapsed
+    transform: rotate(90deg)
+    transform-origin: bottom left
+    width: 85em
+    max-height: 4.7em
+    max-width: calc( 55vh + 100px)
+
+    div.header > div
+      display: none
+
+    div.header > div:first-of-type, div.header > div.helper-text
+      display: inline-block
+      cursor: pointer
+
+    div.justify-content-between
+      justify-content: flex-start !important
+
+@media only screen and (min-width:1200px) and (max-width:1900px)
+  .flex-md-row
+    flex-direction: column !important

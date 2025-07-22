@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
 
-import { takeUntil, Subject, take } from "rxjs";
+import { takeUntil, Subject, take, fromEvent, debounceTime } from "rxjs";
 import {
   AfterViewInit,
   Component,
@@ -31,6 +31,8 @@ import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
 import { validateFileType } from "../utils/utils";
+import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
+import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -41,7 +43,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
   wavesurfer: WaveSurfer;
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
-
+  @ViewChild("handle") handleElement!: ElementRef;
+  @ViewChild("styleWindow") styleElement!: WcStylingComponent;
   readalong: Components.ReadAlong;
 
   language: "eng" | "fra" | "spa" = "eng";
@@ -51,6 +54,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   htmlUploadAccepts = ".html";
 
   unsubscribe$ = new Subject<void>();
+  rasFileIsLoaded = false;
   constructor(
     public b64Service: B64Service,
     private fileService: FileService,
@@ -58,7 +62,23 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     public editorService: EditorService,
     private toastr: ToastrService,
     private downloadService: DownloadService,
-  ) {}
+    private wcStylingService: WcStylingService,
+  ) {
+    this.wcStylingService.$wcStyleInput.subscribe((css) =>
+      this.updateWCStyle(css),
+    );
+    this.wcStylingService.$wcStyleFonts.subscribe((font) =>
+      this.addWCCustomFont(font),
+    );
+    fromEvent(window, "resize")
+      .pipe(debounceTime(100), takeUntil(this.unsubscribe$)) // wait for 1 second after the last resize event
+      .subscribe(() => {
+        // When the window is resized, we want to reset the style window size
+        // so that it does not get squeezed too small
+        console.log("[DEBUG] window resized");
+        this.resetStyleWindowSize();
+      });
+  }
 
   async ngAfterViewInit(): Promise<void> {
     this.wavesurfer = WaveSurfer.create({
@@ -121,6 +141,40 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     if (window.location.hash.endsWith("startTour=yes")) {
       this.startTour();
     }
+    if (this.handleElement) {
+      fromEvent(this.handleElement.nativeElement, "dragend")
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((event) => {
+          const ev = event as DragEvent;
+          console.log("[DEBUG] dragged");
+          if (this.styleElement.collapsed$.getValue()) {
+            this.resetStyleWindowSize();
+            return;
+          }
+          if (ev.x < 600) {
+            return;
+          } // do not let the read along be squeezed past 600px width
+          if (window.innerWidth - ev.x < 400) return; // do not let the style window be squeezed past 600px width)
+          // When the handle is dragged, we want to resize the readalong and style containers
+          const styleEle = this.styleElement?.styleSection
+            .nativeElement as HTMLElement;
+          const readAlong = this.readalongContainerElement
+            ?.nativeElement as HTMLElement;
+          if (styleEle?.style) {
+            styleEle.style.width = `calc(100vw - ${ev.x + 50}px)`;
+          }
+
+          if (readAlong?.style) {
+            readAlong.style.width = `${ev.x}px`;
+          }
+        });
+    } else {
+      this.resetStyleWindowSize();
+    }
+    this.styleElement.collapsed$.subscribe((collapsed) => {
+      // When the style element is collapsed, we want to reset the style window size
+      this.resetStyleWindowSize();
+    });
   }
 
   ngOnInit(): void {}
@@ -138,8 +192,10 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
           this.readalong,
           this.editorService.slots,
           this.editorService.audioB64Control$.value,
+          this.wcStylingService,
         );
     }
+    this.rasFileIsLoaded = false;
   }
 
   download(download_type: SupportedOutputs) {
@@ -154,6 +210,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         this.editorService.slots,
         this.readalong,
         "Editor", //from
+        this.wcStylingService,
       );
     } else {
       this.toastr.error($localize`Download failed.`, $localize`Sorry!`, {
@@ -216,10 +273,14 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   async loadRasFile(file: File | Blob) {
+    //reset css
+    this.wcStylingService.$wcStyleInput.next("");
+    this.wcStylingService.$wcStyleFonts.next("");
     const text = await file.text();
     const readalong = await this.parseReadalong(text);
     this.loadAudioIntoWavesurferElement();
     this.renderReadalong(readalong);
+    this.rasFileIsLoaded = true;
   }
 
   async renderReadalong(readalongBody: string | undefined) {
@@ -259,6 +320,12 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       // Make Editable
       rasElement.setAttribute("mode", "EDIT");
       this.readalong = rasElement;
+      //set custom fonts
+      if (this.wcStylingService.$wcStyleFonts.getValue().length) {
+        this.readalong.addCustomFont(
+          this.wcStylingService.$wcStyleFonts.getValue(),
+        );
+      }
       const currentWord$ = await this.readalong.getCurrentWord();
       const alignments = await this.readalong.getAlignments();
       // Subscribe to the current word of the readalong and center the wavesurfer element on it
@@ -359,6 +426,34 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       this.createSegments(this.editorService.rasControl$.value);
     }
 
+    // stylesheet linked
+
+    const css = element.getAttribute("css-url");
+
+    if (css !== null && css.length > 0) {
+      if (css.startsWith("data:text/css;base64,")) {
+        this.wcStylingService.$wcStyleInput.next(
+          this.b64Service.b64_to_utf8(css.substring(css.indexOf(",") + 1)),
+        );
+      } else {
+        const reply = await fetch(css);
+        // Did that work? Great!
+        if (reply.ok) {
+          reply.text().then((cssText) => {
+            this.wcStylingService.$wcStyleInput.next(cssText);
+          });
+        }
+      }
+    } else {
+      this.wcStylingService.$wcStyleInput.next("");
+    }
+    //check for custom fonts
+    const customFont = readalong.querySelector("#ra-wc-custom-font");
+    if (customFont !== null) {
+      this.wcStylingService.$wcStyleFonts.next(customFont.innerHTML);
+    } else {
+      this.wcStylingService.$wcStyleFonts.next("");
+    }
     return readalong.querySelector("body")?.innerHTML;
   }
 
@@ -459,5 +554,29 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       readalong_editor_choose_file,
     ]);
     this.shepherdService.start();
+  }
+  async updateWCStyle($event: string) {
+    this.readalong?.setCss(
+      `data:text/css;base64,${this.b64Service.utf8_to_b64($event ?? "")}`,
+    );
+  }
+  async addWCCustomFont($font: string) {
+    this.readalong?.addCustomFont($font);
+  }
+  resetStyleWindowSize() {
+    const styleEle = this.styleElement?.styleSection
+      .nativeElement as HTMLElement;
+    const readAlong = this.readalongContainerElement
+      ?.nativeElement as HTMLElement;
+
+    if (window.innerWidth > 1199) {
+      styleEle.style.width = this.styleElement.collapsed$.value
+        ? `65vh`
+        : "calc(30vw - 50px)";
+      readAlong.style.width = `70vw`;
+    } else {
+      styleEle.style.width = `95vw`;
+      readAlong.style.width = `95vw`;
+    }
   }
 }

@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { testMakeAReadAlong, defaultBeforeEach } from "../test-commands";
+import {
+  testMakeAReadAlong,
+  defaultBeforeEach,
+  testAssetsPath,
+} from "../test-commands";
 import fs from "fs";
 import JSZip from "jszip";
 
@@ -24,8 +28,9 @@ test("should Download web bundle (zip file format)", async ({
     download1.suggestedFilename(),
     "should have the expected filename",
   ).toMatch(/sentence\-paragr\-[0-9]*\.zip/);
-  //await download1.saveAs(testAssetsPath + download1.suggestedFilename());
-  const zipPath = await download1.path();
+  const zipPath = testAssetsPath + download1.suggestedFilename();
+  await download1.saveAs(zipPath);
+
   const zipBin = await fs.readFileSync(zipPath);
   const zip = await JSZip.loadAsync(zipBin);
   await expect(
@@ -52,6 +57,7 @@ test("should Download web bundle (zip file format)", async ({
     zip.file(/www\/assets\/sentence\-paragr\-[0-9]*\.wav/),
     "should have wav file",
   ).toHaveLength(1); //www/assets audio exists
+
   await expect(
     zip.file(/www\/assets\/image-sentence\-paragr\-[0-9\-]*\.png/),
     "should have image files",
@@ -76,4 +82,5 @@ test("should Download web bundle (zip file format)", async ({
     xmlString,
     "download file should contain XML declaration",
   ).toMatch(/^<\?xml/);
+  fs.unlinkSync(zipPath);
 });

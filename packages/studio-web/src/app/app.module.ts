@@ -20,6 +20,7 @@ import { PrivacyDialog } from "./app.component";
 import { ErrorPageComponent } from "./error-page/error-page.component";
 import { EditorComponent } from "./editor/editor.component";
 import { SharedModule } from "./shared/shared.module";
+import { WcStylingComponent } from "./shared/wc-styling/wc-styling.component";
 
 defineCustomElements();
 
@@ -34,6 +35,7 @@ defineCustomElements();
     ErrorPageComponent,
     EditorComponent,
     // ShepherdComponent
+    WcStylingComponent,
   ],
   imports: [
     BrowserModule,
