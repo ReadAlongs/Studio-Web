@@ -74,6 +74,9 @@
     "unidecode": "^1.1.0",
     "wavesurfer.js": "^6.6.4"
   },
+  "overrides": {
+    "stylus": "github:stylus/stylus#0.64.0"
+  },
   "scripts": {
     "prepare": "husky"
   },
