@@ -14,7 +14,7 @@ export class FileService {
   ) {}
 
   loadAudioBufferFromFile$(
-    file: File,
+    file: File | Blob,
     sampleRate: number,
   ): Observable<AudioBuffer> {
     var audioCtx = new AudioContext({ sampleRate });
@@ -44,7 +44,11 @@ export class FileService {
     );
   };
 
-  readFile$(blob: Blob | File): Observable<string> {
+  readFile$(blob: Blob | File | string): Observable<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: "text/plain" });
+    }
+
     const reader = new FileReader();
     return Observable.create((obs: any) => {
       reader.onerror = (err) => obs.error(err);
@@ -54,7 +58,12 @@ export class FileService {
       reader.readAsText(blob);
     });
   }
-  readFileAsData$(blob: Blob | File): Observable<any> {
+
+  readFileAsData$(blob: Blob | File | string): Observable<any> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: "text/plain" });
+    }
+
     const reader = new FileReader();
     return Observable.create((obs: any) => {
       reader.onerror = (err) => obs.error(err);

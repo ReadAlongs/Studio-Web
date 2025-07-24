@@ -10,7 +10,11 @@
   </div>
   <div class="container">
     <div class="row g-2 mb-3">
-      <div id="text-section" class="col-12 col-md-6 p-3 pb-0 border bg-light">
+      <div
+        id="text-section"
+        [formGroup]="textGroup"
+        class="col-12 col-md-6 p-3 pb-0 border bg-light"
+      >
         <div class="d-flex flex-row justify-content-between">
           <div class="p-0">
             <h1 i18n="Title for text box" class="title">Text</h1>
@@ -35,7 +39,7 @@
             </mat-button-toggle-group>
           </div>
         </div>
-        <div *ngIf="studioService.inputMethod.text === 'upload'">
+        <div [class.d-none]="studioService.inputMethod.text !== 'upload'">
           <div class="row">
             <div class="mt-4 mb-3">
               <!-- <div class="container"> -->
@@ -47,7 +51,7 @@
                 file (.readalong)</label
               >
               <input
-                #textInputElement
+                #textFileUpload
                 (change)="onTextFileSelected($event)"
                 class="form-control"
                 name="text"
@@ -76,7 +80,7 @@
             </div>
           }
         </div>
-        <div *ngIf="studioService.inputMethod.text === 'edit'">
+        <div [class.d-none]="studioService.inputMethod.text !== 'edit'">
           <div class="d-flex flex-row justify-content-between p-0">
             <span class="p-0"
               ><h2 i18n="Title for text writing box" class="subtitle">
@@ -96,7 +100,7 @@
               <button
                 i18n="Text download button"
                 mat-button
-                [disabled]="!(studioService.$textInput | async)"
+                [disabled]="!textGroup.controls.edit.value"
                 (click)="downloadText()"
                 aria-label="Text download button"
                 class="pr-0"
@@ -109,13 +113,12 @@
           <div class="row">
             <mat-form-field class="col-12 p-0 b-0">
               <textarea
-                [ngModel]="studioService.$textInput | async"
-                (ngModelChange)="studioService.$textInput.next($event)"
                 id="textInput"
                 class="border rounded b-0 p-0 bg-light"
                 rows="8"
                 matInput
                 i18n-placeholder="Example input text"
+                formControlName="edit"
                 placeholder="Ex. Hello my name is...
 Sentence two.
 
@@ -130,7 +133,6 @@ Page two."
         </div>
       </div>
       <div id="audio-section" class="col-12 col-md-6 p-3 border bg-light">
-        <!-- <div class="container"> -->
         <div class="d-flex flex-row justify-content-between p-0">
           <div class="p-0">
             <h1 i18n="Title for audio box" class="title">Audio</h1>
@@ -155,7 +157,7 @@ Page two."
         </div>
 
         <div
-          *ngIf="studioService.inputMethod.audio === 'upload'"
+          [class.d-none]="studioService.inputMethod.audio !== 'upload'"
           class="row mb-3"
         >
           <h2 i18n="Title for upload box" class="subtitle">
@@ -179,7 +181,7 @@ Page two."
           />
         </div>
         <div
-          *ngIf="studioService.inputMethod.audio === 'mic'"
+          [class.d-none]="studioService.inputMethod.audio !== 'mic'"
           class="mb-0 mb-md-3"
         >
           <div class="row">
@@ -198,102 +200,104 @@ Page two."
               data-test-id="ras-audio-recording-btn"
             >
               <mat-icon class="mat-icon-lg">mic</mat-icon>
-              <span
-                i18n="Audio re-record button"
-                *ngIf="
-                  studioService.audioControl$.value !== null && !this.recording
-                "
-                >Delete and re-record</span
-              >
-              <span
-                i18n="Audio record button"
-                *ngIf="
-                  studioService.audioControl$.value === null && !this.recording
-                "
-                >Record</span
-              >
-              <span i18n="Audio recording button" *ngIf="this.recording"
-                >Recording</span
-              >
+              @if (audioGroup.controls.mic.value !== null && !recording) {
+                <span i18n="Audio re-record button">Delete and re-record</span>
+              }
+
+              @if (audioGroup.controls.mic.value === null && !recording) {
+                <span i18n="Audio record button">Record</span>
+              }
+
+              @if (recording) {
+                <span i18n="Audio recording button">Recording</span>
+              }
             </button>
-            <button
-              i18n="Audio stop button"
-              class="audioControl"
-              (click)="stopRecording()"
-              *ngIf="recording"
-              mat-button
-              color="primary"
-              aria-label="Stop button"
-            >
-              <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
-              Stop
-            </button>
+
+            @if (recording) {
+              <button
+                i18n="Audio stop button"
+                class="audioControl"
+                (click)="stopRecording()"
+                mat-button
+                color="primary"
+                aria-label="Stop button"
+              >
+                <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
+                Stop
+              </button>
+            }
           </div>
         </div>
         <div class="row">
           <div class="col-12 col-xl-4">
-            <button
-              i18n="Audio play button"
-              class="audioControl"
-              (click)="playRecording()"
-              *ngIf="
-                !recording &&
-                studioService.audioControl$.value !== null &&
-                !playing
-              "
-              mat-button
-              color="primary"
-              aria-label="Play button"
-            >
-              <mat-icon class="mat-icon-lg">play_circle</mat-icon>
-              Play
-            </button>
-            <button
-              i18n="Audio stop button"
-              class="audioControl"
-              color="warn"
-              (click)="stopPlayback()"
-              *ngIf="
-                !recording &&
-                studioService.audioControl$.value !== null &&
-                playing
-              "
-              mat-button
-              aria-label="Stop button"
-            >
-              <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
-              Stop
-            </button>
+            @if (
+              !recording &&
+              audioGroup.controls[studioService.inputMethod.audio].value &&
+              !playing
+            ) {
+              <button
+                i18n="Audio play button"
+                class="audioControl"
+                (click)="playRecording()"
+                mat-button
+                color="primary"
+                aria-label="Play button"
+              >
+                <mat-icon class="mat-icon-lg">play_circle</mat-icon>
+                Play
+              </button>
+            }
+
+            @if (
+              !recording &&
+              audioGroup.controls[studioService.inputMethod.audio].value &&
+              playing
+            ) {
+              <button
+                i18n="Audio stop button"
+                class="audioControl"
+                color="warn"
+                (click)="stopPlayback()"
+                mat-button
+                aria-label="Stop button"
+              >
+                <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
+                Stop
+              </button>
+            }
           </div>
-          <div class="col-12 col-xl-4">
-            <button
-              i18n="Audio download button"
-              class="audioControl"
-              color="primary"
-              (click)="downloadRecording()"
-              *ngIf="!recording && studioService.audioControl$.value !== null"
-              mat-button
-              color="primary"
-              aria-label="Audio save button"
-            >
-              <mat-icon class="mat-icon-lg">save</mat-icon>
-              Save a copy
-            </button>
-          </div>
-          <div class="col-12 col-xl-4">
-            <button
-              i18n="Audio delete button"
-              class="audioControl"
-              (click)="deleteRecording()"
-              *ngIf="!recording && studioService.audioControl$.value !== null"
-              mat-button
-              color="warn"
-              aria-label="Delete button"
-            >
-              <mat-icon class="mat-icon-lg">delete</mat-icon>
-              Delete
-            </button>
-          </div>
+          @if (
+            !recording &&
+            audioGroup.controls[studioService.inputMethod.audio].value
+          ) {
+            <div class="col-12 col-xl-4">
+              <button
+                i18n="Audio download button"
+                class="audioControl"
+                color="primary"
+                (click)="downloadRecording()"
+                mat-button
+                color="primary"
+                aria-label="Audio save button"
+              >
+                <mat-icon class="mat-icon-lg">save</mat-icon>
+                Save a copy
+              </button>
+            </div>
+            <div class="col-12 col-xl-4">
+              <button
+                i18n="Audio delete button"
+                class="audioControl"
+                (click)="deleteRecording()"
+                mat-button
+                color="warn"
+                aria-label="Delete button"
+              >
+                <mat-icon class="mat-icon-lg">delete</mat-icon>
+                Delete
+              </button>
+            </div>
+          }
         </div>
         <!-- </div> -->
       </div>
@@ -405,4 +409,6 @@ Page two."
       </div>
     </div>
   </div>
+
+  <button (click)="testButton($event)">Test</button>
 </section>
