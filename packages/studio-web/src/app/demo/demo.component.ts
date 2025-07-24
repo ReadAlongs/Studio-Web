@@ -1,6 +1,13 @@
 import { Subject } from "rxjs";
 
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+} from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
@@ -9,6 +16,7 @@ import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
 import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
+import { UploadResult } from "../upload/upload.component";
 @Component({
   selector: "app-demo",
   templateUrl: "./demo.component.html",
@@ -16,9 +24,19 @@ import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
   standalone: false,
 })
 export class DemoComponent implements OnDestroy, OnInit {
-  @ViewChild("readalong") readalong!: Components.ReadAlong;
+  @ViewChild("readalong") readalong: Components.ReadAlong;
   language: "eng" | "fra" | "spa" = "eng";
   unsubscribe$ = new Subject<void>();
+
+  _uploadResult = signal<UploadResult | null>(null);
+  @Input()
+  set uploadResult(value: UploadResult) {
+    this._uploadResult.set(value);
+  }
+  get uploadResult(): UploadResult | null {
+    return this._uploadResult();
+  }
+
   constructor(
     public b64Service: B64Service,
     public studioService: StudioService,
@@ -43,6 +61,7 @@ export class DemoComponent implements OnDestroy, OnInit {
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {}
+
   download(download_type: SupportedOutputs) {
     if (
       this.studioService.b64Inputs$.value &&
@@ -81,11 +100,13 @@ export class DemoComponent implements OnDestroy, OnInit {
       );
     }
   }
+
   async updateWCStyle($event: string) {
     this.readalong?.setCss(
       `data:text/css;base64,${this.b64Service.utf8_to_b64($event ?? "")}`,
     );
   }
+
   async addWCCustomFont($font: string) {
     this.readalong?.addCustomFont($font);
   }

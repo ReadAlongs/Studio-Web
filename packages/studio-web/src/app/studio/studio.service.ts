@@ -8,6 +8,12 @@ export enum langMode {
   specific = "specific",
 }
 
+export interface TextInputSource {
+  source: "edit" | "upload";
+  blob?: Blob;
+  filename?: string;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -25,21 +31,26 @@ export class StudioService {
     { value: "und", disabled: this.langMode$.value !== "specific" },
     Validators.required,
   );
-  textControl$ = new FormControl<any>(null, Validators.required);
+
+  textControl$ = new FormControl<TextInputSource | null>(
+    null,
+    Validators.required,
+  );
   audioControl$ = new FormControl<File | Blob | null>(
     null,
     Validators.required,
   );
-  $textInput = new BehaviorSubject<string>("");
+
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl$,
     text: this.textControl$,
     audio: this.audioControl$,
   });
-  inputMethod = {
+  inputMethod: { audio: "mic" | "upload"; text: "edit" | "upload" } = {
     audio: "mic",
     text: "edit",
   };
+
   constructor(private _formBuilder: FormBuilder) {
     this.langMode$.subscribe((chosenLangMode) => {
       if (chosenLangMode === langMode.generic) {
