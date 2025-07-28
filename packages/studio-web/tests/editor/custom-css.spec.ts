@@ -4,7 +4,6 @@ import fs from "fs";
 
 test.describe.configure({ mode: "parallel" });
 test.beforeEach(async ({ page, isMobile }) => {
-  //await context.grantPermissions(["clipboard-write", "clipboard-read"]);
   await page.goto("/", { waitUntil: "load" });
   disablePlausible(page);
   if (isMobile) {
@@ -104,13 +103,14 @@ test("should use with custom font", async ({ page, isMobile }) => {
   ).toBeVisible();
 });
 
-test("should paste in style", async ({ page, context }) => {
+test("should paste in style", async ({ page, browserName }) => {
+  test.skip(browserName === "firefox", "Grant Permissions issues for Firefox");
+
   const style = fs.readFileSync(
     testAssetsPath + "sentence-paragr-cust-css.css",
     { encoding: "utf8", flag: "r" },
   );
-  // Ensure clipboard permissions are granted
-  await context.grantPermissions(["clipboard-write", "clipboard-read"]);
+
   await page.evaluate(async (text) => {
     await navigator.clipboard.writeText(text);
   }, style);
@@ -126,8 +126,7 @@ test("should paste in style", async ({ page, context }) => {
     })
     .toContain(style);
 });
-test("should load and copy style", async ({ page, context }) => {
-  await context.grantPermissions(["clipboard-write", "clipboard-read"]);
+test("should load and copy style", async ({ page, browserName }) => {
   let fileChooserPromise = page.waitForEvent("filechooser");
   await page.getByRole("radio", { name: "File" }).click();
   await page
@@ -146,9 +145,13 @@ test("should load and copy style", async ({ page, context }) => {
     page.locator("#styleInput"),
     "style input should not be empty",
   ).not.toBeEmpty();
-  await page.getByRole("button", { name: "Copy" }).click();
-  const css = await page.evaluate(() => navigator.clipboard.readText());
-  await expect(css.length, "clipboard css should not be empty").toBeGreaterThan(
-    0,
-  );
+
+  if (browserName === "chromium") {
+    await page.getByRole("button", { name: "Copy" }).click();
+    const css = await page.evaluate(() => navigator.clipboard.readText());
+    await expect(
+      css.length,
+      "clipboard css should not be empty",
+    ).toBeGreaterThan(0);
+  }
 });

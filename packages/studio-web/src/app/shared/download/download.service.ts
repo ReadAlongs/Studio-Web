@@ -181,14 +181,18 @@ Please host all assets on your server, include the font and package imports defi
     readalong: Components.ReadAlong,
     slots: ReadAlongSlots,
     b64Audio: string,
-    wcStylingService: WcStylingService,
+    wcStylingService: WcStylingService | null,
   ) {
     await this.updateImages(rasDoc, true, "image", readalong);
     await this.updateTranslations(rasDoc, readalong);
     let rasB64 = this.b64Service.xmlToB64(rasDoc);
     let b64Css = "";
-    const cssText = wcStylingService.$wcStyleInput.getValue();
-    const customFont = wcStylingService.$wcStyleFonts.getValue();
+    const cssText = wcStylingService
+      ? wcStylingService.$wcStyleInput.getValue()
+      : "";
+    const customFont = wcStylingService
+      ? wcStylingService.$wcStyleFonts.getValue()
+      : "";
     if (cssText) {
       b64Css = `\n      css-url="data:text/css;base64,${this.b64Service.utf8_to_b64(cssText)}"`;
     }
@@ -272,11 +276,16 @@ Please host all assets on your server, include the font and package imports defi
     rasXML: Document,
     slots: ReadAlongSlots,
     readalong: Components.ReadAlong,
+    wcStylingService: WcStylingService | null = null,
     from: "Studio" | "Editor" = "Studio",
-    wcStylingService: WcStylingService,
   ) {
-    const cssText = wcStylingService.$wcStyleInput.getValue();
-    const customFont = wcStylingService.$wcStyleFonts.getValue();
+    const cssText = wcStylingService
+      ? wcStylingService.$wcStyleInput.getValue()
+      : "";
+    const customFont = wcStylingService
+      ? wcStylingService.$wcStyleFonts.getValue()
+      : "";
+
     if (selectedOutputFormat == SupportedOutputs.html) {
       var element = document.createElement("a");
       const blob = await this.createSingleFileBlob(

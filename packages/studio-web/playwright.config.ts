@@ -41,17 +41,32 @@ export default defineConfig({
     ? [
         {
           name: "chromium",
-          use: { ...devices["Desktop Chrome"] },
+          use: {
+            ...devices["Desktop Chrome"],
+            contextOptions: {
+              permissions: ["clipboard-read", "clipboard-write"],
+            },
+          },
         },
         {
           name: "Mobile Chrome",
-          use: { ...devices["Pixel 5"] },
+          use: {
+            ...devices["Pixel 5"],
+            contextOptions: {
+              permissions: ["clipboard-read", "clipboard-write"],
+            },
+          },
         },
       ]
     : [
         {
           name: "chromium",
-          use: { ...devices["Desktop Chrome"] },
+          use: {
+            ...devices["Desktop Chrome"],
+            contextOptions: {
+              permissions: ["clipboard-read", "clipboard-write"],
+            },
+          },
         },
 
         {
@@ -67,7 +82,12 @@ export default defineConfig({
         /* Test against mobile viewports. */
         {
           name: "Mobile Chrome",
-          use: { ...devices["Pixel 5"] },
+          use: {
+            ...devices["Pixel 5"],
+            contextOptions: {
+              permissions: ["clipboard-read", "clipboard-write"],
+            },
+          },
         },
         /*
         {
