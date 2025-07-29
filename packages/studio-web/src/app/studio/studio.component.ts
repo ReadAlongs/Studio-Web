@@ -2,7 +2,7 @@ import { ShepherdService } from "../shepherd.service";
 import { forkJoin, of, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
@@ -35,7 +35,7 @@ import {
   readalong_go_to_editor,
 } from "../shepherd.steps";
 import { DemoComponent } from "../demo/demo.component";
-import { UploadComponent } from "../upload/upload.component";
+import { UploadComponent, UploadResult } from "../upload/upload.component";
 import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DownloadService } from "../shared/download/download.service";
@@ -53,8 +53,11 @@ export class StudioComponent implements OnDestroy, OnInit {
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
+
+  uploadResult: UploadResult;
+
   unsubscribe$ = new Subject<void>();
-  private route: ActivatedRoute;
+  private route: ActivatedRoute = inject(ActivatedRoute);
   constructor(
     private titleService: Title,
     private downloadService: DownloadService,
@@ -140,6 +143,7 @@ export class StudioComponent implements OnDestroy, OnInit {
   }
 
   selectionChange(event: StepperSelectionEvent) {
+    console.log(event);
     if (event.selectedIndex === 0) {
       this.studioService.render$.next(false);
     } else if (event.selectedIndex === 1) {
@@ -156,8 +160,9 @@ export class StudioComponent implements OnDestroy, OnInit {
   formIsDirty() {
     return (
       this.studioService.audioControl$.value !== null ||
-      this.studioService.textControl$.value !== null ||
-      this.studioService.$textInput
+      this.studioService.textControl$.value !== null
+      //TODO      ||
+      //TODO      this.studioService.$textInput
     );
   }
 
@@ -171,8 +176,9 @@ export class StudioComponent implements OnDestroy, OnInit {
     };
     this.shepherdService.keyboardNavigation = false;
 
+    type textModes = typeof this.studioService.inputMethod.text;
     const cachedTextInputMode = this.studioService.inputMethod.text;
-    const setTextInputMode = (mode: string) => {
+    const setTextInputMode = (mode: textModes) => {
       return () => {
         if (this.upload) {
           this.studioService.inputMethod.text = mode;
@@ -189,8 +195,9 @@ export class StudioComponent implements OnDestroy, OnInit {
       hide: setTextInputMode(cachedTextInputMode),
     };
 
+    type audioModes = typeof this.studioService.inputMethod.audio;
     const cachedAudioInputMode = this.studioService.inputMethod.audio;
-    const setAudioInputMode = (mode: string) => {
+    const setAudioInputMode = (mode: audioModes) => {
       return () => {
         if (this.upload) {
           this.studioService.inputMethod.audio = mode;
@@ -222,7 +229,7 @@ export class StudioComponent implements OnDestroy, OnInit {
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((audioFile) => {
           if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
-            this.studioService.$textInput.next("Hello world!");
+            //TODO this.studioService.$textInput.next("Hello world!");
             this.studioService.inputMethod.text = "edit";
             this.studioService.audioControl$.setValue(audioFile);
             this.upload?.nextStep();
@@ -301,18 +308,17 @@ export class StudioComponent implements OnDestroy, OnInit {
     this.shepherdService.start();
   }
 
-  stepChange(event: any[]) {
-    if (event[0] === "aligned") {
-      const aligned_xml = createAlignedXML(event[2], event[3] as Segment);
-      forkJoin([
-        this.fileService.readFileAsData$(event[1]), // audio
-        of(aligned_xml),
-      ])
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((x: any) => {
-          this.studioService.b64Inputs$.next(x);
-          this.stepper.next();
-        });
-    }
+  stepChange(upload: UploadResult) {
+    upload.ras = createAlignedXML(upload.ras, upload.segment);
+    this.uploadResult = upload;
+    this.stepper.next();
+
+    // forkJoin([this.fileService.readFileAsData$(upload.audio), of(upload.ras)])
+    //   .pipe(takeUntil(this.unsubscribe$))
+    //   .subscribe((x: any) => {
+    //     console.log(x);
+    //     // this.studioService.b64Inputs$.next(x);
+    //     // this.stepper.next();
+    //   });
   }
 }

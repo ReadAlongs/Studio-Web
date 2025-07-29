@@ -14,7 +14,7 @@ export class FileService {
   ) {}
 
   loadAudioBufferFromFile$(
-    file: File,
+    file: File | Blob,
     sampleRate: number,
   ): Observable<AudioBuffer> {
     var audioCtx = new AudioContext({ sampleRate });
@@ -44,7 +44,11 @@ export class FileService {
     );
   };
 
-  readFile$(blob: Blob | File): Observable<string> {
+  readFile$(blob: Blob | File | string): Observable<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: "text/plain" });
+    }
+
     const reader = new FileReader();
     return Observable.create((obs: any) => {
       reader.onerror = (err) => obs.error(err);
@@ -54,13 +58,34 @@ export class FileService {
       reader.readAsText(blob);
     });
   }
-  readFileAsData$(blob: Blob | File): Observable<any> {
+
+  readFileAsDataURL$(blob: Blob | File | string): Observable<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: "text/plain" });
+    }
+
     const reader = new FileReader();
     return Observable.create((obs: any) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
       reader.onload = () => obs.next(reader.result);
       reader.onloadend = () => obs.complete();
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  readFileAsDataURL(blob: Blob | File | string): Promise<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: "text/plain" });
+    }
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onerror = () => reject(reader.error);
+      reader.onabort = () => reject(reader.error);
+      reader.onload = () => resolve(reader.result as string);
+
       reader.readAsDataURL(blob);
     });
   }

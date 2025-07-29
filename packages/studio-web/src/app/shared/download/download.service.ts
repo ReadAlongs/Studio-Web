@@ -142,7 +142,7 @@ Please host all assets on your server, include the font and package imports defi
         blob = await compress(blob, 0.75);
         // Either embed the images directly
         if (b64Embed) {
-          let b64 = await this.b64Service.blobToB64(blob);
+          let b64 = await this.b64Service.blobAsDataURL(blob);
           // @ts-ignore
           graphic.setAttribute("url", b64);
           // or return a list of blobs and use the filename here

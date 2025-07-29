@@ -79,7 +79,7 @@ export class SoundswallowerService {
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
-        loglevel: "INFO",
+        loglevel: "ERROR", // "INFO"
         beam: this.beamParams[this.mode]["beam"],
         wbeam: this.beamParams[this.mode]["wbeam"],
         pbeam: this.beamParams[this.mode]["pbeam"],
@@ -122,7 +122,7 @@ export class SoundswallowerService {
           }
           decoder.stop();
           const hypseg = decoder.get_alignment();
-          console.log(`hypseg is ${hypseg}`);
+          console.log("hypseg is %o", hypseg);
           if (hypseg.w === undefined || hypseg.w.length == 0)
             throw new Error("No alignment found");
           subscriber.next({
@@ -146,13 +146,11 @@ export class SoundswallowerService {
   }
 }
 
-export function createAlignedXML(
-  xmlText: string,
-  alignment: Segment,
-): Document {
-  if (alignment.w === undefined) throw "Missing segmentation in alignment";
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(xmlText, "text/xml");
+export function createAlignedXML(xml: Document, alignment: Segment): Document {
+  if (alignment.w === undefined) {
+    throw "Missing segmentation in alignment";
+  }
+
   const word_times: { [id: string]: [number, number] } = {};
   for (const { t, b, d } of alignment.w) word_times[t] = [b, d];
   for (const w of Array.from(xml.querySelectorAll("w[id]"))) {
@@ -163,5 +161,6 @@ export function createAlignedXML(
       w.setAttribute("dur", "" + d);
     }
   }
+
   return xml;
 }
