@@ -39,6 +39,7 @@ export class B64Service {
 
     return this.cachedBundle;
   }
+
   utf8_to_b64(str: string) {
     // See https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     return window.btoa(
@@ -47,6 +48,7 @@ export class B64Service {
       }),
     );
   }
+
   b64_to_utf8(str: string) {
     // See https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     return decodeURIComponent(
@@ -85,7 +87,6 @@ export class B64Service {
 
   private indent(str: string, level: number) {
     const indent = " ".repeat(level);
-
     return str
       .split("\n")
       .map((line) => (line.trim() ? indent + line : line))

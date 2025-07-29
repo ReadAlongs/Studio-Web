@@ -2,10 +2,12 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { WcStylingComponent } from "./wc-styling.component";
 import { ToastrModule } from "ngx-toastr";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MaterialModule } from "../../material.module";
 import { FormsModule } from "@angular/forms";
+import { provideHttpClient } from "@angular/common/http";
+
 describe("WcStylingComponent", () => {
   let component: WcStylingComponent;
   let fixture: ComponentFixture<WcStylingComponent>;
@@ -13,13 +15,13 @@ describe("WcStylingComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         BrowserAnimationsModule,
         FormsModule,
         MaterialModule,
         ToastrModule.forRoot(),
       ],
       declarations: [WcStylingComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(WcStylingComponent);

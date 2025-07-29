@@ -1,5 +1,7 @@
 import { EventEmitter, Injectable } from "@angular/core";
 
+export const ERR_NO_RECORDING = "Recorder didn't hear anything";
+
 @Injectable({
   providedIn: "root",
 })
@@ -10,12 +12,12 @@ export class MicrophoneService {
   private stream: MediaStream | null = null;
 
   async startRecording() {
-    if (this.recorder !== null && this.recorder.state == "paused") {
+    if (this.recorder !== null && this.recorder.state === "paused") {
       this.resume();
       return;
     }
     this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    this.recorder = new MediaRecorder(this.stream);
+    this.recorder = new MediaRecorder(this.stream, { mimeType: "audio/mpeg" });
     this.addListeners();
     this.recorder.start();
   }
@@ -38,7 +40,7 @@ export class MicrophoneService {
           // compressed to a very small file.  The number is arbitrary, but
           // should at least catch the case of an input that is all zeros.
           if (blob.size < 2000) {
-            reject("Recorder didn't hear anything");
+            reject(ERR_NO_RECORDING);
           } else {
             resolve(blob);
           }
@@ -47,11 +49,15 @@ export class MicrophoneService {
           reject("Recorder timed out");
         },
       );
-      if (this.recorder === null) reject("Recorder was not created");
-      else this.recorder.stop();
+      if (this.recorder === null) {
+        reject("Recorder was not created");
+      } else {
+        this.recorder.stop();
+      }
       this.recorder = null;
-      if (this.stream === null) reject("Stream was not created");
-      else {
+      if (this.stream === null) {
+        reject("Stream was not created");
+      } else {
         for (const track of this.stream.getTracks()) {
           track.stop();
         }
@@ -62,11 +68,13 @@ export class MicrophoneService {
 
   private addListeners() {
     if (this.recorder === null) throw "Recorder was not created";
+
+    const mimeType = this.recorder.mimeType;
     this.recorder.addEventListener("dataavailable", (event: BlobEvent) => {
       this.chunks.push(event.data);
     });
     this.recorder.addEventListener("stop", (event: Event) => {
-      const blob = new Blob(this.chunks, { type: "audio/mpeg" });
+      const blob = new Blob(this.chunks, { type: mimeType });
       this.chunks = [];
       this.recorderEnded.emit(blob);
       this.clear();

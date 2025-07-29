@@ -1,8 +1,8 @@
-import { HttpClient, HttpEventType } from "@angular/common/http";
+import { HttpClient, provideHttpClient } from "@angular/common/http";
 import { ToastrModule } from "ngx-toastr";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 
@@ -15,7 +15,8 @@ describe("B64Service", () => {
   let httpTestingController: HttpTestingController;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
+      imports: [ToastrModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);

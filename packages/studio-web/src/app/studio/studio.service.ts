@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ReadAlongSlots } from "../ras.service";
-import { Subject, BehaviorSubject } from "rxjs";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import { BehaviorSubject } from "rxjs";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 
 export enum langMode {
   generic = "generic",
@@ -17,35 +17,43 @@ export interface InputMethodType {
   providedIn: "root",
 })
 export class StudioService {
-  slots: ReadAlongSlots = {
+  public slots: ReadAlongSlots = {
     title: $localize`Title`,
     subtitle: $localize`Subtitle`,
   };
-  lastStepperIndex: number = 0;
-  temporaryBlob: Blob | undefined = undefined;
-  b64Inputs$ = new BehaviorSubject<[string, Document | null]>(["", null]);
-  render$ = new BehaviorSubject<boolean>(false);
-  langMode$ = new BehaviorSubject<langMode>(langMode.generic);
-  langControl$ = new FormControl<string>(
+  public lastStepperIndex: number = 0;
+  public temporaryBlob: Blob | undefined = undefined;
+  public b64Inputs$ = new BehaviorSubject<[string, Document | null]>([
+    "",
+    null,
+  ]);
+  public render$ = new BehaviorSubject<boolean>(false);
+  public langMode$ = new BehaviorSubject<langMode>(langMode.generic);
+  public langControl$ = new FormControl<string>(
     { value: "und", disabled: this.langMode$.value !== "specific" },
     Validators.required,
   );
-  textControl$ = new FormControl<File | Blob | null>(null, Validators.required);
-  audioControl$ = new FormControl<File | Blob | null>(
+  public textControl$ = new FormControl<File | Blob | null>(
     null,
     Validators.required,
   );
-  $textInput = new BehaviorSubject<string>("");
-  public uploadFormGroup = this._formBuilder.group({
+  public audioControl$ = new FormControl<File | Blob | null>(
+    null,
+    Validators.required,
+  );
+  public $textInput = new BehaviorSubject<string>("");
+
+  public uploadFormGroup = new FormGroup({
     lang: this.langControl$,
     text: this.textControl$,
     audio: this.audioControl$,
   });
-  inputMethod: InputMethodType = {
+  public inputMethod: InputMethodType = {
     audio: "mic",
     text: "edit",
   };
-  constructor(private _formBuilder: FormBuilder) {
+
+  constructor() {
     this.langMode$.subscribe((chosenLangMode) => {
       if (chosenLangMode === langMode.generic) {
         this.langControl$.disable();
