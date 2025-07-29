@@ -1,64 +1,71 @@
 <section>
-  <div class="container" *ngIf="studioService.render$ | async">
-    <div class="row">
-      <div class="col col-md-6 col-lg-9">
-        <h2
-          id="readalong-congratulations"
-          i18n="Congratulations message"
-          class="subtitle"
-        >
-          Congratulations! Here's your ReadAlong!
-        </h2>
+  @if (studioService.render$ | async) {
+    <div class="container">
+      <div class="row">
+        <div class="col col-md-6 col-lg-9">
+          <h2
+            id="readalong-congratulations"
+            i18n="Congratulations message"
+            class="subtitle"
+          >
+            Congratulations! Here's your ReadAlong!
+          </h2>
+        </div>
+        <div class="col col-md-6 col-lg-3">
+          <ras-shared-download
+            (downloadButtonClicked)="download($event)"
+          ></ras-shared-download>
+        </div>
       </div>
-      <div class="col col-md-6 col-lg-3">
-        <ras-shared-download
-          (downloadButtonClicked)="download($event)"
-        ></ras-shared-download>
-      </div>
-    </div>
 
-    <div class="row"></div>
+      <div class="row"></div>
 
-    <div class="row" *ngIf="studioService.b64Inputs$ | async as b64Inputs">
-      <div *ngIf="b64Inputs[0] && b64Inputs[1]">
-        <read-along
-          id="readalong"
-          [language]="language"
-          #readalong
-          *ngIf="studioService.render$ | async"
-          mode="EDIT"
-          href="data:application/readalong+xml;base64,{{
-            b64Service.xmlToB64(b64Inputs[1])
-          }}"
-          audio="{{ b64Inputs[0] }}"
-          class="hydrated"
-        >
-          <input
-            #title
-            [(ngModel)]="studioService.slots.title"
-            [ngStyle]="{
-              'width.ch': studioService.slots.title.length,
-              'min-width.ch': 20,
-            }"
-            style="border: none"
-            placeholder="Enter your title here"
-            slot="read-along-header"
-            data-test-id="ra-header"
-          />
-          <input
-            #subtitle
-            [(ngModel)]="studioService.slots.subtitle"
-            [ngStyle]="{
-              'width.ch': studioService.slots.subtitle.length,
-              'min-width.ch': 20,
-            }"
-            style="border: none"
-            placeholder="Enter your subtitle here"
-            slot="read-along-subheader"
-            data-test-id="ra-subheader"
-          />
-        </read-along>
-      </div>
+      @if (studioService.b64Inputs$ | async; as b64Inputs) {
+        <div class="row">
+          @if (b64Inputs[0] && b64Inputs[1]) {
+            <div>
+              @if (studioService.render$ | async) {
+                <read-along
+                  id="readalong"
+                  [language]="language"
+                  #readalong
+                  mode="EDIT"
+                  href="data:application/readalong+xml;base64,{{
+                    b64Service.xmlToB64(b64Inputs[1])
+                  }}"
+                  audio="{{ b64Inputs[0] }}"
+                  class="hydrated"
+                >
+                  <input
+                    #title
+                    [(ngModel)]="studioService.slots.title"
+                    [ngStyle]="{
+                      'width.ch': studioService.slots.title.length,
+                      'min-width.ch': 20,
+                    }"
+                    style="border: none"
+                    placeholder="Enter your title here"
+                    slot="read-along-header"
+                    data-test-id="ra-header"
+                  />
+                  <input
+                    #subtitle
+                    [(ngModel)]="studioService.slots.subtitle"
+                    [ngStyle]="{
+                      'width.ch': studioService.slots.subtitle.length,
+                      'min-width.ch': 20,
+                    }"
+                    style="border: none"
+                    placeholder="Enter your subtitle here"
+                    slot="read-along-subheader"
+                    data-test-id="ra-subheader"
+                  />
+                </read-along>
+              }
+            </div>
+          }
+        </div>
+      }
     </div>
-  </div>
+  }
 </section>

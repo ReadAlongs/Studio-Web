@@ -2,7 +2,7 @@ import { forkJoin, Observable, BehaviorSubject } from "rxjs";
 import { switchMap } from "rxjs/operators";
 
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 
 import { FileService } from "./file.service";
 
@@ -10,18 +10,17 @@ import { FileService } from "./file.service";
   providedIn: "root",
 })
 export class B64Service {
-  JS_BUNDLE_URL = "assets/bundle.js";
-  FONTS_BUNDLE_URL = "assets/fonts.b64.css";
+  private readonly JS_BUNDLE_URL = "assets/bundle.js";
+  private readonly FONTS_BUNDLE_URL = "assets/fonts.b64.css";
+  private http = inject(HttpClient);
+  private fileService = inject(FileService);
+
+  public jsAndFontsBundle$ = new BehaviorSubject<[string, string] | null>(null);
+
   /**
    * Creates an instance of B64Service, a service for B64 encoding assets.
-   * @param {HttpClient} http - The HttpClient service for making HTTP requests.
-   * @param {FileService} fileService - The FileService for handling file operations.
    */
-  jsAndFontsBundle$ = new BehaviorSubject<[string, string] | null>(null);
-  constructor(
-    private http: HttpClient,
-    private fileService: FileService,
-  ) {
+  constructor() {
     this.getBundle$().subscribe((bundle) => {
       this.jsAndFontsBundle$.next([
         this.indent(bundle[0], 6), //apply the indentation to the js bundle
@@ -29,6 +28,7 @@ export class B64Service {
       ]);
     });
   }
+
   getBundle$(): Observable<[string, string]> {
     return forkJoin([
       this.http
@@ -40,6 +40,7 @@ export class B64Service {
         .pipe(switchMap((blob: Blob) => this.fileService.readFile$(blob))),
     ]);
   }
+
   utf8_to_b64(str: string) {
     // See https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     return window.btoa(
@@ -48,6 +49,7 @@ export class B64Service {
       }),
     );
   }
+
   b64_to_utf8(str: string) {
     // See https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     return decodeURIComponent(
@@ -67,18 +69,16 @@ export class B64Service {
     );
   }
 
-  blobToB64(blob: any) {
+  blobToB64(blob: Blob) {
     return new Promise((resolve, _) => {
       const reader = new FileReader();
-      // @ts-ignore
-      reader.onloadend = () => resolve(reader.result);
+      reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
   }
 
   indent(str: string, level: number) {
     const indent = " ".repeat(level);
-
     return str
       .split("\n")
       .map((line) => (line.trim() ? indent + line : line))

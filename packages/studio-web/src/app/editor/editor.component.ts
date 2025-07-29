@@ -5,6 +5,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  inject,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -33,6 +34,7 @@ import { ToastrService } from "ngx-toastr";
 import { validateFileType } from "../utils/utils";
 import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
 import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";
+
 @Component({
   selector: "app-editor",
   templateUrl: "./editor.component.html",
@@ -41,29 +43,29 @@ import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";
 })
 export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
-  wavesurfer: WaveSurfer;
+  private wavesurfer: WaveSurfer;
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
   @ViewChild("handle") handleElement!: ElementRef;
   @ViewChild("styleWindow") styleElement!: WcStylingComponent;
-  readalong: Components.ReadAlong;
+  private readalong: Components.ReadAlong;
 
-  language: "eng" | "fra" | "spa" = "eng";
+  private language: "eng" | "fra" | "spa" = "eng";
 
   // value passed to input[type=file] accept's attribute which expects
   // a comma separated list of file extensions or mime types.
-  htmlUploadAccepts = ".html";
+  protected htmlUploadAccepts = ".html";
 
-  unsubscribe$ = new Subject<void>();
-  rasFileIsLoaded = false;
-  constructor(
-    public b64Service: B64Service,
-    private fileService: FileService,
-    public shepherdService: ShepherdService,
-    public editorService: EditorService,
-    private toastr: ToastrService,
-    private downloadService: DownloadService,
-    private wcStylingService: WcStylingService,
-  ) {
+  private unsubscribe$ = new Subject<void>();
+  protected rasFileIsLoaded = false;
+  public b64Service = inject(B64Service);
+  private fileService = inject(FileService);
+  public shepherdService = inject(ShepherdService);
+  public editorService = inject(EditorService);
+  private toastr = inject(ToastrService);
+  private downloadService = inject(DownloadService);
+  private wcStylingService = inject(WcStylingService);
+
+  constructor() {
     this.wcStylingService.$wcStyleInput.subscribe((css) =>
       this.updateWCStyle(css),
     );
@@ -241,7 +243,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       this.wavesurfer.loadBlob(this.editorService.audioControl$.value);
       this.wavesurfer.clearSegments();
       this.fileService
-        .readFileAsData$(this.editorService.audioControl$.value)
+        .readFileAsDataURL$(this.editorService.audioControl$.value)
         .pipe(take(1))
         .subscribe((audiob64) => {
           this.editorService.audioB64Control$.setValue(audiob64);

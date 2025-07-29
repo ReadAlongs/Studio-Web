@@ -3,11 +3,85 @@ import { TestBed } from "@angular/core/testing";
 import { SoundswallowerService } from "./soundswallower.service";
 import { ToastrModule } from "ngx-toastr";
 import { FileService } from "./file.service";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, provideHttpClient } from "@angular/common/http";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
+
+describe("SoundswallowerService", () => {
+  let service: SoundswallowerService;
+  let fileService: FileService;
+  let httpClientSpy: jasmine.SpyObj<HttpClient>;
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+  beforeEach(() => {
+    httpClientSpy = jasmine.createSpyObj("HttpClient", ["get"]);
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(SoundswallowerService);
+    fileService = TestBed.inject(FileService);
+  });
+
+  it("should be created", () => {
+    expect(service).toBeTruthy();
+  });
+
+  /* All of these are commented out, because Karma cannot serve
+   * arbitrary binary files, or if it can, there is ZERO DOCUMENTATION
+   * telling you how to do that. */
+
+  // it("should be initialized", async () => {
+  //   const done = await lastValueFrom(concat(service.waitForInit$(),
+  //                                           of(true)));
+  //   expect(done).toBeTruthy();
+  // });
+
+  // it("should align text", async () => {
+  //   const ready = await lastValueFrom(concat(service.waitForInit$(),
+  //                                            of(true)));
+  //   expect(ready).toBeTruthy();
+  //   const response = await fetch(b64audio);
+  //   const audio_file = (await response.blob()) as File;
+  //   const audio = await audioService
+  //     .loadAudioBufferFromFile$(audio_file, 8000)
+  //     .toPromise();
+  //   expect(audio).toBeDefined();
+  //   const aligner = service.align$(audio!, {
+  //     text_ids: "go forward ten meters",
+  //     lexicon: [
+  //       ["go", "G OW"],
+  //       ["forward", "F AO R W ER D"],
+  //       ["ten", "T EH N"],
+  //       ["meters", "M IY T ER Z"],
+  //     ],
+  //     processed_ras: "go forward ten meters",
+  //     input: null,
+  //     parsed: null,
+  //     tokenized: null,
+  //     g2ped: null,
+  //   });
+  //   let progress = await aligner.toPromise();
+  //   expect(progress!).toBeDefined();
+  //   expect(progress!.hypseg!).toBeDefined();
+  //   expect(progress!.hypseg!.t).toBeDefined();
+  //   expect(progress!.hypseg!.w).toBeDefined();
+  //   expect(progress!.hypseg!.t).toEqual("go forward ten meters");
+  //   let prev = -1;
+  //   const hypseg_words = [];
+  //   for (const { t, b, d } of progress!.hypseg!.w!) {
+  //     expect(d).toBeGreaterThan(0);
+  //     expect(b).toBeGreaterThan(prev);
+  //     prev = b;
+  //     if (t != "<sil>" && t != "(NULL)") hypseg_words.push(t);
+  //   }
+  //   expect(hypseg_words.join(" ")).toEqual("go forward ten meters");
+  // });
+});
 
 const b64audio = `data:audio/wave;base64,UklGRiSAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQCAAAAzAGIAVgBdAGIAXwBv
 AG8AYwBaAGMAZwBZAGUAcQBxAIYAiwCBAHUAeAB7AG4AegB6AHsAewCDAI0AhQCUAJ0AkwCXAJoA
@@ -585,76 +659,3 @@ BwAJAA0ABgAiAC4AJgAwADAAEAAcADoAMwA5ADsANgAuACsANQA9AEIARgA9ADEAOABDAEcAUABa
 AFsAXgBYAFcAYgBeAF4AWABZAFoAWgBmAFoAVABgAF0AUABQAFcATQBGAFgAWABJAFkAWABLAFEA
 TgBVAF8AWgBSAFYAXQBbAGkAawBfAGAAVwBXAGQAagBgAFoAVwBbAGMAYABuAHAAZABgAFsAXwBg
 AFwAWQBbAGEAagBvAHAAcABkAGIAaABhAGcAagBwAGkAVwBfAA==`;
-
-describe("SoundswallowerService", () => {
-  let service: SoundswallowerService;
-  let fileService: FileService;
-  let httpClientSpy: jasmine.SpyObj<HttpClient>;
-  let httpClient: HttpClient;
-  let httpTestingController: HttpTestingController;
-  beforeEach(() => {
-    httpClientSpy = jasmine.createSpyObj("HttpClient", ["get"]);
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
-    });
-    httpClient = TestBed.inject(HttpClient);
-    httpTestingController = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(SoundswallowerService);
-    fileService = TestBed.inject(FileService);
-  });
-
-  it("should be created", () => {
-    expect(service).toBeTruthy();
-  });
-
-  /* All of these are commented out, because Karma cannot serve
-   * arbitrary binary files, or if it can, there is ZERO DOCUMENTATION
-   * telling you how to do that. */
-
-  // it("should be initialized", async () => {
-  //   const done = await lastValueFrom(concat(service.waitForInit$(),
-  //                                           of(true)));
-  //   expect(done).toBeTruthy();
-  // });
-
-  // it("should align text", async () => {
-  //   const ready = await lastValueFrom(concat(service.waitForInit$(),
-  //                                            of(true)));
-  //   expect(ready).toBeTruthy();
-  //   const response = await fetch(b64audio);
-  //   const audio_file = (await response.blob()) as File;
-  //   const audio = await audioService
-  //     .loadAudioBufferFromFile$(audio_file, 8000)
-  //     .toPromise();
-  //   expect(audio).toBeDefined();
-  //   const aligner = service.align$(audio!, {
-  //     text_ids: "go forward ten meters",
-  //     lexicon: [
-  //       ["go", "G OW"],
-  //       ["forward", "F AO R W ER D"],
-  //       ["ten", "T EH N"],
-  //       ["meters", "M IY T ER Z"],
-  //     ],
-  //     processed_ras: "go forward ten meters",
-  //     input: null,
-  //     parsed: null,
-  //     tokenized: null,
-  //     g2ped: null,
-  //   });
-  //   let progress = await aligner.toPromise();
-  //   expect(progress!).toBeDefined();
-  //   expect(progress!.hypseg!).toBeDefined();
-  //   expect(progress!.hypseg!.t).toBeDefined();
-  //   expect(progress!.hypseg!.w).toBeDefined();
-  //   expect(progress!.hypseg!.t).toEqual("go forward ten meters");
-  //   let prev = -1;
-  //   const hypseg_words = [];
-  //   for (const { t, b, d } of progress!.hypseg!.w!) {
-  //     expect(d).toBeGreaterThan(0);
-  //     expect(b).toBeGreaterThan(prev);
-  //     prev = b;
-  //     if (t != "<sil>" && t != "(NULL)") hypseg_words.push(t);
-  //   }
-  //   expect(hypseg_words.join(" ")).toEqual("go forward ten meters");
-  // });
-});

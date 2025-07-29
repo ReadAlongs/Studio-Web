@@ -2,7 +2,7 @@ import { ShepherdService } from "../shepherd.service";
 import { forkJoin, of, Subject, take, takeUntil } from "rxjs";
 import { Segment } from "soundswallower";
 
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
@@ -38,7 +38,6 @@ import { DemoComponent } from "../demo/demo.component";
 import { UploadComponent } from "../upload/upload.component";
 import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
-import { DownloadService } from "../shared/download/download.service";
 import { StudioService } from "./studio.service";
 import { environment } from "../../environments/environment";
 
@@ -49,22 +48,20 @@ import { environment } from "../../environments/environment";
   standalone: false,
 })
 export class StudioComponent implements OnDestroy, OnInit {
-  title = "readalong-studio";
-  @ViewChild("upload", { static: false }) upload?: UploadComponent;
-  @ViewChild("demo", { static: false }) demo?: DemoComponent;
+  @ViewChild("upload", { static: false }) private upload?: UploadComponent;
+  @ViewChild("demo", { static: false }) private demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
   unsubscribe$ = new Subject<void>();
   private route: ActivatedRoute;
-  constructor(
-    private titleService: Title,
-    private downloadService: DownloadService,
-    public studioService: StudioService,
-    private router: Router,
-    private fileService: FileService,
-    private meta: Meta,
-    public shepherdService: ShepherdService,
-    private ssjsService: SoundswallowerService,
-  ) {}
+
+  private titleService = inject(Title);
+  public studioService = inject(StudioService);
+  private router = inject(Router);
+  private fileService = inject(FileService);
+  private meta = inject(Meta);
+  public shepherdService = inject(ShepherdService);
+  private ssjsService = inject(SoundswallowerService);
+
   ngOnInit(): void {
     // Set Meta Tags for search engines and social media
     // We don't have to set charset or viewport for example since Angular already adds them
@@ -305,7 +302,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     if (event[0] === "aligned") {
       const aligned_xml = createAlignedXML(event[2], event[3] as Segment);
       forkJoin([
-        this.fileService.readFileAsData$(event[1]), // audio
+        this.fileService.readFileAsDataURL$(event[1]), // audio
         of(aligned_xml),
       ])
         .pipe(takeUntil(this.unsubscribe$))

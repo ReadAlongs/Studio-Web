@@ -3,21 +3,22 @@ import Shepherd from "shepherd.js";
 import { elementIsHidden } from "./utils/dom";
 import { makeButton } from "./utils/buttons";
 import Step from "shepherd.js/src/types/step";
+
 @Injectable({
   providedIn: "root",
 })
 export class ShepherdService {
-  confirmCancel = false;
-  confirmCancelMessage?: string;
-  defaultStepOptions: Step.StepOptions = {};
-  errorTitle = null;
-  isActive = false;
-  keyboardNavigation = true;
-  messageForUser?: string;
-  modal = false;
-  requiredElements = [];
-  tourName = undefined;
-  tourObject: Shepherd.Tour;
+  public confirmCancel = false;
+  private confirmCancelMessage?: string;
+  public defaultStepOptions: Step.StepOptions = {};
+  private errorTitle = null;
+  private isActive = false;
+  public keyboardNavigation = true;
+  private messageForUser?: string;
+  public modal = false;
+  private requiredElements = [];
+  private tourName = undefined;
+  private tourObject: Shepherd.Tour;
 
   constructor() {}
 

@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
 
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
@@ -9,33 +9,34 @@ import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
 import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
+
+type rasLanguages = "eng" | "fra" | "spa";
+const localizationToRASLanguage: Record<string, rasLanguages> = {
+  en: "eng",
+  fr: "fra",
+  es: "spa",
+};
+
 @Component({
   selector: "app-demo",
   templateUrl: "./demo.component.html",
   styleUrls: ["./demo.component.sass"],
   standalone: false,
 })
-export class DemoComponent implements OnDestroy, OnInit {
-  @ViewChild("readalong") readalong!: Components.ReadAlong;
-  language: "eng" | "fra" | "spa" = "eng";
-  unsubscribe$ = new Subject<void>();
-  constructor(
-    public b64Service: B64Service,
-    public studioService: StudioService,
-    private downloadService: DownloadService,
-    private toastr: ToastrService,
-  ) {
-    // If we do more languages, this should be a lookup table
-    if ($localize.locale == "fr") {
-      this.language = "fra";
-    } else if ($localize.locale == "es") {
-      this.language = "spa";
-    }
+export class DemoComponent implements OnDestroy {
+  @ViewChild("readalong") private readalong!: Components.ReadAlong;
+
+  protected language: rasLanguages = "eng";
+  private unsubscribe$ = new Subject<void>();
+  protected b64Service = inject(B64Service);
+  public studioService = inject(StudioService);
+  private downloadService = inject(DownloadService);
+  private toastr = inject(ToastrService);
+
+  constructor() {
+    this.language = localizationToRASLanguage[$localize.locale ?? "en"];
   }
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit(): void {}
   download(download_type: SupportedOutputs) {
     if (
       this.studioService.b64Inputs$.value &&

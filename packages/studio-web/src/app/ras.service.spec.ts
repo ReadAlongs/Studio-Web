@@ -1,13 +1,14 @@
-import { HttpClient, HttpEventType } from "@angular/common/http";
+import { HttpClient, provideHttpClient } from "@angular/common/http";
 import { ToastrModule } from "ngx-toastr";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 
 import { ASSEMBLE_MOCK, LANGS_MOCK } from "../mocks";
 import { RasService } from "./ras.service";
+import { environment } from "../environments/environment";
 
 describe("RasService", () => {
   let service: RasService;
@@ -17,7 +18,8 @@ describe("RasService", () => {
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj("HttpClient", ["get"]);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
+      imports: [ToastrModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     // Inject the http service and test controller for each test
     httpClient = TestBed.inject(HttpClient);
@@ -34,7 +36,7 @@ describe("RasService", () => {
     });
     const req = httpTestingController.expectOne({
       method: "GET",
-      url: service.baseURL + "/langs",
+      url: `${environment.apiBaseURL}/langs`,
     });
     expect(req.request.method).toEqual("GET");
     expect(req.request.responseType).toEqual("json");
@@ -58,7 +60,7 @@ describe("RasService", () => {
       });
     const req = httpTestingController.expectOne({
       method: "POST",
-      url: service.baseURL + "/assemble",
+      url: `${environment.apiBaseURL}/assemble`,
     });
     expect(req.cancelled).toBeFalsy();
     expect(req.request.responseType).toEqual("json");

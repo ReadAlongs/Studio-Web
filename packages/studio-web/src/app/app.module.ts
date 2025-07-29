@@ -34,7 +34,6 @@ defineCustomElements();
     StudioComponent,
     ErrorPageComponent,
     EditorComponent,
-    // ShepherdComponent
     WcStylingComponent,
   ],
   imports: [

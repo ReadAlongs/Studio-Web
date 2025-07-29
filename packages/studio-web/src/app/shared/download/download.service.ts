@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Observable, Subject, takeUntil } from "rxjs";
 import { slugify } from "../../utils/utils";
@@ -28,9 +28,13 @@ interface Image {
   providedIn: "root",
 })
 export class DownloadService {
-  unsubscribe$ = new Subject<void>();
-  xmlSerializer = new XMLSerializer();
-  readmeFile = new Blob(
+  private unsubscribe$ = new Subject<void>();
+  private xmlSerializer = new XMLSerializer();
+  private uploadService = inject(UploadService);
+  private rasService = inject(RasService);
+  private b64Service = inject(B64Service);
+  private toastr = inject(ToastrService);
+  private readmeFile = new Blob(
     [
       `Web Deployment Guide
 
@@ -49,13 +53,6 @@ Please host all assets on your server, include the font and package imports defi
       type: "text/plain",
     },
   );
-
-  constructor(
-    private uploadService: UploadService,
-    private rasService: RasService,
-    private b64Service: B64Service,
-    private toastr: ToastrService,
-  ) {}
 
   async updateTranslations(
     doc: Document,

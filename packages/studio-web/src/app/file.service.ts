@@ -1,6 +1,6 @@
-import { Observable, catchError, from, map, of, take } from "rxjs";
+import { Observable, Subscriber, catchError, from, map, of, take } from "rxjs";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ToastrService } from "ngx-toastr";
 import { AudioContext, AudioBuffer } from "standardized-audio-context";
 
@@ -8,13 +8,11 @@ import { AudioContext, AudioBuffer } from "standardized-audio-context";
   providedIn: "root",
 })
 export class FileService {
-  constructor(
-    private http: HttpClient,
-    private toastr: ToastrService,
-  ) {}
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
 
   loadAudioBufferFromFile$(
-    file: File,
+    file: File | Blob,
     sampleRate: number,
   ): Observable<AudioBuffer> {
     var audioCtx = new AudioContext({ sampleRate });
@@ -44,22 +42,31 @@ export class FileService {
     );
   };
 
-  readFile$(blob: Blob | File): Observable<string> {
+  readFile$(blob: Blob | File | string): Observable<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: "text/plain" });
+    }
+
     const reader = new FileReader();
-    return Observable.create((obs: any) => {
+    return new Observable((obs: Subscriber<string>) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
-      reader.onload = () => obs.next(reader.result);
+      reader.onload = () => obs.next(reader.result as string);
       reader.onloadend = () => obs.complete();
       reader.readAsText(blob);
     });
   }
-  readFileAsData$(blob: Blob | File): Observable<any> {
+
+  readFileAsDataURL$(blob: Blob | File | string): Observable<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: "text/plain" });
+    }
+
     const reader = new FileReader();
-    return Observable.create((obs: any) => {
+    return new Observable((obs: Subscriber<string>) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
-      reader.onload = () => obs.next(reader.result);
+      reader.onload = () => obs.next(reader.result as string);
       reader.onloadend = () => obs.complete();
       reader.readAsDataURL(blob);
     });
