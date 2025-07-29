@@ -82,7 +82,7 @@ export class WcStylingComponent implements OnDestroy, OnInit {
     }
     // type == "ttf" ? "font/ttf" : "application/x-font-" + type + ";charset=utf-8"
     this.b64Service
-      .blobToB64(file)
+      .blobAsDataURL(file)
       .then((data) => {
         this.fontDeclaration$.next(
           this.fontDeclaration$.getValue() +

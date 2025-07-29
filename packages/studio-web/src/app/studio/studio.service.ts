@@ -8,6 +8,11 @@ export enum langMode {
   specific = "specific",
 }
 
+export interface InputMethod {
+  audio: "mic" | "upload";
+  text: "edit" | "upload";
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -30,16 +35,17 @@ export class StudioService {
     null,
     Validators.required,
   );
-  $textInput = new BehaviorSubject<string>("");
+
   public uploadFormGroup = this._formBuilder.group({
     lang: this.langControl$,
     text: this.textControl$,
     audio: this.audioControl$,
   });
-  inputMethod = {
+  inputMethod: InputMethod = {
     audio: "mic",
     text: "edit",
   };
+
   constructor(private _formBuilder: FormBuilder) {
     this.langMode$.subscribe((chosenLangMode) => {
       if (chosenLangMode === langMode.generic) {

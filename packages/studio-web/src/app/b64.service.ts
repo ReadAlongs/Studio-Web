@@ -5,13 +5,14 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
 import { FileService } from "./file.service";
+import { deprecate } from "node:util";
 
 @Injectable({
   providedIn: "root",
 })
 export class B64Service {
-  JS_BUNDLE_URL = "assets/bundle.js";
-  FONTS_BUNDLE_URL = "assets/fonts.b64.css";
+  readonly JS_BUNDLE_URL = "assets/bundle.js";
+  readonly FONTS_BUNDLE_URL = "assets/fonts.b64.css";
   /**
    * Creates an instance of B64Service, a service for B64 encoding assets.
    * @param {HttpClient} http - The HttpClient service for making HTTP requests.
@@ -59,6 +60,22 @@ export class B64Service {
     );
   }
 
+  rasAsDataURL(xml: Document): Promise<string> {
+    return this.blobAsDataURL(
+      new Blob(
+        [
+          new XMLSerializer()
+            .serializeToString(xml)
+            .replace("?><read", "?>\n<read"),
+        ],
+        { type: "application/readalongs+xml" },
+      ),
+    );
+  }
+
+  /**
+   * @deprecated
+   */
   xmlToB64(xml: Document) {
     return this.utf8_to_b64(
       new XMLSerializer()
@@ -67,11 +84,10 @@ export class B64Service {
     );
   }
 
-  blobToB64(blob: any) {
+  blobAsDataURL(blob: Blob): Promise<string> {
     return new Promise((resolve, _) => {
       const reader = new FileReader();
-      // @ts-ignore
-      reader.onloadend = () => resolve(reader.result);
+      reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
   }
