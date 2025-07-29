@@ -241,7 +241,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       this.wavesurfer.loadBlob(this.editorService.audioControl$.value);
       this.wavesurfer.clearSegments();
       this.fileService
-        .readFileAsData$(this.editorService.audioControl$.value)
+        .readFileAsDataURL$(this.editorService.audioControl$.value)
         .pipe(take(1))
         .subscribe((audiob64) => {
           this.editorService.audioB64Control$.setValue(audiob64);

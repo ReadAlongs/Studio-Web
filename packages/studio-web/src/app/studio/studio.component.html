@@ -3,11 +3,8 @@
   #stepper
   (selectionChange)="selectionChange($event)"
 >
-  <mat-step
-    [stepControl]="studioService.uploadFormGroup"
-    i18n-label="Step 1"
-    label="Step 1"
-  >
+  <!-- TODO [stepControl]="studioService.uploadFormGroup" -->
+  <mat-step i18n-label="Step 1" label="Step 1">
     <section>
       <div class="container mb-3">
         <p i18n="Description of app">
@@ -45,11 +42,7 @@
     <app-upload #upload (stepChange)="stepChange($event)"></app-upload>
   </mat-step>
 
-  <!-- <mat-step label="Step 2">
-        <app-config></app-config>
-    </mat-step> -->
-
   <mat-step i18n-label="Step 2" label="Step 2">
-    <app-demo></app-demo>
+    <app-demo #demo [uploadResult]="uploadResult"></app-demo>
   </mat-step>
 </mat-horizontal-stepper>

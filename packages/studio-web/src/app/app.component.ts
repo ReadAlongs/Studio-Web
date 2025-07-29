@@ -1,8 +1,9 @@
 import { Subject, takeUntil } from "rxjs";
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit, signal } from "@angular/core";
+import { Component, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { environment } from "../environments/environment";
-import { Router } from "@angular/router";
+import { EventType, Router, Event as RouterEvent } from "@angular/router";
+
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
@@ -10,14 +11,14 @@ import { Router } from "@angular/router";
   standalone: false,
 })
 export class AppComponent implements OnDestroy, OnInit {
-  unsubscribe$ = new Subject<void>();
-  version = environment.packageJson.singleFileBundleVersion;
-  currentURL = signal("/");
-  languages: (typeof environment)["languages"];
+  private unsubscribe$ = new Subject<void>();
+  protected version = environment.packageJson.singleFileBundleVersion;
+  protected currentURL = signal("/");
+  protected languages: (typeof environment)["languages"];
 
   constructor(
     private dialog: MatDialog,
-    public router: Router,
+    protected router: Router,
   ) {
     const currentLanguage = $localize.locale ?? "en";
     this.languages = environment.languages.filter(
@@ -26,11 +27,13 @@ export class AppComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.router.events.pipe(takeUntil(this.unsubscribe$)).subscribe((event) => {
-      if (event.type === 1) {
-        this.currentURL.set(event.url);
-      }
-    });
+    this.router.events
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((event: RouterEvent) => {
+        if (event.type === EventType.NavigationEnd) {
+          this.currentURL.set(event.url);
+        }
+      });
   }
 
   openPrivacyDialog(): void {
@@ -50,8 +53,6 @@ export class AppComponent implements OnDestroy, OnInit {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
-
-  ngAfterViewInit() {}
 }
 
 @Component({
@@ -60,20 +61,21 @@ export class AppComponent implements OnDestroy, OnInit {
   standalone: false,
 })
 export class PrivacyDialog {
-  analyticsExcluded =
-    window.localStorage.getItem("plausible_ignore") === "true";
-  constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
+  protected analyticsExcluded =
+    localStorage.getItem("plausible_ignore") === "true";
+  private dialogRef = inject(MatDialogRef<PrivacyDialog>);
+
   ngOnInit() {
     this.dialogRef.updateSize("100%");
   }
 
   toggleAnalytics() {
     if (this.analyticsExcluded) {
-      window.localStorage.removeItem("plausible_ignore");
+      localStorage.removeItem("plausible_ignore");
     } else {
-      window.localStorage.setItem("plausible_ignore", "true");
+      localStorage.setItem("plausible_ignore", "true");
     }
     this.analyticsExcluded =
-      window.localStorage.getItem("plausible_ignore") === "true";
+      localStorage.getItem("plausible_ignore") === "true";
   }
 }

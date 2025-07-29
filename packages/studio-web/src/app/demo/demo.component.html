@@ -18,47 +18,47 @@
     </div>
 
     <div class="row"></div>
-
-    <div class="row" *ngIf="studioService.b64Inputs$ | async as b64Inputs">
-      <div *ngIf="b64Inputs[0] && b64Inputs[1]">
-        <read-along
-          id="readalong"
-          [language]="language"
-          #readalong
-          *ngIf="studioService.render$ | async"
-          mode="EDIT"
-          href="data:application/readalong+xml;base64,{{
-            b64Service.xmlToB64(b64Inputs[1])
-          }}"
-          audio="{{ b64Inputs[0] }}"
-          class="hydrated"
-        >
-          <input
-            #title
-            [(ngModel)]="studioService.slots.title"
-            [ngStyle]="{
-              'width.ch': studioService.slots.title.length,
-              'min-width.ch': 20,
-            }"
-            style="border: none"
-            placeholder="Enter your title here"
-            slot="read-along-header"
-            data-test-id="ra-header"
-          />
-          <input
-            #subtitle
-            [(ngModel)]="studioService.slots.subtitle"
-            [ngStyle]="{
-              'width.ch': studioService.slots.subtitle.length,
-              'min-width.ch': 20,
-            }"
-            style="border: none"
-            placeholder="Enter your subtitle here"
-            slot="read-along-subheader"
-            data-test-id="ra-subheader"
-          />
-        </read-along>
+    @let upload = uploadResult();
+    @if (upload) {
+      <div class="row">
+        @if (upload.audio && upload.ras) {
+          <read-along
+            #readalong
+            id="readalong"
+            [language]="language"
+            *ngIf="studioService.render$ | async"
+            mode="EDIT"
+            href="{{ rasDataURL() | async }}"
+            audio="{{ audioDataURL() | async }}"
+            class="hydrated"
+          >
+            <input
+              #title
+              [(ngModel)]="studioService.slots.title"
+              [ngStyle]="{
+                'width.ch': studioService.slots.title.length,
+                'min-width.ch': 20,
+              }"
+              style="border: none"
+              placeholder="Enter your title here"
+              slot="read-along-header"
+              data-test-id="ra-header"
+            />
+            <input
+              #subtitle
+              [(ngModel)]="studioService.slots.subtitle"
+              [ngStyle]="{
+                'width.ch': studioService.slots.subtitle.length,
+                'min-width.ch': 20,
+              }"
+              style="border: none"
+              placeholder="Enter your subtitle here"
+              slot="read-along-subheader"
+              data-test-id="ra-subheader"
+            />
+          </read-along>
+        }
       </div>
-    </div>
+    }
   </div>
 </section>
