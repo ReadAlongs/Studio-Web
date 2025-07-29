@@ -53,43 +53,45 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   standalone: false,
 })
 export class UploadComponent implements OnInit {
-  isLoaded = false;
-  langs: Array<SupportedLanguage> = [];
-  loading = false;
-  starting_to_record = false;
-  recording = false;
-  playing = false;
-  player: any = null;
-  contactLink = environment.packageJson.contact;
-  progressMode: ProgressBarMode = "indeterminate";
-  progressValue = 0;
+  protected isLoaded = false;
+  protected langs: Array<SupportedLanguage> = [];
+  protected loading = false;
+  protected starting_to_record = false;
+  protected recording = false;
+  protected playing = false;
+  private player: any = null;
+  protected contactLink = environment.packageJson.contact;
+  protected progressMode: ProgressBarMode = "indeterminate";
+  protected progressValue = 0;
   // Max plain text file size: 40KB is OK but takes around 15-20s on Heroku
-  maxTxtSizeKB = 40;
+  private maxTxtSizeKB = 40;
   // Max .readalong XML text size: text * 5 is a rough heuristic; the XML is much bloated from the text.
-  maxRasSizeKB = 200;
-  currentToast: number;
-  @ViewChild("audioFileUpload") audioFileUpload: ElementRef<HTMLFormElement>;
-  @ViewChild("textFileUpload") textFileUpload: ElementRef<HTMLFormElement>;
-  @Output() stepChange = new EventEmitter<any[]>();
+  private maxRasSizeKB = 200;
+  private currentToast: number;
+  @ViewChild("textFileUpload")
+  private textFileUpload: ElementRef<HTMLFormElement>;
+  @ViewChild("audioFileUpload")
+  private audioFileUpload: ElementRef<HTMLFormElement>;
+  @Output() public stepChange = new EventEmitter<any[]>();
 
   // value passed to input[type=file] accept's attribute which expects
   // a comma separated list of file extensions or mime types.
-  textUploadAccepts = ".txt,.xml,.readalong";
-  audioUploadAccepts = ".mp3,.wav,.webm,.m4a";
+  protected textUploadAccepts = ".txt,.xml,.readalong";
+  protected audioUploadAccepts = ".mp3,.wav,.webm,.m4a";
 
   private destroyRef$ = inject(DestroyRef);
   private route: ActivatedRoute;
-  constructor(
-    private router: Router,
-    private toastr: ToastrService,
-    private rasService: RasService,
-    private fileService: FileService,
-    private ssjsService: SoundswallowerService,
-    private microphoneService: MicrophoneService,
-    private uploadService: UploadService,
-    private dialog: MatDialog,
-    public studioService: StudioService,
-  ) {
+  private router = inject(Router);
+  private toastr = inject(ToastrService);
+  private rasService = inject(RasService);
+  private fileService = inject(FileService);
+  private ssjsService = inject(SoundswallowerService);
+  private microphoneService = inject(MicrophoneService);
+  private uploadService = inject(UploadService);
+  private dialog = inject(MatDialog);
+  public studioService = inject(StudioService);
+
+  constructor() {
     this.studioService.audioControl$.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((audio) => this.uploadService.$currentAudio.next(audio));

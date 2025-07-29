@@ -30,8 +30,13 @@ interface Image {
 })
 export class DownloadService {
   private destroyRef$ = inject(DestroyRef);
-  xmlSerializer = new XMLSerializer();
-  readmeFile = new Blob(
+  private xmlSerializer = new XMLSerializer();
+  private uploadService = inject(UploadService);
+  private rasService = inject(RasService);
+  private b64Service = inject(B64Service);
+  private fileService = inject(FileService);
+  private toastr = inject(ToastrService);
+  private readmeFile = new Blob(
     [
       `Web Deployment Guide
 
@@ -50,15 +55,6 @@ Please host all assets on your server, include the font and package imports defi
       type: "text/plain",
     },
   );
-
-  private fileService = inject(FileService);
-
-  constructor(
-    private uploadService: UploadService,
-    private rasService: RasService,
-    private b64Service: B64Service,
-    private toastr: ToastrService,
-  ) {}
 
   async updateTranslations(
     doc: Document,

@@ -323,49 +323,55 @@
       <g></g>
     </svg>
   </div>
-  <div class="error__container" *ngIf="errorType === 'aligner'">
-    <h1 i18n="Aligner error heading" class="title">Aligner Error</h1>
-    <p i18n="Aligner error text">
-      Failed to initialize the aligner. This may be the result of an
-      incompatible browser. Please:
-      <br />
-      1. try updating your browser,<br />
-      2. try with Chrome,<br />
-      3. if the problem persists, please
-      <a href="{{ contactLink }}"
-        ><mat-icon inline style="vertical-align: middle">mail</mat-icon> contact
-        the developers</a
-      >
-      and send them a complete copy of the error message below:
-    </p>
-    <pre>{{ msg }}</pre>
-  </div>
+  @if (errorType === "aligner") {
+    <div class="error__container">
+      <h1 i18n="Aligner error heading" class="title">Aligner Error</h1>
+      <p i18n="Aligner error text">
+        Failed to initialize the aligner. This may be the result of an
+        incompatible browser. Please:
+        <br />
+        1. try updating your browser,<br />
+        2. try with Chrome,<br />
+        3. if the problem persists, please
+        <a href="{{ contactLink }}"
+          ><mat-icon inline style="vertical-align: middle">mail</mat-icon>
+          contact the developers</a
+        >
+        and send them a complete copy of the error message below:
+      </p>
+      <pre>{{ msg }}</pre>
+    </div>
+  }
 
-  <div class="error__container" *ngIf="errorType !== 'aligner' && msg !== null">
-    <h1 i18n="Language error heading" class="title">Server Error</h1>
-    <p i18n="Language error text">
-      Failed to retrieve the list of languages from the server. Please
-      <a href="{{ contactLink }}"
-        ><mat-icon inline style="vertical-align: middle">mail</mat-icon> contact
-        the developers</a
-      >
-      and reload the page once the error is corrected.
-    </p>
-    <pre>{{ msg }}</pre>
-  </div>
+  @if (errorType !== "aligner" && msg !== null) {
+    <div class="error__container">
+      <h1 i18n="Language error heading" class="title">Server Error</h1>
+      <p i18n="Language error text">
+        Failed to retrieve the list of languages from the server. Please
+        <a href="{{ contactLink }}"
+          ><mat-icon inline style="vertical-align: middle">mail</mat-icon>
+          contact the developers</a
+        >
+        and reload the page once the error is corrected.
+      </p>
+      <pre>{{ msg }}</pre>
+    </div>
+  }
 
-  <div class="error__container" *ngIf="msg === null">
-    <h1 i18n="404" class="MainTitle">
-      Whoops! Looks like you're lost! You weren't supposed to see this page.
-      Please go back to the home page by clicking below.
-    </h1>
-    <button
-      i18n="Navigate home"
-      mat-raised-button
-      color="primary"
-      (click)="goHome()"
-    >
-      Take me home!
-    </button>
-  </div>
+  @if (msg === null) {
+    <div class="error__container">
+      <h1 i18n="404" class="MainTitle">
+        Whoops! Looks like you're lost! You weren't supposed to see this page.
+        Please go back to the home page by clicking below.
+      </h1>
+      <button
+        i18n="Navigate home"
+        mat-raised-button
+        color="primary"
+        (click)="goHome()"
+      >
+        Take me home!
+      </button>
+    </div>
+  }
 </div>
