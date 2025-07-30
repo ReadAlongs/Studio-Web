@@ -1,5 +1,5 @@
-import { forkJoin, Observable, BehaviorSubject } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { forkJoin, Observable, BehaviorSubject, lastValueFrom } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
@@ -14,20 +14,7 @@ export class B64Service {
   private readonly FONTS_BUNDLE_URL = "assets/fonts.b64.css";
   private http = inject(HttpClient);
   private fileService = inject(FileService);
-
-  public jsAndFontsBundle$ = new BehaviorSubject<[string, string] | null>(null);
-
-  /**
-   * Creates an instance of B64Service, a service for B64 encoding assets.
-   */
-  constructor() {
-    this.getBundle$().subscribe((bundle) => {
-      this.jsAndFontsBundle$.next([
-        this.indent(bundle[0], 6), //apply the indentation to the js bundle
-        this.indent(bundle[1], 6),
-      ]);
-    });
-  }
+  private cachedBundle: Promise<[string, string]> | null = null;
 
   getBundle$(): Observable<[string, string]> {
     return forkJoin([
@@ -38,7 +25,19 @@ export class B64Service {
       this.http
         .get(this.FONTS_BUNDLE_URL, { responseType: "blob" })
         .pipe(switchMap((blob: Blob) => this.fileService.readFile$(blob))),
-    ]);
+    ]).pipe(
+      map((bundle) => [this.indent(bundle[0], 6), this.indent(bundle[1], 6)]),
+    );
+  }
+
+  // A promise implementation of getBundle()$. Additionally, the promise is
+  // cached and reused on subsequent bundle requests.
+  getBundle(): Promise<[string, string]> {
+    if (!this.cachedBundle) {
+      this.cachedBundle = lastValueFrom(this.getBundle$());
+    }
+
+    return this.cachedBundle;
   }
 
   utf8_to_b64(str: string) {
@@ -61,7 +60,7 @@ export class B64Service {
     );
   }
 
-  xmlToB64(xml: Document) {
+  xmlToB64(xml: Document): string {
     return this.utf8_to_b64(
       new XMLSerializer()
         .serializeToString(xml)
@@ -69,15 +68,24 @@ export class B64Service {
     );
   }
 
-  blobToB64(blob: Blob) {
-    return new Promise((resolve, _) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(blob);
-    });
+  // rasToDataURL creates a data URL containing the contents of the RAS document.
+  rasToDataURL(xml: Document): Promise<string> {
+    const xmlText = new XMLSerializer()
+      .serializeToString(xml)
+      .replace("?><read", "?>\n<read");
+
+    return this.fileService.readFileAsDataURL(
+      xmlText,
+      "application/readalong+xml",
+    );
   }
 
-  indent(str: string, level: number) {
+  // blobToDataURL encodes the blob to a data URL.
+  blobToDataURL(blob: Blob): Promise<string> {
+    return this.fileService.readFileAsDataURL(blob);
+  }
+
+  private indent(str: string, level: number) {
     const indent = " ".repeat(level);
     return str
       .split("\n")

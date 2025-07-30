@@ -22,7 +22,7 @@
 
       @if (studioService.b64Inputs$ | async; as b64Inputs) {
         <div class="row">
-          @if (b64Inputs[0] && b64Inputs[1]) {
+          @if (b64Inputs[0] && b64Inputs[1] && rasAsDataURL()) {
             <div>
               @if (studioService.render$ | async) {
                 <read-along
@@ -30,9 +30,7 @@
                   [language]="language"
                   #readalong
                   mode="EDIT"
-                  href="data:application/readalong+xml;base64,{{
-                    b64Service.xmlToB64(b64Inputs[1])
-                  }}"
+                  href="{{ rasAsDataURL() }}"
                   audio="{{ b64Inputs[0] }}"
                   class="hydrated"
                 >

@@ -10,7 +10,6 @@ import { B64Service } from "./b64.service";
 
 describe("B64Service", () => {
   let service: B64Service;
-  let httpClientSpy: jasmine.SpyObj<HttpClient>;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   beforeEach(() => {

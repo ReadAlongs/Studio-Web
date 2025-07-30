@@ -433,18 +433,12 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     const css = element.getAttribute("css-url");
 
     if (css !== null && css.length > 0) {
-      if (css.startsWith("data:text/css;base64,")) {
-        this.wcStylingService.$wcStyleInput.next(
-          this.b64Service.b64_to_utf8(css.substring(css.indexOf(",") + 1)),
-        );
-      } else {
-        const reply = await fetch(css);
-        // Did that work? Great!
-        if (reply.ok) {
-          reply.text().then((cssText) => {
-            this.wcStylingService.$wcStyleInput.next(cssText);
-          });
-        }
+      const reply = await fetch(css);
+      // Did that work? Great!
+      if (reply.ok) {
+        reply.text().then((cssText) => {
+          this.wcStylingService.$wcStyleInput.next(cssText);
+        });
       }
     } else {
       this.wcStylingService.$wcStyleInput.next("");
@@ -550,9 +544,11 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     this.shepherdService.start();
   }
   async updateWCStyle($event: string) {
-    this.readalong?.setCss(
-      `data:text/css;base64,${this.b64Service.utf8_to_b64($event ?? "")}`,
+    const css = await this.fileService.readFileAsDataURL(
+      $event ?? "",
+      "text/css",
     );
+    this.readalong?.setCss(css);
   }
   async addWCCustomFont($font: string) {
     this.readalong?.addCustomFont($font);

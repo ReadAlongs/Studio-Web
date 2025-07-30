@@ -1,6 +1,13 @@
 import { Subject } from "rxjs";
 
-import { Component, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+} from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
@@ -8,7 +15,6 @@ import { StudioService } from "../studio/studio.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
-import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
 
 type rasLanguages = "eng" | "fra" | "spa";
 const localizationToRASLanguage: Record<string, rasLanguages> = {
@@ -33,8 +39,16 @@ export class DemoComponent implements OnDestroy {
   private downloadService = inject(DownloadService);
   private toastr = inject(ToastrService);
 
+  protected rasAsDataURL = signal<string>("");
+
   constructor() {
     this.language = localizationToRASLanguage[$localize.locale ?? "en"];
+
+    this.studioService.b64Inputs$.subscribe(async (b64Input) => {
+      if (b64Input[1]) {
+        this.rasAsDataURL.set(await this.b64Service.rasToDataURL(b64Input[1]));
+      }
+    });
   }
 
   download(download_type: SupportedOutputs) {

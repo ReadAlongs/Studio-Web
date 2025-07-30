@@ -18,6 +18,7 @@ import {
 } from "../../ras.service";
 import { Components } from "@readalongs/web-component/loader";
 import { WcStylingService } from "../wc-styling/wc-styling.service";
+import { FileService } from "../../file.service";
 
 interface Image {
   path: string;
@@ -34,6 +35,7 @@ export class DownloadService {
   private rasService = inject(RasService);
   private b64Service = inject(B64Service);
   private toastr = inject(ToastrService);
+  private fileService = inject(FileService);
   private readmeFile = new Blob(
     [
       `Web Deployment Guide
@@ -134,13 +136,12 @@ Please host all assets on your server, include the font and package imports defi
         // Remove any images that are there from before
         currentPage.querySelectorAll("graphic").forEach((e) => e.remove());
         let graphic = doc.createElementNS(null, "graphic");
-        // @ts-ignore
-        let blob = await fetch(img).then((r) => r.blob());
-        blob = await compress(blob, 0.75);
+        let blob = await fetch(img)
+          .then((r) => r.blob())
+          .then((blob) => compress(blob, 0.75));
         // Either embed the images directly
         if (b64Embed) {
-          let b64 = await this.b64Service.blobToB64(blob);
-          // @ts-ignore
+          const b64 = await this.b64Service.blobToDataURL(blob);
           graphic.setAttribute("url", b64);
           // or return a list of blobs and use the filename here
         } else {
@@ -182,21 +183,26 @@ Please host all assets on your server, include the font and package imports defi
   ) {
     await this.updateImages(rasDoc, true, "image", readalong);
     await this.updateTranslations(rasDoc, readalong);
-    let rasB64 = this.b64Service.xmlToB64(rasDoc);
-    let b64Css = "";
+    const rasB64 = await this.b64Service.rasToDataURL(rasDoc);
     const cssText = wcStylingService
       ? wcStylingService.$wcStyleInput.getValue()
       : "";
     const customFont = wcStylingService
       ? wcStylingService.$wcStyleFonts.getValue()
       : "";
-    if (cssText) {
-      b64Css = `\n      css-url="data:text/css;base64,${this.b64Service.utf8_to_b64(cssText)}"`;
+
+    const b64Css = cssText
+      ? `\n      css-url="${await this.fileService.readFileAsDataURL(cssText, "text/css")}"`
+      : "";
+
+    const jsAndFontsBundle = await this.b64Service.getBundle();
+    if (!jsAndFontsBundle) {
+      return undefined;
     }
-    if (this.b64Service.jsAndFontsBundle$.value !== null) {
-      let blob = new Blob(
-        [
-          `
+
+    return new Blob(
+      [
+        `
             <!DOCTYPE html>
 
             <!--
@@ -229,17 +235,17 @@ Please host all assets on your server, include the font and package imports defi
                 <meta name="generator" content="@readalongs/studio-web ${environment.packageJson.singleFileBundleVersion}">
                 <title>${slots.title}</title>
                 <style>
-            ${this.b64Service.jsAndFontsBundle$.value[1]}
+            ${jsAndFontsBundle[1]}
                 </style>
                 <style id="ra-wc-custom-font" type="text/css">${customFont}</style>
                 <script name="@readalongs/web-component" version="${environment.packageJson.singleFileBundleVersion}" timestamp="${environment.packageJson.singleFileBundleTimestamp}">
-            ${this.b64Service.jsAndFontsBundle$.value[0]}
+            ${jsAndFontsBundle[0]}
                 </script>
               </head>
               <body>
                 <read-along
                   version="${environment.packageJson.singleFileBundleVersion}"
-                  href="data:application/readalong+xml;base64,${rasB64}"
+                  href="${rasB64}"
                   audio="${b64Audio}"
                   image-assets-folder=""
                   ${b64Css}
@@ -250,14 +256,11 @@ Please host all assets on your server, include the font and package imports defi
               </body>
             </html>
           `
-            .replace(/\n            /g, "\n")
-            .trim(),
-        ],
-        { type: "text/html;charset=utf-8" },
-      );
-      return blob;
-    }
-    return undefined;
+          .replace(/\n            /g, "\n")
+          .trim(),
+      ],
+      { type: "text/html;charset=utf-8" },
+    );
   }
 
   createRASBasename(title: string) {
