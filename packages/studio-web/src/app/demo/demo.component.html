@@ -27,9 +27,7 @@
           #readalong
           *ngIf="studioService.render$ | async"
           mode="EDIT"
-          href="data:application/readalong+xml;base64,{{
-            b64Service.xmlToB64(b64Inputs[1])
-          }}"
+          href="{{ rasAsDataURL() }}"
           audio="{{ b64Inputs[0] }}"
           class="hydrated"
         >

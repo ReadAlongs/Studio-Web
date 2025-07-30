@@ -317,7 +317,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     if (event[0] === "aligned") {
       const aligned_xml = createAlignedXML(event[2], event[3] as Segment);
       forkJoin([
-        this.fileService.readFileAsData$(event[1]), // audio
+        this.fileService.readFileAsDataURL$(event[1]), // audio
         of(aligned_xml),
       ])
         .pipe(takeUntilDestroyed(this.destroyRef$))

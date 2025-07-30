@@ -84,12 +84,12 @@ export class WcStylingComponent implements OnInit {
     }
     // type == "ttf" ? "font/ttf" : "application/x-font-" + type + ";charset=utf-8"
     this.b64Service
-      .blobToB64(file)
+      .blobToDataURL(file)
       .then((data) => {
         this.fontDeclaration$.next(
           this.fontDeclaration$.getValue() +
             (this.fontDeclaration$.getValue().length > 1 ? ", " : "") +
-            `url(${(data as string).replace("application/octet-stream", type == "ttf" ? "application/x-ttf;charset=utf-8" : "application/x-font-" + type + ";charset=utf-8")}) format('${type?.replace("ttf", "truetype")}')`,
+            `url(${data.replace("application/octet-stream", type == "ttf" ? "application/x-ttf;charset=utf-8" : "application/x-font-" + type + ";charset=utf-8")}) format('${type?.replace("ttf", "truetype")}')`,
         );
         this.updateStyle();
         this.toastr.success(
