@@ -1,4 +1,13 @@
-import { Observable, catchError, from, map, of, take } from "rxjs";
+import {
+  Observable,
+  Subscriber,
+  catchError,
+  from,
+  lastValueFrom,
+  map,
+  of,
+  take,
+} from "rxjs";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ToastrService } from "ngx-toastr";
@@ -17,14 +26,14 @@ export class FileService {
     file: File,
     sampleRate: number,
   ): Observable<AudioBuffer> {
-    var audioCtx = new AudioContext({ sampleRate });
-    var audioFile = file.arrayBuffer().then((buffer: any) => {
+    const audioCtx = new AudioContext({ sampleRate });
+    const audioFile = file.arrayBuffer().then((buffer: any) => {
       return audioCtx.decodeAudioData(buffer);
     });
     return from(audioFile);
   }
 
-  returnFileFromPath$ = (url: string, responseType: string = "blob") => {
+  returnFileFromPath$(url: string, responseType: string = "blob") {
     const httpOptions: Object = { responseType };
     return this.http.get<any>(url, httpOptions).pipe(
       catchError((err: HttpErrorResponse) => {
@@ -42,11 +51,18 @@ export class FileService {
       }),
       take(1),
     );
-  };
+  }
 
-  readFile$(blob: Blob | File): Observable<string> {
+  readFile$(
+    blob: Blob | File | string,
+    type: string = "text/plain",
+  ): Observable<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: type });
+    }
+
     const reader = new FileReader();
-    return Observable.create((obs: any) => {
+    return new Observable((obs: any) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
       reader.onload = () => obs.next(reader.result);
@@ -54,14 +70,38 @@ export class FileService {
       reader.readAsText(blob);
     });
   }
-  readFileAsData$(blob: Blob | File): Observable<any> {
+
+  // A promise based implementation of readFile$.
+  readFile(
+    blob: Blob | File | string,
+    type: string = "text/plain",
+  ): Promise<string> {
+    return lastValueFrom(this.readFile$(blob, type));
+  }
+
+  readFileAsDataURL$(
+    blob: Blob | File | string,
+    type: string = "text/plain",
+  ): Observable<string> {
+    if (typeof blob === "string") {
+      blob = new Blob([blob], { type: type });
+    }
+
     const reader = new FileReader();
-    return Observable.create((obs: any) => {
+    return new Observable((obs: any) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
       reader.onload = () => obs.next(reader.result);
       reader.onloadend = () => obs.complete();
       reader.readAsDataURL(blob);
     });
+  }
+
+  // A promise based implementation of readFileAsDataURL$.
+  readFileAsDataURL(
+    blob: Blob | File | string,
+    type: string = "text/plain",
+  ): Promise<string> {
+    return lastValueFrom(this.readFileAsDataURL$(blob, type));
   }
 }

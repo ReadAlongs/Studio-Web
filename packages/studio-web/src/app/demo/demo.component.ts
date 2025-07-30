@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
@@ -16,7 +16,7 @@ import { ToastrService } from "ngx-toastr";
 export class DemoComponent implements OnDestroy, OnInit {
   @ViewChild("readalong") readalong!: Components.ReadAlong;
   language: "eng" | "fra" | "spa" = "eng";
-
+  protected rasAsDataURL = signal<string>("");
   constructor(
     public b64Service: B64Service,
     public studioService: StudioService,
@@ -29,6 +29,12 @@ export class DemoComponent implements OnDestroy, OnInit {
     } else if ($localize.locale == "es") {
       this.language = "spa";
     }
+
+    this.studioService.b64Inputs$.subscribe(async (b64Input) => {
+      if (b64Input[1]) {
+        this.rasAsDataURL.set(await this.b64Service.rasToDataURL(b64Input[1]));
+      }
+    });
   }
 
   ngOnInit(): void {}
