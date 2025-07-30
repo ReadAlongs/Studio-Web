@@ -2,7 +2,6 @@
 import { ToastrService } from "ngx-toastr";
 import {
   Observable,
-  Subject,
   catchError,
   finalize,
   forkJoin,
@@ -10,7 +9,6 @@ import {
   of,
   switchMap,
   map,
-  takeUntil,
   throwError,
   firstValueFrom,
   take,
@@ -18,10 +16,10 @@ import {
 
 import {
   Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
   inject,
-  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -45,6 +43,7 @@ import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
 import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 import { StudioService } from "../studio/studio.service";
 import { validateFileType } from "../utils/utils";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-upload",
@@ -52,7 +51,7 @@ import { validateFileType } from "../utils/utils";
   styleUrls: ["./upload.component.sass"],
   standalone: false,
 })
-export class UploadComponent implements OnDestroy, OnInit {
+export class UploadComponent implements OnInit {
   protected isLoaded = false;
   protected langs: Array<SupportedLanguage> = [];
   protected loading = false;
@@ -78,7 +77,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   protected textUploadAccepts = ".txt,.xml,.readalong";
   protected audioUploadAccepts = ".mp3,.wav,.webm,.m4a";
 
-  private unsubscribe$ = new Subject<void>();
+  private destroyRef$ = inject(DestroyRef);
   private route: ActivatedRoute;
   private router = inject(Router);
   private toastr = inject(ToastrService);
@@ -92,20 +91,20 @@ export class UploadComponent implements OnDestroy, OnInit {
 
   constructor() {
     this.studioService.audioControl$.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((audio) => this.uploadService.$currentAudio.next(audio));
     this.studioService.textControl$.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((textBlob) => this.uploadService.$currentText.next(textBlob));
     this.studioService.$textInput
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((textString) => {
         //provides user with warning if text size is above limit
         if (this.checkIsTextSizeBelowLimit())
           this.uploadService.$currentText.next(textString);
       });
     this.ssjsService.modelLoaded
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((loaded) => {
         this.isLoaded = loaded;
       });
@@ -114,7 +113,7 @@ export class UploadComponent implements OnDestroy, OnInit {
   async ngOnInit() {
     this.rasService
       .getLangs$()
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe({
         next: (langs: Array<SupportedLanguage>) => {
           this.langs = langs
@@ -130,11 +129,6 @@ export class UploadComponent implements OnDestroy, OnInit {
           console.log(err);
         },
       });
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
   }
 
   reportRasError(err: HttpErrorResponse) {
@@ -500,7 +494,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               return possibleError;
             }
           }),
-          takeUntil(this.unsubscribe$),
+          takeUntilDestroyed(this.destroyRef$),
           finalize(() => (this.ssjsService.mode = BeamDefaults.strict)),
         )
         .subscribe({

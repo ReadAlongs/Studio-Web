@@ -1,6 +1,5 @@
-import { inject, Injectable } from "@angular/core";
+import { DestroyRef, inject, Injectable } from "@angular/core";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Observable, Subject, takeUntil } from "rxjs";
 import { slugify } from "../../utils/utils";
 import { UploadService } from "../../upload.service";
 import { ToastrService } from "ngx-toastr";
@@ -19,6 +18,7 @@ import {
 import { Components } from "@readalongs/web-component/loader";
 import { WcStylingService } from "../wc-styling/wc-styling.service";
 import { FileService } from "../../file.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface Image {
   path: string;
@@ -29,7 +29,7 @@ interface Image {
   providedIn: "root",
 })
 export class DownloadService {
-  private unsubscribe$ = new Subject<void>();
+  private destroyRef$ = inject(DestroyRef);
   private xmlSerializer = new XMLSerializer();
   private uploadService = inject(UploadService);
   private rasService = inject(RasService);
@@ -483,7 +483,7 @@ Use the text editor to paste the snippet below in your WordPress page:
           },
           selectedOutputFormat,
         )
-        .pipe(takeUntil(this.unsubscribe$))
+        .pipe(takeUntilDestroyed(this.destroyRef$))
         .subscribe({
           next: (x: Blob) => saveAs(x, `${basename}.${selectedOutputFormat}`),
           error: (err: HttpErrorResponse) => this.reportRasError(err),

@@ -1,16 +1,17 @@
-import { Subject, takeUntil } from "rxjs";
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
-import { Component, inject, OnDestroy, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { environment } from "../environments/environment";
 import { EventType, Router, Event as RouterEvent } from "@angular/router";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.sass"],
   standalone: false,
 })
-export class AppComponent implements OnDestroy, OnInit {
-  private unsubscribe$ = new Subject<void>();
+export class AppComponent implements OnInit {
+  private destroyRef$ = inject(DestroyRef);
   protected version = environment.packageJson.singleFileBundleVersion;
   protected currentURL = signal("/");
   protected languages: (typeof environment)["languages"];
@@ -26,7 +27,7 @@ export class AppComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.router.events
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((event: RouterEvent) => {
         if (event.type === EventType.NavigationEnd) {
           this.currentURL.set(event.url);
@@ -45,11 +46,6 @@ export class AppComponent implements OnDestroy, OnInit {
 
   switchLanguage(url: string) {
     window.open(url, "_blank");
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
   }
 }
 

@@ -1,13 +1,13 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
   inject,
-  OnDestroy,
   OnInit,
   ViewChild,
 } from "@angular/core";
 import { ToastrService } from "ngx-toastr";
-import { BehaviorSubject, Subject, takeUntil } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { WcStylingService } from "./wc-styling.service";
 import {
   MatDialog,
@@ -16,6 +16,7 @@ import {
 } from "@angular/material/dialog";
 import { B64Service } from "../../b64.service";
 import { MatButtonModule } from "@angular/material/button";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-wc-styling",
@@ -23,11 +24,11 @@ import { MatButtonModule } from "@angular/material/button";
   styleUrl: "./wc-styling.component.sass",
   standalone: false,
 })
-export class WcStylingComponent implements OnDestroy, OnInit {
+export class WcStylingComponent implements OnInit {
+  private destroyRef$ = inject(DestroyRef);
   protected styleText$ = new BehaviorSubject<string>("");
   private fontDeclaration$ = new BehaviorSubject<string>("");
   protected inputType: "edit" | "upload" = "edit";
-  private unsubscribe$ = new Subject<void>();
   public collapsed$ = new BehaviorSubject<boolean>(true);
   @ViewChild("styleInputElement") private styleInputElement: ElementRef;
   @ViewChild("fontInputElement") private fontInputElement: ElementRef;
@@ -198,7 +199,7 @@ span.theme--dark.sentence__text {
   }
   async ngOnInit() {
     this.wcStylingService.$wcStyleInput
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((css) => {
         if (this.styleText$.getValue().length < 1) {
           this.styleText$.next(css);
@@ -207,10 +208,6 @@ span.theme--dark.sentence__text {
       });
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
   openHelpDialog(): void {
     this.dialog.open(WCStylingHelper, {
       width: "80vw",
@@ -284,7 +281,7 @@ span.theme--dark.sentence__text {
   imports: [MatDialogModule, MatButtonModule],
 })
 export class WCStylingHelper {
-  constructor(public dialogRef: MatDialogRef<WCStylingHelper>) {}
+  private dialogRef = inject(MatDialogRef<WCStylingHelper>);
   closeDialog(): void {
     this.dialogRef.close();
   }

@@ -1,9 +1,10 @@
 import WaveSurfer from "wavesurfer.js";
 
-import { takeUntil, Subject, take, fromEvent, debounceTime } from "rxjs";
+import { take, fromEvent, debounceTime } from "rxjs";
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   OnDestroy,
@@ -34,6 +35,7 @@ import { ToastrService } from "ngx-toastr";
 import { validateFileType } from "../utils/utils";
 import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
 import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-editor",
@@ -41,12 +43,15 @@ import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";
   styleUrls: ["./editor.component.sass"],
   standalone: false,
 })
-export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
-  @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
+export class EditorComponent implements OnDestroy, AfterViewInit {
+  private destroyRef$ = inject(DestroyRef);
+
   private wavesurfer: WaveSurfer;
-  @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
-  @ViewChild("handle") handleElement!: ElementRef;
-  @ViewChild("styleWindow") styleElement!: WcStylingComponent;
+  @ViewChild("wavesurferContainer") private wavesurferContainer!: ElementRef;
+  @ViewChild("readalongContainer")
+  private readalongContainerElement: ElementRef;
+  @ViewChild("handle") private handleElement!: ElementRef;
+  @ViewChild("styleWindow") private styleElement!: WcStylingComponent;
   private readalong: Components.ReadAlong;
 
   private language: "eng" | "fra" | "spa" = "eng";
@@ -55,7 +60,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
   // a comma separated list of file extensions or mime types.
   protected htmlUploadAccepts = ".html";
 
-  private unsubscribe$ = new Subject<void>();
   protected rasFileIsLoaded = false;
   public b64Service = inject(B64Service);
   private fileService = inject(FileService);
@@ -73,7 +77,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       this.addWCCustomFont(font),
     );
     fromEvent(window, "resize")
-      .pipe(debounceTime(100), takeUntil(this.unsubscribe$)) // wait for 1 second after the last resize event
+      .pipe(debounceTime(100), takeUntilDestroyed(this.destroyRef$)) // wait for 1 second after the last resize event
       .subscribe(() => {
         // When the window is resized, we want to reset the style window size
         // so that it does not get squeezed too small
@@ -145,7 +149,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     }
     if (this.handleElement) {
       fromEvent(this.handleElement.nativeElement, "dragend")
-        .pipe(takeUntil(this.unsubscribe$))
+        .pipe(takeUntilDestroyed(this.destroyRef$))
         .subscribe((event) => {
           const ev = event as DragEvent;
           console.log("[DEBUG] dragged");
@@ -179,7 +183,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit(): void {}
   async ngOnDestroy() {
     // Save translations, images and all other edits to a temporary blob before destroying component
     // We just re-use the download service method here for simplicity and reload from this when
@@ -331,13 +334,15 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
       const currentWord$ = await this.readalong.getCurrentWord();
       const alignments = await this.readalong.getAlignments();
       // Subscribe to the current word of the readalong and center the wavesurfer element on it
-      currentWord$.pipe(takeUntil(this.unsubscribe$)).subscribe((word) => {
-        if (word) {
-          this.wavesurfer.seekAndCenter(
-            alignments[word][0] / 1000 / this.wavesurfer.getDuration(),
-          );
-        }
-      });
+      currentWord$
+        .pipe(takeUntilDestroyed(this.destroyRef$))
+        .subscribe((word) => {
+          if (word) {
+            this.wavesurfer.seekAndCenter(
+              alignments[word][0] / 1000 / this.wavesurfer.getDuration(),
+            );
+          }
+        });
     }
   }
 
@@ -490,7 +495,7 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     readalong_editor_choose_file["buttons"][1]["action"] = () => {
       this.fileService
         .returnFileFromPath$("assets/hello-world.offline.html")
-        .pipe(takeUntil(this.unsubscribe$))
+        .pipe(takeUntilDestroyed(this.destroyRef$))
         .subscribe(async (indexFile) => {
           await this.loadRasFile(indexFile);
           this.shepherdService.next();

@@ -2,9 +2,9 @@ import { Subject } from "rxjs";
 
 import {
   Component,
+  DestroyRef,
   inject,
   OnDestroy,
-  OnInit,
   signal,
   ViewChild,
 } from "@angular/core";
@@ -15,6 +15,7 @@ import { StudioService } from "../studio/studio.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 type rasLanguages = "eng" | "fra" | "spa";
 const localizationToRASLanguage: Record<string, rasLanguages> = {
@@ -33,7 +34,7 @@ export class DemoComponent implements OnDestroy {
   @ViewChild("readalong") private readalong!: Components.ReadAlong;
 
   protected language: rasLanguages = "eng";
-  private unsubscribe$ = new Subject<void>();
+  private destroyRef$ = inject(DestroyRef);
   protected b64Service = inject(B64Service);
   public studioService = inject(StudioService);
   private downloadService = inject(DownloadService);
@@ -44,11 +45,15 @@ export class DemoComponent implements OnDestroy {
   constructor() {
     this.language = localizationToRASLanguage[$localize.locale ?? "en"];
 
-    this.studioService.b64Inputs$.subscribe(async (b64Input) => {
-      if (b64Input[1]) {
-        this.rasAsDataURL.set(await this.b64Service.rasToDataURL(b64Input[1]));
-      }
-    });
+    this.studioService.b64Inputs$
+      .pipe(takeUntilDestroyed(this.destroyRef$))
+      .subscribe(async (b64Input) => {
+        if (b64Input[1]) {
+          this.rasAsDataURL.set(
+            await this.b64Service.rasToDataURL(b64Input[1]),
+          );
+        }
+      });
   }
 
   download(download_type: SupportedOutputs) {
@@ -71,8 +76,6 @@ export class DemoComponent implements OnDestroy {
   }
 
   async ngOnDestroy() {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
     // Save translations, images and all other edits to the studio service when we exit
     if (this.studioService.b64Inputs$.value[1]) {
       await this.downloadService.updateTranslations(
