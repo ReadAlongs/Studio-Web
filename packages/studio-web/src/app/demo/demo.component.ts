@@ -1,5 +1,3 @@
-import { Subject } from "rxjs";
-
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
@@ -8,7 +6,7 @@ import { StudioService } from "../studio/studio.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
-import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
+
 @Component({
   selector: "app-demo",
   templateUrl: "./demo.component.html",
@@ -18,7 +16,7 @@ import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
 export class DemoComponent implements OnDestroy, OnInit {
   @ViewChild("readalong") readalong!: Components.ReadAlong;
   language: "eng" | "fra" | "spa" = "eng";
-  unsubscribe$ = new Subject<void>();
+
   constructor(
     public b64Service: B64Service,
     public studioService: StudioService,
@@ -56,8 +54,6 @@ export class DemoComponent implements OnDestroy, OnInit {
   }
 
   async ngOnDestroy() {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
     // Save translations, images and all other edits to the studio service when we exit
     if (this.studioService.b64Inputs$.value[1]) {
       await this.downloadService.updateTranslations(

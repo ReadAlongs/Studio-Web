@@ -1,7 +1,8 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
-  OnDestroy,
+  inject,
   OnInit,
   ViewChild,
 } from "@angular/core";
@@ -15,6 +16,7 @@ import {
 } from "@angular/material/dialog";
 import { B64Service } from "../../b64.service";
 import { MatButtonModule } from "@angular/material/button";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-wc-styling",
@@ -22,11 +24,11 @@ import { MatButtonModule } from "@angular/material/button";
   styleUrl: "./wc-styling.component.sass",
   standalone: false,
 })
-export class WcStylingComponent implements OnDestroy, OnInit {
+export class WcStylingComponent implements OnInit {
   styleText$ = new BehaviorSubject<string>("");
   fontDeclaration$ = new BehaviorSubject<string>("");
   inputType = "edit";
-  unsubscribe$ = new Subject<void>();
+  private destroyRef$ = inject(DestroyRef);
   collapsed$ = new BehaviorSubject<boolean>(true);
   @ViewChild("styleInputElement") styleInputElement: ElementRef;
   @ViewChild("fontInputElement") fontInputElement: ElementRef;
@@ -198,7 +200,7 @@ span.theme--dark.sentence__text {
   }
   async ngOnInit() {
     this.wcStylingService.$wcStyleInput
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((css) => {
         if (this.styleText$.getValue().length < 1) {
           this.styleText$.next(css);
@@ -207,10 +209,6 @@ span.theme--dark.sentence__text {
       });
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
   openHelpDialog(): void {
     this.dialog.open(WCStylingHelper, {
       width: "80vw",

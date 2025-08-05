@@ -1,16 +1,17 @@
-import { Subject, takeUntil } from "rxjs";
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { environment } from "../environments/environment";
 import { Router } from "@angular/router";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.sass"],
   standalone: false,
 })
-export class AppComponent implements OnDestroy, OnInit {
-  unsubscribe$ = new Subject<void>();
+export class AppComponent implements OnInit {
+  private destroyRef$ = inject(DestroyRef);
   version = environment.packageJson.singleFileBundleVersion;
   currentURL = signal("/");
   languages: (typeof environment)["languages"];
@@ -26,11 +27,13 @@ export class AppComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.router.events.pipe(takeUntil(this.unsubscribe$)).subscribe((event) => {
-      if (event.type === 1) {
-        this.currentURL.set(event.url);
-      }
-    });
+    this.router.events
+      .pipe(takeUntilDestroyed(this.destroyRef$))
+      .subscribe((event) => {
+        if (event.type === 1) {
+          this.currentURL.set(event.url);
+        }
+      });
   }
 
   openPrivacyDialog(): void {
@@ -45,13 +48,6 @@ export class AppComponent implements OnDestroy, OnInit {
   switchLanguage(url: string) {
     window.open(url, "_blank");
   }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
-
-  ngAfterViewInit() {}
 }
 
 @Component({

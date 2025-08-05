@@ -1,12 +1,20 @@
 import { ShepherdService } from "../shepherd.service";
-import { forkJoin, of, Subject, take, takeUntil } from "rxjs";
+import { forkJoin, of, take } from "rxjs";
 import { Segment } from "soundswallower";
 
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Meta } from "@angular/platform-browser";
 import { MatStepper } from "@angular/material/stepper";
 import { Title } from "@angular/platform-browser";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 import {
   createAlignedXML,
@@ -52,9 +60,8 @@ export class StudioComponent implements OnDestroy, OnInit {
   @ViewChild("upload", { static: false }) upload?: UploadComponent;
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
-  unsubscribe$ = new Subject<void>();
-
   private beforeUnload: (e: Event) => void;
+  private destroyRef$ = inject(DestroyRef);
   private route: ActivatedRoute;
   constructor(
     private titleService: Title,
@@ -122,7 +129,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     // Catch and report a catastrophic failure as soon as possible
     this.ssjsService
       .loadModule$()
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe({
         error: (err) => {
           this.router.navigate(["error"], {
@@ -138,8 +145,6 @@ export class StudioComponent implements OnDestroy, OnInit {
   async ngOnDestroy() {
     // step us back to the previously left step
     this.studioService.lastStepperIndex = this.stepper?.selectedIndex;
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
 
     window.removeEventListener("beforeunload", this.beforeUnload);
   }
@@ -226,7 +231,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     step_one_final_step["buttons"][1]["action"] = () => {
       this.fileService
         .returnFileFromPath$("assets/hello-world.mp3")
-        .pipe(takeUntil(this.unsubscribe$))
+        .pipe(takeUntilDestroyed(this.destroyRef$))
         .subscribe((audioFile) => {
           if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
             this.studioService.$textInput.next("Hello world!");
@@ -315,7 +320,7 @@ export class StudioComponent implements OnDestroy, OnInit {
         this.fileService.readFileAsData$(event[1]), // audio
         of(aligned_xml),
       ])
-        .pipe(takeUntil(this.unsubscribe$))
+        .pipe(takeUntilDestroyed(this.destroyRef$))
         .subscribe((x: any) => {
           this.studioService.b64Inputs$.next(x);
           this.stepper.next();
