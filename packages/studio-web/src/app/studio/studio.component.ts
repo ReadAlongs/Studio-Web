@@ -40,7 +40,6 @@ import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DownloadService } from "../shared/download/download.service";
 import { StudioService } from "./studio.service";
-import { environment } from "../../environments/environment";
 
 @Component({
   selector: "studio-component",
@@ -54,6 +53,8 @@ export class StudioComponent implements OnDestroy, OnInit {
   @ViewChild("demo", { static: false }) demo?: DemoComponent;
   @ViewChild("stepper") private stepper: MatStepper;
   unsubscribe$ = new Subject<void>();
+
+  private beforeUnload: (e: Event) => void;
   private route: ActivatedRoute;
   constructor(
     private titleService: Title,
@@ -108,13 +109,15 @@ export class StudioComponent implements OnDestroy, OnInit {
       true,
     );
 
+    this.beforeUnload = (e: Event) => {
+      if (this.formIsDirty()) {
+        e.preventDefault(); // chrome & edge >118, circa Oct 2023
+        e.returnValue = true; // chrome & edge <=118
+      }
+    };
+
     // User Browser's default messaging to warn the user when they're about to leave the page
-    if (environment.production) {
-      window.addEventListener("beforeunload", (e) => {
-        if (this.formIsDirty()) (e || window.event).returnValue = true;
-        return true;
-      });
-    }
+    window.addEventListener("beforeunload", this.beforeUnload);
 
     // Catch and report a catastrophic failure as soon as possible
     this.ssjsService
@@ -137,6 +140,8 @@ export class StudioComponent implements OnDestroy, OnInit {
     this.studioService.lastStepperIndex = this.stepper?.selectedIndex;
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+
+    window.removeEventListener("beforeunload", this.beforeUnload);
   }
 
   selectionChange(event: StepperSelectionEvent) {
@@ -155,9 +160,11 @@ export class StudioComponent implements OnDestroy, OnInit {
 
   formIsDirty() {
     return (
-      this.studioService.audioControl$.value !== null ||
-      this.studioService.textControl$.value !== null ||
-      this.studioService.$textInput
+      this.studioService.audioControl$.value ||
+      this.studioService.textControl$.value ||
+      this.studioService.$textInput.value ||
+      this.studioService.langMode$.value !== "generic" ||
+      this.studioService.langControl$.value !== "und"
     );
   }
 

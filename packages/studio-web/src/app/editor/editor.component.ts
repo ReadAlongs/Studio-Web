@@ -39,12 +39,15 @@ import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";
   styleUrls: ["./editor.component.sass"],
   standalone: false,
 })
-export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
+export class EditorComponent implements OnDestroy, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
   wavesurfer: WaveSurfer;
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
   @ViewChild("handle") handleElement!: ElementRef;
   @ViewChild("styleWindow") styleElement!: WcStylingComponent;
+
+  @ViewChild("rasFileUpload")
+  private rasFileUpload: ElementRef<HTMLInputElement>;
   readalong: Components.ReadAlong;
 
   language: "eng" | "fra" | "spa" = "eng";
@@ -55,6 +58,9 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
 
   unsubscribe$ = new Subject<void>();
   rasFileIsLoaded = false;
+
+  private beforeUnload: (e: Event) => void;
+
   constructor(
     public b64Service: B64Service,
     private fileService: FileService,
@@ -78,6 +84,23 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         console.log("[DEBUG] window resized");
         this.resetStyleWindowSize();
       });
+
+    this.beforeUnload = (e: Event) => {
+      if (this.formIsDirty()) {
+        e.preventDefault(); // chrome & edge >118, circa Oct 2023
+        e.returnValue = true; // chrome & edge <=118
+      }
+    };
+
+    // User Browser's default messaging to warn the user when they're about to leave the page
+    window.addEventListener("beforeunload", this.beforeUnload);
+  }
+
+  private formIsDirty(): boolean {
+    return (
+      (this.rasFileUpload && this.rasFileUpload.nativeElement.value !== "") ||
+      this.rasFileIsLoaded
+    );
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -177,7 +200,6 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit(): void {}
   async ngOnDestroy() {
     // Save translations, images and all other edits to a temporary blob before destroying component
     // We just re-use the download service method here for simplicity and reload from this when
@@ -196,6 +218,8 @@ export class EditorComponent implements OnDestroy, OnInit, AfterViewInit {
         );
     }
     this.rasFileIsLoaded = false;
+
+    window.removeEventListener("beforeunload", this.beforeUnload);
   }
 
   download(download_type: SupportedOutputs) {
