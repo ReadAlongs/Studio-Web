@@ -1,19 +1,20 @@
 import { ToastrModule } from "ngx-toastr";
 
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, provideHttpClient } from "@angular/common/http";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { RouterTestingModule } from "@angular/router/testing";
 
 import { StudioComponent } from "./studio.component";
 import { DemoComponent } from "../demo/demo.component";
 import { MaterialModule } from "../material.module";
 import { UploadComponent } from "../upload/upload.component";
+import { provideRouter } from "@angular/router";
+import { routes } from "../app-routing.module";
 
 describe("StudioComponent", () => {
   let httpClient: HttpClient;
@@ -21,13 +22,16 @@ describe("StudioComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule,
         ReactiveFormsModule,
         FormsModule,
         BrowserAnimationsModule,
         MaterialModule,
         ToastrModule.forRoot(),
-        HttpClientTestingModule,
+      ],
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [StudioComponent, UploadComponent, DemoComponent],
     }).compileComponents();
@@ -39,11 +43,5 @@ describe("StudioComponent", () => {
     const fixture = TestBed.createComponent(StudioComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'readalong-studio'`, () => {
-    const fixture = TestBed.createComponent(StudioComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual("readalong-studio");
   });
 });

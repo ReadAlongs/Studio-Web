@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
   selector: "app-text-format-dialog",
@@ -6,8 +6,4 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ["./text-format-dialog.component.sass"],
   standalone: false,
 })
-export class TextFormatDialogComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class TextFormatDialogComponent {}
