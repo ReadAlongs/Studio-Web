@@ -1,7 +1,7 @@
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
 import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { environment } from "../environments/environment";
-import { Router } from "@angular/router";
+import { EventType, Router, Event as RouterEvent } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
@@ -12,14 +12,13 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class AppComponent implements OnInit {
   private destroyRef$ = inject(DestroyRef);
-  version = environment.packageJson.singleFileBundleVersion;
-  currentURL = signal("/");
-  languages: (typeof environment)["languages"];
+  protected version = environment.packageJson.singleFileBundleVersion;
+  protected currentURL = signal("/");
+  protected languages: (typeof environment)["languages"];
+  protected router = inject(Router);
+  private dialog = inject(MatDialog);
 
-  constructor(
-    private dialog: MatDialog,
-    public router: Router,
-  ) {
+  constructor() {
     const currentLanguage = $localize.locale ?? "en";
     this.languages = environment.languages.filter(
       (l) => l.code != currentLanguage,
@@ -29,8 +28,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.router.events
       .pipe(takeUntilDestroyed(this.destroyRef$))
-      .subscribe((event) => {
-        if (event.type === 1) {
+      .subscribe((event: RouterEvent) => {
+        if (event.type === EventType.NavigationEnd) {
           this.currentURL.set(event.url);
         }
       });
@@ -48,7 +47,10 @@ export class AppComponent implements OnInit {
   switchLanguage(url: string) {
     window.open(url, "_blank");
   }
+  ngAfterViewInit() {}
 }
+
+const plausibleKey = "plausible_ignore";
 
 @Component({
   selector: "privacy-dialog",
@@ -56,20 +58,20 @@ export class AppComponent implements OnInit {
   standalone: false,
 })
 export class PrivacyDialog {
-  analyticsExcluded =
-    window.localStorage.getItem("plausible_ignore") === "true";
-  constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
+  private dialogRef = inject(MatDialogRef<PrivacyDialog>);
+  protected analyticsExcluded = localStorage.getItem(plausibleKey) === "true";
+
   ngOnInit() {
     this.dialogRef.updateSize("100%");
   }
 
   toggleAnalytics() {
     if (this.analyticsExcluded) {
-      window.localStorage.removeItem("plausible_ignore");
+      localStorage.removeItem(plausibleKey);
+      this.analyticsExcluded = false;
     } else {
-      window.localStorage.setItem("plausible_ignore", "true");
+      localStorage.setItem(plausibleKey, "true");
+      this.analyticsExcluded = true;
     }
-    this.analyticsExcluded =
-      window.localStorage.getItem("plausible_ignore") === "true";
   }
 }

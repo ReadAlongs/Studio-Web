@@ -5,7 +5,7 @@ import { BehaviorSubject } from "rxjs";
   providedIn: "root",
 })
 export class UploadService {
-  $currentAudio = new BehaviorSubject<Blob | File | null>(null);
-  $currentText = new BehaviorSubject<Blob | File | null>(null);
+  public $currentAudio = new BehaviorSubject<Blob | File | null>(null);
+  public $currentText = new BehaviorSubject<Blob | File | null>(null);
   constructor() {}
 }

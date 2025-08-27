@@ -3,11 +3,10 @@ import soundswallower_factory, {
   Segment,
   SoundSwallowerModule,
 } from "soundswallower";
-import { ReadAlong } from "./ras.service";
-
+import { type ReadAlong } from "./ras.service";
 import { Injectable } from "@angular/core";
 
-var soundswallower: SoundSwallowerModule;
+let soundswallower: SoundSwallowerModule;
 
 export interface AlignmentProgress {
   pos: number;
@@ -32,9 +31,9 @@ export enum BeamDefaults {
   providedIn: "root",
 })
 export class SoundswallowerService {
-  modelLoaded = new BehaviorSubject<boolean>(false);
-  mode = BeamDefaults.strict;
-  beamParams: { [key in BeamDefaults]: BeamSettings } = {
+  public modelLoaded = new BehaviorSubject<boolean>(false);
+  public mode = BeamDefaults.strict;
+  private beamParams: { [key in BeamDefaults]: BeamSettings } = {
     strict: {
       beam: 1e-100,
       pbeam: 1e-100,
@@ -51,7 +50,6 @@ export class SoundswallowerService {
       wbeam: 0,
     },
   };
-  constructor() {}
 
   async preload(): Promise<void> {
     const scratch = new soundswallower.Decoder();
@@ -62,14 +60,16 @@ export class SoundswallowerService {
   }
 
   loadModule$(): Observable<void> {
-    if (soundswallower === undefined)
+    if (!soundswallower) {
       return from(
         soundswallower_factory().then((module) => {
           soundswallower = module;
           return this.preload();
         }),
       );
-    else return from(this.preload());
+    }
+
+    return from(this.preload());
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
@@ -79,7 +79,7 @@ export class SoundswallowerService {
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
-        loglevel: "INFO",
+        loglevel: "ERROR", // "INFO"
         beam: this.beamParams[this.mode]["beam"],
         wbeam: this.beamParams[this.mode]["wbeam"],
         pbeam: this.beamParams[this.mode]["pbeam"],
@@ -122,7 +122,7 @@ export class SoundswallowerService {
           }
           decoder.stop();
           const hypseg = decoder.get_alignment();
-          console.log(`hypseg is ${hypseg}`);
+          console.log("hypseg is %o", hypseg);
           if (hypseg.w === undefined || hypseg.w.length == 0)
             throw new Error("No alignment found");
           subscriber.next({
