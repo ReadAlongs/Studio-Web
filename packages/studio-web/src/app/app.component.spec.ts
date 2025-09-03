@@ -14,7 +14,7 @@ import { DemoComponent } from "./demo/demo.component";
 import { MaterialModule } from "./material.module";
 import { UploadComponent } from "./upload/upload.component";
 import { provideRouter } from "@angular/router";
-import { routes } from "./app-routing.module";
+import { AppRoutingModule, routes } from "./app-routing.module";
 
 describe("AppComponent", () => {
   let httpClient: HttpClient;
@@ -27,6 +27,7 @@ describe("AppComponent", () => {
         BrowserAnimationsModule,
         MaterialModule,
         ToastrModule.forRoot(),
+        AppRoutingModule,
       ],
       providers: [
         provideHttpClient(),
