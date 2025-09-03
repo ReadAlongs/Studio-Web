@@ -2,7 +2,7 @@ import { map, Observable } from "rxjs";
 
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { DictEntry } from "soundswallower";
+import { type DictEntry } from "soundswallower";
 
 import { environment } from "../environments/environment";
 
