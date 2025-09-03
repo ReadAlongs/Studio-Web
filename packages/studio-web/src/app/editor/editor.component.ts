@@ -8,7 +8,6 @@ import {
   ElementRef,
   inject,
   OnDestroy,
-  OnInit,
   ViewChild,
 } from "@angular/core";
 import SegmentsPlugin from "./segments";
@@ -45,35 +44,32 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class EditorComponent implements OnDestroy, AfterViewInit {
   @ViewChild("wavesurferContainer") wavesurferContainer!: ElementRef;
-  wavesurfer: WaveSurfer;
+  private wavesurfer: WaveSurfer;
   @ViewChild("readalongContainer") readalongContainerElement: ElementRef;
   @ViewChild("handle") handleElement!: ElementRef;
   @ViewChild("styleWindow") styleElement!: WcStylingComponent;
 
   @ViewChild("rasFileUpload")
   private rasFileUpload: ElementRef<HTMLInputElement>;
-  readalong: Components.ReadAlong;
-
-  language: "eng" | "fra" | "spa" = "eng";
+  private readalong: Components.ReadAlong;
 
   // value passed to input[type=file] accept's attribute which expects
   // a comma separated list of file extensions or mime types.
-  htmlUploadAccepts = ".html";
-
+  protected htmlUploadAccepts = ".html";
   private destroyRef$ = inject(DestroyRef);
-  rasFileIsLoaded = false;
+  protected rasFileIsLoaded = false;
 
   private beforeUnload: (e: Event) => void;
 
-  constructor(
-    public b64Service: B64Service,
-    private fileService: FileService,
-    public shepherdService: ShepherdService,
-    public editorService: EditorService,
-    private toastr: ToastrService,
-    private downloadService: DownloadService,
-    private wcStylingService: WcStylingService,
-  ) {
+  public b64Service = inject(B64Service);
+  private fileService = inject(FileService);
+  public shepherdService = inject(ShepherdService);
+  public editorService = inject(EditorService);
+  private toastr = inject(ToastrService);
+  private downloadService = inject(DownloadService);
+  private wcStylingService = inject(WcStylingService);
+
+  constructor() {
     this.wcStylingService.$wcStyleInput.subscribe((css) =>
       this.updateWCStyle(css),
     );

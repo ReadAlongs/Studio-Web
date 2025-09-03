@@ -35,7 +35,7 @@ describe("RasService", () => {
     });
     const req = httpTestingController.expectOne({
       method: "GET",
-      url: service.baseURL + "/langs",
+      url: `${service.baseURL}/langs`,
     });
     expect(req.request.method).toEqual("GET");
     expect(req.request.responseType).toEqual("json");
@@ -59,7 +59,7 @@ describe("RasService", () => {
       });
     const req = httpTestingController.expectOne({
       method: "POST",
-      url: service.baseURL + "/assemble",
+      url: `${service.baseURL}/assemble`,
     });
     expect(req.cancelled).toBeFalsy();
     expect(req.request.responseType).toEqual("json");

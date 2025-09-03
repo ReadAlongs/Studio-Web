@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
+import { Component, inject, OnDestroy, ViewChild, signal } from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
@@ -13,16 +13,17 @@ import { ToastrService } from "ngx-toastr";
   styleUrls: ["./demo.component.sass"],
   standalone: false,
 })
-export class DemoComponent implements OnDestroy, OnInit {
-  @ViewChild("readalong") readalong!: Components.ReadAlong;
-  language: "eng" | "fra" | "spa" = "eng";
+export class DemoComponent implements OnDestroy {
+  @ViewChild("readalong") private readalong!: Components.ReadAlong;
+
+  protected language: "eng" | "fra" | "spa" = "eng";
+  protected b64Service = inject(B64Service);
   protected rasAsDataURL = signal<string>("");
-  constructor(
-    public b64Service: B64Service,
-    public studioService: StudioService,
-    private downloadService: DownloadService,
-    private toastr: ToastrService,
-  ) {
+  public studioService = inject(StudioService);
+  private downloadService = inject(DownloadService);
+  private toastr = inject(ToastrService);
+
+  constructor() {
     // If we do more languages, this should be a lookup table
     if ($localize.locale == "fr") {
       this.language = "fra";
@@ -37,9 +38,6 @@ export class DemoComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit(): void {}
   download(download_type: SupportedOutputs) {
     if (
       this.studioService.b64Inputs$.value &&
