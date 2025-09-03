@@ -10,12 +10,12 @@ export class MicrophoneService {
   private stream: MediaStream | null = null;
 
   async startRecording() {
-    if (this.recorder !== null && this.recorder.state == "paused") {
+    if (this.recorder !== null && this.recorder.state === "paused") {
       this.resume();
       return;
     }
     this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    this.recorder = new MediaRecorder(this.stream);
+    this.recorder = new MediaRecorder(this.stream, { mimeType: "audio/mpeg" });
     this.addListeners();
     this.recorder.start();
   }
@@ -62,11 +62,13 @@ export class MicrophoneService {
 
   private addListeners() {
     if (this.recorder === null) throw "Recorder was not created";
+
+    const mimeType = this.recorder.mimeType;
     this.recorder.addEventListener("dataavailable", (event: BlobEvent) => {
       this.chunks.push(event.data);
     });
     this.recorder.addEventListener("stop", (event: Event) => {
-      const blob = new Blob(this.chunks, { type: "audio/mpeg" });
+      const blob = new Blob(this.chunks, { type: mimeType });
       this.chunks = [];
       this.recorderEnded.emit(blob);
       this.clear();
