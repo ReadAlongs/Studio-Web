@@ -35,24 +35,25 @@
   style="display: flex; justify-content: space-evenly; margin-top: 1em"
 >
   <div>
+    @if(analyticsExcluded) {
     <button
       color="accent"
-      *ngIf="analyticsExcluded"
       (click)="toggleAnalytics()"
       i18n="Opt In Button"
       mat-raised-button
     >
       Opt in to Analytics
     </button>
+    } @else {
     <button
       color="warn"
-      *ngIf="!analyticsExcluded"
       (click)="toggleAnalytics()"
       i18n="Opt Out Button"
       mat-raised-button
     >
       Opt out of Analytics
     </button>
+    }
   </div>
   <div>
     <button
