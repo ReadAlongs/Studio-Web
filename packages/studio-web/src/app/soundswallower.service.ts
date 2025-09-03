@@ -31,9 +31,9 @@ export enum BeamDefaults {
   providedIn: "root",
 })
 export class SoundswallowerService {
-  modelLoaded = new BehaviorSubject<boolean>(false);
-  mode = BeamDefaults.strict;
-  beamParams: { [key in BeamDefaults]: BeamSettings } = {
+  public modelLoaded = new BehaviorSubject<boolean>(false);
+  public mode = BeamDefaults.strict;
+  private beamParams: { [key in BeamDefaults]: BeamSettings } = {
     strict: {
       beam: 1e-100,
       pbeam: 1e-100,
@@ -50,7 +50,6 @@ export class SoundswallowerService {
       wbeam: 0,
     },
   };
-  constructor() {}
 
   async preload(): Promise<void> {
     const scratch = new soundswallower.Decoder();

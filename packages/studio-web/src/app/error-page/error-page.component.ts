@@ -1,8 +1,7 @@
-import { query } from "@angular/animations";
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { map, Observable } from "rxjs";
 import { environment } from "../../environments/environment";
+
 @Component({
   selector: "app-error-page",
   templateUrl: "./error-page.component.html",
@@ -10,14 +9,11 @@ import { environment } from "../../environments/environment";
   standalone: false,
 })
 export class ErrorPageComponent implements OnInit {
-  msg: string | null = null;
-  errorType: string | null = null;
-  contactLink = environment.packageJson.contact;
-
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {}
+  protected msg: string | null = null;
+  protected errorType: string | null = null;
+  protected contactLink = environment.packageJson.contact;
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
     this.msg = this.route.snapshot.queryParamMap.get("msg");

@@ -9,7 +9,7 @@ import {
   take,
 } from "rxjs";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ToastrService } from "ngx-toastr";
 import { AudioContext, AudioBuffer } from "standardized-audio-context";
 
@@ -17,10 +17,8 @@ import { AudioContext, AudioBuffer } from "standardized-audio-context";
   providedIn: "root",
 })
 export class FileService {
-  constructor(
-    private http: HttpClient,
-    private toastr: ToastrService,
-  ) {}
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
 
   loadAudioBufferFromFile$(
     file: File | Blob,

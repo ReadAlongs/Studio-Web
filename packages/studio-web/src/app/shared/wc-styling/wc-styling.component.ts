@@ -25,22 +25,21 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   standalone: false,
 })
 export class WcStylingComponent implements OnInit {
-  styleText$ = new BehaviorSubject<string>("");
-  fontDeclaration$ = new BehaviorSubject<string>("");
-  inputType = "edit";
+  protected styleText$ = new BehaviorSubject<string>("");
+  private fontDeclaration$ = new BehaviorSubject<string>("");
+  protected inputType: "edit" | "upload" = "edit";
+  public collapsed$ = new BehaviorSubject<boolean>(true);
+  @ViewChild("styleInputElement") private styleInputElement: ElementRef;
+  @ViewChild("fontInputElement") private fontInputElement: ElementRef;
+  @ViewChild("styleSection") public styleSection: ElementRef;
+  protected canUseClipBoard = false;
+  private toastr = inject(ToastrService);
+  private wcStylingService = inject(WcStylingService);
+  private dialog = inject(MatDialog);
+  private b64Service = inject(B64Service);
   private destroyRef$ = inject(DestroyRef);
-  collapsed$ = new BehaviorSubject<boolean>(true);
-  @ViewChild("styleInputElement") styleInputElement: ElementRef;
-  @ViewChild("fontInputElement") fontInputElement: ElementRef;
-  @ViewChild("styleSection") styleSection: ElementRef;
-  canUseClipBoard = false;
 
-  constructor(
-    private toastr: ToastrService,
-    private wcStylingService: WcStylingService,
-    private dialog: MatDialog,
-    private b64Service: B64Service,
-  ) {
+  constructor() {
     //when a new file is uploaded
     this.wcStylingService.$wcStyleInput.subscribe((css) => {
       if (css !== this.styleText$.getValue()) {
