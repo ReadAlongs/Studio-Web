@@ -6,6 +6,7 @@ import { FormsModule } from "@angular/forms";
 import { MaterialModule } from "../material.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { provideHttpClient } from "@angular/common/http";
+import { AppModule } from "../app.module";
 
 describe("EditorComponent", () => {
   let component: EditorComponent;
@@ -18,6 +19,7 @@ describe("EditorComponent", () => {
         FormsModule,
         MaterialModule,
         BrowserAnimationsModule,
+        AppModule,
       ],
       declarations: [EditorComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
