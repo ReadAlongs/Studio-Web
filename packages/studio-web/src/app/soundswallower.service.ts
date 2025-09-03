@@ -79,7 +79,7 @@ export class SoundswallowerService {
     return new Observable((subscriber) => {
       // Do synchronous (and hopefully fast) initialization
       const decoder = new soundswallower.Decoder({
-        loglevel: "INFO",
+        loglevel: "ERROR",
         beam: this.beamParams[this.mode]["beam"],
         wbeam: this.beamParams[this.mode]["wbeam"],
         pbeam: this.beamParams[this.mode]["pbeam"],
@@ -122,7 +122,7 @@ export class SoundswallowerService {
           }
           decoder.stop();
           const hypseg = decoder.get_alignment();
-          console.log(`hypseg is ${hypseg}`);
+          console.log("hypseg is %o", hypseg);
           if (hypseg.w === undefined || hypseg.w.length == 0)
             throw new Error("No alignment found");
           subscriber.next({
