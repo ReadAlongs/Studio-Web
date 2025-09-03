@@ -12,14 +12,13 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class AppComponent implements OnInit {
   private destroyRef$ = inject(DestroyRef);
-  version = environment.packageJson.singleFileBundleVersion;
-  currentURL = signal("/");
-  languages: (typeof environment)["languages"];
+  protected version = environment.packageJson.singleFileBundleVersion;
+  protected currentURL = signal("/");
+  protected languages: (typeof environment)["languages"];
+  protected router = inject(Router);
+  private dialog = inject(MatDialog);
 
-  constructor(
-    private dialog: MatDialog,
-    public router: Router,
-  ) {
+  constructor() {
     const currentLanguage = $localize.locale ?? "en";
     this.languages = environment.languages.filter(
       (l) => l.code != currentLanguage,
@@ -56,9 +55,10 @@ export class AppComponent implements OnInit {
   standalone: false,
 })
 export class PrivacyDialog {
-  analyticsExcluded =
+  private dialogRef = inject(MatDialogRef<PrivacyDialog>);
+  protected analyticsExcluded =
     window.localStorage.getItem("plausible_ignore") === "true";
-  constructor(public dialogRef: MatDialogRef<PrivacyDialog>) {}
+
   ngOnInit() {
     this.dialogRef.updateSize("100%");
   }
@@ -66,10 +66,10 @@ export class PrivacyDialog {
   toggleAnalytics() {
     if (this.analyticsExcluded) {
       window.localStorage.removeItem("plausible_ignore");
+      this.analyticsExcluded = false;
     } else {
       window.localStorage.setItem("plausible_ignore", "true");
+      this.analyticsExcluded = true;
     }
-    this.analyticsExcluded =
-      window.localStorage.getItem("plausible_ignore") === "true";
   }
 }

@@ -8,8 +8,10 @@ import { SupportedOutputs } from "../../ras.service";
   standalone: false,
 })
 export class DownloadComponent {
-  @Output() downloadButtonClicked = new EventEmitter<SupportedOutputs>();
-  outputFormats = [
+  @Output() private downloadButtonClicked =
+    new EventEmitter<SupportedOutputs>();
+
+  protected outputFormats = [
     { value: SupportedOutputs.html, display: $localize`Offline HTML` },
     { value: SupportedOutputs.zip, display: $localize`Web Bundle` },
     { value: SupportedOutputs.eaf, display: $localize`Elan File` },
@@ -17,8 +19,7 @@ export class DownloadComponent {
     { value: SupportedOutputs.srt, display: $localize`SRT Subtitles` },
     { value: SupportedOutputs.vtt, display: $localize`WebVTT Subtitles` },
   ];
-  selectedOutputFormat: SupportedOutputs = SupportedOutputs.html;
-  constructor() {}
+  protected selectedOutputFormat: SupportedOutputs = SupportedOutputs.html;
 
   download() {
     this.downloadButtonClicked.emit(this.selectedOutputFormat);

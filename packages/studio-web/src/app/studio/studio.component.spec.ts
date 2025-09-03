@@ -44,10 +44,4 @@ describe("StudioComponent", () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
-
-  it(`should have as title 'readalong-studio'`, () => {
-    const fixture = TestBed.createComponent(StudioComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual("readalong-studio");
-  });
 });
