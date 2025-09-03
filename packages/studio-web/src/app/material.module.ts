@@ -12,6 +12,7 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatStepperModule } from "@angular/material/stepper";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatDividerModule } from "@angular/material/divider";
+import { MatToolbarModule } from "@angular/material/toolbar";
 
 @NgModule({
   imports: [
@@ -27,6 +28,7 @@ import { MatDividerModule } from "@angular/material/divider";
     MatRadioModule,
     MatMenuModule,
     MatButtonToggleModule,
+    MatToolbarModule,
   ],
   exports: [
     MatDividerModule,
@@ -42,6 +44,7 @@ import { MatDividerModule } from "@angular/material/divider";
     MatRadioModule,
     MatMenuModule,
     MatButtonToggleModule,
+    MatToolbarModule,
   ],
 })
 export class MaterialModule {}
