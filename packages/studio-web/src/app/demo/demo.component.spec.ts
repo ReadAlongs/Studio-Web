@@ -1,13 +1,14 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ToastrModule } from "ngx-toastr";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 import { MaterialModule } from "../material.module";
 import { DemoComponent } from "./demo.component";
 import { FormsModule } from "@angular/forms";
 import { SharedModule } from "../shared/shared.module";
+import { provideHttpClient } from "@angular/common/http";
 
 // ==== check create or not and default value =====
 describe("DemoComponent", () => {
@@ -17,7 +18,6 @@ describe("DemoComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         SharedModule,
         BrowserAnimationsModule,
         FormsModule,
@@ -26,6 +26,7 @@ describe("DemoComponent", () => {
       ],
       declarations: [DemoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DemoComponent);
