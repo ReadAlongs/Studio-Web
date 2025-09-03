@@ -76,58 +76,60 @@
             </div>
           }
         </div>
-        <div *ngIf="studioService.inputMethod.text === 'edit'">
-          <div class="d-flex flex-row justify-content-between p-0">
-            <span class="p-0"
-              ><h2 i18n="Title for text writing box" class="subtitle">
-                Write or paste your text here
-              </h2></span
-            >
-            <span class="p-0 align-right" align="right">
-              <button
-                i18n="Text format help button"
-                mat-button
-                (click)="displayFormatHelp()"
-                aria-label="Text format help button"
-                class="pr-0"
+        @if (studioService.inputMethod.text === "edit") {
+          <div>
+            <div class="d-flex flex-row justify-content-between p-0">
+              <span class="p-0"
+                ><h2 i18n="Title for text writing box" class="subtitle">
+                  Write or paste your text here
+                </h2></span
               >
-                <mat-icon class="mat-icon-lg">help_outline</mat-icon> Format
-              </button>
-              <button
-                i18n="Text download button"
-                mat-button
-                [disabled]="!(studioService.$textInput | async)"
-                (click)="downloadText()"
-                aria-label="Text download button"
-                class="pr-0"
-                data-test-id="text-download-btn"
-              >
-                <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
-              </button>
-            </span>
-          </div>
-          <div class="row">
-            <mat-form-field class="col-12 p-0 b-0">
-              <textarea
-                [ngModel]="studioService.$textInput | async"
-                (ngModelChange)="studioService.$textInput.next($event)"
-                id="textInput"
-                class="border rounded b-0 p-0 bg-light"
-                rows="8"
-                matInput
-                i18n-placeholder="Example input text"
-                placeholder="Ex. Hello my name is...
+              <span class="p-0 align-right" align="right">
+                <button
+                  i18n="Text format help button"
+                  mat-button
+                  (click)="displayFormatHelp()"
+                  aria-label="Text format help button"
+                  class="pr-0"
+                >
+                  <mat-icon class="mat-icon-lg">help_outline</mat-icon> Format
+                </button>
+                <button
+                  i18n="Text download button"
+                  mat-button
+                  [disabled]="!(studioService.$textInput | async)"
+                  (click)="downloadText()"
+                  aria-label="Text download button"
+                  class="pr-0"
+                  data-test-id="text-download-btn"
+                >
+                  <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
+                </button>
+              </span>
+            </div>
+            <div class="row">
+              <mat-form-field class="col-12 p-0 b-0">
+                <textarea
+                  [ngModel]="studioService.$textInput | async"
+                  (ngModelChange)="studioService.$textInput.next($event)"
+                  id="textInput"
+                  class="border rounded b-0 p-0 bg-light"
+                  rows="8"
+                  matInput
+                  i18n-placeholder="Example input text"
+                  placeholder="Ex. Hello my name is...
 Sentence two.
 
 Paragraph two.
 
 
 Page two."
-                data-test-id="ras-text-input"
-              ></textarea>
-            </mat-form-field>
+                  data-test-id="ras-text-input"
+                ></textarea>
+              </mat-form-field>
+            </div>
           </div>
-        </div>
+        }
       </div>
       <div id="audio-section" class="col-12 col-md-6 p-3 border bg-light">
         <!-- <div class="container"> -->
@@ -178,122 +180,120 @@ Page two."
             data-test-id="ras-audio-fileselector"
           />
         </div>
-        <div
-          *ngIf="studioService.inputMethod.audio === 'mic'"
-          class="mb-0 mb-md-3"
-        >
-          <div class="row">
-            <h2 i18n="Title for record box" class="subtitle">
-              Record your voice here
-            </h2>
+        @if (studioService.inputMethod.audio === "mic") {
+          <div class="mb-0 mb-md-3">
+            <div class="row">
+              <h2 i18n="Title for record box" class="subtitle">
+                Record your voice here
+              </h2>
+            </div>
+            <div class="row text-center">
+              <button
+                class="audioControl"
+                mat-button
+                (click)="startRecording()"
+                [color]="recording ? 'warn' : 'primary'"
+                aria-label="Record button"
+                [disabled]="starting_to_record"
+                data-test-id="ras-audio-recording-btn"
+              >
+                <mat-icon class="mat-icon-lg">mic</mat-icon>
+                @if (studioService.audioControl$.value !== null && !recording) {
+                  <span i18n="Audio re-record button"
+                    >Delete and re-record</span
+                  >
+                }
+                @if (studioService.audioControl$.value === null && !recording) {
+                  <span i18n="Audio record button">Record</span>
+                }
+                @if (recording) {
+                  <span i18n="Audio recording button">Recording</span>
+                }
+              </button>
+              @if (recording) {
+                <button
+                  i18n="Audio stop button"
+                  class="audioControl"
+                  (click)="stopRecording()"
+                  mat-button
+                  color="primary"
+                  aria-label="Stop button"
+                >
+                  <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
+                  Stop
+                </button>
+              }
+            </div>
           </div>
-          <div class="row text-center">
-            <button
-              class="audioControl"
-              mat-button
-              (click)="startRecording()"
-              [color]="recording ? 'warn' : 'primary'"
-              aria-label="Record button"
-              [disabled]="starting_to_record"
-              data-test-id="ras-audio-recording-btn"
-            >
-              <mat-icon class="mat-icon-lg">mic</mat-icon>
-              <span
-                i18n="Audio re-record button"
-                *ngIf="
-                  studioService.audioControl$.value !== null && !this.recording
-                "
-                >Delete and re-record</span
-              >
-              <span
-                i18n="Audio record button"
-                *ngIf="
-                  studioService.audioControl$.value === null && !this.recording
-                "
-                >Record</span
-              >
-              <span i18n="Audio recording button" *ngIf="this.recording"
-                >Recording</span
-              >
-            </button>
-            <button
-              i18n="Audio stop button"
-              class="audioControl"
-              (click)="stopRecording()"
-              *ngIf="recording"
-              mat-button
-              color="primary"
-              aria-label="Stop button"
-            >
-              <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
-              Stop
-            </button>
-          </div>
-        </div>
+        }
         <div class="row">
           <div class="col-12 col-xl-4">
-            <button
-              i18n="Audio play button"
-              class="audioControl"
-              (click)="playRecording()"
-              *ngIf="
-                !recording &&
-                studioService.audioControl$.value !== null &&
-                !playing
-              "
-              mat-button
-              color="primary"
-              aria-label="Play button"
-            >
-              <mat-icon class="mat-icon-lg">play_circle</mat-icon>
-              Play
-            </button>
-            <button
-              i18n="Audio stop button"
-              class="audioControl"
-              color="warn"
-              (click)="stopPlayback()"
-              *ngIf="
-                !recording &&
-                studioService.audioControl$.value !== null &&
-                playing
-              "
-              mat-button
-              aria-label="Stop button"
-            >
-              <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
-              Stop
-            </button>
+            @if (
+              !recording &&
+              studioService.audioControl$.value !== null &&
+              !playing
+            ) {
+              <button
+                i18n="Audio play button"
+                class="audioControl"
+                (click)="playRecording()"
+                mat-button
+                color="primary"
+                aria-label="Play button"
+              >
+                <mat-icon class="mat-icon-lg">play_circle</mat-icon>
+                Play
+              </button>
+            }
+            @if (
+              !recording &&
+              studioService.audioControl$.value !== null &&
+              playing
+            ) {
+              <button
+                i18n="Audio stop button"
+                class="audioControl"
+                color="warn"
+                (click)="stopPlayback()"
+                mat-button
+                aria-label="Stop button"
+              >
+                <mat-icon class="mat-icon-lg">stop_circle</mat-icon>
+                Stop
+              </button>
+            }
           </div>
           <div class="col-12 col-xl-4">
-            <button
-              i18n="Audio download button"
-              class="audioControl"
-              color="primary"
-              (click)="downloadRecording()"
-              *ngIf="!recording && studioService.audioControl$.value !== null"
-              mat-button
-              color="primary"
-              aria-label="Audio save button"
-            >
-              <mat-icon class="mat-icon-lg">save</mat-icon>
-              Save a copy
-            </button>
+            @if (!recording && studioService.audioControl$.value !== null) {
+              <button
+                i18n="Audio download button"
+                class="audioControl"
+                color="primary"
+                (click)="downloadRecording()"
+                mat-button
+                color="primary"
+                aria-label="Audio save button"
+              >
+                <mat-icon class="mat-icon-lg">save</mat-icon>
+                Save a copy
+              </button>
+            }
           </div>
           <div class="col-12 col-xl-4">
-            <button
-              i18n="Audio delete button"
-              class="audioControl"
-              (click)="deleteRecording()"
-              *ngIf="!recording && studioService.audioControl$.value !== null"
-              mat-button
-              color="warn"
-              aria-label="Delete button"
-              data-test-id="ras-audio-fileselector-delete-btn"
-            >
-              <mat-icon class="mat-icon-lg">delete</mat-icon>
-              Delete
-            </button>
+            @if (!recording && studioService.audioControl$.value !== null) {
+              <button
+                i18n="Audio delete button"
+                class="audioControl"
+                (click)="deleteRecording()"
+                mat-button
+                color="warn"
+                aria-label="Delete button"
+                data-test-id="ras-audio-fileselector-delete-btn"
+              >
+                <mat-icon class="mat-icon-lg">delete</mat-icon>
+                Delete
+              </button>
+            }
           </div>
         </div>
         <!-- </div> -->
@@ -375,9 +375,11 @@ Page two."
                   required
                   data-test-id="language-list"
                 >
-                  <mat-option *ngFor="let lang of langs" [value]="lang.code">
-                    {{ lang.names["_"] }} - ({{ lang.code }})
-                  </mat-option>
+                  @for (lang of langs; track lang.code) {
+                    <mat-option [value]="lang.code">
+                      {{ lang.names["_"] }} - ({{ lang.code }})
+                    </mat-option>
+                  }
                 </mat-select>
               </mat-form-field>
             </div>
@@ -398,11 +400,12 @@ Page two."
         >
           Go to the next step!
         </button>
-        <mat-progress-bar
-          *ngIf="loading"
-          [mode]="progressMode"
-          [value]="progressValue"
-        ></mat-progress-bar>
+        @if (loading) {
+          <mat-progress-bar
+            [mode]="progressMode"
+            [value]="progressValue"
+          ></mat-progress-bar>
+        }
       </div>
     </div>
   </div>

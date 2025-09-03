@@ -22,11 +22,13 @@
           </button>
         </div>
       </div>
-      <div class="col-4" *ngIf="editorService.uploadFormGroup.valid">
-        <ras-shared-download
-          (downloadButtonClicked)="download($event)"
-        ></ras-shared-download>
-      </div>
+      @if (editorService.uploadFormGroup.valid) {
+        <div class="col-4">
+          <ras-shared-download
+            (downloadButtonClicked)="download($event)"
+          ></ras-shared-download>
+        </div>
+      }
     </div>
     <div class="row justify-content-center mb-6">
       <div class="col">
@@ -53,16 +55,6 @@
       </div>
     </div>
   </div>
-  <!--div class="fluid-container">
-  <div class="row flex-nowrap">
-    <div class="col col-lg-7">
-
-    </div>
-    <div class="col-12 bg-fade  col-lg-5 pt-lg-5 d-lg-flex flex-row" *ngIf="rasFileIsLoaded">
-
-
-    </div>
-  </div></div-->
   <div
     class="d-flex justify-content-center flex-column flex-xl-row flex-xl-nowrap bg-light mt-3 full-height"
   >
@@ -85,28 +77,30 @@
   <div class="container">
     <div class="row justify-content-center mt-5 mb-5">
       <div class="col" id="audioToolbar">
-        <mat-toolbar *ngIf="editorService.audioControl$.valid">
-          <span i18n="Audio Toolbar">Audio Toolbar</span>
-          <span class="example-spacer"></span>
-          <span id="zoomControls">
-            <button
-              (click)="zoomIn()"
-              mat-icon-button
-              class="example-icon zoom-in-icon"
-              aria-label="Zoom in icon for audio waveform"
+        @if (editorService.audioControl$.valid) {
+          <mat-toolbar>
+            <span i18n="Audio Toolbar">Audio Toolbar</span>
+            <span class="example-spacer"></span>
+            <span id="zoomControls">
+              <button
+                (click)="zoomIn()"
+                mat-icon-button
+                class="example-icon zoom-in-icon"
+                aria-label="Zoom in icon for audio waveform"
+              >
+                <mat-icon>zoom_in</mat-icon>
+              </button>
+              <button
+                (click)="zoomOut()"
+                mat-icon-button
+                class="example-icon"
+                aria-label="Zoom out icon for audio waveform"
+              >
+                <mat-icon>zoom_out</mat-icon>
+              </button></span
             >
-              <mat-icon>zoom_in</mat-icon>
-            </button>
-            <button
-              (click)="zoomOut()"
-              mat-icon-button
-              class="example-icon"
-              aria-label="Zoom out icon for audio waveform"
-            >
-              <mat-icon>zoom_out</mat-icon>
-            </button></span
-          >
-        </mat-toolbar>
+          </mat-toolbar>
+        }
         <div
           class="pure-u-1"
           id="wavesurferContainer"
