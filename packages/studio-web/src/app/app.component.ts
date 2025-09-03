@@ -1,7 +1,7 @@
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
 import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { environment } from "../environments/environment";
-import { Router } from "@angular/router";
+import { EventType, Router, Event as RouterEvent } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
@@ -29,8 +29,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.router.events
       .pipe(takeUntilDestroyed(this.destroyRef$))
-      .subscribe((event) => {
-        if (event.type === 1) {
+      .subscribe((event: RouterEvent) => {
+        if (event.type === EventType.NavigationEnd) {
           this.currentURL.set(event.url);
         }
       });

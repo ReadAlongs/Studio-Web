@@ -3,11 +3,10 @@ import soundswallower_factory, {
   Segment,
   SoundSwallowerModule,
 } from "soundswallower";
-import { ReadAlong } from "./ras.service";
-
+import { type ReadAlong } from "./ras.service";
 import { Injectable } from "@angular/core";
 
-var soundswallower: SoundSwallowerModule;
+let soundswallower: SoundSwallowerModule;
 
 export interface AlignmentProgress {
   pos: number;
@@ -62,14 +61,16 @@ export class SoundswallowerService {
   }
 
   loadModule$(): Observable<void> {
-    if (soundswallower === undefined)
+    if (!soundswallower) {
       return from(
         soundswallower_factory().then((module) => {
           soundswallower = module;
           return this.preload();
         }),
       );
-    else return from(this.preload());
+    }
+
+    return from(this.preload());
   }
 
   align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
