@@ -1,8 +1,8 @@
-import { HttpClient, HttpEventType } from "@angular/common/http";
+import { HttpClient, provideHttpClient } from "@angular/common/http";
 import { ToastrModule } from "ngx-toastr";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 
@@ -17,7 +17,8 @@ describe("RasService", () => {
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj("HttpClient", ["get"]);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
+      imports: [ToastrModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     // Inject the http service and test controller for each test
     httpClient = TestBed.inject(HttpClient);

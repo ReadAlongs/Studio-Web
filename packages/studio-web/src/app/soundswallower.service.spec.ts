@@ -3,10 +3,10 @@ import { TestBed } from "@angular/core/testing";
 import { SoundswallowerService } from "./soundswallower.service";
 import { ToastrModule } from "ngx-toastr";
 import { FileService } from "./file.service";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, provideHttpClient } from "@angular/common/http";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 
 const b64audio = `data:audio/wave;base64,UklGRiSAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQCAAAAzAGIAVgBdAGIAXwBv
@@ -595,7 +595,8 @@ describe("SoundswallowerService", () => {
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj("HttpClient", ["get"]);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ToastrModule.forRoot()],
+      imports: [ToastrModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
