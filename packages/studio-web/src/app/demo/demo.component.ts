@@ -6,6 +6,13 @@ import { StudioService } from "../studio/studio.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
+import { type InterfaceLanguage } from "@readalongs/web-component";
+
+const localizationToRASLanguage: Record<string, InterfaceLanguage> = {
+  en: "eng",
+  fr: "fra",
+  es: "spa",
+};
 
 @Component({
   selector: "app-demo",
@@ -16,7 +23,7 @@ import { ToastrService } from "ngx-toastr";
 export class DemoComponent implements OnDestroy {
   @ViewChild("readalong") private readalong!: Components.ReadAlong;
 
-  protected language: "eng" | "fra" | "spa" = "eng";
+  protected language: InterfaceLanguage = "eng";
   protected b64Service = inject(B64Service);
   protected rasAsDataURL = signal<string>("");
   public studioService = inject(StudioService);
@@ -24,11 +31,9 @@ export class DemoComponent implements OnDestroy {
   private toastr = inject(ToastrService);
 
   constructor() {
-    // If we do more languages, this should be a lookup table
-    if ($localize.locale == "fr") {
-      this.language = "fra";
-    } else if ($localize.locale == "es") {
-      this.language = "spa";
+    const curLocale = $localize.locale ?? "en";
+    if (curLocale in localizationToRASLanguage) {
+      this.language = localizationToRASLanguage[curLocale];
     }
 
     this.studioService.b64Inputs$.subscribe(async (b64Input) => {
