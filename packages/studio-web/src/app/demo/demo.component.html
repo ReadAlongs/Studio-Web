@@ -20,7 +20,7 @@
     <div class="row"></div>
 
     <div class="row" *ngIf="studioService.b64Inputs$ | async as b64Inputs">
-      <div *ngIf="b64Inputs[0] && b64Inputs[1]">
+      <div *ngIf="b64Inputs[0] && b64Inputs[1] && rasAsDataURL()">
         <read-along
           id="readalong"
           [language]="language"
