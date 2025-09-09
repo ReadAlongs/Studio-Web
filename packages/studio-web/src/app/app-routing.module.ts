@@ -4,7 +4,7 @@ import { StudioComponent } from "./studio/studio.component";
 import { ErrorPageComponent } from "./error-page/error-page.component";
 import { EditorComponent } from "./editor/editor.component";
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: "",
     pathMatch: "full",

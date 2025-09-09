@@ -9,7 +9,7 @@ import {
   take,
 } from "rxjs";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ToastrService } from "ngx-toastr";
 import { AudioContext, AudioBuffer } from "standardized-audio-context";
 
@@ -17,13 +17,11 @@ import { AudioContext, AudioBuffer } from "standardized-audio-context";
   providedIn: "root",
 })
 export class FileService {
-  constructor(
-    private http: HttpClient,
-    private toastr: ToastrService,
-  ) {}
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
 
   loadAudioBufferFromFile$(
-    file: File,
+    file: File | Blob,
     sampleRate: number,
   ): Observable<AudioBuffer> {
     const audioCtx = new AudioContext({ sampleRate });
@@ -62,10 +60,10 @@ export class FileService {
     }
 
     const reader = new FileReader();
-    return new Observable((obs: any) => {
+    return new Observable((obs: Subscriber<string>) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
-      reader.onload = () => obs.next(reader.result);
+      reader.onload = () => obs.next(reader.result as string);
       reader.onloadend = () => obs.complete();
       reader.readAsText(blob);
     });
@@ -88,10 +86,10 @@ export class FileService {
     }
 
     const reader = new FileReader();
-    return new Observable((obs: any) => {
+    return new Observable((obs: Subscriber<string>) => {
       reader.onerror = (err) => obs.error(err);
       reader.onabort = (err) => obs.error(err);
-      reader.onload = () => obs.next(reader.result);
+      reader.onload = () => obs.next(reader.result as string);
       reader.onloadend = () => obs.complete();
       reader.readAsDataURL(blob);
     });

@@ -1,6 +1,6 @@
 import { ToastrModule } from "ngx-toastr";
 
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
@@ -34,7 +34,6 @@ defineCustomElements();
     StudioComponent,
     ErrorPageComponent,
     EditorComponent,
-    // ShepherdComponent
     WcStylingComponent,
   ],
   imports: [
@@ -43,14 +42,13 @@ defineCustomElements();
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
     ReactiveFormsModule,
-    HttpClientModule,
     MaterialModule,
     MatToolbarModule,
     FormsModule,
     NgxRAWebComponentModule,
     SharedModule,
   ],
-  providers: [],
+  providers: [provideHttpClient()],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

@@ -1,8 +1,8 @@
 import { map, Observable } from "rxjs";
 
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { DictEntry } from "soundswallower";
+import { inject, Injectable } from "@angular/core";
+import { type DictEntry } from "soundswallower";
 
 import { environment } from "../environments/environment";
 
@@ -57,22 +57,22 @@ export enum SupportedOutputs {
   providedIn: "root",
 })
 export class RasService {
-  baseURL = environment.apiBaseURL;
-  constructor(private http: HttpClient) {}
+  public readonly baseURL = environment.apiBaseURL;
+  private http = inject(HttpClient);
 
   convertRasFormat$(
     body: ReadAlongFormatRequest,
     output_type: SupportedOutputs,
   ): Observable<Blob> {
     return this.http.post(
-      this.baseURL + "/convert_alignment/" + output_type,
+      `${this.baseURL}/convert_alignment/${output_type}`,
       body,
       { responseType: "blob" },
     );
   }
 
   assembleReadalong$(body: ReadAlongRequest): Observable<ReadAlong> {
-    return this.http.post<ReadAlong>(this.baseURL + "/assemble", body).pipe(
+    return this.http.post<ReadAlong>(`${this.baseURL}/assemble`, body).pipe(
       map((ras: ReadAlong) => {
         if (!ras.processed_ras.startsWith("<?xml")) {
           ras.processed_ras =
@@ -83,6 +83,6 @@ export class RasService {
     );
   }
   getLangs$(): Observable<Array<SupportedLanguage>> {
-    return this.http.get<Array<SupportedLanguage>>(this.baseURL + "/langs");
+    return this.http.get<Array<SupportedLanguage>>(`${this.baseURL}/langs`);
   }
 }

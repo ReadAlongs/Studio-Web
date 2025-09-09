@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
+import { Component, inject, OnDestroy, ViewChild, signal } from "@angular/core";
 import { Components } from "@readalongs/web-component/loader";
 
 import { B64Service } from "../b64.service";
@@ -6,6 +6,13 @@ import { StudioService } from "../studio/studio.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
 import { ToastrService } from "ngx-toastr";
+import { type InterfaceLanguage } from "@readalongs/web-component";
+
+const localizationToRASLanguage: Record<string, InterfaceLanguage> = {
+  en: "eng",
+  fr: "fra",
+  es: "spa",
+};
 
 @Component({
   selector: "app-demo",
@@ -13,21 +20,20 @@ import { ToastrService } from "ngx-toastr";
   styleUrls: ["./demo.component.sass"],
   standalone: false,
 })
-export class DemoComponent implements OnDestroy, OnInit {
-  @ViewChild("readalong") readalong!: Components.ReadAlong;
-  language: "eng" | "fra" | "spa" = "eng";
+export class DemoComponent implements OnDestroy {
+  @ViewChild("readalong") private readalong!: Components.ReadAlong;
+
+  protected language: InterfaceLanguage = "eng";
+  protected b64Service = inject(B64Service);
   protected rasAsDataURL = signal<string>("");
-  constructor(
-    public b64Service: B64Service,
-    public studioService: StudioService,
-    private downloadService: DownloadService,
-    private toastr: ToastrService,
-  ) {
-    // If we do more languages, this should be a lookup table
-    if ($localize.locale == "fr") {
-      this.language = "fra";
-    } else if ($localize.locale == "es") {
-      this.language = "spa";
+  public studioService = inject(StudioService);
+  private downloadService = inject(DownloadService);
+  private toastr = inject(ToastrService);
+
+  constructor() {
+    const curLocale = $localize.locale ?? "en";
+    if (curLocale in localizationToRASLanguage) {
+      this.language = localizationToRASLanguage[curLocale];
     }
 
     this.studioService.b64Inputs$.subscribe(async (b64Input) => {
@@ -37,9 +43,6 @@ export class DemoComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit(): void {}
   download(download_type: SupportedOutputs) {
     if (
       this.studioService.b64Inputs$.value &&

@@ -1,19 +1,20 @@
 import { ToastrModule } from "ngx-toastr";
 
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, provideHttpClient } from "@angular/common/http";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { RouterTestingModule } from "@angular/router/testing";
 
 import { AppComponent } from "./app.component";
 import { DemoComponent } from "./demo/demo.component";
 import { MaterialModule } from "./material.module";
 import { UploadComponent } from "./upload/upload.component";
+import { provideRouter } from "@angular/router";
+import { AppRoutingModule, routes } from "./app-routing.module";
 
 describe("AppComponent", () => {
   let httpClient: HttpClient;
@@ -21,13 +22,17 @@ describe("AppComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule,
         ReactiveFormsModule,
         FormsModule,
         BrowserAnimationsModule,
         MaterialModule,
         ToastrModule.forRoot(),
-        HttpClientTestingModule,
+        AppRoutingModule,
+      ],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter(routes),
       ],
       declarations: [AppComponent, UploadComponent, DemoComponent],
     }).compileComponents();

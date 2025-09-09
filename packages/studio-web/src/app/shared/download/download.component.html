@@ -5,9 +5,11 @@
       data-test-id="download-formats"
       [(ngModel)]="selectedOutputFormat"
     >
-      <mat-option *ngFor="let format of outputFormats" [value]="format.value">
-        {{ format.display }}
-      </mat-option>
+      @for (format of outputFormats; track format.value) {
+        <mat-option [value]="format.value">
+          {{ format.display }}
+        </mat-option>
+      }
     </mat-select>
   </mat-form-field>
   <button
