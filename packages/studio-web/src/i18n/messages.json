@@ -168,6 +168,7 @@
     "1549389605329660619": "This is really difficult. We'll try one last time, but it might take a long time and produce poor results. Please make sure your text matches your audio and that there is as little background noise as possible.",
     "6071928720301938306": "Audio processing failed.",
     "3763839702998678686": "No audio to download.",
+    "3513286828638574591": "Microphone access was denied. Please grant microphone access to use this feature.",
     "4183225119057268962": "Could not start recording!",
     "2596823344081631983": "Audio was successfully recorded. Please listen to your recording to make sure it's OK, and save it for reuse if so.",
     "1317075918959775059": "Yay!",

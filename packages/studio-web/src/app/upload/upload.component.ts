@@ -279,7 +279,15 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       await this.microphoneService.startRecording();
       this.recording = true;
     } catch (err: any) {
-      this.toastr.error(err.toString(), $localize`Could not start recording!`);
+      let message;
+      if (err.name === "NotAllowedError") {
+        message = $localize`Microphone access was denied. Please grant microphone access to use this feature.`;
+      } else {
+        message = err.toString();
+      }
+      this.toastr.error(message, $localize`Could not start recording!`, {
+        timeOut: 15000,
+      });
     } finally {
       this.starting_to_record = false;
     }
