@@ -23,6 +23,7 @@ import {
   inject,
   OnInit,
   Output,
+  signal,
   ViewChild,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -46,6 +47,8 @@ import { StudioService } from "../studio/studio.service";
 import { validateFileType } from "../utils/utils";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
+import { G2PErrorComponent } from "./g2p.error.component";
+import { BehaviorSubject } from "rxjs";
 @Component({
   selector: "app-upload",
   templateUrl: "./upload.component.html",
@@ -73,6 +76,8 @@ export class UploadComponent implements OnInit {
   @ViewChild("audioFileUpload")
   private audioFileUpload: ElementRef<HTMLFormElement>;
   @Output() public stepChange = new EventEmitter<any[]>();
+  @ViewChild("g2pError")
+  private g2pError: ElementRef<G2PErrorComponent>;
 
   // value passed to input[type=file] accept's attribute which expects
   // a comma separated list of file extensions or mime types.
@@ -90,6 +95,7 @@ export class UploadComponent implements OnInit {
   private uploadService = inject(UploadService);
   private dialog = inject(MatDialog);
   public studioService = inject(StudioService);
+  g2pErrorMessage$ = new BehaviorSubject<string>("");
 
   constructor() {
     this.studioService.audioControl$.valueChanges
@@ -174,12 +180,17 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           { timeOut: 30000 },
         );
       }
-      this.toastr.error(err.error.detail, $localize`Text processing failed.`, {
+      let message = err.error.detail;
+      //remove the PARTIAL RAS part of the message if present
+      if (message.includes("PARTIAL RAS:")) {
+        message = message.split("PARTIAL RAS:")[0];
+      }
+      this.toastr.error(message.trim(), $localize`Text processing failed.`, {
         timeOut: 30000,
       });
     } else {
       this.toastr.error(
-        err.message,
+        err.error.detail,
         $localize`Hmm, we can't connect to the ReadAlongs API. Please try again later.`,
         { timeOut: 60000 },
       );
@@ -487,7 +498,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       });
       this.studioService.textControl$.setValue(inputText);
     }
-
+    this.g2pErrorMessage$.next("");
     // Show progress bar
     this.loading = true;
     this.progressMode = "query";
@@ -568,6 +579,13 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
             possibleError instanceof Error ||
             possibleError instanceof HttpErrorResponse
           ) {
+            if (possibleError instanceof HttpErrorResponse) {
+              const httpError = possibleError as HttpErrorResponse;
+              //get the message if the PARTIAL RAS is present
+              if (httpError.error.detail.includes(".PARTIAL RAS:")) {
+                this.g2pErrorMessage$.next(httpError.error.detail);
+              }
+            }
             throw possibleError;
           } else {
             return possibleError;
@@ -594,6 +612,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         },
         error: (err: Error) => {
           this.loading = false;
+
           if (err instanceof HttpErrorResponse) {
             this.reportRasError(err);
           } else if (err.message.includes("align")) {
