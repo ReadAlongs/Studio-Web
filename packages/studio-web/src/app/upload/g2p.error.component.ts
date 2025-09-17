@@ -6,10 +6,14 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
   template: `<div [ngClass]="class()">
     <h3>
       {{ this.parsedHeader() }}
-      <p i18n="g2p advice">
+      <div i18n="g2p advice" class="text-info">
         Common issues include stray diacritics and numbers or dates represented
         as digits instead of words.
-      </p>
+      </div>
+      <div i18n="g2p error highlights" class="text-info">
+        Characters/symbols/punctuations that prevented our system from
+        processing your text are highlighted below:
+      </div>
     </h3>
     <div>
       @for (page of this.parsedPages(); track $index) {
@@ -60,7 +64,7 @@ export class G2PErrorComponent {
   }
   wordClass(word: HTMLElement): string {
     return word.getAttribute("ARPABET") === ""
-      ? "text-danger border border-danger"
+      ? "text-danger border border-danger bg-warning"
       : "text-muted";
   }
 }
