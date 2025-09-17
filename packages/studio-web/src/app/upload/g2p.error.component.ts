@@ -4,7 +4,13 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 @Component({
   selector: "g2p-error",
   template: `<div [ngClass]="class()">
-    <h3>{{ this.parsedHeader() }}</h3>
+    <h3>
+      {{ this.parsedHeader() }}
+      <p i18n="g2p advice">
+        Common issues include stray diacritics and numbers or dates represented
+        as digits instead of words.
+      </p>
+    </h3>
     <div>
       @for (page of this.parsedPages(); track $index) {
         <div>
