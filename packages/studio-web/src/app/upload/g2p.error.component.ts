@@ -53,6 +53,8 @@ export class G2PErrorComponent {
     return Array.from(sentence.querySelectorAll("w"));
   }
   wordClass(word: HTMLElement): string {
-    return word.getAttribute("ARPABET") === "" ? "text-danger" : "";
+    return word.getAttribute("ARPABET") === ""
+      ? "text-danger border border-danger"
+      : "text-muted";
   }
 }
