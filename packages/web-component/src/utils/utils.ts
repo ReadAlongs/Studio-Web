@@ -17,6 +17,10 @@ export function zip(arrays): Array<any[]> {
   });
 }
 
+export function isIOS(): boolean {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
+
 /**
  * Return pages from readalong XML file
  * @param {string} - the path to the readalong file
@@ -98,7 +102,7 @@ export function extractAlignment(parsed_text: Array<Page>): Alignment {
  */
 export var Sprite = function (options) {
   var self = this;
-
+  const html5 = isIOS();
   self.sounds = [];
   // Setup the options to define this sprite display.
   self._sprite = options.sprite;
@@ -120,6 +124,7 @@ export var Sprite = function (options) {
     src: options.src,
     sprite: options.sprite,
     rate: options.rate,
+    html5: html5,
     onend: function () {
       self._reading$.next(""); //flush the pipe
     },
