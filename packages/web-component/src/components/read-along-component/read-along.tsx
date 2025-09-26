@@ -20,6 +20,7 @@ import {
   extractPages,
   extractAlignment,
   isFileAvailable,
+  isIOS,
   getUserPreferences,
   USER_PREFERENCE_VERSION,
   setUserPreferences,
@@ -1200,6 +1201,7 @@ export class ReadAlongComponent {
     // load basic Howl
     this.audio_howl = new Howl({
       src: [this.audio],
+      html5: isIOS(),
       preload: false,
     });
     // Once loaded, get duration and build Sprite
