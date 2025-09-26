@@ -15,8 +15,8 @@
     "e2e-ui": "playwright test --ui"
   },
   "private": true,
-  "singleFileBundleVersion": "1.6.0",
-  "singleFileBundleTimestamp": "2025-07-22+17-39-05",
+  "singleFileBundleVersion": "1.6.1",
+  "singleFileBundleTimestamp": "2025-09-26+14-17-34",
   "dependencies": {
     "readalong-studio": "file:"
   }
