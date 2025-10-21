@@ -22,8 +22,10 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Stop early if the tag fails any validation
-        run: sh validate-version.sh ${{ github.ref_name }}
+        run: sh validate-version.sh ${GITHUB_REF_NAME}
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
@@ -40,7 +42,7 @@ jobs:
       - name: Fix the relative URLs in the READMEs to work on npmjs
         run: |
           sed -i 's/(\.\.\/web-component)/(web-component)/g' dist/packages/ngx-web-component/README.md
-          sed -i 's/(test-data\//(https:\/\/github.com\/ReadAlongs\/Studio-Web\/blob\/${{ github.ref_name }}\/packages\/web-component\/test-data\//g' dist/packages/web-component/README.md
+          sed -i 's/(test-data\//(https:\/\/github.com\/ReadAlongs\/Studio-Web\/blob\/${GITHUB_REF_NAME}\/packages\/web-component\/test-data\//g' dist/packages/web-component/README.md
       - name: Update CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
