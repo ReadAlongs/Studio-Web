@@ -38,6 +38,9 @@ export class DemoComponent implements OnDestroy {
 
     this.studioService.b64Inputs$.subscribe(async (b64Input) => {
       if (b64Input[1]) {
+        // disable the read-along component until the
+        // `await` below is done and updates the dataUrl.
+        this.rasAsDataURL.set("");
         this.rasAsDataURL.set(await this.b64Service.rasToDataURL(b64Input[1]));
       }
     });
