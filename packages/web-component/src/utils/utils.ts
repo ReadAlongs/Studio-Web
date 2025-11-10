@@ -315,6 +315,14 @@ export const setUserPreferences = (userPref: UserPreferences) => {
   );
 };
 
+export const hasUserPreferences = (): boolean => {
+  return window.localStorage.getItem(USER_PREFERENCE_STORAGE_ID) !== null;
+};
+
+export const clearUserPreferences = () => {
+  window.localStorage.removeItem(USER_PREFERENCE_STORAGE_ID);
+};
+
 export const sentenceIsAligned = (sentence: Element): boolean => {
   return sentence.innerHTML.includes("</w>");
 };
