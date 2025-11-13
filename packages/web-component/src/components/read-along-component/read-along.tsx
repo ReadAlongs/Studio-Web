@@ -26,6 +26,8 @@ import {
   setUserPreferences,
   extractMeta,
   sentenceIsAligned,
+  hasUserPreferences,
+  clearUserPreferences,
 } from "../../utils/utils";
 import {
   Alignment,
@@ -63,6 +65,20 @@ interface InvalidImageFile {
 // values disables this functionality.
 const DEFAULT_ERROR_TIMEOUT_MS = 50000;
 
+/**
+ * navigatorTheme returns the user's preferred theme, defaults to the
+ * light theme.
+ */
+function navigatorTheme(): string {
+  if (window.matchMedia) {
+    if (window.matchMedia("prefers-color-scheme: dark").matches) {
+      return "dark";
+    }
+  }
+
+  return "light";
+}
+
 @Component({
   tag: "read-along",
   styleUrl: "../../scss/styles.scss",
@@ -99,15 +115,15 @@ export class ReadAlongComponent {
   @Prop() svgOverlay: string;
 
   /**
-   * Theme to use: ['light', 'dark'] defaults to 'dark'
+   * Theme to use: ['light', 'dark'] defaults to the user's configured theme.
    */
-  @Prop({ mutable: true, reflect: true }) theme: string = "light";
+  @Prop() theme: string = navigatorTheme();
 
   /**
    * Language  of the interface. In 639-3 code.
    * Options are "eng" (English), "fra" (French) or "spa" (Spanish)
    */
-  @Prop({ mutable: true, reflect: true }) language: InterfaceLanguage = "eng";
+  @Prop() language: InterfaceLanguage = "eng";
 
   /**
    * i18n strings dicts
@@ -154,8 +170,7 @@ export class ReadAlongComponent {
    * animated, good for fast computers) or "auto" (choppy but much less compute
    * intensive)
    */
-  @Prop({ mutable: true, reflect: true }) scrollBehaviour: ScrollBehaviour =
-    "smooth";
+  @Prop() scrollBehaviour: ScrollBehaviour = "smooth";
 
   /**
    * Show text translation  on at load time
@@ -171,7 +186,7 @@ export class ReadAlongComponent {
   /**
    * Auto Pause at end of every page
    */
-  @Prop({ mutable: true, reflect: true }) autoPauseAtEndOfPage? = false;
+  @Prop() autoPauseAtEndOfPage = false;
 
   /************
    *  STATES  *
@@ -219,10 +234,14 @@ export class ReadAlongComponent {
   endOfPageTags: Alignment = {};
   finalTaggedWord: string;
   @State() settingsVisible: boolean = false;
-  @State() userPreferencesDirty: boolean = false;
+  @State() private userPreferences: UserPreferences;
+  @State() private userPreferencesDirty: boolean = false;
+  @State() private hasUserPreferences: boolean = hasUserPreferences();
+
   meta: RASMeta = {};
   @State() annotations: RASAnnotation[] = [];
   @State() annotationsMenuVisible: boolean = false;
+
   @Watch("audio_howl_sprites")
   /************
    *  LISTENERS  *
@@ -374,7 +393,11 @@ export class ReadAlongComponent {
    * toggle (override) scrolling animation
    */
   toggleScrollBehavior(): void {
-    this.scrollBehaviour = this.scrollBehaviour === "auto" ? "smooth" : "auto";
+    this.userPreferences = {
+      ...this.userPreferences,
+      scrollBehaviour:
+        this.userPreferences.scrollBehaviour === "auto" ? "smooth" : "auto",
+    };
   }
   /*************
    *   AUDIO   *
@@ -576,8 +599,8 @@ export class ReadAlongComponent {
     let trail =
       wave__container.contentDocument.querySelector("#progress-trail");
     let base = wave__container.contentDocument.querySelector("#progress-base");
-    fill.classList.add("stop-color--" + this.theme);
-    base.classList.add("stop-color--" + this.theme);
+    fill.classList.add("stop-color--" + this.userPreferences.theme);
+    base.classList.add("stop-color--" + this.userPreferences.theme);
 
     // push them to array to be changed in step()
     this.audio_howl_sprites.sounds.push(fill);
@@ -607,7 +630,7 @@ export class ReadAlongComponent {
    */
   animateProgressDefault(play_id: number, tag: string): void {
     let elm = document.createElement("div");
-    elm.className = "progress theme--" + this.theme;
+    elm.className = "progress theme--" + this.userPreferences.theme;
     elm.id = play_id.toString();
     elm.dataset.sprite = tag;
     let query = this.tagToQuery(tag);
@@ -722,11 +745,8 @@ export class ReadAlongComponent {
    */
   @Method()
   async changeTheme(): Promise<void> {
-    if (this.theme === "light") {
-      this.theme = "dark";
-    } else {
-      this.theme = "light";
-    }
+    const newTheme = this.userPreferences.theme === "light" ? "dark" : "light";
+    this.userPreferences = { ...this.userPreferences, theme: newTheme };
   }
   /**
    * Update stylesheet
@@ -925,7 +945,7 @@ export class ReadAlongComponent {
         this.pageScrolling.match("vertical") != null
           ? 0
           : next_page.offsetLeft - page_container.scrollLeft,
-      behavior: this.scrollBehaviour,
+      behavior: this.userPreferences.scrollBehaviour,
     });
     next_page.scrollTo(0, 0); //reset to top of the page
   }
@@ -945,7 +965,7 @@ export class ReadAlongComponent {
             top: sent_container.getBoundingClientRect().height - anchor.height, // negative value
             // acceptable
             left: 0,
-            behavior: this.scrollBehaviour,
+            behavior: this.userPreferences.scrollBehaviour,
           });
         }
       },
@@ -965,13 +985,13 @@ export class ReadAlongComponent {
     sent_container.scrollTo({
       left: anchor.left - 10, // negative value acceptable
       top: 0,
-      behavior: this.scrollBehaviour,
+      behavior: this.userPreferences.scrollBehaviour,
     });
   }
 
   scrollTo(el: HTMLElement): void {
     el.scrollIntoView({
-      behavior: this.scrollBehaviour,
+      behavior: this.userPreferences.scrollBehaviour,
     });
   }
 
@@ -1002,28 +1022,27 @@ export class ReadAlongComponent {
   }
 
   /**
-   * Using this Lifecycle hook to handle backwards compatibility of component attribute
+   * construct a valid default user preferences object, using the provided
+   * component properties.
    */
-  async componentWillLoad() {
-    //set theme based on system default mode (dark/light)
-    if (window.matchMedia) {
-      if (window.matchMedia("prefers-color-scheme: dark").matches) {
-        this.theme = "dark";
-      } else {
-        this.theme = "light";
-      }
-    }
-    //load user preferences
-    const userPreferences: UserPreferences | null = getUserPreferences();
+  private defaultUserPreferences(): UserPreferences {
+    const prefs: UserPreferences = {
+      version: USER_PREFERENCE_VERSION,
+      autoPauseAtEndOfPage: this.autoPauseAtEndOfPage,
+      scrollBehaviour: this.scrollBehaviour,
+      language: this.language,
+      theme: this.theme,
+    };
+
+    // Make sure scroll-behaviour is valid
     if (
-      userPreferences !== null &&
-      userPreferences.version === USER_PREFERENCE_VERSION
+      prefs.scrollBehaviour !== "smooth" &&
+      prefs.scrollBehaviour !== "auto"
     ) {
-      this.language = userPreferences.language;
-      this.scrollBehaviour = userPreferences.scrollBehaviour;
-      this.autoPauseAtEndOfPage = userPreferences.autoPauseAtEndOfPage;
-      this.theme = userPreferences.theme || this.theme;
+      console.error("Invalid scroll-behaviour value, using default (smooth)");
+      prefs.scrollBehaviour = "smooth";
     }
+
     // The backward compatible behaviour used to be audio, alignment and text files outside assets
     // and only image files inside assets.
     // See version 0.1.0, where it only looks in assets/ for images, nothing else.
@@ -1032,21 +1051,28 @@ export class ReadAlongComponent {
     //this.alignment = this.urlTransform(this.alignment)
     //this.text = this.urlTransform(this.text)
     //this.cssUrl = this.urlTransform(this.cssUrl)
+
     // TO maintain backwards compatibility language code
-    if (this.language.length < 3) {
-      if (this.language.match("fr") != null) {
-        this.language = "fra";
-      } else if (this.language.match("es") !== null) {
-        this.language = "spa";
+    if (prefs.language.length < 3) {
+      if (prefs.language.match("fr") != null) {
+        prefs.language = "fra";
+      } else if (prefs.language.match("es") !== null) {
+        prefs.language = "spa";
       } else {
-        this.language = "eng";
+        prefs.language = "eng";
       }
     }
 
-    // Make sure scroll-behaviour is valid
-    if (this.scrollBehaviour !== "smooth" && this.scrollBehaviour !== "auto") {
-      console.error("Invalid scroll-behaviour value, using default (smooth)");
-      this.scrollBehaviour = "smooth";
+    return prefs;
+  }
+
+  /**
+   * Using this Lifecycle hook to handle backwards compatibility of component attribute
+   */
+  async componentWillLoad() {
+    this.userPreferences = getUserPreferences();
+    if (!this.userPreferences) {
+      this.userPreferences = this.defaultUserPreferences();
     }
 
     // Make sure playback-rate-range is valid
@@ -1156,9 +1182,9 @@ export class ReadAlongComponent {
       if (this.meta["annotations-ids"]) {
         const delimiter = ",";
         const labels: string | undefined = this.meta[
-          "annotations-labels-" + this.language
+          "annotations-labels-" + this.userPreferences.language
         ]
-          ? this.meta["annotations-labels-" + this.language]
+          ? this.meta["annotations-labels-" + this.userPreferences.language]
           : this.meta["annotations-labels"];
         const annotationNames = labels ? labels.split(delimiter) : [];
         this.meta["annotations-ids"]
@@ -1236,7 +1262,7 @@ export class ReadAlongComponent {
         //if auto pause is active and not on last word of the read along pause the audio
         if (
           this.playing &&
-          this.autoPauseAtEndOfPage &&
+          this.userPreferences.autoPauseAtEndOfPage &&
           el_tag in this.endOfPageTags &&
           this.finalTaggedWord !== el_tag
         ) {
@@ -1357,10 +1383,10 @@ export class ReadAlongComponent {
    */
   getRawI18nString(key: string): string {
     if (
-      this.i18nStrings[this.language] &&
-      this.i18nStrings[this.language][key]
+      this.i18nStrings[this.userPreferences.language] &&
+      this.i18nStrings[this.userPreferences.language][key]
     ) {
-      return this.i18nStrings[this.language][key];
+      return this.i18nStrings[this.userPreferences.language][key];
     } else if (this.i18nStrings.eng[key]) {
       // Fallback to English if the string does not exist for this.language
       return this.i18nStrings.eng[key];
@@ -1459,10 +1485,13 @@ export class ReadAlongComponent {
    */
   Guide = (): Element => (
     <button
-      class={"scroll-guide__container ripple ui-button theme--" + this.theme}
+      class={
+        "scroll-guide__container ripple ui-button theme--" +
+        this.userPreferences.theme
+      }
       onClick={() => this.hideGuideAndScroll()}
     >
-      <span class={"scroll-guide__text theme--" + this.theme}>
+      <span class={"scroll-guide__text theme--" + this.userPreferences.theme}>
         {this.getI18nString("re-align")}
       </span>
     </button>
@@ -1493,7 +1522,12 @@ export class ReadAlongComponent {
         title="Delete image"
         onClick={() => this.deleteImage(props.pageIndex)}
         id="img-remover"
-        class={"ripple theme--" + this.theme + " background--" + this.theme}
+        class={
+          "ripple theme--" +
+          this.userPreferences.theme +
+          " background--" +
+          this.userPreferences.theme
+        }
       >
         <MatIcon>delete</MatIcon>
       </button>
@@ -1507,7 +1541,12 @@ export class ReadAlongComponent {
    */
   Img = (props: { imgURL: string }): Element => {
     return (
-      <div class={"image__container page__col__image theme--" + this.theme}>
+      <div
+        class={
+          "image__container page__col__image theme--" +
+          this.userPreferences.theme
+        }
+      >
         <img alt={"image"} class="image" src={props.imgURL} />
       </div>
     );
@@ -1515,10 +1554,15 @@ export class ReadAlongComponent {
 
   ImgPlaceHolder = (props: { pageID: string; pageIndex: number }): Element => {
     return (
-      <div class={"image__container page__col__image theme--" + this.theme}>
+      <div
+        class={
+          "image__container page__col__image theme--" +
+          this.userPreferences.theme
+        }
+      >
         <div class="drop-area">
           <form class="my-form">
-            <p class={"theme--" + this.theme}>
+            <p class={"theme--" + this.userPreferences.theme}>
               {this.getI18nString("upload-image")}
             </p>
             <input
@@ -1553,7 +1597,7 @@ export class ReadAlongComponent {
    * Shows currentPage / pgCount
    */
   PageCount = (props: { pgCount: number; currentPage: number }): Element => (
-    <div class={"page__counter color--" + this.theme}>
+    <div class={"page__counter color--" + this.userPreferences.theme}>
       {this.getI18nString("page")}{" "}
       <span data-test-id="page-count__current">{props.currentPage}</span>
       {" / "}
@@ -1595,7 +1639,7 @@ export class ReadAlongComponent {
     <div
       class={
         "page page__container page--multi animate-transition  theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " " +
         (props.pageData.attributes["class"]
           ? props.pageData.attributes["class"].value
@@ -1616,7 +1660,12 @@ export class ReadAlongComponent {
         pageID={props.pageData.id}
         pageIndex={this.parsed_text.indexOf(props.pageData)}
       ></this.ImgContainer>
-      <div class={"page__col__text paragraph__container theme--" + this.theme}>
+      <div
+        class={
+          "page__col__text paragraph__container theme--" +
+          this.userPreferences.theme
+        }
+      >
         {
           /* Here are the Paragraph children */
           props.pageData.paragraphs.map((paragraph: Element) => {
@@ -1647,7 +1696,7 @@ export class ReadAlongComponent {
       {...props.attributes}
       class={
         "paragraph sentence__container theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " " +
         (props.attributes["class"] ? props.attributes["class"].value : "")
       }
@@ -1746,7 +1795,7 @@ export class ReadAlongComponent {
                   {...cnodeProps}
                   class={
                     "sentence__text theme--" +
-                    this.theme +
+                    this.userPreferences.theme +
                     (" " + child.className)
                   }
                   id={child.id ? child.id : "text_" + c}
@@ -1841,7 +1890,7 @@ export class ReadAlongComponent {
     return (
       <span
         {...nodeProps}
-        class={"sentence__text theme--" + this.theme}
+        class={"sentence__text theme--" + this.userPreferences.theme}
         id={props.id}
       >
         {props.text}
@@ -1872,7 +1921,7 @@ export class ReadAlongComponent {
         {...nodeProps}
         class={
           "sentence__word theme--" +
-          this.theme +
+          this.userPreferences.theme +
           " " +
           (props && props.attributes["class"]
             ? props.attributes["class"].value
@@ -1900,9 +1949,9 @@ export class ReadAlongComponent {
       }}
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
       tabindex={1}
     >
@@ -1919,9 +1968,9 @@ export class ReadAlongComponent {
       onClick={() => this.goBack(5)}
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
     >
       <MatIcon>replay_5</MatIcon>
@@ -1937,9 +1986,9 @@ export class ReadAlongComponent {
       onClick={() => this.stop()}
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
     >
       <MatIcon>stop</MatIcon>
@@ -1949,7 +1998,9 @@ export class ReadAlongComponent {
   PlaybackSpeedControl = (): Element => (
     <div>
       <h5
-        class={"control-panel__buttons__header color--" + this.theme}
+        class={
+          "control-panel__buttons__header color--" + this.userPreferences.theme
+        }
         id="speed-slider-label"
       >
         {this.getI18nString("speed")}
@@ -1976,9 +2027,9 @@ export class ReadAlongComponent {
       title={this.getI18nString("theme-tooltip")}
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
     >
       <MatIcon outline>style</MatIcon>
@@ -1992,9 +2043,9 @@ export class ReadAlongComponent {
       title={this.getI18nString("full-screen-tooltip")}
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
     >
       {this.fullscreen ? (
@@ -2015,9 +2066,9 @@ export class ReadAlongComponent {
       }
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
     >
       <MatIcon outline>layers</MatIcon>
@@ -2032,9 +2083,9 @@ export class ReadAlongComponent {
       onClick={() => this.toggleTextTranslation()}
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
     >
       <MatIcon outline>subtitles</MatIcon>
@@ -2049,9 +2100,9 @@ export class ReadAlongComponent {
       id={"settings-button"}
       class={
         "control-panel__control ripple theme--" +
-        this.theme +
+        this.userPreferences.theme +
         " background--" +
-        this.theme
+        this.userPreferences.theme
       }
     >
       <MatIcon aria-label="Show settings">settings</MatIcon>
@@ -2062,7 +2113,10 @@ export class ReadAlongComponent {
     <div
       data-test-id="control-panel"
       class={
-        "control-panel theme--" + this.theme + " background--" + this.theme
+        "control-panel theme--" +
+        this.userPreferences.theme +
+        " background--" +
+        this.userPreferences.theme
       }
     >
       <div class="control-panel__buttons--left">
@@ -2092,7 +2146,7 @@ export class ReadAlongComponent {
     <div
       id={"settings"}
       data-test-id={"settings"}
-      class={"settings  theme--" + this.theme}
+      class={"settings  theme--" + this.userPreferences.theme}
     >
       <button
         class={"close"}
@@ -2109,20 +2163,32 @@ export class ReadAlongComponent {
           <select
             title={this.getI18nString("language")}
             onChange={(e) => {
-              this.language = (e.target as HTMLSelectElement)
-                .value as InterfaceLanguage;
+              const newLang = (e.target as HTMLSelectElement).value;
+              this.userPreferences = {
+                ...this.userPreferences,
+                language: newLang as InterfaceLanguage,
+              };
               this.userPreferencesDirty = true;
             }}
             data-test-id="settings-language"
             tabindex={2}
           >
-            <option selected={this.language == "eng"} value="eng">
+            <option
+              selected={this.userPreferences.language == "eng"}
+              value="eng"
+            >
               {this.getI18nString("eng")}
             </option>
-            <option selected={this.language == "fra"} value="fra">
+            <option
+              selected={this.userPreferences.language == "fra"}
+              value="fra"
+            >
               {this.getI18nString("fra")}
             </option>
-            <option selected={this.language == "spa"} value="spa">
+            <option
+              selected={this.userPreferences.language == "spa"}
+              value="spa"
+            >
               {this.getI18nString("spa")}
             </option>
           </select>
@@ -2150,14 +2216,14 @@ export class ReadAlongComponent {
         <button
           class={
             "control-panel__control  ripple theme--" +
-            this.theme +
+            this.userPreferences.theme +
             " background--" +
-            this.theme
+            this.userPreferences.theme
           }
           title={this.getI18nString("page-animation")}
           data-test-id={"settings-scroll-behavior"}
         >
-          {this.scrollBehaviour === "smooth" ? (
+          {this.userPreferences.scrollBehaviour === "smooth" ? (
             <MatIcon outline>check_box</MatIcon>
           ) : (
             <MatIcon outline>check_box_outline_blank</MatIcon>
@@ -2167,7 +2233,10 @@ export class ReadAlongComponent {
       </p>
       <p
         onClick={() => {
-          this.autoPauseAtEndOfPage = !this.autoPauseAtEndOfPage;
+          this.userPreferences = {
+            ...this.userPreferences,
+            autoPauseAtEndOfPage: !this.userPreferences.autoPauseAtEndOfPage,
+          };
           this.userPreferencesDirty = true;
         }}
         tabindex={5}
@@ -2175,14 +2244,14 @@ export class ReadAlongComponent {
         <button
           class={
             "control-panel__control  ripple theme--" +
-            this.theme +
+            this.userPreferences.theme +
             " background--" +
-            this.theme
+            this.userPreferences.theme
           }
           title={this.getI18nString("auto-pause")}
           data-test-id={"settings-auto-pause"}
         >
-          {this.autoPauseAtEndOfPage ? (
+          {this.userPreferences.autoPauseAtEndOfPage ? (
             <MatIcon outline>check_box</MatIcon>
           ) : (
             <MatIcon outline>check_box_outline_blank</MatIcon>
@@ -2198,20 +2267,15 @@ export class ReadAlongComponent {
           type="button"
           class={
             "control-panel__control  ripple theme--" +
-            this.theme +
+            this.userPreferences.theme +
             " background--" +
-            this.theme
+            this.userPreferences.theme
           }
           title={this.getI18nString("save-settings")}
           onClick={() => {
-            setUserPreferences({
-              version: USER_PREFERENCE_VERSION,
-              autoPauseAtEndOfPage: this.autoPauseAtEndOfPage,
-              scrollBehaviour: this.scrollBehaviour,
-              language: this.language,
-              theme: this.theme,
-            });
+            setUserPreferences(this.userPreferences);
             this.userPreferencesDirty = false;
+            this.hasUserPreferences = true;
           }}
           data-test-id={"settings-save"}
           disabled={!this.userPreferencesDirty}
@@ -2225,9 +2289,9 @@ export class ReadAlongComponent {
           onClick={() => this.toggleSettings()}
           class={
             "control-panel__control  ripple theme--" +
-            this.theme +
+            this.userPreferences.theme +
             " background--" +
-            this.theme
+            this.userPreferences.theme
           }
           tabindex={7}
         >
@@ -2241,13 +2305,18 @@ export class ReadAlongComponent {
     return (
       <div
         id="annotationsMenu"
-        class={"annotations-menu  theme--" + this.theme}
+        class={"annotations-menu  theme--" + this.userPreferences.theme}
       >
-        {/*<h3 class={"theme--" + this.theme}> {this.getI18nString("annotation-layers")}</h3> */}
+        {/*<h3 class={"theme--" + this.userPreferences.theme}> {this.getI18nString("annotation-layers")}</h3> */}
         {this.annotations.map((annotation) => (
           <button
             data-test-id={"toggle-annotation-" + annotation.id}
-            class={"ripple theme--" + this.theme + " background--" + this.theme}
+            class={
+              "ripple theme--" +
+              this.userPreferences.theme +
+              " background--" +
+              this.userPreferences.theme
+            }
             onClick={() => this.toggleTextAnnotation(annotation.id)}
           >
             {annotation.isVisible ? (
@@ -2260,7 +2329,12 @@ export class ReadAlongComponent {
         ))}
         <button
           data-test-id="toggle-all-annotations"
-          class={"ripple theme--" + this.theme + " background--" + this.theme}
+          class={
+            "ripple theme--" +
+            this.userPreferences.theme +
+            " background--" +
+            this.userPreferences.theme
+          }
           onClick={() => this.toggleTextAnnotation("*")}
         >
           <MatIcon outline>layers</MatIcon> All
@@ -2345,7 +2419,7 @@ export class ReadAlongComponent {
           class={
             "pages__container" +
             " theme--" +
-            this.theme +
+            this.userPreferences.theme +
             " " +
             this.pageScrolling
           }
@@ -2372,9 +2446,9 @@ export class ReadAlongComponent {
             data-test-id="progress-bar"
             class={
               "overlay__container theme--" +
-              this.theme +
+              this.userPreferences.theme +
               " background--" +
-              this.theme
+              this.userPreferences.theme
             }
           >
             {this.svgOverlay ? <this.Overlay /> : null}

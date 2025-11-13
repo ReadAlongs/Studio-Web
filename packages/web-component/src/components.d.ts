@@ -40,7 +40,7 @@ export namespace Components {
           * Auto Pause at end of every page
           * @default false
          */
-        "autoPauseAtEndOfPage"?: boolean;
+        "autoPauseAtEndOfPage": boolean;
         /**
           * Change theme
          */
@@ -118,8 +118,8 @@ export namespace Components {
          */
         "svgOverlay": string;
         /**
-          * Theme to use: ['light', 'dark'] defaults to 'dark'
-          * @default "light"
+          * Theme to use: ['light', 'dark'] defaults to the user's configured theme.
+          * @default navigatorTheme()
          */
         "theme": string;
         /**
@@ -243,8 +243,8 @@ declare namespace LocalJSX {
          */
         "svgOverlay"?: string;
         /**
-          * Theme to use: ['light', 'dark'] defaults to 'dark'
-          * @default "light"
+          * Theme to use: ['light', 'dark'] defaults to the user's configured theme.
+          * @default navigatorTheme()
          */
         "theme"?: string;
         /**
