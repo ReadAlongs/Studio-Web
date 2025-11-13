@@ -2174,24 +2174,15 @@ export class ReadAlongComponent {
             data-test-id="settings-language"
             tabindex={2}
           >
-            <option
-              selected={this.userPreferences.language == "eng"}
-              value="eng"
-            >
-              {this.getI18nString("eng")}
-            </option>
-            <option
-              selected={this.userPreferences.language == "fra"}
-              value="fra"
-            >
-              {this.getI18nString("fra")}
-            </option>
-            <option
-              selected={this.userPreferences.language == "spa"}
-              value="spa"
-            >
-              {this.getI18nString("spa")}
-            </option>
+            {Object.keys(this.i18nStrings).map((lang) => (
+              <option
+                class={`background--${this.userPreferences.theme}`}
+                selected={this.userPreferences.language == lang}
+                value={lang}
+              >
+                {this.getI18nString(lang)}
+              </option>
+            ))}
           </select>
           {this.getI18nString("language")}
         </label>
