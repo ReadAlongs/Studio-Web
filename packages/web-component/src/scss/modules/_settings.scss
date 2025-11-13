@@ -54,7 +54,6 @@
     color: inherit;
     font-size: 18px;
 
-    display: inline-block;
     padding: 0.275rem 0.75rem;
 
     font-weight: 400;
@@ -104,6 +103,28 @@
     margin: 0.5em 1em;
   }
 
+  & > .preference-btns {
+    @extend %border--strong--top;
+    height: 3em;
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-content: space-between;
+    justify-content: space-between;
+
+    & button {
+      width: 75%;
+      border: 1px solid #ccc;
+      padding: 0.25em 0.5em !important;
+    }
+
+    & button:hover {
+      background-color: rgba(0, 0, 0, 0.15);
+      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
+    }
+  }
+
   & > .footer {
     position: absolute;
     bottom: 0;
@@ -117,13 +138,16 @@
     flex-shrink: 0;
     flex-direction: row;
     align-content: space-between;
-    justify-content: space-between;
+    justify-content: flex-end;
+    column-gap: 1em;
 
     & > div {
       flex-grow: 8;
     }
 
     & > button {
+      margin-left: 0;
+      margin-right: 0;
       border: 1px solid #ccc;
       padding: 0.25em 0.5em !important;
     }

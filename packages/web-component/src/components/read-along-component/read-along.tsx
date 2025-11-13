@@ -2251,10 +2251,7 @@ export class ReadAlongComponent {
         </button>
         {this.getI18nString("auto-pause")}
       </p>
-      <p class="version">
-        @readalongs/web-component version: {PACKAGE_VERSION}
-      </p>
-      <div class="footer">
+      <div class="preference-btns">
         <button
           type="button"
           class={
@@ -2275,8 +2272,31 @@ export class ReadAlongComponent {
         >
           {this.getI18nString("save-settings")}
         </button>
-
-        <div></div>
+      </div>
+      <p class="version">
+        @readalongs/web-component version: {PACKAGE_VERSION}
+      </p>
+      <div class="footer">
+        <button
+          type="button"
+          class={
+            "control-panel__control ripple" +
+            ` theme--${this.userPreferences.theme}` +
+            ` background--${this.userPreferences.theme}`
+          }
+          title={this.getI18nString("reset-title")}
+          onClick={() => {
+            clearUserPreferences();
+            this.userPreferences = this.defaultUserPreferences();
+            this.userPreferencesDirty = false;
+            this.hasUserPreferences = false;
+          }}
+          data-test-id={"reset"}
+          disabled={!this.hasUserPreferences && !this.userPreferencesDirty}
+          tabindex={7}
+        >
+          {this.getI18nString("reset")}
+        </button>
         <button
           onClick={() => this.toggleSettings()}
           class={
@@ -2285,7 +2305,7 @@ export class ReadAlongComponent {
             " background--" +
             this.userPreferences.theme
           }
-          tabindex={7}
+          tabindex={8}
         >
           {this.getI18nString("close")}
         </button>
