@@ -2170,6 +2170,7 @@ export class ReadAlongComponent {
               };
               this.userPreferencesDirty = true;
             }}
+            id="settings-language"
             data-test-id="settings-language"
             tabindex={2}
           >
