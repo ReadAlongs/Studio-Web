@@ -87,6 +87,44 @@ context("Testing end user enabled settings", () => {
       cy.getAllLocalStorage();
     });
   });
+  it("can save reset user preference", () => {
+    cy.readalong().within(() => {
+      cy.get("[data-test-id=settings-button]").click();
+      cy.get("[data-test-id=settings]").should("be.visible");
+      cy.get("[data-test-id=settings-auto-pause]").should(
+        "have.text",
+        "check_box_outline_blank",
+      );
+
+      cy.get("[data-test-id=reset").should("be.disabled");
+      cy.get("[data-test-id=settings-save").should("be.disabled");
+      cy.get("[data-test-id=settings-auto-pause]").click();
+      cy.get("[data-test-id=settings-auto-pause]").should(
+        "have.text",
+        "check_box",
+      );
+      cy.get("[data-test-id=settings-save").should("be.enabled").click();
+      cy.get("[data-test-id=settings-close-button]").click();
+      cy.reload();
+      cy.get("[data-test-id=settings-button]").click();
+      cy.get("[data-test-id=settings-auto-pause]").should(
+        "have.text",
+        "check_box",
+      );
+
+      // Click on the reset button and verify auto pause is back to the default
+      cy.get("[data-test-id=reset").should("be.enabled").click();
+      cy.get("[data-test-id=reset").should("be.disabled");
+      cy.get("[data-test-id=settings-save").should("be.disabled");
+      cy.get("[data-test-id=settings-auto-pause]").should(
+        "have.text",
+        "check_box_outline_blank",
+      );
+
+      //reset back to default
+      cy.getAllLocalStorage();
+    });
+  });
   it("has version information", () => {
     cy.readalong().within(() => {
       cy.get("[data-test-id=settings-button]").click();
