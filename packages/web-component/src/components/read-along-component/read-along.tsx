@@ -273,7 +273,7 @@ export class ReadAlongComponent {
   fullScreenHandler() {
     this.fullscreen = window.document.fullscreenElement != null;
   }
-  @Listen("keydown")
+  @Listen("keydown", { target: "document" })
   handleKeyDown(event: KeyboardEvent) {
     //dismiss setting modal user pressing escape
     if (event.key === "Escape" && this.settingsVisible) {
