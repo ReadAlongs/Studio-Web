@@ -2180,7 +2180,7 @@ export class ReadAlongComponent {
                 selected={this.userPreferences.language == lang}
                 value={lang}
               >
-                {this.getI18nString(lang)}
+                {this.i18nStrings[lang][lang] || lang}
               </option>
             ))}
           </select>
