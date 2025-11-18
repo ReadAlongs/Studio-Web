@@ -2148,134 +2148,138 @@ export class ReadAlongComponent {
       data-test-id={"settings"}
       class={"settings  theme--" + this.userPreferences.theme}
     >
-      <button
-        class={"close"}
-        data-test-id={"settings-close-button"}
-        onClick={() => {
-          this.toggleSettings();
-        }}
-      >
-        &times;{" "}
-      </button>
-      <h3>{this.getI18nString("settings")}</h3>
-      <p>
-        <label>
-          <select
-            title={this.getI18nString("language")}
-            onChange={(e) => {
-              const newLang = (e.target as HTMLSelectElement).value;
-              this.userPreferences = {
-                ...this.userPreferences,
-                language: newLang as InterfaceLanguage,
-              };
-              this.userPreferencesDirty = true;
-            }}
-            id="settings-language"
-            data-test-id="settings-language"
-            tabindex={2}
-          >
-            {Object.keys(this.i18nStrings).map((lang) => (
-              <option
-                class={`background--${this.userPreferences.theme}`}
-                selected={this.userPreferences.language == lang}
-                value={lang}
-              >
-                {this.i18nStrings[lang][lang] || lang}
-              </option>
-            ))}
-          </select>
-          {this.getI18nString("language")}
-        </label>
-      </p>
-      <p
-        onClick={() => {
-          this.changeTheme();
-          this.userPreferencesDirty = true;
-        }}
-        tabindex={3}
-      >
-        <this.StyleControl />
-        {this.getI18nString("theme-tooltip")}
-      </p>
-
-      <p
-        onClick={() => {
-          this.toggleScrollBehavior();
-          this.userPreferencesDirty = true;
-        }}
-        tabindex={4}
-      >
+      <div class="header">
         <button
-          class={
-            "control-panel__control  ripple theme--" +
-            this.userPreferences.theme +
-            " background--" +
-            this.userPreferences.theme
-          }
-          title={this.getI18nString("page-animation")}
-          data-test-id={"settings-scroll-behavior"}
-        >
-          {this.userPreferences.scrollBehaviour === "smooth" ? (
-            <MatIcon outline>check_box</MatIcon>
-          ) : (
-            <MatIcon outline>check_box_outline_blank</MatIcon>
-          )}
-        </button>
-        {this.getI18nString("page-animation")}
-      </p>
-      <p
-        onClick={() => {
-          this.userPreferences = {
-            ...this.userPreferences,
-            autoPauseAtEndOfPage: !this.userPreferences.autoPauseAtEndOfPage,
-          };
-          this.userPreferencesDirty = true;
-        }}
-        tabindex={5}
-      >
-        <button
-          class={
-            "control-panel__control  ripple theme--" +
-            this.userPreferences.theme +
-            " background--" +
-            this.userPreferences.theme
-          }
-          title={this.getI18nString("auto-pause")}
-          data-test-id={"settings-auto-pause"}
-        >
-          {this.userPreferences.autoPauseAtEndOfPage ? (
-            <MatIcon outline>check_box</MatIcon>
-          ) : (
-            <MatIcon outline>check_box_outline_blank</MatIcon>
-          )}
-        </button>
-        {this.getI18nString("auto-pause")}
-      </p>
-      <div class="preference-btns">
-        <button
-          type="button"
-          class={
-            "control-panel__control  ripple theme--" +
-            this.userPreferences.theme +
-            " background--" +
-            this.userPreferences.theme
-          }
-          title={this.getI18nString("save-settings")}
+          class={"close"}
+          data-test-id={"settings-close-button"}
           onClick={() => {
-            setUserPreferences(this.userPreferences);
-            this.userPreferencesDirty = false;
-            this.hasUserPreferences = true;
+            this.toggleSettings();
           }}
-          data-test-id={"settings-save"}
-          disabled={!this.userPreferencesDirty}
-          tabindex={6}
         >
-          {this.getI18nString("save-settings")}
+          &times;{" "}
         </button>
+        <h3>{this.getI18nString("settings")}</h3>
       </div>
-      <p class="version">
-        @readalongs/web-component version: {PACKAGE_VERSION}
-      </p>
+      <div class="content">
+        <p>
+          <label>
+            <select
+              title={this.getI18nString("language")}
+              onChange={(e) => {
+                const newLang = (e.target as HTMLSelectElement).value;
+                this.userPreferences = {
+                  ...this.userPreferences,
+                  language: newLang as InterfaceLanguage,
+                };
+                this.userPreferencesDirty = true;
+              }}
+              id="settings-language"
+              data-test-id="settings-language"
+              tabindex={2}
+            >
+              {Object.keys(this.i18nStrings).map((lang) => (
+                <option
+                  class={`background--${this.userPreferences.theme}`}
+                  selected={this.userPreferences.language == lang}
+                  value={lang}
+                >
+                  {this.i18nStrings[lang][lang] || lang}
+                </option>
+              ))}
+            </select>
+            {this.getI18nString("language")}
+          </label>
+        </p>
+        <p
+          onClick={() => {
+            this.changeTheme();
+            this.userPreferencesDirty = true;
+          }}
+          tabindex={3}
+        >
+          <this.StyleControl />
+          {this.getI18nString("theme-tooltip")}
+        </p>
+
+        <p
+          onClick={() => {
+            this.toggleScrollBehavior();
+            this.userPreferencesDirty = true;
+          }}
+          tabindex={4}
+        >
+          <button
+            class={
+              "control-panel__control  ripple theme--" +
+              this.userPreferences.theme +
+              " background--" +
+              this.userPreferences.theme
+            }
+            title={this.getI18nString("page-animation")}
+            data-test-id={"settings-scroll-behavior"}
+          >
+            {this.userPreferences.scrollBehaviour === "smooth" ? (
+              <MatIcon outline>check_box</MatIcon>
+            ) : (
+              <MatIcon outline>check_box_outline_blank</MatIcon>
+            )}
+          </button>
+          {this.getI18nString("page-animation")}
+        </p>
+        <p
+          onClick={() => {
+            this.userPreferences = {
+              ...this.userPreferences,
+              autoPauseAtEndOfPage: !this.userPreferences.autoPauseAtEndOfPage,
+            };
+            this.userPreferencesDirty = true;
+          }}
+          tabindex={5}
+        >
+          <button
+            class={
+              "control-panel__control  ripple theme--" +
+              this.userPreferences.theme +
+              " background--" +
+              this.userPreferences.theme
+            }
+            title={this.getI18nString("auto-pause")}
+            data-test-id={"settings-auto-pause"}
+          >
+            {this.userPreferences.autoPauseAtEndOfPage ? (
+              <MatIcon outline>check_box</MatIcon>
+            ) : (
+              <MatIcon outline>check_box_outline_blank</MatIcon>
+            )}
+          </button>
+          {this.getI18nString("auto-pause")}
+        </p>
+        <div class="preference-btns">
+          <button
+            type="button"
+            class={
+              "control-panel__control  ripple theme--" +
+              this.userPreferences.theme +
+              " background--" +
+              this.userPreferences.theme
+            }
+            title={this.getI18nString("save-settings")}
+            onClick={() => {
+              setUserPreferences(this.userPreferences);
+              this.userPreferencesDirty = false;
+              this.hasUserPreferences = true;
+            }}
+            data-test-id={"settings-save"}
+            disabled={!this.userPreferencesDirty}
+            tabindex={6}
+          >
+            {this.getI18nString("save-settings")}
+          </button>
+        </div>
+        <p class="version">
+          @readalongs/web-component version: {PACKAGE_VERSION}
+        </p>
+      </div>
       <div class="footer">
         <button
           type="button"
