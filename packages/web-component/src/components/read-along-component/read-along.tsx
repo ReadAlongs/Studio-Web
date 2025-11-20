@@ -1029,9 +1029,9 @@ export class ReadAlongComponent {
     const prefs: UserPreferences = {
       version: USER_PREFERENCE_VERSION,
       autoPauseAtEndOfPage: this.autoPauseAtEndOfPage,
-      scrollBehaviour: this.scrollBehaviour,
-      language: this.language,
-      theme: this.theme,
+      scrollBehaviour: this.scrollBehaviour.toLowerCase() as ScrollBehaviour,
+      language: this.language.toLowerCase() as InterfaceLanguage,
+      theme: this.theme.toLowerCase(),
     };
 
     // Make sure scroll-behaviour is valid
@@ -1052,16 +1052,16 @@ export class ReadAlongComponent {
     //this.text = this.urlTransform(this.text)
     //this.cssUrl = this.urlTransform(this.cssUrl)
 
-    // TO maintain backwards compatibility language code
-    if (prefs.language.length < 3) {
-      if (prefs.language.match("fr") != null) {
-        prefs.language = "fra";
-      } else if (prefs.language.match("es") !== null) {
-        prefs.language = "spa";
-      } else {
-        prefs.language = "eng";
-      }
-    }
+    // Maintains backwards compatibility with ISO 639-1 language codes.
+    const acceptedLanguages: Record<string, InterfaceLanguage> = {
+      en: "eng",
+      eng: "eng",
+      fr: "fra",
+      fra: "fra",
+      es: "spa",
+      spa: "spa",
+    };
+    prefs.language = acceptedLanguages[prefs.language] || "eng";
 
     return prefs;
   }
