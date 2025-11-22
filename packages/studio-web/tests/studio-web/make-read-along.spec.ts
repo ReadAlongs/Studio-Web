@@ -91,3 +91,39 @@ test("should make read along", async ({ page, browserName }) => {
   fileChooser.setFiles(testAssetsPath + "page2.png");
   await page.getByRole("tab", { name: "Editable Step" }).click();
 });
+
+test("should show g2p text error", async ({ page, browserName }) => {
+  await defaultBeforeEach(page, browserName);
+  await page
+    .getByTestId("ras-text-input")
+    .fill(
+      "Staff on the Caledonian Sleeper will hold two 24-hour strikes. One from 11:59 on Sunday 31 October and one on Thursday 11 November.",
+    );
+
+  await expect(page.getByTestId("text-download-btn")).toBeVisible();
+  await page
+    .getByTestId("audio-btn-group")
+    .getByRole("radio", { name: "File" })
+    .click();
+  await page.getByTestId("ras-audio-fileselector").click();
+  await page
+    .getByTestId("ras-audio-fileselector")
+    .setInputFiles(
+      testMp3Path.replace(
+        "test-sentence-paragraph-page-56k",
+        "bbc_text_tts_nihalgazi_alloy",
+      ),
+    );
+  const responsePromise = page.waitForResponse("**/api/v1/assemble");
+  await page.getByTestId("next-step").click();
+  await responsePromise;
+
+  await expect(
+    page.locator("g2p-error"),
+    "should show G2P error box",
+  ).toBeVisible();
+  await expect(
+    page.locator("g2p-error .text-danger").first(),
+    "should have highlighted 24",
+  ).toContainText("24");
+});
