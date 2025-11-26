@@ -15,7 +15,6 @@
     "@nx/eslint": "22.1.2",
     "@nx/eslint-plugin": "22.1.2",
     "@nx/jest": "22.1.2",
-    "@nx/storybook": "22.1.2",
     "@nxext/stencil": "^21.0.0",
     "@playwright/test": "^1.56.1",
     "@stencil/angular-output-target": "^0.10.2",
@@ -72,8 +71,7 @@
     "soundswallower": "^0.6.3",
     "standardized-audio-context": "^25.3.77",
     "unidecode": "^1.1.0",
-    "wavesurfer.js": "^6.6.4",
-    "storybook": "10.0.0"
+    "wavesurfer.js": "^6.6.4"
   },
   "scripts": {
     "prepare": "husky"
