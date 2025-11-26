@@ -1,23 +1,29 @@
 {
   "name": "ngx-web-component",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": [
+    "web-component",
+    "web-component",
+    "web-component",
+    "web-component"
+  ],
   "projectType": "library",
   "sourceRoot": "packages/ngx-web-component/src",
   "prefix": "app",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "packages/ngx-web-component/ng-package.json"
+        "project": "packages/ngx-web-component/ng-package.json",
+        "tsConfig": "packages/ngx-web-component/tsconfig.lib.json"
       },
       "configurations": {
         "production": {
           "tsConfig": "packages/ngx-web-component/tsconfig.lib.prod.json"
         },
-        "development": {
-          "tsConfig": "packages/ngx-web-component/tsconfig.lib.json"
-        }
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
@@ -26,7 +32,8 @@
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/ngx-web-component/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "tsConfig": "packages/ngx-web-component/tsconfig.spec.json"
       }
     },
     "lint": {
@@ -39,6 +46,5 @@
         ]
       }
     }
-  },
-  "tags": []
+  }
 }

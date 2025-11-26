@@ -4,6 +4,7 @@
   "projectType": "application",
   "sourceRoot": "packages/angular-demo/src",
   "prefix": "app",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
@@ -81,9 +82,9 @@
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/angular-demo/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "tsConfig": "packages/angular-demo/tsconfig.spec.json"
       }
     }
-  },
-  "tags": []
+  }
 }
