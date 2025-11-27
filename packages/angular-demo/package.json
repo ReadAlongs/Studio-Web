@@ -2,8 +2,8 @@
   "name": "angular-demo",
   "type": "module",
   "dependencies": {
-    "@angular/core": "^19",
-    "@angular/platform-browser": "^19",
-    "@angular/platform-browser-dynamic": "^19.2.14"
+    "@angular/core": "^20",
+    "@angular/platform-browser": "^20",
+    "@angular/platform-browser-dynamic": "^20"
   }
 }
