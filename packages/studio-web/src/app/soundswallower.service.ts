@@ -5,6 +5,7 @@ import soundswallower_factory, {
 } from "soundswallower";
 import { type ReadAlong } from "./ras.service";
 import { Injectable } from "@angular/core";
+import { IAudioBuffer } from "standardized-audio-context";
 
 let soundswallower: SoundSwallowerModule;
 
@@ -72,7 +73,7 @@ export class SoundswallowerService {
     return from(this.preload());
   }
 
-  align$(audio: AudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
+  align$(audio: IAudioBuffer, ras: ReadAlong): Observable<AlignmentProgress> {
     const text = ras["text_ids"];
     const dict = ras["lexicon"];
     const xml = ras["processed_ras"];

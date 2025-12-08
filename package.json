@@ -71,7 +71,8 @@
     "soundswallower": "^0.6.3",
     "standardized-audio-context": "^25.3.77",
     "unidecode": "^1.1.0",
-    "wavesurfer.js": "^6.6.4"
+    "wavesurfer.js": "^6.6.4",
+    "zone.js": "~0.15.0"
   },
   "scripts": {
     "prepare": "husky"
