@@ -176,7 +176,10 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         );
       }
       this.toastr.error(err.error.detail, $localize`Text processing failed.`, {
-        timeOut: 30000,
+        timeOut: 180000,
+        closeButton: true,
+        tapToDismiss: false,
+        disableTimeOut: "extendedTimeOut",
       });
     } else {
       this.toastr.error(

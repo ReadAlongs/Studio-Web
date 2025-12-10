@@ -40,7 +40,11 @@ defineCustomElements();
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      preventDuplicates: true,
+      resetTimeoutOnDuplicate: true,
+      includeTitleDuplicates: true,
+    }),
     ReactiveFormsModule,
     MaterialModule,
     MatToolbarModule,
