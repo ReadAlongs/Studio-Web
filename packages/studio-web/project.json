@@ -82,7 +82,7 @@
       "defaultConfiguration": "production"
     },
     "update-browserslist": {
-      "command": "npx update-browserslist-db@latest"
+      "command": "npx -y update-browserslist-db@latest"
     },
     "serve": {
       "executor": "@angular-builders/custom-webpack:dev-server",
