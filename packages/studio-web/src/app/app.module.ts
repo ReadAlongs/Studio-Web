@@ -21,6 +21,7 @@ import { ErrorPageComponent } from "./error-page/error-page.component";
 import { EditorComponent } from "./editor/editor.component";
 import { SharedModule } from "./shared/shared.module";
 import { WcStylingComponent } from "./shared/wc-styling/wc-styling.component";
+import { G2PErrorComponent } from "./upload/g2p.error.component";
 
 defineCustomElements();
 
@@ -47,6 +48,7 @@ defineCustomElements();
     FormsModule,
     NgxRAWebComponentModule,
     SharedModule,
+    G2PErrorComponent,
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent],

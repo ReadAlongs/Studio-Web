@@ -28,7 +28,7 @@
                 >Write</mat-button-toggle
               >
               <mat-button-toggle
-                i18n="Lable for text File toggle"
+                i18n="Label for text File toggle"
                 value="upload"
                 >File</mat-button-toggle
               >
@@ -297,6 +297,11 @@ Page two."
           </div>
         </div>
         <!-- </div> -->
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <g2p-error [errorMessage]="g2pErrorMessage$ | async"></g2p-error>
       </div>
     </div>
     <div class="row g-2">
