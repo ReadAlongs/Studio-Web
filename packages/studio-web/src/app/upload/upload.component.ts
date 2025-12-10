@@ -584,6 +584,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         next: (progress) => {
           if (progress.hypseg !== undefined) {
             this.loading = false;
+            this.toastr.clear(); // clean all outstanding toasts on alignment success
             this.stepChange.emit([
               "aligned",
               this.studioService.audioControl$.value,
