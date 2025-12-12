@@ -189,8 +189,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
 
   reportUnpronounceableError(err: Error) {
     this.toastr.error(
-      $localize`Your text may contain unpronounceable characters or numbers.
-Please check it to make sure all words are spelled out completely, e.g. write "42" as "forty two".`,
+      $localize`Unable to align even with loose alignment parameters. Please check your text and audio for quality and make sure they are a good match.`,
       $localize`Alignment failed.`,
       { timeOut: 30000 },
     );
@@ -201,13 +200,13 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.toastr.warning(
         $localize`Hmm, this is harder than usual, please wait while we try again.`,
         $localize`Alignment failed.`,
-        { timeOut: 5000 },
+        { timeOut: 10000 },
       );
     } else {
-      this.toastr.error(
+      this.toastr.warning(
         $localize`This is really difficult. We'll try one last time, but it might take a long time and produce poor results. Please make sure your text matches your audio and that there is as little background noise as possible.`,
         $localize`Alignment failed.`,
-        { timeOut: 30000 },
+        { timeOut: 20000 },
       );
     }
   }
