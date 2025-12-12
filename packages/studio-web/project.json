@@ -11,6 +11,7 @@
       "es": "packages/studio-web/src/i18n/messages.es.json"
     }
   },
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-builders/custom-webpack:browser",
@@ -160,9 +161,9 @@
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/studio-web/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "tsConfig": "packages/studio-web/tsconfig.spec.json"
       }
     }
-  },
-  "tags": []
+  }
 }

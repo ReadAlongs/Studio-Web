@@ -45,6 +45,7 @@ import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dia
 import { StudioService } from "../studio/studio.service";
 import { validateFileType } from "../utils/utils";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { IAudioBuffer } from "standardized-audio-context";
 
 @Component({
   selector: "app-upload",
@@ -530,7 +531,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       ),
     })
       .pipe(
-        switchMap(({ audio, ras }: { audio: AudioBuffer; ras: ReadAlong }) => {
+        switchMap(({ audio, ras }: { audio: IAudioBuffer; ras: ReadAlong }) => {
           if (ras.log !== null) {
             const fallbackRx = /^.*g2p.*$/gim;
             const matches = ras.log.match(fallbackRx);
