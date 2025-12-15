@@ -179,7 +179,6 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         timeOut: 180000,
         closeButton: true,
         tapToDismiss: false,
-        disableTimeOut: "extendedTimeOut",
       });
     } else {
       this.toastr.error(
@@ -583,13 +582,29 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         next: (progress) => {
           if (progress.hypseg !== undefined) {
             this.loading = false;
-            this.toastr.clear(); // clean all outstanding toasts on alignment success
+            this.toastr.toasts.forEach((toast) => {
+              // clean all outstanding success and error toasts on alignment success,
+              // they are no longer relevant, but keep the warnings, they are typically
+              // about having to relax alignment parameters.
+              let type =
+                toast.toastRef.componentInstance.toastPackage.toastType;
+              if (type === "toast-error" || type === "toast-success") {
+                this.toastr.clear(toast.toastId);
+              }
+            });
             this.stepChange.emit([
               "aligned",
               this.studioService.audioControl$.value,
               progress.xml,
               progress.hypseg,
             ]);
+            if (this.ssjsService.mode !== BeamDefaults.strict) {
+              this.toastr.success(
+                $localize`Alignment succeeded, but with relaxed parameters. Please check the results for alignment errors, and please check your text and audio for quality and to make sure they are a good match.`,
+                $localize`Relaxed alignment succeeded.`,
+                { timeOut: 20000 },
+              );
+            }
           } else {
             this.progressValue = Math.round(
               (progress.pos / progress.length) * 100,
