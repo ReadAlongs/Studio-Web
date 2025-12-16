@@ -5,14 +5,14 @@ concurrency:
 on:
   - push
   - workflow_call
+permissions:
+  contents: read
 jobs:
   run-tests:
     name: Web-Component and Studio-web spec tests, utilities verification, etc.
     runs-on: ubuntu-latest
     # Stop the occasional rogue instance before the 6h GitHub limit
     timeout-minutes: 15
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v6
         with:

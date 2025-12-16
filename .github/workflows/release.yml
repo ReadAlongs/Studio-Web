@@ -15,7 +15,6 @@ permissions:
 jobs:
   test:
     uses: ./.github/workflows/end-to-end-tests.yml
-    secrets: inherit
 
   publish:
     runs-on: ubuntu-latest
@@ -32,6 +31,7 @@ jobs:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
           scope: "@readalongs"
+          package-manager-cache: false
       - run: npm install
       - run: npx update-browserslist-db@latest
       - name: Build and bundle
@@ -71,4 +71,3 @@ jobs:
   deploy:
     needs: publish
     uses: ./.github/workflows/deploy.yml
-    secrets: inherit
