@@ -10,16 +10,18 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   test:
     uses: ./.github/workflows/end-to-end-tests.yml
-    secrets: inherit
 
   publish:
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: write # for GitHub release
+      id-token: write # for Trusted Publishing to npmjs
     steps:
       - uses: actions/checkout@v6
         with:
@@ -32,6 +34,7 @@ jobs:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
           scope: "@readalongs"
+          package-manager-cache: false
       - run: npm install
       - run: npx update-browserslist-db@latest
       - name: Build and bundle
@@ -51,8 +54,6 @@ jobs:
           tag: ${{ github.ref_name }}
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
@@ -70,5 +71,6 @@ jobs:
 
   deploy:
     needs: publish
+    permissions:
+      contents: write
     uses: ./.github/workflows/deploy.yml
-    secrets: inherit
