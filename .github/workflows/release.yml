@@ -61,13 +61,9 @@ jobs:
       - name: Publish web-component to npmjs
         run: |
           cd dist/packages/web-component && npm publish --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish ngx-web-component to npmjs
         run: |
           cd dist/packages/ngx-web-component && npm publish --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   deploy:
     needs: publish
