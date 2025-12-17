@@ -48,12 +48,12 @@ jobs:
           sed -i 's/(test-data\//(https:\/\/github.com\/ReadAlongs\/Studio-Web\/blob\/${GITHUB_REF_NAME}\/packages\/web-component\/test-data\//g' dist/packages/web-component/README.md
       - name: Update CHANGELOG
         id: changelog
-        uses: requarks/changelog-action@v1
+        uses: requarks/changelog-action@b78a3354a01f4a1affb484b9264b506a815c46b1 # v1.10.3
         with:
           token: ${{ github.token }}
           tag: ${{ github.ref_name }}
       - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20.0
         with:
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}

@@ -34,7 +34,7 @@ jobs:
           npx license-checker --summary --onlyAllow "$DEV_LICENSES;$PROD_LICENSES" --excludePackages "$OK_BUT_NOT_AUTODETECTED"
 
       - name: Run Cypress tests for web-component
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@2ad32e649e4db26c07674ebae31a297601dbcbaf # v6.10.8
         with:
           install: false
           start: |
