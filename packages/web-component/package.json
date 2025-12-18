@@ -37,6 +37,5 @@
     "woff2base64": "^2.0.0",
     "css": "^3.0.0"
   },
-  "license": "MIT",
-  "gitHead": "0a6670c1d1b0aac11d5fab2d18f233585a6b867e"
+  "license": "MIT"
 }
