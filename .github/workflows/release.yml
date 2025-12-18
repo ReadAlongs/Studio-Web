@@ -33,7 +33,6 @@ jobs:
         with:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
-          scope: "@readalongs"
           package-manager-cache: false
       - run: npm install
       - run: npx update-browserslist-db@latest
