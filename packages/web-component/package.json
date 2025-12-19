@@ -37,5 +37,12 @@
     "woff2base64": "^2.0.0",
     "css": "^3.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/ReadAlongs",
+  "bugs": "https://github.com/ReadAlongs/Studio-Web/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ReadAlongs/Studio-Web",
+    "directory": "packages/web-component"
+  }
 }

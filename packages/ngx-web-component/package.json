@@ -13,5 +13,12 @@
     "implicitDependencies": [
       "web-component"
     ]
+  },
+  "homepage": "https://github.com/ReadAlongs",
+  "bugs": "https://github.com/ReadAlongs/Studio-Web/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ReadAlongs/Studio-Web",
+    "directory": "packages/ngx-web-component"
   }
 }
