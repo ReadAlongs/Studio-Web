@@ -55,16 +55,19 @@ This mono repo, formerly called Web-Component, now called Studio-Web, combines f
 Here is the quick recipe to spin up the ReadAlongs Studio Web app locally.
 
 ```
-# Clone and install the Studio CLI in a Python environment and make sure it's activated:
+# Clone the Studio CLI (backend):
 git clone https://github.com/ReadAlongs/Studio.git
+# Commands below assume the CLI folder is called "Studio", please do not rename
 cd Studio
-# First create a python environment with conda or venv, activate it, and then run:
-pip install -e .
+# Create a Python 3.8+ environment with uv or venv and activate it.
+# Install the Studio CLI with its `api` dependencies:
+pip install -e '.[api]'
 cd ..
 
-# Clone and install the Studio-Web monorepo:
+# Clone the Studio-Web front-end monorepo:
 git clone https://github.com/ReadAlongs/Studio-Web.git
 cd Studio-Web
+# Using Node.js 20+, install Studio-Web:
 npm install
 
 # Run all the servers
@@ -102,7 +105,7 @@ Clone the repo:
 
 ### Installing dependencies
 
-Use `npm` to install all dependencies:
+Use `npm` from Node.js 20+ to install all dependencies:
 
     cd Studio-Web
     npm install
@@ -152,19 +155,19 @@ Note that you will need to also spin-up the ReadAlong-Studio API in order to hav
 
     git clone https://github.com/ReadAlongs/Studio.git
     cd Studio
-    pip install -e .
+    pip install -e '.[api]'
 
 then run:
 
-    DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload
+    ./run-web-api.sh
 
-If your Studio sandbox is in a sibling directory to this sandbox, and you Python environment is active, `npx nx serve-web-api studio-web` will run that command for you.
+If your Studio sandbox is in a sibling directory to this sandbox called `Studio`, and your Python environment is active, `npx nx serve-web-api studio-web` will run that command for you.
 
 Alternatively run together as:
 
     npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
 
-Studio-Web will automatically [deploy](.github/workflows/deploy.yml) to https://readalong-studio.mothertongues.org/ every time there is a push to `deploy`.
+Studio-Web will automatically [deploy](.github/workflows/deploy.yml) in production to https://readalong-studio.mothertongues.org/ every time there is a push to `deploy`.
 Each push to `main` will deploy a [dev preview](.github/workflows/dev-preview.yml) at https://readalong-studio.mothertongues.org/dev/.
 
 #### Understanding where the components come from when you run locally
