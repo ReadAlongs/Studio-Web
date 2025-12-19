@@ -44,6 +44,7 @@ defineCustomElements();
       preventDuplicates: true,
       resetTimeoutOnDuplicate: true,
       includeTitleDuplicates: true,
+      disableTimeOut: "extendedTimeOut",
     }),
     ReactiveFormsModule,
     MaterialModule,

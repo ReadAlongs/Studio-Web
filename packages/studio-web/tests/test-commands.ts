@@ -107,7 +107,9 @@ export const testMakeAReadAlong = async (page: Page) => {
     page.locator("#fileElem--t0b0d1").dispatchEvent("click");
     fileChooser = await fileChooserPromise;
     fileChooser.setFiles(testAssetsPath + "page2.png");
-    await page.locator("div.toast-message").last().click({ force: true });
+    for(const toast of await page.locator("div.toast-message").all()){
+        await toast.click({ force: true });
+    }
     await expect(async () => {
       await expect(page.locator("div.toast-message")).not.toBeVisible();
     }).toPass();
