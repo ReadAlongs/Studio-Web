@@ -190,7 +190,6 @@
     "3861272198542491849": "No model loaded",
     "5640828320811588897": "Please select or write text, select or record audio data, and select the language.",
     "7065107025201081158": "Form not complete",
-    "7614709406289221963": "Possible text processing issues.",
     "4232057340007056015": "Alignment succeeded, but with relaxed parameters. Please check the results for alignment errors, and please check your text and audio for quality and to make sure they are a good match.",
     "4534823616345596361": "Relaxed alignment succeeded.",
     "6817170311264143962": "The file \"{$fileName}\" is not a compatible audio file.",

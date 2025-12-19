@@ -533,16 +533,8 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     })
       .pipe(
         switchMap(({ audio, ras }: { audio: IAudioBuffer; ras: ReadAlong }) => {
-          if (ras.log !== null) {
-            const fallbackRx = /^.*g2p.*$/gim;
-            const matches = ras.log.match(fallbackRx);
-            if (matches) {
-              this.toastr.warning(
-                matches.join("\n"),
-                $localize`Possible text processing issues.`,
-                { timeOut: 30000 },
-              );
-            }
+          if (ras.log) {
+            console.log("RAS Web API assemble/ log:\n" + ras.log);
           }
           return this.ssjsService.align$(audio, ras as ReadAlong);
         }),

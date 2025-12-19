@@ -190,7 +190,6 @@
     "3861272198542491849": "No se ha cargado el modelo",
     "5640828320811588897": "Por favor seleccione o escriba el texto, seleccione o grabe el audio y seleccione el idioma.",
     "7065107025201081158": "Plantilla incompleta",
-    "7614709406289221963": "Posible problema con el procesamiento del texto.",
     "4232057340007056015": "El alineamento se realizó, pero con parámetros relajados. Por favor, revise el resultado para detectar posibles errores de alineación. Además, verifique la calidad de su texto y audio y asegúrese de que coincidan.",
     "4534823616345596361": "Alineación relajada exitosa",
     "6817170311264143962": "El fichero \"{$fileName}\" no es un fichero de audio compatible.",
