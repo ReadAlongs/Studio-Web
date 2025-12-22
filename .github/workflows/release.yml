@@ -39,7 +39,6 @@ jobs:
       - run: npx update-browserslist-db@latest
       - name: Build and bundle
         run: |
-          npx nx build web-component
           npx nx bundle web-component
           npx nx build ngx-web-component
       - name: Fix the relative URLs in the READMEs to work on npmjs
