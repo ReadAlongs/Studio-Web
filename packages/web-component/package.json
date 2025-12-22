@@ -15,7 +15,7 @@
     "dist/"
   ],
   "scripts": {
-    "bundle": "bash bundle.sh",
+    "bundle": "npx nx build && bash bundle.sh",
     "linter:maticon": "node b64Fonts.js --validate",
     "cy:run": "npm run linter:maticon && cypress run",
     "test:full-pipeline": "npm run linter:maticon && npm run serve-test-data & nx run serve & npm run wait-for-test-server && npm run test:once",
