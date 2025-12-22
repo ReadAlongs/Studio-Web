@@ -32,6 +32,10 @@ $max-height: 98vh;
   width: 100%;
   max-width: 55em;
 
+  p {
+    @extend %themed-text;
+  }
+
   &--multi {
     @extend %border--strong--left;
     @extend %border--strong--right;
