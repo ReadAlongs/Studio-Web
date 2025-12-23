@@ -2277,7 +2277,13 @@ export class ReadAlongComponent {
           </button>
         </div>
         <p class="version">
-          @readalongs/web-component version: {PACKAGE_VERSION}
+          <a
+            href="https://github.com/ReadAlongs/Studio-Web"
+            target="_blank"
+            rel="noreferrer"
+          >
+            @readalongs/web-component {PACKAGE_VERSION}
+          </a>
         </p>
       </div>
       <div class="footer">
