@@ -1472,8 +1472,10 @@ export class ReadAlongComponent {
       URL.revokeObjectURL(this.images[pageIndex]);
     }
 
-    delete this.images[pageIndex];
-    this.images = { ...this.images }; // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
+    const newImage = {};
+    newImage[pageIndex] = null;
+
+    this.images = { ...this.images, ...newImage }; // Using spread operator as advised https://stenciljs.com/docs/reactive-data#updating-an-object
   }
 
   /**********
