@@ -1539,7 +1539,7 @@ export class ReadAlongComponent {
    *
    * @param props
    */
-  Img = (props: { imgURL: string }): Element => {
+  Img = (props: { imgURL: string; pageIndex: number }): Element => {
     return (
       <div
         class={
@@ -1547,6 +1547,12 @@ export class ReadAlongComponent {
           this.userPreferences.theme
         }
       >
+        {this.mode === "EDIT" && (
+          <span id="image-container">
+            <this.RemoveImg pageIndex={props.pageIndex} />
+          </span>
+        )}
+
         <img alt={"image"} class="image" src={props.imgURL} />
       </div>
     );
@@ -1609,22 +1615,23 @@ export class ReadAlongComponent {
     const hasImage =
       props.pageIndex in this.images && this.images[props.pageIndex] !== null;
 
-    return (
-      <div class="image__container">
-        <span id="image-container">
-          {this.mode === "EDIT" && hasImage && (
-            <this.RemoveImg pageIndex={props.pageIndex} />
-          )}
-          {hasImage && <this.Img imgURL={this.images[props.pageIndex]} />}
-        </span>
-        {this.mode === "EDIT" && !hasImage && (
-          <this.ImgPlaceHolder
-            pageID={props.pageID}
-            pageIndex={props.pageIndex}
-          />
-        )}
-      </div>
-    );
+    if (hasImage) {
+      return (
+        <this.Img
+          imgURL={this.images[props.pageIndex]}
+          pageIndex={props.pageIndex}
+        />
+      );
+    }
+
+    if (this.mode === "EDIT") {
+      return (
+        <this.ImgPlaceHolder
+          pageID={props.pageID}
+          pageIndex={props.pageIndex}
+        />
+      );
+    }
   };
 
   /**
