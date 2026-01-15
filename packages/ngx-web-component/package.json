@@ -2,12 +2,12 @@
   "name": "@readalongs/ngx-web-component",
   "type": "module",
   "license": "MIT",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "private": false,
   "peerDependencies": {
     "@angular/core": "^20",
     "@angular/common": "^20",
-    "@readalongs/web-component": "1.6.2"
+    "@readalongs/web-component": "1.6.3"
   },
   "nx": {
     "implicitDependencies": [
