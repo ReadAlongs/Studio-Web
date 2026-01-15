@@ -18,7 +18,7 @@
   "bugs": "https://github.com/ReadAlongs/Studio-Web/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ReadAlongs/Studio-Web",
+    "url": "git+https://github.com/ReadAlongs/Studio-Web.git",
     "directory": "packages/ngx-web-component"
   }
 }
