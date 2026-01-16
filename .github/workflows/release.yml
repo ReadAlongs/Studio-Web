@@ -31,10 +31,12 @@ jobs:
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: "https://registry.npmjs.org"
           scope: "@readalongs"
           package-manager-cache: false
+      - name: Update npm to latest version for OIDC/Trusted Publishing support
+        run: npm install -g npm@latest
       - run: npm install
       - run: npx update-browserslist-db@latest
       - name: Build and bundle
@@ -60,13 +62,9 @@ jobs:
       - name: Publish web-component to npmjs
         run: |
           cd dist/packages/web-component && npm publish --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish ngx-web-component to npmjs
         run: |
           cd dist/packages/ngx-web-component && npm publish --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   deploy:
     needs: publish
