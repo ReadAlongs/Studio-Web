@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
-      - run: npm install
+      - run: npm ci
       - run: npx update-browserslist-db@latest
       - name: Build web-component
         run: |
