@@ -37,7 +37,7 @@ jobs:
           package-manager-cache: false
       - name: Update npm to latest version for OIDC/Trusted Publishing support
         run: npm install -g npm@latest
-      - run: npm install
+      - run: npm ci
       - run: npx update-browserslist-db@latest
       - name: Build and bundle
         run: |

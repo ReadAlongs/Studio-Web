@@ -26,7 +26,7 @@ jobs:
       - name: Install
         if: github.event.action != 'closed'
         run: |
-          npm install
+          npm ci
       - name: Always preview with the latest browserslist db
         if: github.event.action != 'closed'
         run: |
