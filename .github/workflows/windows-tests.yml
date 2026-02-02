@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+      - run: npm install -g npm@latest
       - run: npm ci --verbose
       - run: npx update-browserslist-db@latest
       - name: Ng test for studio-web

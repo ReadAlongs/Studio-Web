@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
+      - run: npm install -g npm@latest
+        if: github.event.action != 'closed'
       - name: Install
         if: github.event.action != 'closed'
         run: |

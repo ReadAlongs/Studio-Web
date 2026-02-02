@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: "22"
           package-manager-cache: false
+      - run: npm install -g npm@latest
       - run: npm ci
       - run: npx update-browserslist-db@latest
       - run: npx nx bundle web-component
