@@ -1,3 +1,7 @@
+### Build the image
+
+    podman build -t ras-web .
+
 ### Launch the container with:
 
     podman run --rm -it -v "$(pwd)":/work:Z -e HOME=/work ras-web bash -l
