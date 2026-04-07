@@ -30,10 +30,10 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "cypress": "^14.5.1",
-    "sirv-cli": "^3.0.1",
-    "wait-on": "^8.0.3",
-    "webpack-cli": "^6.0.1",
+    "cypress": "^15",
+    "sirv-cli": "^3",
+    "wait-on": "^9",
+    "webpack-cli": "^7",
     "woff2base64": "^2.0.0",
     "css": "^3.0.0"
   },
