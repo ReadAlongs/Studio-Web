@@ -33,7 +33,7 @@
     "find-cache-dir": "^5.0.0",
     "husky": "^9.1.7",
     "jasmine-core": "^5.8.0",
-    "jest": "^29.7.0",
+    "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.2.0",
     "jsdom": "^26.1.0",
     "karma": "^6.4.4",
