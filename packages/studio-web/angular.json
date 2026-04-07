@@ -113,26 +113,12 @@
           }
         },
         "test": {
-          "builder": "@angular-builders/custom-webpack:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.cjs",
-            "inlineStyleLanguage": "sass",
-            "assets": [
-              "src/favicon.ico",
-              {
-                "glob": "**/*",
-                "ignore": ["fr-fr/*"],
-                "input": "./node_modules/soundswallower/model",
-                "output": "./model"
-              }
-            ],
-            "customWebpackConfig": {
-              "path": "./custom-webpack.config.cjs"
-            },
-            "styles": ["src/styles.sass"]
+            "buildTarget": "readalong-studio:build:development",
+            "browsers": ["Chrome", "ChromeHeadlessCI"],
+            "runner": "vitest",
+            "tsConfig": "tsconfig.spec.json"
           }
         }
       }
