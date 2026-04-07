@@ -1,6 +1,7 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  allowCypressEnv: false,
   chromeWebSecurity: false,
   e2e: {
     // We've imported your old cypress plugins here.
