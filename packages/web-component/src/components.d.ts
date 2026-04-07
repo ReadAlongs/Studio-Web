@@ -252,17 +252,40 @@ declare namespace LocalJSX {
          */
         "useAssetsFolder"?: boolean;
     }
+
+    interface ErrorMessageAttributes {
+        "msg": string;
+        "data_cy": string;
+        "timeout": number;
+    }
+    interface ReadAlongAttributes {
+        "href": string;
+        "audio": string;
+        "svgOverlay": string;
+        "theme": string;
+        "language": InterfaceLanguage;
+        "cssUrl": string;
+        "useAssetsFolder": boolean;
+        "imageAssetsFolder": string;
+        "pageScrolling": "horizontal" | "vertical";
+        "mode": ReadAlongMode;
+        "scrollBehaviour": ScrollBehaviour;
+        "displayTranslation": boolean;
+        "playbackRateRange": number;
+        "autoPauseAtEndOfPage": boolean;
+    }
+
     interface IntrinsicElements {
-        "error-message": ErrorMessage;
-        "read-along": ReadAlong;
+        "error-message": Omit<ErrorMessage, keyof ErrorMessageAttributes> & { [K in keyof ErrorMessage & keyof ErrorMessageAttributes]?: ErrorMessage[K] } & { [K in keyof ErrorMessage & keyof ErrorMessageAttributes as `attr:${K}`]?: ErrorMessageAttributes[K] } & { [K in keyof ErrorMessage & keyof ErrorMessageAttributes as `prop:${K}`]?: ErrorMessage[K] };
+        "read-along": Omit<ReadAlong, keyof ReadAlongAttributes> & { [K in keyof ReadAlong & keyof ReadAlongAttributes]?: ReadAlong[K] } & { [K in keyof ReadAlong & keyof ReadAlongAttributes as `attr:${K}`]?: ReadAlongAttributes[K] } & { [K in keyof ReadAlong & keyof ReadAlongAttributes as `prop:${K}`]?: ReadAlong[K] };
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
-            "read-along": LocalJSX.ReadAlong & JSXBase.HTMLAttributes<HTMLReadAlongElement>;
+            "error-message": LocalJSX.IntrinsicElements["error-message"] & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
+            "read-along": LocalJSX.IntrinsicElements["read-along"] & JSXBase.HTMLAttributes<HTMLReadAlongElement>;
         }
     }
 }
