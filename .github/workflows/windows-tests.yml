@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 jobs:
   tests-on-windows:
     runs-on: windows-latest
@@ -25,7 +26,7 @@ jobs:
           npx nx test:once studio-web
 
       - name: Cypress run for web-component
-        uses: cypress-io/github-action@2ad32e649e4db26c07674ebae31a297601dbcbaf # v6.10.8
+        uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
         with:
           install: true # fails on Windows with install: false
           start: |
