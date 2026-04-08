@@ -31,6 +31,7 @@
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
     "commitlint": "^20.5.0",
+    "cypress": "^15",
     "find-cache-dir": "^5.0.0",
     "husky": "^9.1.7",
     "jasmine-core": "^5.8.0",
