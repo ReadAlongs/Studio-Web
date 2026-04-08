@@ -23,5 +23,6 @@
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     }
   },
-  "useInferencePlugins": false
+  "useInferencePlugins": false,
+  "analytics": false
 }
