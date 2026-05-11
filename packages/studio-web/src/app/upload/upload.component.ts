@@ -67,7 +67,8 @@ export class UploadComponent implements OnInit {
   // Max plain text file size: 40KB is OK but takes around 15-20s on Heroku
   private maxTxtSizeKB = 40;
   // Max .readalong XML text size: text * 5 is a rough heuristic; the XML is much bloated from the text.
-  private maxRasSizeKB = 200;
+  // Later bumped to 400 to accommodate a real life use case.
+  private maxRasSizeKB = 400;
   private currentToast: number;
   @ViewChild("textFileUpload")
   private textFileUpload: ElementRef<HTMLFormElement>;
