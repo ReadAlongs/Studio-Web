@@ -205,7 +205,7 @@ Please host all assets on your server, include the font and package imports defi
         `
             <!DOCTYPE html>
 
-            <!-- DO NOT USE THIS VERSION ON A WEBSITE. See Webmaster Instructions below -->
+            <!-- DO NOT USE THIS VERSION ON A WEBSITE. See Web Publication Instructions below -->
 
             <!--
 
@@ -231,11 +231,11 @@ Please host all assets on your server, include the font and package imports defi
 
             <!--
 
-                                      Webmaster Instructions
+                                   Web Publication Instructions
 
             Before publishing this ReadAlong on a web site, please convert it to a Web
-            Bundle. This monolithic format is the master file for editing and for offline
-            use, but it is not optimized for publication on a web site.
+            Bundle. This monolithic format is intended for editing and for offline use,
+            but it is not optimized for publication on a web site.
 
             Use the ReadAlong Studio Editor to convert this to a Web Bundle zip file:
             https://readalong-studio.mothertongues.org/#/editor
