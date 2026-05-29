@@ -16,7 +16,7 @@
     "@nx/eslint-plugin": "^22.1.2",
     "@nx/jest": "^22.1.2",
     "@nxext/stencil": "^21.0.0",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.60.0",
     "@stencil/angular-output-target": "^0.10.2",
     "@stencil/core": "^4.35.3",
     "@stencil/sass": "^3.2.1",
