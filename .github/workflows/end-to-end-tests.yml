@@ -99,18 +99,18 @@ jobs:
           npx nx build web-component
           npx nx run-many --targets=serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6 &
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Wait for the servers to be up
         run: |
           # wait for the studio web to be up
-          sleep 50
           curl --retry 20 --retry-delay 10 --retry-all-errors http://localhost:4200 > /dev/null
           # Make sure the back-end API is up too
           curl --retry 20 --retry-delay 1 --retry-all-errors http://localhost:8000/api/v1/langs
 
       - name: Run Playwright tests for studio-web
-        run: |
-          npx playwright install --with-deps chromium
-          npx nx e2e studio-web
+        run: npx nx e2e studio-web
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v6
