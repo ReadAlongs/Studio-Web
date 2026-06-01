@@ -25,25 +25,24 @@ jobs:
           npx nx build web-component
           npx nx test:once studio-web
 
-      #- name: Cypress run for web-component
-      #  uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
-      #  with:
-      #    install: true # fails on Windows with install: false
-      #    start: |
-      #      npx nx serve web-component
-      #      npx nx serve-test-data web-component
-      #    wait-on: sleep 15 # there is no reliable URL to wait for...
-      #    command: |
-      #      npx cypress install
-      #      npx nx test:once web-component
       - name: Cypress run for web-component
-        shell: bash
-        run: |
-          npx nx serve web-component &
-          npx nx serve-test-data web-component &
-          npx cypress install
-          sleep 15
-          npx nx test:once web-component
+        uses: cypress-io/github-action@948d67d3074f1bbb6379c8bdbb04e95d2f8e593f # v7.4.0
+        with:
+          install: true # fails on Windows with install: false
+          start: |
+            npx nx serve web-component
+            npx nx serve-test-data web-component
+          wait-on: sleep 15 # there is no reliable URL to wait for...
+          command: |
+            npx nx test:once web-component
+      #- name: Cypress run for web-component
+      #  shell: bash
+      #  run: |
+      #    npx nx serve web-component &
+      #    npx nx serve-test-data web-component &
+      #    npx cypress install
+      #    sleep 15
+      #    npx nx test:once web-component
 
       - run: npx nx extract-i18n studio-web
       - run: npx nx check-l10n studio-web
