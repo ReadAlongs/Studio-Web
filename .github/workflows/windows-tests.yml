@@ -27,6 +27,7 @@ jobs:
           npx nx build web-component
           npx nx test:once studio-web
 
+      - run: npx cypress install
       - name: Cypress run for web-component
         uses: cypress-io/github-action@948d67d3074f1bbb6379c8bdbb04e95d2f8e593f # v7.4.0
         with:
