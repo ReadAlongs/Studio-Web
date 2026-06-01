@@ -37,6 +37,7 @@ jobs:
       #      npx cypress install
       #      npx nx test:once web-component
       - name: Cypress run for web-component
+        shell: bash
         run: |
           npx nx serve web-component &
           npx nx serve-test-data web-component &
