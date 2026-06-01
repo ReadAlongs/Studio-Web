@@ -10,6 +10,8 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: read
+    env:
+      CYPRESS_CACHE_FOLDER: ${{ github.workspace }}/.cypress-cache
     steps:
       - uses: actions/checkout@v6
         with:
