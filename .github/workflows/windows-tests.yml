@@ -21,6 +21,10 @@ jobs:
       - run: npm ci --verbose
       
       - run: npx cypress install
+      - shell: bash
+        run: find "C:\Users\runneradmin\AppData\Local\Cypress" || true
+      - shell: bash
+        run: find "C:\" -iname Cypress.exe
       - run: npx cypress verify
 
       - run: npx update-browserslist-db@latest
