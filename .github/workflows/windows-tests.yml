@@ -20,7 +20,7 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm ci --verbose
       
-      - run: npx cypress install
+      - run: npx cypress install --force
       - shell: bash
         run: find 'C:\Users\runneradmin\AppData\Local\Cypress' || true
       - shell: bash
