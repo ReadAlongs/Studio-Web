@@ -8,8 +8,8 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: read
-    env:
-      CYPRESS_CACHE_FOLDER: ${{ github.workspace }}/.cypress-cache
+    #env:
+    #  CYPRESS_CACHE_FOLDER: ${{ github.workspace }}/.cypress-cache
     steps:
       - uses: actions/checkout@v6
         with:
@@ -19,6 +19,10 @@ jobs:
           node-version: 24
       - run: npm install -g npm@latest
       - run: npm ci --verbose
+      
+      - run: npx cypress install
+      - run: npx cypress verify
+
       - run: npx update-browserslist-db@latest
 
       #- run: npx cypress install
