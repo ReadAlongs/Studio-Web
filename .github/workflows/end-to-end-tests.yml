@@ -4,6 +4,7 @@ concurrency:
   cancel-in-progress: true
 on:
   - workflow_call
+  - push
 permissions:
   contents: read
 jobs:
