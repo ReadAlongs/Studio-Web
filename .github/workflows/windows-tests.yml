@@ -18,13 +18,13 @@ jobs:
         with:
           node-version: 24
       - run: npm install -g npm@latest
-      - run: npm ci --verbose
+      - run: npm ci --verbose --foreground-scripts
       
       - run: npx cypress install --force
       - shell: bash
         run: find 'C:\Users\runneradmin\AppData\Local\Cypress' || true
-      - shell: bash
-        run: find "C:\\" -iname Cypress.exe || true
+      #- shell: bash
+      #  run: find "C:\\" -iname Cypress.exe || true
       - run: npx cypress verify
 
       - run: npx update-browserslist-db@latest
