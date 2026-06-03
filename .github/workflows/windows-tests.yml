@@ -25,6 +25,7 @@ jobs:
         run: find 'C:\Users\runneradmin\AppData\Local\Cypress' || true
       #- shell: bash
       #  run: find "C:\\" -iname Cypress.exe || true
+      - run: npx cypress info
       - run: npx cypress verify
 
       - run: npx update-browserslist-db@latest
