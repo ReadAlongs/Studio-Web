@@ -88,6 +88,15 @@
     "packages/*"
   ],
   "allowScripts": {
-    "cypress@15.13.1": true
+    "cypress@15.13.1": true,
+    "esbuild@0.25.5": true,
+    "esbuild@0.25.9": true,
+    "esbuild@0.27.7": true,
+    "nx@21.6.10": true,
+    "nx@22.6.5": true,
+    "@parcel/watcher@2.5.6": true,
+    "lmdb@3.4.2": true,
+    "msgpackr-extract@3.0.3": true,
+    "unrs-resolver@1.11.1": true
   }
 }
