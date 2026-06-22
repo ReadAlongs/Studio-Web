@@ -24,5 +24,6 @@
     }
   },
   "useInferencePlugins": false,
-  "analytics": false
+  "analytics": false,
+  "neverConnectToCloud": true
 }
