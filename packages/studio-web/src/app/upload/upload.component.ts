@@ -1,5 +1,5 @@
 // -*- typescript-indent-level: 2 -*-
-import { ToastrService } from "ngx-toastr";
+import { Toast, ToastrService } from "ngx-toastr";
 import {
   Observable,
   catchError,
@@ -587,8 +587,8 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
               // clean all outstanding success and error toasts on alignment success,
               // they are no longer relevant, but keep the warnings, they are typically
               // about having to relax alignment parameters.
-              let type =
-                toast.toastRef.componentInstance.toastPackage.toastType;
+              let type = (toast.toastRef.componentInstance as Toast)
+                .toastPackage.toastType;
               if (type === "toast-error" || type === "toast-success") {
                 this.toastr.clear(toast.toastId);
               }
