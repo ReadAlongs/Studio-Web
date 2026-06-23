@@ -2289,7 +2289,7 @@ export class ReadAlongComponent {
           <a
             href="https://github.com/ReadAlongs/Studio-Web"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             @readalongs/web-component {PACKAGE_VERSION}
           </a>
