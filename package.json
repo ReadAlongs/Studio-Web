@@ -9,7 +9,7 @@
     "@angular/compiler-cli": "^21.2.9",
     "@angular/language-service": "^21.2.9",
     "@angular/localize": "^21.2.9",
-    "@angular/platform-browser-dynamic": "^21.2.9",
+    "@angular/platform-browser": "^21.2.9",
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "@express-rate-limit/prettier": "^1.1.1",

@@ -3,7 +3,6 @@
   "type": "module",
   "dependencies": {
     "@angular/core": "^21",
-    "@angular/platform-browser": "^21",
-    "@angular/platform-browser-dynamic": "^21"
+    "@angular/platform-browser": "^21"
   }
 }
