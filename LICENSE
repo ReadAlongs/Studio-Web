@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2018-2024 National Research Council Canada, Algonquian Dictionaries and Language Resources Project, David Huggins-Daines
+Copyright (c) 2018-2026 National Research Council Canada, Algonquian Dictionaries and Language Resources Project, David Huggins-Daines
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-packages/studio-web/src/app/shepherd.service.ts and friends:
+packages/studio-web/src/app/{shepherd.service.*, utils/dom.ts, utils/button.ts}:
 
 The MIT License (MIT)
 
