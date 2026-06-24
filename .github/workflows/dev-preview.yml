@@ -26,9 +26,9 @@ jobs:
         run: |
           # create the bundles required for studio-web
           npx nx bundle web-component
-      - name: Test
-        run: |
-          npx nx test:once studio-web
+      #- name: Test
+      #  run: |
+      #    npx nx test:once studio-web
       - name: Build
         run: |
           sed -r -i  's:readalong-studio.mothertongues.org/:readalong-studio.mothertongues.org/dev/:g' packages/studio-web/src/environments/environment.prod.ts

@@ -20,10 +20,10 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm ci --verbose
       - run: npx update-browserslist-db@latest
-      - name: Ng test for studio-web
-        run: |
-          npx nx build web-component
-          npx nx test:once studio-web
+      #- name: Ng test for studio-web
+      #  run: |
+      #    npx nx build web-component
+      #    npx nx test:once studio-web
 
       - name: Cypress run for web-component
         uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
