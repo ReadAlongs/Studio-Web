@@ -1,7 +1,11 @@
 import { ToastrModule } from "ngx-toastr";
 
 import { provideHttpClient } from "@angular/common/http";
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  NgModule,
+  provideZoneChangeDetection,
+} from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -53,7 +57,7 @@ defineCustomElements();
     NgxRAWebComponentModule,
     SharedModule,
   ],
-  providers: [provideHttpClient()],
+  providers: [provideHttpClient(), provideZoneChangeDetection()],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
