@@ -16,7 +16,7 @@
   },
   "private": true,
   "singleFileBundleVersion": "1.6.4",
-  "singleFileBundleTimestamp": "2026-06-25+20-19-19",
+  "singleFileBundleTimestamp": "2026-06-26+16-07-10",
   "dependencies": {
     "readalong-studio": "file:"
   }
