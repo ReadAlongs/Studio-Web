@@ -1125,7 +1125,8 @@ export class ReadAlongComponent {
             const sentences = paragraphs[
               paragraphs.length - 1
             ].querySelectorAll(
-              "s:not(.translation), s:not(.sentence__translation)",
+              // chain the not statements so they are ANDed: exclude sentences matching any of these criteria
+              's:not(.translation):not(.sentence__translation):not([do-not-align="true"])',
             ); //get non-translation sentences in the last paragraph
             const word =
               sentences[sentences.length - 1].querySelector("w:last-of-type"); //get the last word of the last sentence
