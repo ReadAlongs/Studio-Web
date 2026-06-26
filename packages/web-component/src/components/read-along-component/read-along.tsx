@@ -2288,7 +2288,7 @@ export class ReadAlongComponent {
         </div>
         <p class="version">
           <a
-            href="https://github.com/ReadAlongs/Studio-Web"
+            href="https://github.com/ReadAlongs"
             target="_blank"
             rel="noopener noreferrer"
           >
