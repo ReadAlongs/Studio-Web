@@ -2,6 +2,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
     "outDir": "./out-tsc/spec",
     "types": ["jasmine"]
   },
