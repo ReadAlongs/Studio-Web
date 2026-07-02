@@ -67,6 +67,23 @@ export class TextareaOverlayService {
   }
 
   /**
+   * Copies just the vertical box metrics (top/bottom padding and height)
+   * from `source` onto `target`, without touching width, horizontal
+   * padding, or font/text properties. For elements like the gutter that
+   * sit beside the textarea rather than behind it: they need their first
+   * row to start at the same vertical offset as the textarea's first line
+   * of text, but have their own fixed width and don't render the
+   * textarea's actual text.
+   */
+  applyVerticalMetrics(source: HTMLElement, target: HTMLElement): void {
+    const computed = getComputedStyle(source);
+    target.style.paddingTop = computed.paddingTop;
+    target.style.paddingBottom = computed.paddingBottom;
+    target.style.boxSizing = "border-box";
+    target.style.height = `${source.clientHeight}px`;
+  }
+
+  /**
    * Observes `element` for box-size changes (window resizes, manual
    * textarea resizing, etc.) and invokes `callback` each time. Returns a
    * disposer that stops observing.

@@ -6,8 +6,19 @@
 // the overlay.
 #textInputHost
     position: relative
+    display: flex
+    align-items: stretch
     border: 1px solid #222
+    overflow: hidden
     min-height: 150px
+
+// Wraps the overlay + textarea pair from prompt 1 so the gutter can sit
+// beside them as its own flex column without disturbing their existing
+// position: relative / absolute-overlay relationship.
+.textarea-editor-main
+    position: relative
+    flex: 1 1 auto
+    min-width: 0
 
 #textInput
     font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'

@@ -1,0 +1,15 @@
+<div class="textarea-gutter" #gutter aria-hidden="true">
+  @for (row of rows; track $index) {
+    <div class="textarea-gutter__row" [style.height.px]="row.heightPx">
+      @if (row.marker === "paragraph") {
+        <span class="textarea-gutter__pilcrow">&para;</span>
+      }
+      @if (row.marker === "page") {
+        <mat-icon class="textarea-gutter__page-icon"
+          >insert_drive_file</mat-icon
+        >
+      }
+    </div>
+  }
+</div>
+<div class="textarea-gutter__measurer" #measurer aria-hidden="true"></div>

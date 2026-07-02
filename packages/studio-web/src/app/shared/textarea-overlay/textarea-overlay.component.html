@@ -4,8 +4,7 @@
       class="textarea-overlay__line"
       [class.textarea-overlay__line--paragraph]="line.tint === 'paragraph'"
       [class.textarea-overlay__line--page]="line.tint === 'page'"
-    >
-      {{ line.text }}
-    </div>
+      [textContent]="line.text"
+    ></div>
   }
 </div>

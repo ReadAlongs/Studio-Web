@@ -1,0 +1,45 @@
+// Static, non-interactive column for now (click behavior comes later) —
+// see TextareaGutterComponent for why row heights are set explicitly in
+// JS rather than derived from line-height here.
+:host
+  display: contents
+
+.textarea-gutter
+  position: relative
+  flex: 0 0 28px
+  width: 28px
+  overflow: hidden
+  box-sizing: border-box
+  background-color: rgba(0, 0, 0, 0.025)
+  border-right: 1px solid rgba(0, 0, 0, 0.1)
+
+  &__row
+    display: flex
+    align-items: center
+    justify-content: center
+    overflow: hidden
+
+  &__pilcrow
+    font-size: 15px
+    line-height: 1
+    color: #3f51b5
+    opacity: 0.65
+
+  &__page-icon
+    font-size: 15px
+    width: 15px
+    height: 15px
+    line-height: 15px
+    color: #c2185b
+
+// Off-screen full-width mirror used only to measure wrapped line heights;
+// never shown, never a source of truth for anything rendered above.
+.textarea-gutter__measurer
+  position: absolute
+  top: 0
+  left: 0
+  visibility: hidden
+  pointer-events: none
+  white-space: pre-wrap
+  word-wrap: break-word
+  overflow-wrap: break-word
