@@ -1,7 +1,26 @@
-#textInput
+// Positioning context for the textarea-overlay decoration layer, and now
+// the home of the visible box chrome that used to live on #textInput
+// directly: the textarea itself is made transparent (see below) so the
+// overlay can render tinted backgrounds behind its text, which means it
+// can no longer paint its own opaque background/border without hiding
+// the overlay.
+#textInputHost
+    position: relative
     border: 1px solid #222
     min-height: 150px
+
+#textInput
     font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
+    position: relative
+    z-index: 1
+    background: transparent
+    color: transparent
+    -webkit-text-fill-color: transparent
+    caret-color: #222
+
+    &::placeholder
+        color: #6c757d
+        -webkit-text-fill-color: #6c757d
 
 .audioControl
     width: 100%

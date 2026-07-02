@@ -1,0 +1,11 @@
+<div class="textarea-overlay" #mirror aria-hidden="true">
+  @for (line of lines; track $index) {
+    <div
+      class="textarea-overlay__line"
+      [class.textarea-overlay__line--paragraph]="line.tint === 'paragraph'"
+      [class.textarea-overlay__line--page]="line.tint === 'page'"
+    >
+      {{ line.text }}
+    </div>
+  }
+</div>
