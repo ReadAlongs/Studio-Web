@@ -1,4 +1,5 @@
-import { EditorState, Transaction } from "@tiptap/pm/state";
+import { Node as PMNode } from "@tiptap/pm/model";
+import { EditorState, TextSelection, Transaction } from "@tiptap/pm/state";
 
 import {
   canSplitIntoNewParagraph,
@@ -16,7 +17,13 @@ function isCollapsedInSentence(state: EditorState): boolean {
 }
 
 /**
- * Inserts a pagebreak node at the cursor.
+ * Inserts a pagebreak node at the cursor, and leaves the cursor at the
+ * start of the paragraph that follows it — the first line of the new
+ * page — creating an empty one there first if the pagebreak would
+ * otherwise land at the very end of the document (e.g. the cursor was at
+ * the end of the last paragraph), so there's always somewhere to
+ * immediately continue typing rather than a page break with nothing
+ * after it.
  *
  * If the cursor sits exactly at the start or end of its enclosing
  * paragraph, the pagebreak is inserted as a sibling of that paragraph (no
@@ -41,6 +48,7 @@ export function insertPageBreakCommand({
   const { $from } = state.selection;
   const pos = $from.pos;
   const pagebreakType = state.schema.nodes["pagebreak"];
+  const paragraphType = state.schema.nodes["paragraph"];
   // $from.start(1)/end(1) are the paragraph's own content boundaries, one
   // token outside any sentence — unreachable while isCollapsedInSentence
   // holds. The reachable boundary is one token in: the first/last
@@ -72,7 +80,24 @@ export function insertPageBreakCommand({
   }
 
   if (dispatch) {
-    tr.insert(insertAt, pagebreakType.create());
+    const pagebreak = pagebreakType.create();
+    const followingNode = tr.doc.nodeAt(insertAt);
+    const afterPagebreak = insertAt + pagebreak.nodeSize;
+
+    tr.insert(insertAt, pagebreak);
+    if (followingNode?.type === paragraphType) {
+      // A paragraph is already there (the pre-existing paragraph, for the
+      // at-start case; the split-off second half, for the mid-paragraph
+      // case) — just move the cursor into its first sentence.
+      tr.setSelection(TextSelection.create(tr.doc, afterPagebreak + 2));
+    } else {
+      // The pagebreak landed at the very end of the document (or right
+      // before another pagebreak) — nothing to continue typing into, so
+      // create an empty paragraph and put the cursor there.
+      const emptyParagraph = paragraphType.createAndFill() as PMNode;
+      tr.insert(afterPagebreak, emptyParagraph);
+      tr.setSelection(TextSelection.create(tr.doc, afterPagebreak + 2));
+    }
     dispatch(tr.scrollIntoView());
   }
   return true;
