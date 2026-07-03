@@ -165,7 +165,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     return (
       this.studioService.audioControl$.value ||
       this.studioService.textControl$.value ||
-      this.studioService.$textInput.value ||
+      this.studioService.$hasText.value ||
       this.studioService.langMode$.value !== "generic" ||
       this.studioService.langControl$.value !== "und"
     );

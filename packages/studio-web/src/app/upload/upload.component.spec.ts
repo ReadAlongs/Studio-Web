@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 import { MaterialModule } from "../material.module";
+import { SharedModule } from "../shared/shared.module";
 import { UploadComponent } from "./upload.component";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 
@@ -21,6 +22,7 @@ describe("UploadComponent", () => {
         FormsModule,
         ToastrModule.forRoot(),
         MaterialModule,
+        SharedModule,
       ],
       declarations: [UploadComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],

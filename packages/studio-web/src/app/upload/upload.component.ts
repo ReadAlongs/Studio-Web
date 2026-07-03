@@ -12,6 +12,7 @@ import {
   throwError,
   firstValueFrom,
   take,
+  skip,
   filter,
 } from "rxjs";
 
@@ -29,6 +30,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
 import { HttpErrorResponse } from "@angular/common/http";
+import { Node as PMNode } from "@tiptap/pm/model";
 
 import { environment } from "../../environments/environment";
 import { FileService } from "../file.service";
@@ -46,6 +48,11 @@ import { StudioService } from "../studio/studio.service";
 import { validateFileType } from "../utils/utils";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { IAudioBuffer } from "standardized-audio-context";
+import {
+  isG2pAssembleErrorBody,
+  mapG2pErrorsToPositions,
+} from "../shared/tiptap-editor/g2p/g2p-error-mapping";
+import { TiptapEditorComponent } from "../shared/tiptap-editor/tiptap-editor.component";
 
 @Component({
   selector: "app-upload",
@@ -74,7 +81,16 @@ export class UploadComponent implements OnInit {
   private textFileUpload: ElementRef<HTMLFormElement>;
   @ViewChild("audioFileUpload")
   private audioFileUpload: ElementRef<HTMLFormElement>;
+  @ViewChild("tiptapEditor")
+  private tiptapEditor: TiptapEditorComponent;
   @Output() public stepChange = new EventEmitter<any[]>();
+
+  // The tiptap editor's current doc, kept up to date via (docChange), and
+  // the doc actually submitted in the last alignment request — g2p error
+  // positions must be resolved against the latter, not the (possibly
+  // since-edited) live doc.
+  private currentDoc: PMNode | null = null;
+  private lastSubmittedDoc: PMNode | null = null;
 
   // value passed to input[type=file] accept's attribute which expects
   // a comma separated list of file extensions or mime types.
@@ -130,19 +146,26 @@ export class UploadComponent implements OnInit {
         this.audioFileUpload.nativeElement.value = "";
       });
 
-    // As the user is entering text, validate the length of the string
-    // and set the textControl$ to the new value.
-    this.studioService.$textInput
+    // As the user edits, validate the size of the resulting XML and set
+    // textControl$ to the new value.
+    this.studioService.$textInputXml
       .pipe(
         takeUntilDestroyed(this.destroyRef$),
         filter((val) => val !== ""),
         filter(() => this.checkIsTextSizeBelowLimit()),
       )
-      .subscribe((textString) => {
+      .subscribe((xml) => {
         this.studioService.textControl$.setValue(
-          new Blob([textString], { type: "text/plain" }),
+          new Blob([xml], { type: "application/readalong+xml" }),
         );
       });
+
+    // $textInput is a one-way "load this into the editor" channel (demo
+    // tour text, clearing on file upload) — skip its initial value, which
+    // the editor already consumes once via its `initialText` binding.
+    this.studioService.$textInput
+      .pipe(takeUntilDestroyed(this.destroyRef$), skip(1))
+      .subscribe((text) => this.tiptapEditor?.loadText(text));
   }
 
   async ngOnInit() {
@@ -168,6 +191,18 @@ export class UploadComponent implements OnInit {
 
   reportRasError(err: HttpErrorResponse) {
     if (err.status == 422) {
+      if (
+        isG2pAssembleErrorBody(err.error) &&
+        this.applyG2pErrorRanges(err.error.partial_ras)
+      ) {
+        this.toastr.error(
+          $localize`Some words couldn't be processed — see the highlighted text.`,
+          $localize`Text processing failed.`,
+          { timeOut: 30000, closeButton: true },
+        );
+        return;
+      }
+
       if (err.error.detail.includes("is empty")) {
         this.toastr.error(
           $localize`Your text may contain unpronounceable characters or numbers.
@@ -188,6 +223,27 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         { timeOut: 60000 },
       );
     }
+  }
+
+  /**
+   * Attempts to positionally map a g2p assemble error onto the doc that
+   * was actually submitted, and — if that succeeds — flags the failing
+   * words in the editor. Returns false (without flagging anything) if the
+   * mapping isn't trustworthy (no submitted doc on record, e.g. the
+   * "upload" text input method was used, or the word count doesn't
+   * match), so the caller can fall back to the generic error toast rather
+   * than silently pointing at the wrong word.
+   */
+  private applyG2pErrorRanges(partialRas: string | undefined): boolean {
+    if (!partialRas || !this.lastSubmittedDoc) {
+      return false;
+    }
+    const errors = mapG2pErrorsToPositions(this.lastSubmittedDoc, partialRas);
+    if (!errors || errors.length === 0) {
+      return false;
+    }
+    this.tiptapEditor?.setErrorRanges(errors);
+    return true;
   }
 
   reportUnpronounceableError(err: Error) {
@@ -254,14 +310,14 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   downloadText() {
-    if (this.studioService.$textInput.value) {
-      let textBlob = new Blob([this.studioService.$textInput.value], {
-        type: "text/plain",
+    if (this.studioService.$hasText.value) {
+      let textBlob = new Blob([this.studioService.$textInputXml.value], {
+        type: "application/xml",
       });
       var url = window.URL.createObjectURL(textBlob);
       var a = document.createElement("a");
       a.href = url;
-      a.download = "ras-text-" + Date.now() + ".txt";
+      a.download = "ras-text-" + Date.now() + ".readalong";
       a.click();
       a.remove();
     } else {
@@ -376,17 +432,26 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     this.studioService.inputMethod.text = event.value;
   }
 
+  onEditorXmlChange(xml: string): void {
+    this.studioService.$textInputXml.next(xml);
+  }
+
+  onEditorDocChange(doc: PMNode): void {
+    this.currentDoc = doc;
+    this.studioService.$hasText.next(doc.textContent.trim().length > 0);
+  }
+
   checkIsTextSizeBelowLimit(): boolean {
-    if (this.studioService.$textInput.value) {
-      const inputLength = this.studioService.$textInput.value.length;
+    if (this.studioService.$textInputXml.value) {
+      const inputLength = this.studioService.$textInputXml.value.length;
       if (this.currentToast) {
         this.toastr.clear(this.currentToast);
       }
-      if (inputLength > this.maxTxtSizeKB * 1024) {
+      if (inputLength > this.maxRasSizeKB * 1024) {
         this.currentToast = this.toastr.error(
           $localize`Text too large. ` +
             $localize`Max size: ` +
-            this.maxTxtSizeKB +
+            this.maxRasSizeKB +
             $localize` KB.` +
             $localize` Current size: ` +
             Math.ceil(inputLength / 1024) +
@@ -416,7 +481,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   private validateTextControl(): boolean {
     switch (this.studioService.inputMethod.text) {
       case "edit":
-        if (this.studioService.$textInput.value) {
+        if (this.studioService.$hasText.value) {
           return this.checkIsTextSizeBelowLimit();
         }
 
@@ -492,11 +557,16 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       return;
     }
 
+    // Don't leave stale g2p error underlines from a previous failed
+    // attempt showing while this new one is in flight.
+    this.tiptapEditor?.setErrorRanges([]);
+
     if (this.studioService.inputMethod.text === "edit") {
-      const inputText = new Blob([this.studioService.$textInput.value], {
-        type: "text/plain",
+      const inputText = new Blob([this.studioService.$textInputXml.value], {
+        type: "application/readalong+xml",
       });
       this.studioService.textControl$.setValue(inputText);
+      this.lastSubmittedDoc = this.currentDoc;
     }
 
     // Show progress bar
@@ -505,14 +575,15 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     // Determine text type for API request
     let input_type;
     if (
-      this.studioService.inputMethod.text === "upload" &&
-      this.studioService.textControl$.value instanceof File &&
-      (this.studioService.textControl$.value.name
-        .toLowerCase()
-        .endsWith(".xml") ||
-        this.studioService.textControl$.value.name
+      this.studioService.inputMethod.text === "edit" ||
+      (this.studioService.inputMethod.text === "upload" &&
+        this.studioService.textControl$.value instanceof File &&
+        (this.studioService.textControl$.value.name
           .toLowerCase()
-          .endsWith(".readalong"))
+          .endsWith(".xml") ||
+          this.studioService.textControl$.value.name
+            .toLowerCase()
+            .endsWith(".readalong")))
     ) {
       input_type = "application/readalong+xml";
     } else {

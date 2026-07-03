@@ -41,7 +41,19 @@ export class StudioService {
     null,
     Validators.required,
   );
+  // A one-way "load this into the editor" channel — e.g. the guided tour's
+  // demo text, or clearing the editor when switching to file upload — in
+  // the plain-text blank-line convention TiptapEditorComponent.loadText
+  // accepts. Not the editor's live content; see $textInputXml for that.
   public $textInput = new BehaviorSubject<string>("");
+  // The editor's current content, serialized to read-along input XML.
+  // Kept in sync by UploadComponent from the tiptap editor's `xmlChange`.
+  public $textInputXml = new BehaviorSubject<string>("");
+  // Whether the editor has any actual text — docToReadAlongXml always
+  // wraps output in <read-along> scaffolding, so $textInputXml is never
+  // itself empty/falsy, even for an empty doc. Kept in sync by
+  // UploadComponent from the tiptap editor's `docChange`.
+  public $hasText = new BehaviorSubject<boolean>(false);
 
   public uploadFormGroup = new FormGroup({
     lang: this.langControl$,

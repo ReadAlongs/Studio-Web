@@ -12,6 +12,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { StudioComponent } from "./studio.component";
 import { DemoComponent } from "../demo/demo.component";
 import { MaterialModule } from "../material.module";
+import { SharedModule } from "../shared/shared.module";
 import { UploadComponent } from "../upload/upload.component";
 import { provideRouter } from "@angular/router";
 import { routes } from "../app-routing.module";
@@ -26,6 +27,7 @@ describe("StudioComponent", () => {
         FormsModule,
         BrowserAnimationsModule,
         MaterialModule,
+        SharedModule,
         ToastrModule.forRoot(),
       ],
       providers: [
