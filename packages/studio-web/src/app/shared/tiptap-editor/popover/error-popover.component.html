@@ -1,0 +1,11 @@
+@if (position) {
+  <div
+    class="error-popover"
+    [style.top.px]="position.top"
+    [style.left.px]="position.left"
+    role="tooltip"
+    data-test-id="tiptap-error-popover"
+  >
+    {{ message }}
+  </div>
+}

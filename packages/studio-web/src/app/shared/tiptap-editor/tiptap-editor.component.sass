@@ -1,0 +1,96 @@
+:host
+    display: block
+
+.tiptap-editor
+    border: 1px solid #222
+    border-radius: 4px
+    background: #f8f9fa
+
+.tiptap-editor__toolbar
+    border-bottom: 1px solid #ccc
+    padding: 0.25rem 0.5rem
+
+.tiptap-editor__content
+    display: flex
+    flex-direction: column
+    min-height: 150px
+    max-height: 400px
+    overflow-y: auto
+    padding: 0.5rem 0.75rem
+    font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
+
+    &:focus-within
+        outline: 2px solid #1976d2
+        outline-offset: -2px
+
+    // Without this, the contenteditable only occupies the height of its
+    // own content, not this wrapper's min-height — clicking below the
+    // last line of text (anywhere in the visibly-empty rest of the box)
+    // then lands on the non-editable wrapper instead of focusing the
+    // editor, unlike a <textarea>, which always fills its own box
+    // regardless of how little text it holds.
+    .ProseMirror
+        flex: 1
+        outline: none
+
+    // One line per sentence, matching the plain-text one-sentence-per-line
+    // convention this schema replaces (schema/nodes.ts).
+    .tiptap-sentence
+        display: block
+
+    .tiptap-paragraph
+        margin: 0 0 1rem 0
+
+        &:last-child
+            margin-bottom: 0
+
+    // A word flagged by a g2p alignment error (see g2p/error-highlight-extension.ts).
+    // A background fill, not (only) text-decoration: `text-decoration`
+    // paints along the actual glyph run's advance width, not the
+    // element's laid-out box — confirmed empirically that `min-width`
+    // alone doesn't make the underline visible for a zero-advance-width
+    // glyph (an orphan combining diacritic with no base character to
+    // attach to). `background-color` paints across the full box
+    // regardless of what (if anything) renders inside it, so it stays
+    // visible in that case; the underline is kept as a secondary cue for
+    // the normal case where the flagged text does render.
+    .readalong-error-word
+        display: inline-block
+        min-width: 0.5em
+        // A lone combining mark's ink renders pulled toward its notional
+        // base-character position, not centered in the box `min-width`
+        // reserves for it — centering the (possibly zero-width) text run
+        // within the box pulls the visible glyph closer to matching the
+        // highlight, rather than sitting at the box's left edge.
+        text-align: center
+        background-color: rgba(211, 47, 47, 0.2)
+        border-radius: 2px
+        text-decoration: underline wavy #d32f2f
+        text-decoration-thickness: 2px
+        text-underline-offset: 3px
+
+    // Rendered far more prominently than the paragraph gap so a page
+    // boundary is unmistakable at a glance — this *is* pagination
+    // visibility now, no separate gutter/overlay needed.
+    hr[data-type="pagebreak"]
+        position: relative
+        margin: 1.5rem 0
+        border: none
+        border-top: 3px dashed #1976d2
+        cursor: pointer
+
+        &::after
+            content: attr(data-label)
+            position: absolute
+            top: -0.7rem
+            left: 1rem
+            background: #f8f9fa
+            padding: 0 0.5rem
+            font-size: 0.75rem
+            color: #1976d2
+
+        &.ProseMirror-selectednode
+            border-top-color: #d32f2f
+
+            &::after
+                color: #d32f2f

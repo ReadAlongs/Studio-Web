@@ -1,0 +1,23 @@
+<div class="tiptap-editor" #editorContainer>
+  <div class="tiptap-editor__toolbar">
+    <button
+      mat-button
+      type="button"
+      i18n="Insert page break button"
+      (click)="insertPageBreak()"
+      data-test-id="tiptap-insert-pagebreak-btn"
+    >
+      <mat-icon class="mat-icon-lg">insert_page_break</mat-icon> Page break
+    </button>
+  </div>
+  <div
+    #editorRoot
+    class="tiptap-editor__content"
+    data-test-id="tiptap-editor-content"
+    (click)="onContentClick($event)"
+  ></div>
+  <ras-shared-error-popover
+    [position]="errorPopoverPosition"
+    [message]="errorPopoverMessage"
+  ></ras-shared-error-popover>
+</div>
