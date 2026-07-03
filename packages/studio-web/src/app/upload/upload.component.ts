@@ -46,6 +46,16 @@ import { StudioService } from "../studio/studio.service";
 import { validateFileType } from "../utils/utils";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { IAudioBuffer } from "standardized-audio-context";
+import {
+  DocumentWord,
+  diffWordSequences,
+  remapWordIndex,
+  walkDocumentWords,
+} from "../shared/textarea-overlay/document-words";
+import {
+  isG2pAssembleErrorBody,
+  mapG2pErrorsToRanges,
+} from "./g2p-error-mapping";
 
 @Component({
   selector: "app-upload",
@@ -70,6 +80,16 @@ export class UploadComponent implements OnInit {
   // Later bumped to 400 to accommodate a real life use case.
   private maxRasSizeKB = 400;
   private currentToast: number;
+  // The exact text sent in the last alignment request — g2p error offsets
+  // must be resolved against this, not the (possibly since-edited) live
+  // textarea value.
+  private lastSubmittedText = "";
+  // Indices (into trackedWords) of words currently flagged by a g2p error.
+  private erroringIndices: number[] = [];
+  // The word sequence erroringIndices refers to, i.e. as of the last
+  // syncErrorMarks() call — needed to remap indices forward across edits
+  // elsewhere in the document. See syncErrorMarks().
+  private trackedWords: DocumentWord[] = [];
   @ViewChild("textFileUpload")
   private textFileUpload: ElementRef<HTMLFormElement>;
   @ViewChild("audioFileUpload")
@@ -143,6 +163,47 @@ export class UploadComponent implements OnInit {
           new Blob([textString], { type: "text/plain" }),
         );
       });
+
+    // Keep g2p error underlines in sync with edits: remap their current
+    // positions across the latest edit, dropping any that fell inside it.
+    // Unfiltered (unlike the subscription above) so clearing the textarea
+    // also clears any lingering marks.
+    this.studioService.$textInput
+      .pipe(takeUntilDestroyed(this.destroyRef$))
+      .subscribe((text) => this.syncErrorMarks(text));
+  }
+
+  /**
+   * Remaps `erroringIndices` from `trackedWords` onto `currentText`'s word
+   * sequence, dropping any that fell inside the edited region, and
+   * publishes the survivors' current character ranges for the overlay to
+   * underline.
+   *
+   * This is index-based rather than a simple "does the word at its
+   * original index still read the same" check: editing *any* word shifts
+   * the indices of every word after it, so a naive check would spuriously
+   * drop unrelated marks whenever an earlier flagged word was edited
+   * (e.g. "hello 1 2 3" with 1/2/3 all flagged — deleting "2" alone must
+   * not also clear the mark on "3", which simply moved to a new index).
+   * diffWordSequences finds the unaffected prefix/suffix around the edit
+   * so indices outside it can be carried forward correctly instead.
+   */
+  private syncErrorMarks(currentText: string): void {
+    if (this.erroringIndices.length === 0) {
+      return;
+    }
+    const currentWords = walkDocumentWords(currentText);
+    const diff = diffWordSequences(this.trackedWords, currentWords);
+    this.erroringIndices = this.erroringIndices
+      .map((index) => remapWordIndex(diff, index))
+      .filter((index): index is number => index !== null);
+    this.trackedWords = currentWords;
+    this.studioService.$textInputErrors.next(
+      this.erroringIndices.map((index) => {
+        const word = currentWords[index];
+        return { start: word.start, end: word.end };
+      }),
+    );
   }
 
   async ngOnInit() {
@@ -168,6 +229,18 @@ export class UploadComponent implements OnInit {
 
   reportRasError(err: HttpErrorResponse) {
     if (err.status == 422) {
+      if (
+        isG2pAssembleErrorBody(err.error) &&
+        this.applyG2pErrorRanges(err.error.partial_ras)
+      ) {
+        this.toastr.error(
+          $localize`Some words couldn't be processed — see the highlighted text.`,
+          $localize`Text processing failed.`,
+          { timeOut: 30000, closeButton: true },
+        );
+        return;
+      }
+
       if (err.error.detail.includes("is empty")) {
         this.toastr.error(
           $localize`Your text may contain unpronounceable characters or numbers.
@@ -188,6 +261,31 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         { timeOut: 60000 },
       );
     }
+  }
+
+  /**
+   * Attempts to positionally map a g2p assemble error onto the words that
+   * were actually submitted, and — if that succeeds — flags them for the
+   * overlay to underline. Returns false (without flagging anything) if the
+   * mapping isn't trustworthy, so the caller can fall back to the generic
+   * error toast rather than silently pointing at the wrong word.
+   */
+  private applyG2pErrorRanges(partialRas: string | undefined): boolean {
+    if (!partialRas) {
+      return false;
+    }
+    const errors = mapG2pErrorsToRanges(this.lastSubmittedText, partialRas);
+    if (errors === null || errors.length === 0) {
+      return false;
+    }
+    // Seed tracking from the submitted text's word sequence, then
+    // immediately sync forward to whatever the textarea holds *now* (the
+    // user may have kept typing while the request was in flight) — same
+    // remapping logic as any later edit.
+    this.trackedWords = walkDocumentWords(this.lastSubmittedText);
+    this.erroringIndices = errors.map((error) => error.index);
+    this.syncErrorMarks(this.studioService.$textInput.value);
+    return true;
   }
 
   reportUnpronounceableError(err: Error) {
@@ -499,6 +597,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       this.studioService.textControl$.setValue(inputText);
     }
 
+    // Don't leave stale g2p error marks from a previous failed attempt
+    // showing while this new one is in flight.
+    this.erroringIndices = [];
+    this.studioService.$textInputErrors.next([]);
+
     // Show progress bar
     this.loading = true;
     this.progressMode = "query";
@@ -532,6 +635,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         this.fileService.readFile$(this.studioService.textControl$.value!).pipe(
           switchMap((text: string): Observable<ReadAlong> => {
             body.input = text;
+            this.lastSubmittedText = text;
             this.progressMode = "determinate";
             this.progressValue = 0;
             return this.rasService.assembleReadalong$(body);

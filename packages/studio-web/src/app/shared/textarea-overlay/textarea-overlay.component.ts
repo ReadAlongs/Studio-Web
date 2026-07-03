@@ -10,10 +10,16 @@ import {
 } from "@angular/core";
 
 import { BlankLineRunKind, findBlankLineRuns } from "./blank-line-runs";
+import { TextRange } from "./document-words";
 import { TextareaOverlayService } from "./textarea-overlay.service";
 
-interface OverlayLine {
+interface OverlaySpan {
   text: string;
+  error: boolean;
+}
+
+interface OverlayLine {
+  spans: OverlaySpan[];
   tint: BlankLineRunKind | null;
 }
 
@@ -53,6 +59,20 @@ export class TextareaOverlayComponent
   }
   get text(): string | null {
     return this._text;
+  }
+
+  private _errorRanges: readonly TextRange[] = [];
+
+  // Same rationale as the `text` setter above: recompute synchronously at
+  // assignment time so both inputs are always reflected together in the
+  // next render, whichever one changed.
+  @Input()
+  set errorRanges(value: readonly TextRange[] | null) {
+    this._errorRanges = value ?? [];
+    this.renderLines();
+  }
+  get errorRanges(): readonly TextRange[] {
+    return this._errorRanges;
   }
 
   @Input() textareaEl: HTMLTextAreaElement | null = null;
@@ -96,10 +116,52 @@ export class TextareaOverlayComponent
         tintByLine.set(i, run.kind);
       }
     }
-    this.lines = lines.map((line, index) => ({
-      text: line,
-      tint: tintByLine.get(index) ?? null,
-    }));
+
+    let lineStart = 0;
+    this.lines = lines.map((line, index) => {
+      const overlayLine: OverlayLine = {
+        spans: this.buildLineSpans(line, lineStart),
+        tint: tintByLine.get(index) ?? null,
+      };
+      lineStart += line.length + 1; // +1 for the "\n" this line was split on
+      return overlayLine;
+    });
+  }
+
+  /**
+   * Splits `lineText` (which starts at absolute offset `lineStart` in the
+   * full document) into spans at any `errorRanges` boundaries that fall
+   * within it, so those substrings can be rendered with an error
+   * decoration while the rest of the line renders normally. A word never
+   * spans a newline, so a given error range only ever intersects one line.
+   */
+  private buildLineSpans(lineText: string, lineStart: number): OverlaySpan[] {
+    const lineEnd = lineStart + lineText.length;
+    const errorsInLine = this._errorRanges
+      .map((range) => ({
+        start: Math.max(range.start, lineStart) - lineStart,
+        end: Math.min(range.end, lineEnd) - lineStart,
+      }))
+      .filter((range) => range.start < range.end)
+      .sort((a, b) => a.start - b.start);
+
+    if (errorsInLine.length === 0) {
+      return [{ text: lineText, error: false }];
+    }
+
+    const spans: OverlaySpan[] = [];
+    let cursor = 0;
+    for (const range of errorsInLine) {
+      if (range.start > cursor) {
+        spans.push({ text: lineText.slice(cursor, range.start), error: false });
+      }
+      spans.push({ text: lineText.slice(range.start, range.end), error: true });
+      cursor = range.end;
+    }
+    if (cursor < lineText.length) {
+      spans.push({ text: lineText.slice(cursor), error: false });
+    }
+    return spans;
   }
 
   private attachToTextarea(): void {

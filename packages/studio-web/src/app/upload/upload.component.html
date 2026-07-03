@@ -118,6 +118,7 @@
                     <app-textarea-overlay
                       [text]="studioService.$textInput | async"
                       [textareaEl]="textInputEl"
+                      [errorRanges]="studioService.$textInputErrors | async"
                     ></app-textarea-overlay>
                     <textarea
                       #textInputEl

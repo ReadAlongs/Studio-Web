@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { ReadAlongSlots } from "../ras.service";
 import { BehaviorSubject } from "rxjs";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { TextRange } from "../shared/textarea-overlay/document-words";
 
 export enum langMode {
   generic = "generic",
@@ -42,6 +43,10 @@ export class StudioService {
     Validators.required,
   );
   public $textInput = new BehaviorSubject<string>("");
+  // Character ranges of words currently flagged by a g2p alignment error,
+  // for the text-input overlay to underline. Kept in sync with edits by
+  // UploadComponent (cleared per-word once the flagged word is changed).
+  public $textInputErrors = new BehaviorSubject<TextRange[]>([]);
 
   public uploadFormGroup = new FormGroup({
     lang: this.langControl$,

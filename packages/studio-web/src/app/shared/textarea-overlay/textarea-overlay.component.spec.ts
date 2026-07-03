@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
+import { TextRange } from "./document-words";
 import { TextareaOverlayComponent } from "./textarea-overlay.component";
 
 // A real template binding (rather than poking `component.text` directly)
@@ -13,12 +14,14 @@ import { TextareaOverlayComponent } from "./textarea-overlay.component";
   template: `<app-textarea-overlay
     [text]="text"
     [textareaEl]="textareaEl"
+    [errorRanges]="errorRanges"
   ></app-textarea-overlay>`,
   standalone: false,
 })
 class HostComponent {
   text = "";
   textareaEl: HTMLTextAreaElement | null = null;
+  errorRanges: TextRange[] = [];
 }
 
 describe("TextareaOverlayComponent", () => {
@@ -84,6 +87,66 @@ describe("TextareaOverlayComponent", () => {
     expect(
       lineEls[2].classList.contains("textarea-overlay__line--page"),
     ).toBeTrue();
+  });
+
+  it("underlines the word at the given error range and nothing else", () => {
+    host.text = "hej verden 2";
+    host.errorRanges = [{ start: 11, end: 12 }]; // "2"
+    hostFixture.detectChanges();
+
+    const errorSpans: NodeListOf<HTMLElement> =
+      hostFixture.nativeElement.querySelectorAll(".textarea-overlay__error");
+    expect(errorSpans.length).toBe(1);
+    expect(errorSpans[0].textContent).toBe("2");
+
+    const line = hostFixture.nativeElement.querySelector(
+      ".textarea-overlay__line",
+    );
+    expect(line.textContent).toBe("hej verden 2");
+  });
+
+  it("supports multiple error ranges on the same line", () => {
+    host.text = "one 2 three 4";
+    host.errorRanges = [
+      { start: 4, end: 5 },
+      { start: 12, end: 13 },
+    ];
+    hostFixture.detectChanges();
+
+    const errorSpans: NodeListOf<HTMLElement> =
+      hostFixture.nativeElement.querySelectorAll(".textarea-overlay__error");
+    expect(Array.from(errorSpans).map((el) => el.textContent)).toEqual([
+      "2",
+      "4",
+    ]);
+  });
+
+  it("underlines a word on the correct line in multi-line text", () => {
+    host.text = "line one\nline two has a bad-word here";
+    const wordStart = host.text.indexOf("bad-word");
+    host.errorRanges = [
+      { start: wordStart, end: wordStart + "bad-word".length },
+    ];
+    hostFixture.detectChanges();
+
+    const lineEls: NodeListOf<HTMLElement> =
+      hostFixture.nativeElement.querySelectorAll(".textarea-overlay__line");
+    expect(lineEls[0].querySelectorAll(".textarea-overlay__error").length).toBe(
+      0,
+    );
+    const errorSpans = lineEls[1].querySelectorAll(".textarea-overlay__error");
+    expect(errorSpans.length).toBe(1);
+    expect(errorSpans[0].textContent).toBe("bad-word");
+  });
+
+  it("renders no underline when errorRanges is empty", () => {
+    host.text = "hej verden 2";
+    host.errorRanges = [];
+    hostFixture.detectChanges();
+    expect(
+      hostFixture.nativeElement.querySelectorAll(".textarea-overlay__error")
+        .length,
+    ).toBe(0);
   });
 
   it("attaches to the given textarea and syncs its scroll position", () => {
