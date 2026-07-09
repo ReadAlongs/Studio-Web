@@ -22,7 +22,7 @@ jobs:
           node-version: 24
       - run: npm install -g npm@latest
       - name: Install everything
-        run: npm ci
+        run: npm ci && npx cypress install
 
       - name: Automated license checking
         env:

@@ -20,23 +20,32 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm ci --verbose
       - run: npx update-browserslist-db@latest
-      - name: Ng test for studio-web
+
+      - name: Ng unit test for studio-web
         run: |
           npx nx build web-component
           npx nx test:once studio-web
 
-      - name: Cypress run for web-component
-        uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
-        with:
-          install: true # fails on Windows with install: false
-          start: |
-            npx nx serve web-component
-            npx nx serve-test-data web-component
-          wait-on: sleep 15 # there is no reliable URL to wait for...
-          command: npx nx test:once web-component
+      - name: Cypress tests - Install Cypress
+        run: npx cypress install
+      - name: Cypress tests - Verify Cypress
+        run: npx cypress verify
+      - name: Cypress tests - Run the tests
+        shell: bash
+        run: |
+          npx nx serve web-component &
+          npx nx serve-test-data web-component &
+          sleep 10
+          npx nx test:once web-component
 
-      - run: npx nx extract-i18n studio-web
-      - run: npx nx check-l10n studio-web
-      - run: npx nx build ngx-web-component
-      - run: npx nx build studio-web
-      - run: npx nx bundle web-component
+      - name: Localization checks - extraction
+        run: npx nx extract-i18n studio-web
+      - name: Localization checks - validation of the languages
+        run: npx nx check-l10n studio-web
+
+      - name: Build check - ngx-web-component
+        run: npx nx build ngx-web-component
+      - name: Build check - studio-web
+        run: npx nx build studio-web
+      - name: Bundle check - web-component
+        run: npx nx bundle web-component
