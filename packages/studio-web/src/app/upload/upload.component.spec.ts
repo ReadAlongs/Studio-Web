@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MaterialModule } from "../material.module";
 import { UploadComponent } from "./upload.component";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { TiptapTextEditorComponent } from "../tiptap-text-editor/tiptap-text-editor.component";
 
 describe("UploadComponent", () => {
   let component: UploadComponent;
@@ -22,7 +23,7 @@ describe("UploadComponent", () => {
         ToastrModule.forRoot(),
         MaterialModule,
       ],
-      declarations: [UploadComponent],
+      declarations: [UploadComponent, TiptapTextEditorComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 

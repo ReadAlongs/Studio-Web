@@ -44,6 +44,7 @@ import {
 } from "../shepherd.steps";
 import { DemoComponent } from "../demo/demo.component";
 import { UploadComponent } from "../upload/upload.component";
+import { plainTextToDoc } from "../tiptap-text-editor/schema/serializers";
 import { StepperSelectionEvent } from "@angular/cdk/stepper";
 import { HttpErrorResponse } from "@angular/common/http";
 import { InputMethodType, StudioService } from "./studio.service";
@@ -164,8 +165,7 @@ export class StudioComponent implements OnDestroy, OnInit {
   formIsDirty() {
     return (
       this.studioService.audioControl$.value ||
-      this.studioService.textControl$.value ||
-      this.studioService.$textInput.value ||
+      this.studioService.textControl$.value?.textContent.trim() ||
       this.studioService.langMode$.value !== "generic" ||
       this.studioService.langControl$.value !== "und"
     );
@@ -232,7 +232,9 @@ export class StudioComponent implements OnDestroy, OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef$))
         .subscribe((audioFile) => {
           if (!(audioFile instanceof HttpErrorResponse) && this.upload) {
-            this.studioService.$textInput.next("Hello world!");
+            this.studioService.textControl$.setValue(
+              plainTextToDoc("Hello world!"),
+            );
             this.studioService.inputMethod.text = "edit";
             this.studioService.audioControl$.setValue(audioFile);
             this.upload?.nextStep();

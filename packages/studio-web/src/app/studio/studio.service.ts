@@ -1,3 +1,5 @@
+import { Node as PMNode } from "@tiptap/pm/model";
+
 import { Injectable } from "@angular/core";
 import { ReadAlongSlots } from "../ras.service";
 import { BehaviorSubject } from "rxjs";
@@ -33,7 +35,10 @@ export class StudioService {
     { value: "und", disabled: this.langMode$.value !== "specific" },
     Validators.required,
   );
-  public textControl$ = new FormControl<File | Blob | null>(
+  // Holds the TipTap document directly (implementation_plan.md §1, decision
+  // 1) for both typed and uploaded text, so the align request always
+  // serializes from a single source of truth.
+  public textControl$ = new FormControl<PMNode | null>(
     null,
     Validators.required,
   );
@@ -41,7 +46,6 @@ export class StudioService {
     null,
     Validators.required,
   );
-  public $textInput = new BehaviorSubject<string>("");
 
   public uploadFormGroup = new FormGroup({
     lang: this.langControl$,

@@ -10,7 +10,6 @@ import {
   switchMap,
   map,
   throwError,
-  firstValueFrom,
   take,
   filter,
 } from "rxjs";
@@ -41,11 +40,16 @@ import {
 } from "../ras.service";
 import { UploadService } from "../upload.service";
 import { BeamDefaults, SoundswallowerService } from "../soundswallower.service";
-import { TextFormatDialogComponent } from "../text-format-dialog/text-format-dialog.component";
 import { StudioService } from "../studio/studio.service";
 import { validateFileType } from "../utils/utils";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { IAudioBuffer } from "standardized-audio-context";
+import {
+  docToPlainText,
+  docToReadAlongXml,
+  plainTextToDoc,
+  readAlongXmlToDoc,
+} from "../tiptap-text-editor/schema/serializers";
 
 @Component({
   selector: "app-upload",
@@ -97,22 +101,28 @@ export class UploadComponent implements OnInit {
     this.studioService.audioControl$.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((audio) => this.uploadService.$currentAudio.next(audio));
+    // uploadService.$currentText stays a plain-text Blob (consumed by
+    // DownloadService's zip export), so convert the doc at this boundary.
     this.studioService.textControl$.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef$))
-      .subscribe((textBlob) => this.uploadService.$currentText.next(textBlob));
+      .subscribe((doc) =>
+        this.uploadService.$currentText.next(
+          doc ? new Blob([docToPlainText(doc)], { type: "text/plain" }) : null,
+        ),
+      );
     this.ssjsService.modelLoaded
       .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((loaded) => {
         this.isLoaded = loaded;
       });
 
-    // If the textControl$ changes to a Blob or null, reset the
-    // input[type=file] value.
+    // While in "edit" mode, keep the (hidden) file input's displayed
+    // filename from going stale as the doc changes.
     this.studioService.textControl$.valueChanges
       .pipe(
         takeUntilDestroyed(),
         filter(() => Boolean(this.textFileUpload)),
-        filter((val) => !(val instanceof File)),
+        filter(() => this.studioService.inputMethod.text === "edit"),
       )
       .subscribe(() => {
         this.textFileUpload.nativeElement.value = "";
@@ -130,19 +140,14 @@ export class UploadComponent implements OnInit {
         this.audioFileUpload.nativeElement.value = "";
       });
 
-    // As the user is entering text, validate the length of the string
-    // and set the textControl$ to the new value.
-    this.studioService.$textInput
+    // As the user types, warn (without blocking) once the doc's text grows
+    // past the size limit; the real gate is validateTextControl() on submit.
+    this.studioService.textControl$.valueChanges
       .pipe(
         takeUntilDestroyed(this.destroyRef$),
-        filter((val) => val !== ""),
-        filter(() => this.checkIsTextSizeBelowLimit()),
+        filter(() => this.studioService.inputMethod.text === "edit"),
       )
-      .subscribe((textString) => {
-        this.studioService.textControl$.setValue(
-          new Blob([textString], { type: "text/plain" }),
-        );
-      });
+      .subscribe(() => this.checkIsTextSizeBelowLimit());
   }
 
   async ngOnInit() {
@@ -254,8 +259,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   downloadText() {
-    if (this.studioService.$textInput.value) {
-      let textBlob = new Blob([this.studioService.$textInput.value], {
+    const doc = this.studioService.textControl$.value;
+    if (doc && doc.textContent.trim()) {
+      let textBlob = new Blob([docToPlainText(doc)], {
         type: "text/plain",
       });
       var url = window.URL.createObjectURL(textBlob);
@@ -267,10 +273,6 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     } else {
       this.toastr.error($localize`No text to download.`, $localize`Sorry!`);
     }
-  }
-
-  displayFormatHelp(): void {
-    this.dialog.open(TextFormatDialogComponent);
   }
 
   async startRecording() {
@@ -377,8 +379,9 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   checkIsTextSizeBelowLimit(): boolean {
-    if (this.studioService.$textInput.value) {
-      const inputLength = this.studioService.$textInput.value.length;
+    const doc = this.studioService.textControl$.value;
+    if (doc) {
+      const inputLength = doc.textContent.length;
       if (this.currentToast) {
         this.toastr.clear(this.currentToast);
       }
@@ -414,9 +417,10 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   private validateTextControl(): boolean {
+    const doc = this.studioService.textControl$.value;
     switch (this.studioService.inputMethod.text) {
       case "edit":
-        if (this.studioService.$textInput.value) {
+        if (doc && doc.textContent.trim()) {
           return this.checkIsTextSizeBelowLimit();
         }
 
@@ -428,7 +432,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         return false;
 
       case "upload":
-        if (this.studioService.textControl$.value) {
+        if (doc && doc.textContent.trim()) {
           return true;
         }
 
@@ -492,53 +496,25 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       return;
     }
 
-    if (this.studioService.inputMethod.text === "edit") {
-      const inputText = new Blob([this.studioService.$textInput.value], {
-        type: "text/plain",
-      });
-      this.studioService.textControl$.setValue(inputText);
-    }
-
     // Show progress bar
     this.loading = true;
-    this.progressMode = "query";
-    // Determine text type for API request
-    let input_type;
-    if (
-      this.studioService.inputMethod.text === "upload" &&
-      this.studioService.textControl$.value instanceof File &&
-      (this.studioService.textControl$.value.name
-        .toLowerCase()
-        .endsWith(".xml") ||
-        this.studioService.textControl$.value.name
-          .toLowerCase()
-          .endsWith(".readalong"))
-    ) {
-      input_type = "application/readalong+xml";
-    } else {
-      input_type = "text/plain";
-    }
-    // Create request (text is possibly read from a file later...)
-    let body: ReadAlongRequest = {
+    this.progressMode = "determinate";
+    this.progressValue = 0;
+
+    // The tiptap doc is the source of truth; it's
+    // always sent as read-along-1.2 XML, regardless of whether it came
+    // from typing or a file upload.
+    const body: ReadAlongRequest = {
       text_languages: [this.studioService.langControl$.value as string, "und"],
-      type: input_type,
+      type: "application/readalong+xml",
+      input: docToReadAlongXml(this.studioService.textControl$.value!),
     };
     forkJoin({
       audio: this.fileService.loadAudioBufferFromFile$(
         this.studioService.audioControl$.value as File,
         8000,
       ),
-      ras: firstValueFrom(
-        this.fileService.readFile$(this.studioService.textControl$.value!).pipe(
-          switchMap((text: string): Observable<ReadAlong> => {
-            body.input = text;
-            this.progressMode = "determinate";
-            this.progressValue = 0;
-            return this.rasService.assembleReadalong$(body);
-          }),
-          take(1),
-        ),
-      ),
+      ras: this.rasService.assembleReadalong$(body),
     })
       .pipe(
         switchMap(({ audio, ras }: { audio: IAudioBuffer; ras: ReadAlong }) => {
@@ -683,15 +659,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       return;
     }
 
-    let maxSizeKB;
-    let fileTooBigMessage;
-    if (validateFileType(file, ".readalong,.xml")) {
-      maxSizeKB = this.maxRasSizeKB;
-      fileTooBigMessage = $localize`.readalong file too large. `;
-    } else {
-      maxSizeKB = this.maxTxtSizeKB;
-      fileTooBigMessage = $localize`Text file too large. `;
-    }
+    const isReadAlongXml = validateFileType(file, ".readalong,.xml");
+    const maxSizeKB = isReadAlongXml ? this.maxRasSizeKB : this.maxTxtSizeKB;
+    const fileTooBigMessage = isReadAlongXml
+      ? $localize`.readalong file too large. `
+      : $localize`Text file too large. `;
     if (file.size > maxSizeKB * 1024) {
       this.toastr.error(
         fileTooBigMessage + $localize`Max size: ` + maxSizeKB + $localize` KB.`,
@@ -699,18 +671,26 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         { timeOut: 15000 },
       );
       this.textFileUpload.nativeElement.value = "";
-    } else {
-      // the file has been accepted, clear the user input text.
-      this.studioService.$textInput.next("");
-
-      this.studioService.textControl$.setValue(file);
-      this.toastr.success(
-        $localize`File ` +
-          file.name +
-          $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
-        $localize`Great!`,
-        { timeOut: 10000 },
-      );
+      return;
     }
+
+    // Parse the file into a doc now (readAlongXml -> tipTapDoc or
+    // plainText -> tipTapDoc), since the doc is
+    // the source of truth from here on, not the raw file.
+    this.fileService
+      .readFile$(file)
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef$))
+      .subscribe((text) => {
+        this.studioService.textControl$.setValue(
+          isReadAlongXml ? readAlongXmlToDoc(text) : plainTextToDoc(text),
+        );
+        this.toastr.success(
+          $localize`File ` +
+            file.name +
+            $localize` processed. It will be uploaded through an encrypted connection when you go to the next step.`,
+          $localize`Great!`,
+          { timeOut: 10000 },
+        );
+      });
   }
 }

@@ -86,18 +86,11 @@
               >
               <span class="p-0 align-right" align="right">
                 <button
-                  i18n="Text format help button"
-                  mat-button
-                  (click)="displayFormatHelp()"
-                  aria-label="Text format help button"
-                  class="pr-0"
-                >
-                  <mat-icon class="mat-icon-lg">help_outline</mat-icon> Format
-                </button>
-                <button
                   i18n="Text download button"
                   mat-button
-                  [disabled]="!(studioService.$textInput | async)"
+                  [disabled]="
+                    !studioService.textControl$.value?.textContent?.trim()
+                  "
                   (click)="downloadText()"
                   aria-label="Text download button"
                   class="pr-0"
@@ -108,26 +101,13 @@
               </span>
             </div>
             <div class="row">
-              <mat-form-field class="col-12 p-0 b-0">
-                <textarea
-                  [ngModel]="studioService.$textInput | async"
-                  (ngModelChange)="studioService.$textInput.next($event)"
-                  id="textInput"
-                  class="border rounded b-0 p-0 bg-light"
-                  rows="8"
-                  matInput
-                  spellcheck="false"
-                  i18n-placeholder="Example input text"
-                  placeholder="Ex. Hello my name is...
-Sentence two.
-
-Paragraph two.
-
-
-Page two."
-                  data-test-id="ras-text-input"
-                ></textarea>
-              </mat-form-field>
+              <app-tiptap-text-editor
+                [formControl]="studioService.textControl$"
+                id="textInput"
+                i18n-placeholder="Example input text"
+                placeholder="Ex. Hello my name is..."
+                data-test-id="ras-text-input"
+              ></app-tiptap-text-editor>
             </div>
           </div>
         }
