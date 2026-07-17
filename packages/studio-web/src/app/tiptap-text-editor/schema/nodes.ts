@@ -42,6 +42,67 @@ export const Sentence = Node.create({
   renderHTML() {
     return ["p", { "data-type": "sentence" }, 0];
   },
+  addKeyboardShortcuts() {
+    return {
+      // By default Enter only splits into a new sentence, never a new
+      // paragraph, so typed blank lines would stay invisible to
+      // docToReadAlongXml's paragraph-based spacing. Pressing Enter on an
+      // already-empty sentence confirms that line as blank, promotes it to
+      // its own paragraph, and opens a fresh paragraph for what comes next
+      // — mirroring plainTextToDoc's per-blank-line paragraph, one Enter at
+      // a time.
+      Enter: () => {
+        const editor = this.editor;
+        const { $from } = editor.state.selection;
+        if (
+          $from.parent.type.name !== "sentence" ||
+          $from.parent.content.size > 0
+        ) {
+          return false;
+        }
+        const paragraph = $from.node(-1);
+        if (!paragraph || paragraph.type.name !== "paragraph") {
+          return false;
+        }
+
+        const newParagraph = () => ({
+          type: "paragraph",
+          content: [{ type: "sentence" }],
+        });
+        // nodeSize of an empty { paragraph: [sentence] }: 2 (paragraph's
+        // own open/close) + 2 (its empty sentence's open/close) = 4.
+        const emptyParagraphSize = 4;
+
+        if (paragraph.childCount > 1) {
+          // The empty sentence trails real content — close the paragraph
+          // with just its real content; the blank line it represented gets
+          // its own preserved empty paragraph, separate from the fresh one
+          // opened for whatever comes after it.
+          editor
+            .chain()
+            .deleteRange({ from: $from.before(), to: $from.after() })
+            .run();
+          const insertAt = editor.state.selection.$from.after(-1);
+          editor
+            .chain()
+            .insertContentAt(insertAt, [newParagraph(), newParagraph()])
+            .setTextSelection(insertAt + emptyParagraphSize + 2)
+            .run();
+        } else {
+          // This paragraph is already just a lone empty sentence — an
+          // already-confirmed blank line from an earlier Enter-on-empty —
+          // so it needs no change; just open a fresh paragraph after it.
+          const insertAt = $from.after(-1);
+          editor
+            .chain()
+            .insertContentAt(insertAt, newParagraph())
+            .setTextSelection(insertAt + 2)
+            .run();
+        }
+        return true;
+      },
+    };
+  },
 });
 
 declare module "@tiptap/core" {

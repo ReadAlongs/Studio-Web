@@ -21,41 +21,67 @@ function serializeParagraph(paragraph: PMNode): string {
   return `<p>${sentences.join("")}</p>`;
 }
 
+function isEmptyParagraph(paragraph: PMNode): boolean {
+  return paragraph.textContent.trim() === "";
+}
+
+// Collapses a run of R consecutive empty paragraphs to floor(R/2) `<p>`
+// placeholders: a lone empty paragraph (isolated editing artifacts, e.g.
+// the placeholder insertPageBreak leaves when its trailing paragraph never
+// gets typed into) contributes nothing, a run of 2-3 (a single typed blank
+// line, or that plus a stray artifact) contributes one spacer, and bigger
+// runs (a deliberate larger gap) scale from there — matching how
+// plainTextToDoc treats a run of blank lines, but applied here to whatever
+// the live doc actually contains, not just parsed plain text.
+function serializePageParagraphs(paragraphs: PMNode[]): string[] {
+  const result: string[] = [];
+  let emptyRun = 0;
+  const flushEmptyRun = () => {
+    const spacerCount = Math.floor(emptyRun / 2);
+    for (let i = 0; i < spacerCount; i++) {
+      result.push("<p><s></s></p>");
+    }
+    emptyRun = 0;
+  };
+  for (const paragraph of paragraphs) {
+    if (isEmptyParagraph(paragraph)) {
+      emptyRun += 1;
+    } else {
+      flushEmptyRun();
+      result.push(serializeParagraph(paragraph));
+    }
+  }
+  flushEmptyRun();
+  return result;
+}
+
 /**
- * Serializes a ReadAlong TipTap doc (schema/nodes.ts) to read-along-1.2
- * input XML: `<div type="page">` per pagebreak-delimited run of
- * paragraphs, `<p>` per paragraph, `<s>` per sentence, sentence content as
- * plain text (not pre-split into `<w>` elements — the assemble endpoint
- * tokenizes and runs g2p itself, same as it does for plain-text input;
- * `<w>` only appears in what the server returns).
- *
- * The first page's `<div>` opens implicitly at the start of the doc; a
- * `pagebreak` node closes the current page div and opens a new one rather
- * than mapping onto any element of its own.
- *
+ * Serializes a TipTap doc to read-along-1.2 XML: pagebreak-delimited runs
+ * of paragraphs become `<div type="page">`, paragraphs become `<p>`,
+ * sentences become `<s>` holding plain text (the backend tokenizes and runs
+ * g2p itself; `<w>` only appears in what it returns). Language is embedded
+ * as `xml:lang`/`fallback-langs` on `<text>`.
  */
 export function docToReadAlongXml(doc: PMNode, lang: string = "und"): string {
-  const pages: string[][] = [[]];
+  const pages: PMNode[][] = [[]];
   doc.forEach((node) => {
     if (node.type.name === "pagebreak") {
       pages.push([]);
     } else {
-      pages[pages.length - 1].push(serializeParagraph(node));
+      pages[pages.length - 1].push(node);
     }
   });
   const divs = pages
-    .filter((paragraphs) => paragraphs.length > 0)
-    .map((paragraphs) => `<div type="page">${paragraphs.join("")}</div>`)
+    .map((paragraphs) => serializePageParagraphs(paragraphs))
+    .filter((paragraphXml) => paragraphXml.length > 0)
+    .map((paragraphXml) => `<div type="page">${paragraphXml.join("")}</div>`)
     .join("");
   return `${XML_DECLARATION}\n<read-along version="1.2"><text xml:lang="${lang}" fallback-langs="und"><body>${divs}</body></text></read-along>`;
 }
 
 /**
- * Inverse of docToReadAlongXml. Reads `<div type="page">` / `<p>` / `<s>`
- * structure and text only — `.textContent` on each `<s>` naturally discards
- * any `<w>` wrapper elements and their `ARPABET`/`id` attributes that a real
- * uploaded `.readalong` file may contain, since it flattens child markup to
- * concatenated text.
+ * Inverse of docToReadAlongXml. `.textContent` on each `<s>` discards any
+ * `<w>`/`ARPABET`/`id` markup a real uploaded `.readalong` file may have.
  */
 export function readAlongXmlToDoc(xml: string): PMNode {
   const xmlDoc = new DOMParser().parseFromString(xml, "application/xml");
@@ -89,43 +115,41 @@ export function readAlongXmlToDoc(xml: string): PMNode {
 }
 
 /**
- * plainText -> tipTapDoc grouping
- * within a page, one paragraph; each non-empty line becomes a
- * sentence; a run of 2+ empty lines starts a new page. A single blank line
- * carries no meaning on its own.
+ * plainText -> tipTapDoc: non-blank lines accumulate into
+ * the current paragraph as sentences; each blank line closes the current
+ * paragraph and becomes its own empty paragraph, so N blank lines produce N
+ * empty paragraphs — not a page break, which is an explicit tiptap element only.
+ * Empty sentences render as nothing in the web-component's Paragraph
+ * renderer; empty paragraphs get their own margined container, which is
+ * what makes gaps scale with blank-line count.
  */
 export function plainTextToDoc(text: string): PMNode {
   const lines = text.split(/\r\n|\r|\n/);
-  const pages: string[][] = [[]];
-  let blankRun = 0;
+  const paragraphs: string[][] = [];
+  let current: string[] = [];
   for (const line of lines) {
     if (line.trim() === "") {
-      blankRun += 1;
-      if (blankRun === 2) {
-        pages.push([]);
+      if (current.length > 0) {
+        paragraphs.push(current);
+        current = [];
       }
+      paragraphs.push([]);
       continue;
     }
-    blankRun = 0;
-    pages[pages.length - 1].push(line);
+    current.push(line);
+  }
+  if (current.length > 0) {
+    paragraphs.push(current);
   }
 
-  const blocks: PMNode[] = [];
-  pages
-    .filter((sentenceLines) => sentenceLines.length > 0)
-    .forEach((sentenceLines, i) => {
-      if (i > 0) {
-        blocks.push(schema.nodes["pagebreak"].create());
-      }
-      blocks.push(
-        schema.nodes["paragraph"].create(
-          null,
-          sentenceLines.map((line) =>
-            schema.nodes["sentence"].create(null, schema.text(line)),
-          ),
-        ),
-      );
-    });
+  const blocks = paragraphs.map((sentenceLines) =>
+    schema.nodes["paragraph"].create(
+      null,
+      sentenceLines.map((line) =>
+        schema.nodes["sentence"].create(null, schema.text(line)),
+      ),
+    ),
+  );
 
   return blocks.length > 0
     ? schema.nodes["doc"].create(null, blocks)
@@ -133,23 +157,22 @@ export function plainTextToDoc(text: string): PMNode {
 }
 
 /**
- * Not one of the three main architectural serializers
- * rather, a small convenience used only by the pre-existing "Save a copy"
- * plain-text export button, so that feature keeps working now that the
- * TipTap doc (not a raw string) is the source of truth. Mirrors
- * plainTextToDoc's line/page conventions in reverse.
+ * Not one of the three main serializers — bridges `uploadService.$currentText`
+ * (a plain-text `Blob`) now that the doc is the source of truth. Each
+ * paragraph's sentences join with "\n"; an explicit `pagebreak` exports as
+ * two blank lines (the old page-break convention), an empty paragraph as
+ * one. One-way export, not a round-trip contract.
  */
 export function docToPlainText(doc: PMNode): string {
-  const pageTexts: string[] = [];
-  let currentPageLines: string[] = [];
+  const paragraphTexts: string[] = [];
   doc.forEach((node) => {
     if (node.type.name === "pagebreak") {
-      pageTexts.push(currentPageLines.join("\n"));
-      currentPageLines = [];
+      paragraphTexts.push("", "");
     } else {
-      node.forEach((sentence) => currentPageLines.push(sentence.textContent));
+      const sentenceLines: string[] = [];
+      node.forEach((sentence) => sentenceLines.push(sentence.textContent));
+      paragraphTexts.push(sentenceLines.join("\n"));
     }
   });
-  pageTexts.push(currentPageLines.join("\n"));
-  return pageTexts.join("\n\n\n");
+  return paragraphTexts.join("\n");
 }
