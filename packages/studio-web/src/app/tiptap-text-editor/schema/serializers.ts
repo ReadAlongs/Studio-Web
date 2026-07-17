@@ -34,7 +34,7 @@ function serializeParagraph(paragraph: PMNode): string {
  * than mapping onto any element of its own.
  *
  */
-export function docToReadAlongXml(doc: PMNode): string {
+export function docToReadAlongXml(doc: PMNode, lang: string = "und"): string {
   const pages: string[][] = [[]];
   doc.forEach((node) => {
     if (node.type.name === "pagebreak") {
@@ -47,7 +47,7 @@ export function docToReadAlongXml(doc: PMNode): string {
     .filter((paragraphs) => paragraphs.length > 0)
     .map((paragraphs) => `<div type="page">${paragraphs.join("")}</div>`)
     .join("");
-  return `${XML_DECLARATION}\n<read-along version="1.2"><text><body>${divs}</body></text></read-along>`;
+  return `${XML_DECLARATION}\n<read-along version="1.2"><text xml:lang="${lang}" fallback-langs="und"><body>${divs}</body></text></read-along>`;
 }
 
 /**
