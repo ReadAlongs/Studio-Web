@@ -306,83 +306,68 @@ the page/paragraph/sentence/text structure it produces.
 
 ### `plainText → tipTapDoc`
 
-Per decision 7, **confirmed** (see §4a below): split the input on runs of 2+
-consecutive empty lines → pages; within each page, single non-empty-line runs
-become one paragraph whose sentences are the individual lines (blank single
-lines are paragraph breaks... see confirmation below for the exact reconciled
-rule, since decision 7 as literally stated collapses paragraph breaks into
-sentence breaks within one paragraph).
+Non-blank lines become sentences, accumulating into a paragraph; each blank
+line closes the current paragraph and becomes its own empty paragraph. See
+§4a for the full rule and why it supersedes decision 7's original wording.
 
-### 4a. Confirming decision 7
+### 4a. Blank-line grouping in plainTextToDoc
 
-Decision 7 says: _"within a page, one paragraph; each line becomes a
-sentence; 2+ empty lines start a new page."_ Taken completely literally, this
-means a **single** blank line (today's documented paragraph-break signal)
-would not start a new paragraph at all — everything between page breaks
-becomes one paragraph, with blank lines presumably just skipped as empty
-sentences or ignored.
+Each blank line produces its own empty `paragraph` node — not a `sentence`,
+and not a `pagebreak`. A run of N consecutive blank lines produces N empty
+paragraphs, whose margins stack so the visible gap scales with blank-line
+count, all on a **single page**. Page breaks are never inferred from
+blank-line count; `pagebreak` nodes are only ever created by explicit user
+action (the "Insert page break" toolbar command, Prompt 2). This supersedes
+decision 7's original "2+ empty lines start a new page" wording.
 
-This is **worth confirming rather than silently reinterpreting**, but on
-inspection it does not conflict with anything observable in the current
-system, because **no client-side paragraph/page parser exists today to
-compare against** (§2) — the only client-observable evidence is the inverse
-`rasXMLToText()` (§2), which shows the _aligned-XML → text_ direction, not
-plain-text parsing. The current backend's plain-text parser is out of scope
-for this repo and not something we're bound to replicate exactly.
+**Why paragraphs, not sentences**: `@readalongs/web-component`'s
+`Paragraph` renderer
+(`read-along-component/read-along.tsx:1716-1721`) skips empty `<s>`
+elements entirely:
 
-**Recommendation: keep decision 7 exactly as written**, i.e. collapse the
-paragraph/page distinction present in the old documented advice into a
-simpler two-level model — one paragraph per page, one sentence per non-empty
-line, blank single lines simply skipped (not emitted as an empty sentence,
-not treated as a page break). Rationale:
+```jsx
+props.sentences.map(
+  (sentence: Element) =>
+    sentence.childNodes.length > 0 && (
+      <this.Sentence sentenceData={sentence} />
+    ),
+)
+```
 
-- It matches the **new node schema** cleanly: `paragraph` is a bookkeeping
-  container between page breaks, not a meaningful semantic unit on its own —
-  the schema has no way to visually or structurally distinguish "paragraph
-  break" from "no break" once sentences already carry line-level structure,
-  so a second, finer break would be UI-invisible today anyway (there's no
-  "paragraph mark" in a plain-text list of sentences).
-- It's simpler to implement and explain to users than three break levels
-  (line/blank-line/double-blank-line) with only two of them shown in the
-  editor.
-- The one case this changes user-visible behavior for: someone who typed a
-  single blank line expecting an (invisible, since there's no paragraph
-  rendering) paragraph break. Since paragraphs aren't visually distinct in
-  the editor (no inline marks, no paragraph spacing decision made), this
-  costs nothing in practice.
+so no number of empty sentences packed into one paragraph can ever produce
+visible spacing. Empty _paragraphs_, by contrast, still get a
+`.sentence__container` wrapper with real CSS margin
+(`web-component/src/scss/modules/_pages.scss`) even with no sentence
+content — that's what makes gap size scale with blank-line count.
 
-The alternative — one paragraph per hard line (i.e. treat every non-empty
-line as its own one-sentence paragraph, ignoring single blank lines
-entirely) — was also considered and rejected: it would mean typing normal
-prose (one sentence per line, as instructed today) produces a wall of
-single-sentence paragraphs with no page structure below the page level,
-which doesn't obviously help anyone and diverges further from the documented
-"line = sentence" mental model users already have.
+This grouping lives in `plainTextToDoc` (the paste and file-upload
+boundary). Live typing needs its own mechanism to turn Enter presses into
+empty paragraphs — see the Prompt 2 checklist entry.
 
-**Confirmed by human review.** Decision 7 stands exactly as written, per the
-recommendation above.
+**Algorithm**: accumulate non-blank lines into a "current" paragraph; on a
+blank line, flush the current paragraph (if it has content) and push a
+separate empty paragraph for the blank line itself; flush any remaining
+paragraph at the end.
+
+This does not touch the `tipTapDoc → readAlongXml` contract
+(`docToReadAlongXml`, §4) — only the plain-text grouping rule changed.
 
 ## 5. How language attaches
 
-**Concrete decision: it doesn't attach to the XML at all.** The reference
-`docToReadAlongXml` intentionally has no `xml:lang`/`fallback-langs` output,
-and this matches current backend behavior (§2): the client already sends
-language as `text_languages: [code, "und"]`, a **separate field on
-`ReadAlongRequest`**, and the backend stamps `xml:lang`/`fallback-langs` onto
-the `<text>` element in its own response — it never reads them from the
-input XML. So `tipTapDoc → readAlongXml` produces XML with no language
-information, and the existing `text_languages` request field (built from
-`studioService.langControl$`, unchanged) continues to carry the language
-alongside `body.input = docToReadAlongXml(...)`.
+`docToReadAlongXml(doc, lang = "und")` embeds the language directly on the
+`<text>` element — `xml:lang="${lang}" fallback-langs="und"` — in addition
+to the existing `text_languages: [code, "und"]` request field, which is
+unchanged. Per human decision: this is what tells the backend's g2p engine
+which language to use for tokenization; the Prompt 1 reference serializer
+omitted it, but this diverges from that reference by design. Both
+`nextStep()` and `downloadText()` call
+`docToReadAlongXml(doc, studioService.langControl$.value ?? undefined)`.
 
-**Confirmed by human review**: today `input_type` is chosen by sniffing the
-uploaded file's extension (`.xml`/`.readalong` → `"application/readalong+xml"`,
-else `"text/plain"`). Once the TipTap doc is always the source of truth,
-`body.type` is now always `"application/readalong+xml"` in `nextStep()` —
-the file-extension sniffing branch becomes dead code to remove in Prompt 1.
-This doesn't change the endpoint, method, or request shape, only collapses a
-branch that's no longer meaningful, so it stays within "the existing request
-path."
+Separately: `body.type` is always `"application/readalong+xml"` in
+`nextStep()` now that the doc is always the source of truth — the old
+file-extension-sniffing branch (`.xml`/`.readalong` upload →
+`"application/readalong+xml"`, else `"text/plain"`) was removed as dead
+code.
 
 ## 6. Highlighting approach
 
@@ -424,13 +409,15 @@ Two specs, one per highest-value contract, colocated next to source
    equals the original. Keep to one representative doc, not a matrix of
    edge cases.
 2. **`plainText → tipTapDoc` transform** — one input string exercising a
-   single blank line (should _not_ break the page), a double-blank-line page
-   break, and 2+ lines within a page, asserting the resulting doc's page and
-   sentence counts/text match §4a's confirmed rule.
+   run of blank lines of varying length, asserting the resulting doc's
+   paragraph/sentence structure matches §4a's rule (one empty paragraph per
+   blank line, never a page break).
 
-Prompt 2 and Prompt 3 each get one additional focused spec (paste
-normalization; highlight decoration placement + clearing-on-edit) as already
-specified in `.agent_history/prompts.md` — not duplicated here.
+Prompt 2 added a few more, one per distinct behavior fixed along the way
+(page-break cursor continuity, paste normalization, empty-paragraph
+collapsing, live-typing paragraph breaks — see its checklist entry for
+specifics). Prompt 3 gets one for highlight decoration placement +
+clearing-on-edit, per `.agent_history/prompts.md`.
 
 Explicitly **not** doing: exhaustive edge-case matrices, snapshot tests of
 generated HTML/CSS, or component-level TestBed specs beyond a smoke test for
@@ -442,40 +429,92 @@ style — one `it("should create", ...)`).
 All five items previously raised here have been resolved. Recorded for
 traceability; each is now reflected inline in the section noted:
 
-1. **Decision 7 reconciliation (§4a)** — confirmed as recommended: a single
-   blank line no longer means anything special; only 2+ blank lines start a
-   new page; one paragraph per page.
+1. **Decision 7 reconciliation** — superseded by §4a's later revision: each
+   blank line gets its own empty paragraph (not "2+ blank lines start a new
+   page"); page breaks are explicit-only.
 2. **`body.type` always `"application/readalong+xml"`** (§5) — confirmed.
-   The file-extension sniffing branch in `nextStep()` is removed in Prompt 1;
-   every input funnels through `docToReadAlongXml` and is always sent as
-   `"application/readalong+xml"`.
+   The file-extension sniffing branch in `nextStep()` is removed; every
+   input funnels through `docToReadAlongXml`.
 3. **New feature folder location** (§3, §4) — confirmed:
    `packages/studio-web/src/app/tiptap-text-editor/`.
 4. **`ControlValueAccessor`** (§2) — confirmed. The new editor implements
    `ControlValueAccessor` and plugs into `uploadFormGroup` in place of the
-   current hand-rolled `BehaviorSubject` binding.
-5. **`err.error.detail.includes("is empty")` special case** (§2, "g2p/build
-   error handling") — the toast message is right, but the substring-match
-   condition is brittle. Confirmed fix: replace it with a client-side
-   pre-flight check on the TipTap doc's own text content (no non-whitespace
-   sentence text → show the same toast before ever sending the request),
-   removing the need to pattern-match the backend's response text for this
-   case.
+   old hand-rolled `BehaviorSubject` binding.
+5. **`err.error.detail.includes("is empty")` special case** (§2) — the
+   toast message is right, but the substring match is brittle. On closer
+   inspection this condition is about the backend's g2p output being empty
+   (e.g. all-numeric input), not about the textbox being blank, so it can't
+   be checked client-side without running g2p — deferred to Prompt 3's
+   g2p-error-shape work rather than fixed here.
 
 ## 9. Ordered checklist (mirrors Prompts 1–4)
 
-- [ ] **Prompt 1** — Node schema (`tiptap-text-editor/schema/nodes.ts`),
+- [x] **Prompt 1** — Node schema (`tiptap-text-editor/schema/nodes.ts`),
       TipTap editor component (implementing `ControlValueAccessor`) replacing
       the textarea in `upload.component.html`, three serializers, wire
       `.txt`/`.readalong` uploads and the align request through them
       (`body.type` always `"application/readalong+xml"`, drop the
-      file-extension sniffing branch), replace
-      `err.error.detail.includes("is empty")` with a client-side pre-flight
-      empty-doc check. Two specs (round-trip, plainText transform).
-- [ ] **Prompt 2** — `pagebreak` NodeView (clickable/deletable divider),
-      "Insert page break" toolbar control + i18n label, paste normalization
-      (strip formatting, reapply `plainText → tipTapDoc` rules to pasted
-      content). One spec (paste with a double blank line).
+      file-extension sniffing branch). Two specs (round-trip, plainText
+      transform). `err.error.detail.includes("is empty")` was left
+      untouched — see §8 item 5. Also fixed post-Prompt-1: a CSS bug where
+      the editable surface didn't fill its wrapper's `min-height` (clicks
+      below short content did nothing), and the decision-7 revision in §4a.
+- [x] **Prompt 2**
+
+      **Page break.** `pagebreak` gets a NodeView (clickable/deletable
+      divider; DOM built via `addNodeView()`, since there's no
+      framework-specific NodeView renderer for `@tiptap/core` outside
+      React/Vue) and an `insertPageBreak` command, exposed as an i18n'd
+      "Insert page break" button inside the editor's own toolbar
+      (`tiptap-text-editor.component.html`). Since `pagebreak` is atomic,
+      there's nowhere to place a cursor immediately after one with nothing
+      else following it — `continueAfterPageBreakSelection(editor)`
+      (`schema/nodes.ts`) checks whether the selection is a `NodeSelection`
+      on a pagebreak and, if so, inserts a trailing paragraph and moves the
+      cursor in. It's called both from `insertPageBreak()` (the component
+      method, right after inserting) and from the `pagebreak` node's own
+      `addKeyboardShortcuts` Enter handler (pressing Enter on an
+      already-selected trailing pagebreak). Two specs cover this.
+
+      **Paste normalization.** `editorProps.handlePaste` strips incoming
+      content to plain text and rebuilds it via `plainTextToDoc`, so no
+      formatting survives a paste. Pasting into a genuinely empty editor
+      replaces the whole doc (`editor.isEmpty` → `setContent`) rather than
+      inserting alongside the placeholder empty paragraph. One spec covers
+      normalization of a multi-blank-line paste.
+
+      **Blank-line spacing.** `docToReadAlongXml` collapses runs of R
+      consecutive empty paragraphs to `floor(R/2)` spacer elements: a lone
+      empty paragraph contributes nothing, a run of 2-3 contributes one
+      spacer, larger runs scale from there. This applies uniformly
+      regardless of whether the empty paragraphs came from typing, pasting,
+      or editing artifacts (e.g. an unfilled `insertPageBreak` placeholder);
+      `plainTextToDoc` itself is unchanged, one empty paragraph per blank
+      line — collapsing happens only at serialization. Live typing needed
+      its own mechanism to *create* those empty paragraphs, since Enter by
+      default only splits into a new sentence: `Sentence`'s
+      `addKeyboardShortcuts` (Enter) now treats pressing Enter on an
+      already-empty sentence as confirming that line as blank, promoting it
+      into its own paragraph, then opening a fresh paragraph for whatever
+      comes next — mirroring `plainTextToDoc`'s per-blank-line paragraph,
+      one keystroke at a time. One spec each cover the collapsing
+      (`serializers.spec.ts`) and the live-typing paragraph break
+      (`tiptap-text-editor.component.spec.ts`).
+
+      **Also this pass** (human decisions, not part of the original
+      prompts): removed the "Format" help dialog (`text-format-dialog/`),
+      superseded by the page-break button; `downloadText()` exports
+      `.readalong` XML instead of plain text, since plain text can't
+      represent an explicit page break; `docToReadAlongXml` takes a `lang`
+      parameter and embeds `xml:lang`/`fallback-langs` on `<text>` (§5).
+
+      **Open, not yet resolved**: two adjacent non-empty paragraphs that
+      end up directly touching after a run collapses to zero don't merge
+      into one (e.g. two separate one-sentence paragraphs, not one
+      two-sentence paragraph); holding the Up arrow with a leading
+      pagebreak (nothing before it) flickers the selection instead of
+      settling.
+
 - [ ] **Prompt 3** — Token-precise highlight decorations driven by
       `g2p_error_words`/`partial_ras` on 422, extending `reportRasError`.
       One spec (decoration placement + clears on edit, with a repeated-token

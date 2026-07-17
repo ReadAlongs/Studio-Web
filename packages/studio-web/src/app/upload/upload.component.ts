@@ -507,9 +507,18 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     this.progressMode = "determinate";
     this.progressValue = 0;
 
-    // The tiptap doc is the source of truth; it's
-    // always sent as read-along-1.2 XML, regardless of whether it came
-    // from typing or a file upload.
+    // The tiptap doc is the source of truth; it's always sent as
+    // read-along-1.2 XML, regardless of whether it came from typing or a
+    // file upload.
+    //
+    // POSSIBLE BACKEND BUG: `text_languages` is still sent alongside the
+    // XML's own `xml:lang`/`fallback-langs`. Observed: the backend stamps
+    // `xml:lang`/`fallback-langs` from `text_languages` onto the response
+    // only when `type` is `"text/plain"` — for `"application/readalong+xml"`
+    // (our case, always) it appears to ignore `text_languages` entirely.
+    // We now set `xml:lang` ourselves, so this may be moot, but the web API
+    // silently ignoring `text_languages` for XML input looks worth
+    // confirming/fixing server-side.
     const body: ReadAlongRequest = {
       text_languages: [this.studioService.langControl$.value as string, "und"],
       type: "application/readalong+xml",

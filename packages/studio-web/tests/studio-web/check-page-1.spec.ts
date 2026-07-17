@@ -72,7 +72,7 @@ test.describe("test studio UI & UX", () => {
     await expect(
       download2.suggestedFilename(),
       "should have the expected filename",
-    ).toMatch(/ras-text-\d+\.txt/);
+    ).toMatch(/ras-text-\d+\.readalong/);
   });
 
   test("should validate input text size", async ({ page }) => {
