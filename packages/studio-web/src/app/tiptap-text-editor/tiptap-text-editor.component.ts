@@ -14,7 +14,11 @@ import {
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
-import { emptyDoc, schemaExtensions } from "./schema/nodes";
+import {
+  continueAfterPageBreakSelection,
+  emptyDoc,
+  schemaExtensions,
+} from "./schema/nodes";
 
 @Component({
   selector: "app-tiptap-text-editor",
@@ -83,6 +87,19 @@ export class TiptapTextEditorComponent
 
   ngOnDestroy(): void {
     this.editor?.destroy();
+  }
+
+  insertPageBreak(): void {
+    const editor = this.editor;
+    if (!editor) {
+      return;
+    }
+    editor.chain().focus().insertPageBreak().run();
+    // If nothing followed the just-inserted pagebreak (e.g. it landed at
+    // the end of the doc), the selection is now a NodeSelection on it —
+    // same situation as Enter on an already-selected pagebreak, so this
+    // reuses that fix (schema/nodes.ts) to add somewhere to keep typing.
+    continueAfterPageBreakSelection(editor);
   }
 
   writeValue(doc: PMNode | null): void {

@@ -1,19 +1,37 @@
 :host
     display: block
 
-.tiptap-text-editor
-    // Flex so the child TipTap mounts into (below) stretches to fill this
-    // box's min-height, instead of only being as tall as its own content —
-    // otherwise clicking below a short doc's last line hits the wrapper,
-    // not the editable surface, and does nothing.
+.tiptap-editor-wrapper
     display: flex
     flex-direction: column
     border: 1px solid #222
     border-radius: 4px
     background-color: #f8f9fa
     min-height: 150px
-    padding: 0.375rem 0.75rem
     font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
+
+.tiptap-toolbar
+    flex: 0 0 auto
+    display: flex
+    align-items: center
+    padding: 0.125rem 0.375rem
+    border-bottom: 1px solid #ccc
+
+    ::ng-deep .mat-mdc-button
+        // Match the smaller footprint of a toolbar control rather than a
+        // full-size button meant to stand alone in a header row.
+        font-size: 0.8125rem
+        line-height: 2rem
+
+.tiptap-text-editor
+    // Flex so the child TipTap mounts into (below) stretches to fill the
+    // wrapper's remaining min-height, instead of only being as tall as its
+    // own content — otherwise clicking below a short doc's last line hits
+    // the wrapper, not the editable surface, and does nothing.
+    flex: 1 1 auto
+    display: flex
+    flex-direction: column
+    padding: 0.375rem 0.75rem
     cursor: text
 
     ::ng-deep .ProseMirror
@@ -25,3 +43,26 @@
 
     ::ng-deep hr[data-type="pagebreak"]
         margin: 0.5rem 0
+
+    ::ng-deep .pagebreak-node
+        display: flex
+        align-items: center
+        justify-content: center
+        margin: 0.75rem 0
+        padding: 0.25rem 0
+        cursor: pointer
+        border-top: 1px dashed #888
+        border-bottom: 1px dashed #888
+
+        &__label
+            padding: 0 0.5rem
+            font-size: 0.75rem
+            color: #666
+            user-select: none
+
+        &--selected
+            border-color: #3f51b5
+            background-color: rgba(63, 81, 181, 0.08)
+
+            .pagebreak-node__label
+                color: #3f51b5

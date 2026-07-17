@@ -1,1 +1,16 @@
-<div #editorContainer class="tiptap-text-editor"></div>
+<div class="tiptap-editor-wrapper">
+  <div class="tiptap-toolbar">
+    <button
+      type="button"
+      i18n="Insert page break button"
+      mat-button
+      (click)="insertPageBreak()"
+      aria-label="Insert page break button"
+      data-test-id="insert-pagebreak-btn"
+    >
+      <mat-icon class="mat-icon-lg">insert_page_break</mat-icon>
+      Insert page break
+    </button>
+  </div>
+  <div #editorContainer class="tiptap-text-editor"></div>
+</div>

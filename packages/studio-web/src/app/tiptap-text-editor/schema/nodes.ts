@@ -1,5 +1,6 @@
-import { getSchema, Node } from "@tiptap/core";
+import { Editor, getSchema, Node } from "@tiptap/core";
 import { Node as PMNode } from "@tiptap/pm/model";
+import { NodeSelection } from "@tiptap/pm/state";
 import { UndoRedo } from "@tiptap/extensions/undo-redo";
 
 // tipTapDoc -> (paragraph | pagebreak)*
@@ -43,6 +44,43 @@ export const Sentence = Node.create({
   },
 });
 
+declare module "@tiptap/core" {
+  interface Commands<ReturnType> {
+    pagebreak: {
+      insertPageBreak: () => ReturnType;
+    };
+  }
+}
+
+// pagebreak is atomic, so there's nowhere to type once it's selected with
+// nothing after it — used both right after inserting one (tiptap-text-
+// editor.component.ts's insertPageBreak()) and when Enter is pressed while
+// an existing one is selected (this node's addKeyboardShortcuts below).
+// No-ops (returns false) unless a pagebreak is actually NodeSelection'd.
+export function continueAfterPageBreakSelection(editor: Editor): boolean {
+  const { selection } = editor.state;
+  if (
+    !(selection instanceof NodeSelection) ||
+    selection.node.type.name !== "pagebreak"
+  ) {
+    return false;
+  }
+  const afterPos = selection.to;
+  editor
+    .chain()
+    .insertContentAt(afterPos, {
+      type: "paragraph",
+      content: [{ type: "sentence" }],
+    })
+    // +1 enters the paragraph, +2 enters the empty sentence inside it.
+    .setTextSelection(afterPos + 2)
+    .run();
+  return true;
+}
+
+// Atomic, selectable divider — click to select, Backspace/Delete to remove,
+// like any other block. The NodeView below controls the live editing
+// appearance; renderHTML is still needed for getHTML()/copy-paste.
 export const PageBreak = Node.create({
   name: "pagebreak",
   group: "block",
@@ -53,6 +91,38 @@ export const PageBreak = Node.create({
   },
   renderHTML() {
     return ["hr", { "data-type": "pagebreak" }];
+  },
+  addCommands() {
+    return {
+      insertPageBreak:
+        () =>
+        ({ commands }) =>
+          commands.insertContent({ type: this.name }),
+    };
+  },
+  addKeyboardShortcuts() {
+    return {
+      Enter: () => continueAfterPageBreakSelection(this.editor),
+    };
+  },
+  addNodeView() {
+    return () => {
+      const dom = document.createElement("div");
+      dom.className = "pagebreak-node";
+      dom.setAttribute("data-type", "pagebreak");
+      dom.setAttribute("contenteditable", "false");
+
+      const label = document.createElement("span");
+      label.className = "pagebreak-node__label";
+      label.textContent = $localize`Page break`;
+      dom.appendChild(label);
+
+      return {
+        dom,
+        selectNode: () => dom.classList.add("pagebreak-node--selected"),
+        deselectNode: () => dom.classList.remove("pagebreak-node--selected"),
+      };
+    };
   },
 });
 
