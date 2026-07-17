@@ -16,7 +16,6 @@ import { AppComponent } from "./app.component";
 import { DemoComponent } from "./demo/demo.component";
 import { MaterialModule } from "./material.module";
 import { UploadComponent } from "./upload/upload.component";
-import { TextFormatDialogComponent } from "./text-format-dialog/text-format-dialog.component";
 import { NgxRAWebComponentModule } from "@readalongs/ngx-web-component";
 import { defineCustomElements } from "@readalongs/web-component/loader";
 import { StudioComponent } from "./studio/studio.component";
@@ -25,6 +24,7 @@ import { ErrorPageComponent } from "./error-page/error-page.component";
 import { EditorComponent } from "./editor/editor.component";
 import { SharedModule } from "./shared/shared.module";
 import { WcStylingComponent } from "./shared/wc-styling/wc-styling.component";
+import { TiptapTextEditorComponent } from "./tiptap-text-editor/tiptap-text-editor.component";
 
 defineCustomElements();
 
@@ -34,11 +34,11 @@ defineCustomElements();
     DemoComponent,
     UploadComponent,
     PrivacyDialog,
-    TextFormatDialogComponent,
     StudioComponent,
     ErrorPageComponent,
     EditorComponent,
     WcStylingComponent,
+    TiptapTextEditorComponent,
   ],
   imports: [
     BrowserModule,
