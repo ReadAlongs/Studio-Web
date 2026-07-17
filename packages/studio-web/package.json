@@ -18,6 +18,9 @@
   "singleFileBundleVersion": "1.6.4",
   "singleFileBundleTimestamp": "2026-06-26+16-07-10",
   "dependencies": {
+    "@tiptap/core": "^3.28.0",
+    "@tiptap/extensions": "^3.28.0",
+    "@tiptap/pm": "^3.28.0",
     "readalong-studio": "file:"
   }
 }

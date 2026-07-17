@@ -1,0 +1,27 @@
+:host
+    display: block
+
+.tiptap-text-editor
+    // Flex so the child TipTap mounts into (below) stretches to fill this
+    // box's min-height, instead of only being as tall as its own content —
+    // otherwise clicking below a short doc's last line hits the wrapper,
+    // not the editable surface, and does nothing.
+    display: flex
+    flex-direction: column
+    border: 1px solid #222
+    border-radius: 4px
+    background-color: #f8f9fa
+    min-height: 150px
+    padding: 0.375rem 0.75rem
+    font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif'
+    cursor: text
+
+    ::ng-deep .ProseMirror
+        flex: 1 1 auto
+        outline: none
+
+    ::ng-deep p[data-type="sentence"]
+        margin: 0
+
+    ::ng-deep hr[data-type="pagebreak"]
+        margin: 0.5rem 0
