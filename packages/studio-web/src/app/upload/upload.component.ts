@@ -25,7 +25,6 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
 import { HttpErrorResponse } from "@angular/common/http";
 
@@ -94,7 +93,6 @@ export class UploadComponent implements OnInit {
   private ssjsService = inject(SoundswallowerService);
   private microphoneService = inject(MicrophoneService);
   private uploadService = inject(UploadService);
-  private dialog = inject(MatDialog);
   public studioService = inject(StudioService);
 
   constructor() {
@@ -261,13 +259,21 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   downloadText() {
     const doc = this.studioService.textControl$.value;
     if (doc && doc.textContent.trim()) {
-      let textBlob = new Blob([docToPlainText(doc)], {
-        type: "text/plain",
-      });
+      let textBlob = new Blob(
+        [
+          docToReadAlongXml(
+            doc,
+            this.studioService.langControl$.value ?? undefined,
+          ),
+        ],
+        {
+          type: "application/readalong+xml",
+        },
+      );
       var url = window.URL.createObjectURL(textBlob);
       var a = document.createElement("a");
       a.href = url;
-      a.download = "ras-text-" + Date.now() + ".txt";
+      a.download = "ras-text-" + Date.now() + ".readalong";
       a.click();
       a.remove();
     } else {
@@ -507,7 +513,10 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     const body: ReadAlongRequest = {
       text_languages: [this.studioService.langControl$.value as string, "und"],
       type: "application/readalong+xml",
-      input: docToReadAlongXml(this.studioService.textControl$.value!),
+      input: docToReadAlongXml(
+        this.studioService.textControl$.value!,
+        this.studioService.langControl$.value ?? undefined,
+      ),
     };
     forkJoin({
       audio: this.fileService.loadAudioBufferFromFile$(
