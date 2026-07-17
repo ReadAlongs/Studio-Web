@@ -26,6 +26,33 @@ describe("TiptapTextEditorComponent", () => {
     expect(component).toBeTruthy();
   });
 
+  it("normalizes a paste with a multi-blank-line gap into proportional empty paragraphs, not a page break", () => {
+    // Pastes directly into the freshly-created, still-empty editor —
+    // exercises the isEmpty branch in handlePaste, not just the
+    // normalization logic (already covered by serializers.spec.ts).
+    const editor = (component as any).editor;
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/plain", "Hello world.\n\n\nGoodbye world.");
+    editor.view.dom.dispatchEvent(
+      new ClipboardEvent("paste", {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    const blocks = editor.getJSON().content.map((node: any) => ({
+      type: node.type,
+      sentenceCount: node.content?.length ?? 0,
+    }));
+    expect(blocks).toEqual([
+      { type: "paragraph", sentenceCount: 1 },
+      { type: "paragraph", sentenceCount: 0 },
+      { type: "paragraph", sentenceCount: 0 },
+      { type: "paragraph", sentenceCount: 1 },
+    ]);
+  });
+
   it("leaves a paragraph to type into after inserting a page break at the end of the doc", () => {
     const editor = (component as any).editor;
     editor.commands.setContent({

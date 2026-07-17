@@ -19,6 +19,7 @@ import {
   emptyDoc,
   schemaExtensions,
 } from "./schema/nodes";
+import { plainTextToDoc } from "./schema/serializers";
 
 @Component({
   selector: "app-tiptap-text-editor",
@@ -79,6 +80,32 @@ export class TiptapTextEditorComponent
       // not on our static container div.
       editorProps: {
         attributes: { "data-test-id": this.testId },
+        // Paste normalization (implementation_plan.md §4a / Prompt 2):
+        // always strip incoming content to plain text and rebuild it via
+        // plainTextToDoc, rather than letting the schema's parseHTML rules
+        // interpret whatever HTML the clipboard offers — that's the only
+        // way to guarantee no bold/italic/link survives a paste, since the
+        // schema has no marks to begin with but pasted markup could still
+        // carry structure parseHTML would otherwise honor.
+        handlePaste: (_view, event) => {
+          const text = event.clipboardData?.getData("text/plain");
+          if (!text) {
+            return false;
+          }
+          event.preventDefault();
+          const content = plainTextToDoc(text).toJSON().content ?? [];
+          // A blank editor's cursor sits inside the placeholder empty
+          // sentence, a collapsed position; inserting block-level content
+          // there breaks out of it rather than consuming it, leaving that
+          // empty paragraph as a stray leading block. Replace the whole doc
+          // in that case instead of inserting at the cursor.
+          if (this.editor!.isEmpty) {
+            this.editor!.commands.setContent(content);
+          } else {
+            this.editor!.commands.insertContent(content);
+          }
+          return true;
+        },
       },
       onUpdate: ({ editor }) => this.onChange(editor.state.doc),
       onBlur: () => this.onTouched(),
