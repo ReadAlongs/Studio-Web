@@ -25,10 +25,12 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { MatDialog } from "@angular/material/dialog";
 import { ProgressBarMode } from "@angular/material/progress-bar";
 import { HttpErrorResponse } from "@angular/common/http";
 
 import { environment } from "../../environments/environment";
+import { ConfirmDialogComponent } from "../shared/confirm-dialog/confirm-dialog.component";
 import { FileService } from "../file.service";
 import { MicrophoneService } from "../microphone.service";
 import {
@@ -93,6 +95,7 @@ export class UploadComponent implements OnInit {
   private ssjsService = inject(SoundswallowerService);
   private microphoneService = inject(MicrophoneService);
   private uploadService = inject(UploadService);
+  private dialog = inject(MatDialog);
   public studioService = inject(StudioService);
 
   constructor() {
@@ -114,13 +117,14 @@ export class UploadComponent implements OnInit {
         this.isLoaded = loaded;
       });
 
-    // While in "edit" mode, keep the (hidden) file input's displayed
-    // filename from going stale as the doc changes.
+    // Keep the (hidden) file input's own value from going stale as the doc
+    // changes, so re-selecting the same file again still fires a change
+    // event (browsers don't re-fire it if the input's value already
+    // reflects that file path).
     this.studioService.textControl$.valueChanges
       .pipe(
         takeUntilDestroyed(),
         filter(() => Boolean(this.textFileUpload)),
-        filter(() => this.studioService.inputMethod.text === "edit"),
       )
       .subscribe(() => {
         this.textFileUpload.nativeElement.value = "";
@@ -138,13 +142,11 @@ export class UploadComponent implements OnInit {
         this.audioFileUpload.nativeElement.value = "";
       });
 
-    // As the user types, warn (without blocking) once the doc's text grows
-    // past the size limit; the real gate is validateTextControl() on submit.
+    // As the doc changes (typing, pasting, or a completed upload), warn
+    // (without blocking) once its text grows past the size limit; the real
+    // gate is validateTextControl() on submit.
     this.studioService.textControl$.valueChanges
-      .pipe(
-        takeUntilDestroyed(this.destroyRef$),
-        filter(() => this.studioService.inputMethod.text === "edit"),
-      )
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe(() => this.checkIsTextSizeBelowLimit());
   }
 
@@ -380,10 +382,6 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     this.studioService.langMode$.next(event.value);
   }
 
-  toggleTextInput(event: any) {
-    this.studioService.inputMethod.text = event.value;
-  }
-
   checkIsTextSizeBelowLimit(): boolean {
     const doc = this.studioService.textControl$.value;
     if (doc) {
@@ -424,33 +422,16 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
 
   private validateTextControl(): boolean {
     const doc = this.studioService.textControl$.value;
-    switch (this.studioService.inputMethod.text) {
-      case "edit":
-        if (doc && doc.textContent.trim()) {
-          return this.checkIsTextSizeBelowLimit();
-        }
-
-        this.toastr.error(
-          $localize`Please enter text to align.`,
-          $localize`No text`,
-          { timeOut: 15000 },
-        );
-        return false;
-
-      case "upload":
-        if (doc && doc.textContent.trim()) {
-          return true;
-        }
-
-        this.toastr.error(
-          $localize`Please select a text file.`,
-          $localize`No text`,
-          { timeOut: 15000 },
-        );
-        return false;
+    if (doc && doc.textContent.trim()) {
+      return this.checkIsTextSizeBelowLimit();
     }
 
-    return true;
+    this.toastr.error(
+      $localize`Please write or upload some text to align.`,
+      $localize`No text`,
+      { timeOut: 15000 },
+    );
+    return false;
   }
 
   private validateAudioControl(): boolean {
@@ -654,11 +635,6 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     );
   }
 
-  deleteTextUpload() {
-    this.textFileUpload.nativeElement.value = "";
-    this.studioService.textControl$.setValue(null);
-  }
-
   onTextFileSelected(event: Event) {
     const el = event.target as HTMLInputElement;
     if (!el.files || el.files.length !== 1) {
@@ -692,9 +668,41 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       return;
     }
 
-    // Parse the file into a doc now (readAlongXml -> tipTapDoc or
-    // plainText -> tipTapDoc), since the doc is
-    // the source of truth from here on, not the raw file.
+    const hasExistingText = Boolean(
+      this.studioService.textControl$.value?.textContent?.trim(),
+    );
+    if (!hasExistingText) {
+      this.loadTextFile(file, isReadAlongXml);
+      return;
+    }
+
+    // Uploading always replaces the whole doc (it's the source of truth,
+    // same as typed text) — warn first, since there's no undo for typed
+    // work once it's gone.
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: $localize`Replace your text?`,
+          message: $localize`Uploading "${file.name}:fileName:" will replace the text currently in the editor. This can't be undone.`,
+          confirmLabel: $localize`Upload and replace`,
+          cancelLabel: $localize`Cancel`,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef$))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.loadTextFile(file, isReadAlongXml);
+        } else {
+          this.textFileUpload.nativeElement.value = "";
+        }
+      });
+  }
+
+  // Parses the file into a doc (readAlongXml -> tipTapDoc or plainText ->
+  // tipTapDoc), since the doc is the source of truth from here on, not the
+  // raw file.
+  private loadTextFile(file: File, isReadAlongXml: boolean) {
     this.fileService
       .readFile$(file)
       .pipe(take(1), takeUntilDestroyed(this.destroyRef$))
