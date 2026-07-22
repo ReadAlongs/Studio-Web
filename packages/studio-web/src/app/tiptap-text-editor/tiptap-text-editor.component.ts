@@ -19,7 +19,7 @@ import {
   emptyDoc,
   schemaExtensions,
 } from "./schema/nodes";
-import { plainTextToDoc } from "./schema/serializers";
+import { docToPlainText, plainTextToDoc } from "./schema/serializers";
 
 @Component({
   selector: "app-tiptap-text-editor",
@@ -80,6 +80,12 @@ export class TiptapTextEditorComponent
       // not on our static container div.
       editorProps: {
         attributes: { "data-test-id": this.testId },
+        // Copying out needs to produce the same plain-text convention that
+        // plainTextToDoc reads back in (pagebreak -> two blank lines, an
+        // empty paragraph -> one) — otherwise the default DOM-based copy
+        // (an atomic pagebreak's <hr> has no text content) silently drops
+        // page breaks on copy/paste round trips.
+        clipboardTextSerializer: (slice) => docToPlainText(slice.content),
         // Paste normalization (implementation_plan.md §4a / Prompt 2):
         // always strip incoming content to plain text and rebuild it via
         // plainTextToDoc, rather than letting the schema's parseHTML rules

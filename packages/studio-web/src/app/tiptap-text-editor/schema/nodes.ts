@@ -1,6 +1,7 @@
 import { Editor, getSchema, Node } from "@tiptap/core";
 import { Node as PMNode } from "@tiptap/pm/model";
-import { NodeSelection } from "@tiptap/pm/state";
+import { NodeSelection, Plugin } from "@tiptap/pm/state";
+import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { UndoRedo } from "@tiptap/extensions/undo-redo";
 
 // tipTapDoc -> (paragraph | pagebreak)*
@@ -180,10 +181,57 @@ export const PageBreak = Node.create({
 
       return {
         dom,
-        selectNode: () => dom.classList.add("pagebreak-node--selected"),
-        deselectNode: () => dom.classList.remove("pagebreak-node--selected"),
+        // Single source of truth for the "selected" look: it must cover
+        // both an exact NodeSelection on this pagebreak (clicking it) and a
+        // broader selection merely passing over it (select-all, or a text
+        // drag-select that spans a page break) — the latter has no native
+        // browser highlight to fall back on, since this node's DOM is
+        // contenteditable="false" with no text for ::selection to paint.
+        // Both cases are covered by the decoration this node's plugin
+        // (below) applies whenever the node's own position falls inside
+        // the current selection's range.
+        update: (updatedNode, decorations) => {
+          if (updatedNode.type.name !== "pagebreak") {
+            return false;
+          }
+          dom.classList.toggle(
+            "pagebreak-node--selected",
+            decorations.some(
+              (d) => (d.spec as { selected?: boolean })?.selected,
+            ),
+          );
+          return true;
+        },
       };
     };
+  },
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          decorations: (state) => {
+            const decorations: Decoration[] = [];
+            state.doc.descendants((node, pos) => {
+              if (
+                node.type.name === "pagebreak" &&
+                pos >= state.selection.from &&
+                pos < state.selection.to
+              ) {
+                decorations.push(
+                  Decoration.node(
+                    pos,
+                    pos + node.nodeSize,
+                    {},
+                    { selected: true },
+                  ),
+                );
+              }
+            });
+            return DecorationSet.create(state.doc, decorations);
+          },
+        },
+      }),
+    ];
   },
 });
 

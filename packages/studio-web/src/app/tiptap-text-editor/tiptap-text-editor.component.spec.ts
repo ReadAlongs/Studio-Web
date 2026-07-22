@@ -27,7 +27,7 @@ describe("TiptapTextEditorComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  it("normalizes a paste with a multi-blank-line gap into proportional empty paragraphs, not a page break", () => {
+  it("normalizes a paste with a two-blank-line gap into a page break", () => {
     // Pastes directly into the freshly-created, still-empty editor —
     // exercises the isEmpty branch in handlePaste, not just the
     // normalization logic (already covered by serializers.spec.ts).
@@ -42,16 +42,88 @@ describe("TiptapTextEditorComponent", () => {
       }),
     );
 
-    const blocks = editor.getJSON().content.map((node: any) => ({
-      type: node.type,
-      sentenceCount: node.content?.length ?? 0,
-    }));
-    expect(blocks).toEqual([
-      { type: "paragraph", sentenceCount: 1 },
-      { type: "paragraph", sentenceCount: 0 },
-      { type: "paragraph", sentenceCount: 0 },
-      { type: "paragraph", sentenceCount: 1 },
-    ]);
+    const blocks = editor.getJSON().content.map((node: any) => node.type);
+    expect(blocks).toEqual(["paragraph", "pagebreak", "paragraph"]);
+  });
+
+  it("copies out the same plain-text convention plainTextToDoc reads back in", () => {
+    const editor = (component as any).editor;
+    editor.commands.setContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "sentence",
+              content: [{ type: "text", text: "Hello world." }],
+            },
+          ],
+        },
+        { type: "pagebreak" },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "sentence",
+              content: [{ type: "text", text: "Page two." }],
+            },
+          ],
+        },
+      ],
+    });
+    editor.commands.selectAll();
+
+    const { $from, $to } = editor.state.selection;
+    const slice = editor.state.doc.slice($from.pos, $to.pos);
+    const text = editor.view.someProp("clipboardTextSerializer", (f: any) =>
+      f(slice, editor.view),
+    );
+
+    expect(text).toBe("Hello world.\n\n\nPage two.");
+  });
+
+  it("highlights a page break that a broader selection sweeps over, e.g. select-all", () => {
+    const editor = (component as any).editor;
+    editor.commands.setContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "sentence",
+              content: [{ type: "text", text: "Page one." }],
+            },
+          ],
+        },
+        { type: "pagebreak" },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "sentence",
+              content: [{ type: "text", text: "Page two." }],
+            },
+          ],
+        },
+      ],
+    });
+    const pagebreakDom = editor.view.dom.querySelector(
+      '[data-type="pagebreak"]',
+    );
+
+    editor.commands.selectAll();
+    expect(
+      pagebreakDom.classList.contains("pagebreak-node--selected"),
+    ).toBeTrue();
+
+    // Collapsing back to a plain cursor inside "Page one." must clear it —
+    // this isn't just a one-way toggle.
+    editor.commands.setTextSelection(1);
+    expect(
+      pagebreakDom.classList.contains("pagebreak-node--selected"),
+    ).toBeFalse();
   });
 
   it("leaves a paragraph to type into after inserting a page break at the end of the doc", () => {

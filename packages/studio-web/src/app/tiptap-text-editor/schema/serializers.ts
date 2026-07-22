@@ -1,4 +1,4 @@
-import { Node as PMNode } from "@tiptap/pm/model";
+import { Fragment, Node as PMNode } from "@tiptap/pm/model";
 
 import { emptyDoc, schema } from "./nodes";
 
@@ -115,41 +115,73 @@ export function readAlongXmlToDoc(xml: string): PMNode {
 }
 
 /**
- * plainText -> tipTapDoc: non-blank lines accumulate into
- * the current paragraph as sentences; each blank line closes the current
- * paragraph and becomes its own empty paragraph, so N blank lines produce N
- * empty paragraphs — not a page break, which is an explicit tiptap element only.
- * Empty sentences render as nothing in the web-component's Paragraph
- * renderer; empty paragraphs get their own margined container, which is
- * what makes gaps scale with blank-line count.
+ * plainText -> tipTapDoc: the pre-TipTap convention (one blank line = a
+ * paragraph break, two or more = a page break) is restored here — it's what
+ * users pasting or uploading a `.txt` file authored under that convention
+ * still expect, even though live typing has its own Enter-driven mechanism
+ * and never infers a page from blank-line count (there's no page-break key
+ * combo to type).
+ *
+ * Non-blank lines accumulate into the current paragraph as sentences. A run
+ * of exactly one blank line closes the current paragraph and becomes its
+ * own empty paragraph (a paragraph break). A run of two or more blank lines
+ * becomes one `pagebreak` node — the two blanks that signal the page are
+ * consumed by it; any further blanks in that run become ordinary empty
+ * paragraphs after the break, so a bigger gap still produces a bigger
+ * visual gap once docToReadAlongXml's spacer collapsing runs.
  */
 export function plainTextToDoc(text: string): PMNode {
   const lines = text.split(/\r\n|\r|\n/);
-  const paragraphs: string[][] = [];
+  const blocks: PMNode[] = [];
   let current: string[] = [];
+  let blankRun = 0;
+
+  // A paragraph with zero sentence children (as opposed to one empty
+  // sentence) renders as a childless <div>, which collapses to no visible
+  // height — matching live typing's blank-line paragraphs (schema/nodes.ts's
+  // Sentence Enter handler) here is what makes a pasted blank line actually
+  // show up as a blank line in the editor.
+  const emptyParagraph = () =>
+    schema.nodes["paragraph"].create(null, [schema.nodes["sentence"].create()]);
+
+  const flushCurrent = () => {
+    if (current.length === 0) {
+      return;
+    }
+    blocks.push(
+      schema.nodes["paragraph"].create(
+        null,
+        current.map((line) =>
+          schema.nodes["sentence"].create(null, schema.text(line)),
+        ),
+      ),
+    );
+    current = [];
+  };
+
+  const flushBlankRun = () => {
+    if (blankRun === 1) {
+      blocks.push(emptyParagraph());
+    } else if (blankRun >= 2) {
+      blocks.push(schema.nodes["pagebreak"].create());
+      for (let i = 0; i < blankRun - 2; i++) {
+        blocks.push(emptyParagraph());
+      }
+    }
+    blankRun = 0;
+  };
+
   for (const line of lines) {
     if (line.trim() === "") {
-      if (current.length > 0) {
-        paragraphs.push(current);
-        current = [];
-      }
-      paragraphs.push([]);
-      continue;
+      flushCurrent();
+      blankRun += 1;
+    } else {
+      flushBlankRun();
+      current.push(line);
     }
-    current.push(line);
   }
-  if (current.length > 0) {
-    paragraphs.push(current);
-  }
-
-  const blocks = paragraphs.map((sentenceLines) =>
-    schema.nodes["paragraph"].create(
-      null,
-      sentenceLines.map((line) =>
-        schema.nodes["sentence"].create(null, schema.text(line)),
-      ),
-    ),
-  );
+  flushCurrent();
+  flushBlankRun();
 
   return blocks.length > 0
     ? schema.nodes["doc"].create(null, blocks)
@@ -158,14 +190,19 @@ export function plainTextToDoc(text: string): PMNode {
 
 /**
  * Not one of the three main serializers — bridges `uploadService.$currentText`
- * (a plain-text `Blob`) now that the doc is the source of truth. Each
- * paragraph's sentences join with "\n"; an explicit `pagebreak` exports as
- * two blank lines (the old page-break convention), an empty paragraph as
- * one. One-way export, not a round-trip contract.
+ * (a plain-text `Blob`) now that the doc is the source of truth, and also
+ * doubles as the editor's `clipboardTextSerializer` (given a copied
+ * selection's `Slice.content` instead of a whole doc — same shape, both
+ * expose `forEach` over their top-level page/paragraph/pagebreak children).
+ * Each paragraph's sentences join with "\n"; an explicit `pagebreak` exports
+ * as two blank lines and an empty paragraph as one — the inverse of
+ * plainTextToDoc's page/paragraph-break convention, so copying out and
+ * pasting back in round-trips. One-way export, not a round-trip contract in
+ * itself.
  */
-export function docToPlainText(doc: PMNode): string {
+export function docToPlainText(content: PMNode | Fragment): string {
   const paragraphTexts: string[] = [];
-  doc.forEach((node) => {
+  content.forEach((node) => {
     if (node.type.name === "pagebreak") {
       paragraphTexts.push("", "");
     } else {

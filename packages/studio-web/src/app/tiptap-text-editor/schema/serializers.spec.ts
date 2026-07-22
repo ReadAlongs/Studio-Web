@@ -56,7 +56,7 @@ describe("docToReadAlongXml empty-paragraph collapsing", () => {
 });
 
 describe("plainTextToDoc", () => {
-  it("gives each blank line its own empty paragraph, scaling with run length, and never inserts a page break", () => {
+  it("treats one blank line as a paragraph break and two or more as a page break", () => {
     const text = [
       "Hello world.",
       "Second sentence.",
@@ -64,22 +64,40 @@ describe("plainTextToDoc", () => {
       "Middle line.",
       "",
       "",
+      "Page two.",
+      "",
+      "",
+      "",
+      "",
       "Last line.",
     ].join("\n");
 
     const doc = plainTextToDoc(text);
+    // A blank line becomes a paragraph holding one empty sentence, not zero
+    // — matching live typing, and what keeps it visible as a blank line
+    // rather than a collapsed, invisible <div> (see plainTextToDoc's
+    // emptyParagraph comment).
+    const emptyParagraph = () =>
+      schema.nodes["paragraph"].create(null, [
+        schema.nodes["sentence"].create(),
+      ]);
 
     const expected = schema.nodes["doc"].create(null, [
       schema.nodes["paragraph"].create(null, [
         schema.nodes["sentence"].create(null, schema.text("Hello world.")),
         schema.nodes["sentence"].create(null, schema.text("Second sentence.")),
       ]),
-      schema.nodes["paragraph"].create(null, []),
+      emptyParagraph(), // one blank line -> paragraph break
       schema.nodes["paragraph"].create(null, [
         schema.nodes["sentence"].create(null, schema.text("Middle line.")),
       ]),
-      schema.nodes["paragraph"].create(null, []),
-      schema.nodes["paragraph"].create(null, []),
+      schema.nodes["pagebreak"].create(), // two blank lines -> page break
+      schema.nodes["paragraph"].create(null, [
+        schema.nodes["sentence"].create(null, schema.text("Page two.")),
+      ]),
+      schema.nodes["pagebreak"].create(), // four blank lines -> page break ...
+      emptyParagraph(), // ... plus 2 leftover blanks
+      emptyParagraph(),
       schema.nodes["paragraph"].create(null, [
         schema.nodes["sentence"].create(null, schema.text("Last line.")),
       ]),
