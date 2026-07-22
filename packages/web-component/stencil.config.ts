@@ -20,15 +20,18 @@ export const config: Config = {
     {
       type: "dist",
       esmLoaderPath: "../loader",
+      dir: "../../dist/packages/web-component/dist",
     },
     {
       type: "dist-custom-elements",
       generateTypeDeclarations: true,
+      dir: "../../dist/packages/web-component/dist/components",
     },
     { type: "docs-readme" },
     {
       type: "www",
       serviceWorker: null, // disable service workers
+      dir: "../../dist/packages/web-component/www",
       copy: [
         { src: "scss/fonts", dest: "build/assets/fonts" },
         // Hacky, I know, but we really need the readme to be in the root dist folder and I didn't figure how else to do that.
