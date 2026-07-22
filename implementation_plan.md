@@ -312,13 +312,23 @@ line closes the current paragraph and becomes its own empty paragraph. See
 
 ### 4a. Blank-line grouping in plainTextToDoc
 
-Each blank line produces its own empty `paragraph` node — not a `sentence`,
-and not a `pagebreak`. A run of N consecutive blank lines produces N empty
-paragraphs, whose margins stack so the visible gap scales with blank-line
-count, all on a **single page**. Page breaks are never inferred from
-blank-line count; `pagebreak` nodes are only ever created by explicit user
-action (the "Insert page break" toolbar command, Prompt 2). This supersedes
-decision 7's original "2+ empty lines start a new page" wording.
+Each blank line produces its own empty `paragraph` node — not a `sentence`.
+A run of exactly one blank line is a paragraph break; a run of two or more
+is a page break (one `pagebreak` node, consuming two of the blank lines —
+any further blanks in that run become ordinary empty paragraphs after it,
+so a bigger gap still produces a bigger visual gap once
+`docToReadAlongXml`'s spacer collapsing runs). This restores the
+pre-TipTap plain-text convention (`\n\n` = paragraph, `\n\n\n` = page,
+formerly documented in the now-removed `text-format-dialog`) for the
+**paste and `.txt`-upload boundary only** — live typing has its own
+Enter-driven mechanism (§ Prompt 2 checklist) and still never infers a page
+from blank-line count, since there's no page-break key combo to type.
+
+This rule was briefly dropped mid-Prompt-2 in favor of never inferring
+pages from blank-line count at all (superseding decision 7's original "2+
+empty lines start a new page" wording) — that turned out to be wrong for
+paste/upload specifically: it silently broke round-tripping text authored
+under the old convention. Reinstated as above once that surfaced.
 
 **Why paragraphs, not sentences**: `@readalongs/web-component`'s
 `Paragraph` renderer
@@ -489,8 +499,9 @@ traceability; each is now reflected inline in the section noted:
       spacer, larger runs scale from there. This applies uniformly
       regardless of whether the empty paragraphs came from typing, pasting,
       or editing artifacts (e.g. an unfilled `insertPageBreak` placeholder);
-      `plainTextToDoc` itself is unchanged, one empty paragraph per blank
-      line — collapsing happens only at serialization. Live typing needed
+      collapsing happens only at serialization, on top of whatever empty
+      paragraphs `plainTextToDoc` or live typing already produced. Live
+      typing needed
       its own mechanism to *create* those empty paragraphs, since Enter by
       default only splits into a new sentence: `Sentence`'s
       `addKeyboardShortcuts` (Enter) now treats pressing Enter on an
@@ -514,6 +525,30 @@ traceability; each is now reflected inline in the section noted:
       two-sentence paragraph); holding the Up arrow with a leading
       pagebreak (nothing before it) flickers the selection instead of
       settling.
+
+      **Post-Prompt-2 fix: paste/copy round-tripping.** Human testing found
+      that pasting or uploading text authored under the pre-TipTap plain-text
+      convention (`\n\n` = paragraph, `\n\n\n` = page) lost its page breaks,
+      since `plainTextToDoc` had stopped inferring pages from blank-line
+      count at all (see §4a) — reinstated there, scoped to paste/upload
+      only. Separately, copying text back out of the editor didn't
+      round-trip either: with no custom clipboard serialization, the
+      browser's default plain-text extraction ran over the rendered DOM,
+      and an atomic `pagebreak`'s `<hr>` has no text content, so copying
+      across a page break silently dropped it. Fixed by wiring the
+      existing `docToPlainText` (already used for the
+      `uploadService.$currentText` bridge, and already encoding
+      `pagebreak`/empty-paragraph the same way `plainTextToDoc` reads them)
+      up as the editor's `clipboardTextSerializer` — widened to accept a
+      `Slice`'s `content` (a `Fragment`) as well as a whole doc, since both
+      expose the same `forEach` shape over their top-level children.
+      Considered instead marking the clipboard's `text/html` with the
+      schema's own structure and reconstructing it losslessly on paste
+      (the schema already has matching `parseHTML`/`renderHTML` for every
+      node) — rejected as unnecessary complexity: with no marks and only
+      three block-level distinctions, a correctly-updated plain-text round
+      trip is exactly as faithful as an HTML one for this schema, so one
+      code path is enough.
 
 - [ ] **Prompt 3** — Token-precise highlight decorations driven by
       `g2p_error_words`/`partial_ras` on 422, extending `reportRasError`.
