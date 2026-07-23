@@ -41,9 +41,9 @@ export const data_step: any = {
   id: "data",
 };
 
-export const text_write_step: any = {
-  title: $localize`Write your text`,
-  text: $localize`You can write your text directly into ReadAlong Studio, by selecting the "write" option.`,
+export const text_step: any = {
+  title: $localize`Add your text`,
+  text: $localize`You can write your text directly into ReadAlong Studio, or click "Upload" to use a plain text file (.txt) or a file in the RAS format (.readalong).`,
   attachTo: {
     element: "#text-section",
     on: "bottom",
@@ -60,29 +60,7 @@ export const text_write_step: any = {
       type: "next",
     },
   ],
-  id: "text-write",
-};
-
-export const text_file_step: any = {
-  title: $localize`Use a text file`,
-  text: $localize`You can also use text from a plain text file (.txt) or a file in the RAS format (.readalong).`,
-  attachTo: {
-    element: "#text-section",
-    on: "bottom",
-  },
-  buttons: [
-    {
-      classes: "shepherd-button-primary",
-      text: $localize`Back`,
-      type: "back",
-    },
-    {
-      classes: "shepherd-button-primary",
-      text: $localize`Next`,
-      type: "next",
-    },
-  ],
-  id: "text-file",
+  id: "text",
 };
 
 export const audio_record_step: any = {

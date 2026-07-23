@@ -11,106 +11,55 @@
   <div class="container">
     <div class="row g-2 mb-3">
       <div id="text-section" class="col-12 col-md-6 p-3 pb-0 border bg-light">
-        <div class="d-flex flex-row justify-content-between">
-          <div class="p-0">
-            <h1 i18n="Title for text box" class="title">Text</h1>
-          </div>
-          <div class="p-0">
-            <mat-button-toggle-group
-              appearance="legacy"
-              (change)="toggleTextInput($event)"
-              name="inputMethod"
-              aria-label="Input Method"
-              [value]="studioService.inputMethod.text"
-              data-test-id="text-btn-group"
+        <div class="d-flex flex-row justify-content-between p-0">
+          <span class="p-0"
+            ><h1 i18n="Title for text box" class="title">Text</h1></span
+          >
+          <span class="p-0 align-right" align="right">
+            <button
+              i18n="Text upload button"
+              mat-button
+              (click)="textFileUpload.click()"
+              aria-label="Upload a text file"
+              data-test-id="text-upload-btn"
             >
-              <mat-button-toggle i18n="Label for text Write toggle" value="edit"
-                >Write</mat-button-toggle
-              >
-              <mat-button-toggle
-                i18n="Lable for text File toggle"
-                value="upload"
-                >File</mat-button-toggle
-              >
-            </mat-button-toggle-group>
-          </div>
+              <mat-icon class="mat-icon-lg">upload_file</mat-icon> Upload
+            </button>
+            <button
+              i18n="Text download button"
+              mat-button
+              [disabled]="
+                !studioService.textControl$.value?.textContent?.trim()
+              "
+              (click)="downloadText()"
+              aria-label="Text download button"
+              class="pr-0"
+              data-test-id="text-download-btn"
+            >
+              <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
+            </button>
+          </span>
         </div>
-        <div [class.d-none]="studioService.inputMethod.text !== 'upload'">
+        <input
+          #textFileUpload
+          (change)="onTextFileSelected($event)"
+          class="d-none"
+          name="text"
+          type="file"
+          id="updateText"
+          accept="{{ textUploadAccepts }}"
+        />
+        <div>
           <div class="row">
-            <div class="mt-4 mb-3">
-              <!-- <div class="container"> -->
-              <label
-                i18n="Instructions for uploading text"
-                for="updateText"
-                class="form-label"
-                >Select a plain text file (.txt) or a ReadAlong Studio temporary
-                file (.readalong)</label
-              >
-              <input
-                #textFileUpload
-                (change)="onTextFileSelected($event)"
-                class="form-control"
-                name="text"
-                type="file"
-                id="updateText"
-                accept="{{ textUploadAccepts }}"
-              />
-              <!-- </div> -->
-            </div>
+            <app-tiptap-text-editor
+              [formControl]="studioService.textControl$"
+              id="textInput"
+              i18n-placeholder="Example input text"
+              placeholder="Ex. Hello my name is..."
+              data-test-id="ras-text-input"
+            ></app-tiptap-text-editor>
           </div>
-          @if (textFileUpload.value) {
-            <div class="row">
-              <div class="col-12 offset-xl-8 col-xl-4">
-                <button
-                  mat-button
-                  i18n="Text delete button"
-                  class="audioControl"
-                  (click)="deleteTextUpload()"
-                  color="warn"
-                  aria-label="Delete button"
-                >
-                  <mat-icon class="mat-icon-lg">delete</mat-icon>
-                  Delete
-                </button>
-              </div>
-            </div>
-          }
         </div>
-        @if (studioService.inputMethod.text === "edit") {
-          <div>
-            <div class="d-flex flex-row justify-content-between p-0">
-              <span class="p-0"
-                ><h2 i18n="Title for text writing box" class="subtitle">
-                  Write or paste your text here
-                </h2></span
-              >
-              <span class="p-0 align-right" align="right">
-                <button
-                  i18n="Text download button"
-                  mat-button
-                  [disabled]="
-                    !studioService.textControl$.value?.textContent?.trim()
-                  "
-                  (click)="downloadText()"
-                  aria-label="Text download button"
-                  class="pr-0"
-                  data-test-id="text-download-btn"
-                >
-                  <mat-icon class="mat-icon-lg">save</mat-icon> Save a copy
-                </button>
-              </span>
-            </div>
-            <div class="row">
-              <app-tiptap-text-editor
-                [formControl]="studioService.textControl$"
-                id="textInput"
-                i18n-placeholder="Example input text"
-                placeholder="Ex. Hello my name is..."
-                data-test-id="ras-text-input"
-              ></app-tiptap-text-editor>
-            </div>
-          </div>
-        }
       </div>
       <div id="audio-section" class="col-12 col-md-6 p-3 border bg-light">
         <!-- <div class="container"> -->

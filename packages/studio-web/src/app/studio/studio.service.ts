@@ -12,7 +12,6 @@ export enum langMode {
 
 export interface InputMethodType {
   audio: "mic" | "upload";
-  text: "edit" | "upload";
 }
 
 @Injectable({
@@ -54,7 +53,6 @@ export class StudioService {
   });
   public inputMethod: InputMethodType = {
     audio: "mic",
-    text: "edit",
   };
 
   constructor() {

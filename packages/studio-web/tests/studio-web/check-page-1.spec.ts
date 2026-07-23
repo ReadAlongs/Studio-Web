@@ -14,8 +14,8 @@ test.describe("test studio UI & UX", () => {
     await disablePlausible(page);
     //tour button is visible
     await expect(page.getByText("Take the tour!")).toBeVisible();
-    //check text button group
-    await expect(page.getByTestId("text-btn-group")).toBeVisible();
+    //check text upload button
+    await expect(page.getByTestId("text-upload-btn")).toBeVisible();
     //check audio button group
     await expect(page.getByTestId("audio-btn-group")).toBeVisible();
     //check the language list
@@ -32,8 +32,8 @@ test.describe("test studio UI & UX", () => {
     await expect(
       page.getByRole("button", { name: "Visite guidée" }),
     ).toBeVisible();
-    //check text button group
-    await expect(page.getByTestId("text-btn-group")).toBeVisible();
+    //check text upload button
+    await expect(page.getByTestId("text-upload-btn")).toBeVisible();
     //check audio button group
     await expect(page.getByTestId("audio-btn-group")).toBeVisible();
     //check the language list
@@ -48,8 +48,8 @@ test.describe("test studio UI & UX", () => {
     await disablePlausible(page);
     //tour button is visible
     await expect(page.getByText("¡Siga el tour!")).toBeVisible();
-    //check text button group
-    await expect(page.getByTestId("text-btn-group")).toBeVisible();
+    //check text upload button
+    await expect(page.getByTestId("text-upload-btn")).toBeVisible();
     //check audio button group
     await expect(page.getByTestId("audio-btn-group")).toBeVisible();
     //check the language list
@@ -111,11 +111,6 @@ test.describe("test studio UI & UX", () => {
     }).toPass();
 
     await page
-      .getByTestId("text-btn-group")
-      .getByRole("radio", { name: "File" })
-      .click();
-
-    await page
       .locator("#updateText")
       .setInputFiles(testAssetsPath + "/ras-text-37kb.txt");
 
@@ -150,11 +145,6 @@ test.describe("test studio UI & UX", () => {
       await expect(page.getByTestId("next-step")).toBeEnabled();
     }).toPass();
 
-    await page
-      .getByTestId("text-btn-group")
-      .getByRole("radio", { name: "File" })
-      .click();
-    await page.locator("#updateText").click();
     await page
       .locator("#updateText")
       .setInputFiles(testAssetsPath + "/page1.png");

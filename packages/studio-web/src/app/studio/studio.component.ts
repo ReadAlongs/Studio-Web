@@ -38,8 +38,7 @@ import {
   readalong_change_title_step,
   readalong_export_step,
   readalong_go_back_step,
-  text_file_step,
-  text_write_step,
+  text_step,
   readalong_go_to_editor,
 } from "../shepherd.steps";
 import { DemoComponent } from "../demo/demo.component";
@@ -181,24 +180,6 @@ export class StudioComponent implements OnDestroy, OnInit {
     };
     this.shepherdService.keyboardNavigation = false;
 
-    const cachedTextInputMode = this.studioService.inputMethod.text;
-    const setTextInputMode = (mode: InputMethodType["text"]) => {
-      return () => {
-        if (this.upload) {
-          this.studioService.inputMethod.text = mode;
-        }
-      };
-    };
-
-    text_write_step.when = {
-      show: setTextInputMode("edit"),
-      hide: setTextInputMode(cachedTextInputMode),
-    };
-    text_file_step.when = {
-      show: setTextInputMode("upload"),
-      hide: setTextInputMode(cachedTextInputMode),
-    };
-
     const cachedAudioInputMode = this.studioService.inputMethod.audio;
     const setAudioInputMode = (mode: InputMethodType["audio"]) => {
       return () => {
@@ -235,7 +216,6 @@ export class StudioComponent implements OnDestroy, OnInit {
             this.studioService.textControl$.setValue(
               plainTextToDoc("Hello world!"),
             );
-            this.studioService.inputMethod.text = "edit";
             this.studioService.audioControl$.setValue(audioFile);
             this.upload?.nextStep();
             this.stepper.animationDone.pipe(take(1)).subscribe(() => {
@@ -301,8 +281,7 @@ export class StudioComponent implements OnDestroy, OnInit {
     this.shepherdService.addSteps([
       intro_step,
       data_step,
-      text_write_step,
-      text_file_step,
+      text_step,
       audio_record_step,
       audio_file_step,
       language_step,
