@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Locator, Page } from "@playwright/test";
 import process from "process";
 
 export const testAssetsPath = process.cwd().includes("packages")
@@ -13,12 +13,36 @@ Paragraph.
 Page.`;
 export const testMp3Path =
   testAssetsPath + "test-sentence-paragraph-page-56k.mp3";
+
+/**
+ * Locator.fill() sets a contenteditable's text directly and never fires a
+ * paste event, so it bypasses the TipTap text editor's handlePaste (the
+ * only place the blank-line paragraph/page-break convention is applied —
+ * see serializers.ts's plainTextToDoc). Tests that rely on testText's blank
+ * lines producing real paragraphs/pages (e.g. for #t0b0d0p1s0-style
+ * locators) need to paste it in instead.
+ */
+export const pasteText = async (locator: Locator, text: string) => {
+  await locator.evaluate((el, text) => {
+    el.focus();
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/plain", text);
+    el.dispatchEvent(
+      new ClipboardEvent("paste", {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+  }, text);
+};
+
 /**
  * Steps to recreate a readalong for tests
  */
 export const testMakeAReadAlong = async (page: Page) => {
   await test.step("generate the readalong", async () => {
-    await page.getByTestId("ras-text-input").fill(testText);
+    await pasteText(page.getByTestId("ras-text-input"), testText);
 
     await page
       .getByTestId("audio-btn-group")
@@ -107,8 +131,8 @@ export const testMakeAReadAlong = async (page: Page) => {
     page.locator("#fileElem--t0b0d1").dispatchEvent("click");
     fileChooser = await fileChooserPromise;
     fileChooser.setFiles(testAssetsPath + "page2.png");
-    for(const toast of await page.locator("div.toast-message").all()){
-        await toast.click({ force: true });
+    for (const toast of await page.locator("div.toast-message").all()) {
+      await toast.click({ force: true });
     }
     await expect(async () => {
       await expect(page.locator("div.toast-message")).not.toBeVisible();

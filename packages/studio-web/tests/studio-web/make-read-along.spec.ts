@@ -4,13 +4,14 @@ import {
   testMp3Path,
   testAssetsPath,
   defaultBeforeEach,
+  pasteText,
 } from "../test-commands";
 
 test("should make read along", async ({ page, browserName }) => {
   test.slow();
   await defaultBeforeEach(page, browserName);
   //fill in text and audio
-  await page.getByTestId("ras-text-input").fill(testText);
+  await pasteText(page.getByTestId("ras-text-input"), testText);
   await expect(page.getByTestId("text-download-btn")).toBeVisible();
   await page
     .getByTestId("audio-btn-group")
