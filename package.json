@@ -52,7 +52,8 @@
     "pretty-quick": "^4.2.2",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "webpack-cli": "^7.2.2"
   },
   "dependencies": {
     "@angular/animations": "^21.2.17",
