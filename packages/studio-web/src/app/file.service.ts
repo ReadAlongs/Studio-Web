@@ -10,7 +10,7 @@ import {
 } from "rxjs";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
+import { ToastrService } from "@openng/ngx-toastr";
 import { AudioContext, AudioBuffer } from "standardized-audio-context";
 
 @Injectable({

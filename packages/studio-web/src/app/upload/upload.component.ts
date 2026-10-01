@@ -1,5 +1,5 @@
 // -*- typescript-indent-level: 2 -*-
-import { Toast, ToastrService } from "ngx-toastr";
+import { Toast, ToastrService } from "@openng/ngx-toastr";
 import {
   Observable,
   catchError,
