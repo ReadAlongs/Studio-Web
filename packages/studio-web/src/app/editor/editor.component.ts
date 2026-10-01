@@ -30,7 +30,7 @@ import { ShepherdService } from "../shepherd.service";
 import { EditorService } from "./editor.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
-import { ToastrService } from "ngx-toastr";
+import { ToastrService } from "@openng/ngx-toastr";
 import { validateFileType } from "../utils/utils";
 import { WcStylingService } from "../shared/wc-styling/wc-styling.service";
 import { WcStylingComponent } from "../shared/wc-styling/wc-styling.component";

@@ -6,7 +6,7 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
+import { ToastrService } from "@openng/ngx-toastr";
 import { BehaviorSubject, Subject, takeUntil } from "rxjs";
 import { WcStylingService } from "./wc-styling.service";
 import {
