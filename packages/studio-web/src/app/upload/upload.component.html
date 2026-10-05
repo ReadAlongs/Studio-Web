@@ -193,25 +193,25 @@ Page two."
                 class="audioControl"
                 mat-button
                 (click)="startRecording()"
-                [color]="recording ? 'warn' : 'primary'"
+                [color]="recording() ? 'warn' : 'primary'"
                 aria-label="Record button"
-                [disabled]="starting_to_record"
+                [disabled]="starting_to_record()"
                 data-test-id="ras-audio-recording-btn"
               >
                 <mat-icon class="mat-icon-lg">mic</mat-icon>
-                @if (studioService.audioControl$.value !== null && !recording) {
+                @if (has_audio() && !recording()) {
                   <span i18n="Audio re-record button"
                     >Delete and re-record</span
                   >
                 }
-                @if (studioService.audioControl$.value === null && !recording) {
+                @if (!has_audio() && !recording()) {
                   <span i18n="Audio record button">Record</span>
                 }
-                @if (recording) {
+                @if (recording()) {
                   <span i18n="Audio recording button">Recording</span>
                 }
               </button>
-              @if (recording) {
+              @if (recording()) {
                 <button
                   i18n="Audio stop button"
                   class="audioControl"
@@ -229,11 +229,7 @@ Page two."
         }
         <div class="row">
           <div class="col-12 col-xl-4">
-            @if (
-              !recording &&
-              studioService.audioControl$.value !== null &&
-              !playing
-            ) {
+            @if (!recording() && has_audio() && !playing()) {
               <button
                 i18n="Audio play button"
                 class="audioControl"
@@ -246,11 +242,7 @@ Page two."
                 Play
               </button>
             }
-            @if (
-              !recording &&
-              studioService.audioControl$.value !== null &&
-              playing
-            ) {
+            @if (!recording() && has_audio() && playing()) {
               <button
                 i18n="Audio stop button"
                 class="audioControl"
@@ -265,7 +257,7 @@ Page two."
             }
           </div>
           <div class="col-12 col-xl-4">
-            @if (!recording && studioService.audioControl$.value !== null) {
+            @if (!recording() && has_audio()) {
               <button
                 i18n="Audio download button"
                 class="audioControl"
@@ -281,7 +273,7 @@ Page two."
             }
           </div>
           <div class="col-12 col-xl-4">
-            @if (!recording && studioService.audioControl$.value !== null) {
+            @if (!recording() && has_audio()) {
               <button
                 i18n="Audio delete button"
                 class="audioControl"
@@ -392,7 +384,7 @@ Page two."
           i18n="Next button"
           id="next-step"
           class="mt-4 plausible-event-name=CreateReadalong"
-          [disabled]="loading || !isLoaded"
+          [disabled]="loading() || !isLoaded()"
           mat-raised-button
           color="primary"
           type="submit"
@@ -401,7 +393,7 @@ Page two."
         >
           Go to the next step!
         </button>
-        @if (loading) {
+        @if (loading()) {
           <mat-progress-bar
             [mode]="progressMode"
             [value]="progressValue"

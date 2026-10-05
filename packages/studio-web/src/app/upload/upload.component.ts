@@ -23,6 +23,7 @@ import {
   inject,
   OnInit,
   Output,
+  signal,
   ViewChild,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -54,12 +55,13 @@ import { IAudioBuffer } from "standardized-audio-context";
   standalone: false,
 })
 export class UploadComponent implements OnInit {
-  protected isLoaded = false;
+  protected isLoaded = signal(false);
   protected langs: Array<SupportedLanguage> = [];
-  protected loading = false;
-  protected starting_to_record = false;
-  protected recording = false;
-  protected playing = false;
+  protected loading = signal(false);
+  protected starting_to_record = signal(false);
+  protected recording = signal(false);
+  protected has_audio = signal(false);
+  protected playing = signal(false);
   private player: any = null;
   protected contactLink = environment.packageJson.contact;
   protected progressMode: ProgressBarMode = "indeterminate";
@@ -103,7 +105,7 @@ export class UploadComponent implements OnInit {
     this.ssjsService.modelLoaded
       .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe((loaded) => {
-        this.isLoaded = loaded;
+        this.isLoaded.set(loaded);
       });
 
     // If the textControl$ changes to a Blob or null, reset the
@@ -274,13 +276,16 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   }
 
   async startRecording() {
-    if (this.recording)
+    if (this.recording())
       // Not sure why the button stays clickable, but oh well
       return;
     try {
-      this.starting_to_record = true;
+      this.starting_to_record.set(true);
+      console.log("About to startRecording()");
       await this.microphoneService.startRecording();
-      this.recording = true;
+      console.log("After startRecording()");
+      this.recording.set(true);
+      console.log(this.recording());
     } catch (err: any) {
       let message;
       if (err.name === "NotAllowedError") {
@@ -292,35 +297,35 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         timeOut: 15000,
       });
     } finally {
-      this.starting_to_record = false;
+      this.starting_to_record.set(false);
     }
   }
 
   pauseRecording() {
     this.microphoneService.pause();
-    this.recording = false;
+    this.recording.set(false);
   }
 
   resumeRecording() {
     this.microphoneService.resume();
-    this.recording = true;
+    this.recording.set(true);
   }
 
   playRecording() {
-    if (!this.playing && this.studioService.audioControl$.value !== null) {
+    if (!this.playing() && this.studioService.audioControl$.value !== null) {
       let player = new window.Audio();
       this.player = player;
       player.src = URL.createObjectURL(this.studioService.audioControl$.value);
       player.onended = () => this.stopPlayback();
       player.onerror = () => this.stopPlayback();
       player.load();
-      this.playing = true;
+      this.playing.set(true);
       player.play();
     }
   }
 
   stopPlayback() {
-    this.playing = false;
+    this.playing.set(false);
     this.player?.pause();
     this.player = null;
   }
@@ -328,10 +333,11 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
   deleteRecording() {
     this.audioFileUpload.nativeElement.value = "";
     this.studioService.audioControl$.setValue(null);
+    this.has_audio.set(false);
   }
 
   async stopRecording() {
-    this.recording = false;
+    this.recording.set(false);
     try {
       let output = await this.microphoneService.stopRecording();
       // possibly check for zero-length output and throw here
@@ -340,7 +346,10 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
         $localize`Yay!`,
         { timeOut: 10000 },
       );
+      console.log(output);
       this.studioService.audioControl$.setValue(output);
+      this.has_audio.set(true);
+      console.log(this.studioService.audioControl$.value);
       // do any post output steps
     } catch (err: any) {
       if (err === "Recorder didn't hear anything") {
@@ -500,7 +509,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     }
 
     // Show progress bar
-    this.loading = true;
+    this.loading.set(true);
     this.progressMode = "query";
     // Determine text type for API request
     let input_type;
@@ -582,7 +591,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
       .subscribe({
         next: (progress) => {
           if (progress.hypseg !== undefined) {
-            this.loading = false;
+            this.loading.set(false);
             this.toastr.toasts.forEach((toast) => {
               // clean all outstanding success and error toasts on alignment success,
               // they are no longer relevant, but keep the warnings, they are typically
@@ -613,7 +622,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
           }
         },
         error: (err: Error) => {
-          this.loading = false;
+          this.loading.set(false);
           if (err instanceof HttpErrorResponse) {
             this.reportRasError(err);
           } else if (err.message.includes("align")) {
@@ -629,6 +638,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     const el = event.target as HTMLInputElement;
     if (!el.files || el.files.length !== 1) {
       this.studioService.audioControl$.setValue(null);
+      this.has_audio.set(false);
       return;
     }
 
