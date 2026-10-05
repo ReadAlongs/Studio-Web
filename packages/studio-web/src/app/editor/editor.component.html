@@ -22,7 +22,7 @@
           </button>
         </div>
       </div>
-      @if (editorService.uploadFormGroup.valid) {
+      @if (editorService.uploadFormValid()) {
         <div class="col-4">
           <ras-shared-download
             (downloadButtonClicked)="download($event)"
