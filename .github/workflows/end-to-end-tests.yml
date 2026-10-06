@@ -113,6 +113,7 @@ jobs:
         run: npx nx e2e studio-web
 
       - name: Upload HTML report
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: playwright-report--attempt-${{ github.run_attempt }}
