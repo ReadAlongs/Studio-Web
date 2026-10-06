@@ -60,8 +60,8 @@
   >
     <div id="readalongContainer" #readalongContainer></div>
     <div
-      [class.d-none]="!rasFileIsLoaded"
-      [class.d-lg-flex]="rasFileIsLoaded"
+      [class.d-none]="!rasFileIsLoaded()"
+      [class.d-lg-flex]="rasFileIsLoaded()"
       class="flex-row"
     >
       <div

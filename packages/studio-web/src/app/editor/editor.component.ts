@@ -8,6 +8,7 @@ import {
   ElementRef,
   inject,
   OnDestroy,
+  signal,
   ViewChild,
 } from "@angular/core";
 import SegmentsPlugin from "./segments";
@@ -57,7 +58,7 @@ export class EditorComponent implements OnDestroy, AfterViewInit {
   // a comma separated list of file extensions or mime types.
   protected htmlUploadAccepts = ".html";
   private destroyRef$ = inject(DestroyRef);
-  protected rasFileIsLoaded = false;
+  protected rasFileIsLoaded = signal(false);
 
   private beforeUnload: (e: Event) => void;
 
@@ -99,7 +100,7 @@ export class EditorComponent implements OnDestroy, AfterViewInit {
   private formIsDirty(): boolean {
     return (
       (this.rasFileUpload && this.rasFileUpload.nativeElement.value !== "") ||
-      this.rasFileIsLoaded
+      this.rasFileIsLoaded()
     );
   }
 
@@ -217,7 +218,7 @@ export class EditorComponent implements OnDestroy, AfterViewInit {
           this.wcStylingService,
         );
     }
-    this.rasFileIsLoaded = false;
+    this.rasFileIsLoaded.set(false);
 
     window.removeEventListener("beforeunload", this.beforeUnload);
   }
@@ -304,7 +305,7 @@ export class EditorComponent implements OnDestroy, AfterViewInit {
     const readalong = await this.parseReadalong(text);
     this.loadAudioIntoWavesurferElement();
     this.renderReadalong(readalong);
-    this.rasFileIsLoaded = true;
+    this.rasFileIsLoaded.set(true);
   }
 
   async renderReadalong(readalongBody: string | undefined) {
