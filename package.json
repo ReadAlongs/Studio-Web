@@ -50,6 +50,7 @@
     "prettier": "^3.8.4",
     "prettier-plugin-jsdoc": "^1.8.1",
     "pretty-quick": "^4.2.2",
+    "terser-webpack-plugin": "^5.6.1",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",

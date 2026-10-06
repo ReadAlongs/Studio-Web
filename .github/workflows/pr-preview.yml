@@ -25,6 +25,8 @@ jobs:
           node-version: "24"
       - run: npm install -g npm@latest
         if: github.event.action != 'closed'
+      - run: npm version
+        if: github.event.action != 'closed'
       - name: Install
         if: github.event.action != 'closed'
         run: |
