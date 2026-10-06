@@ -660,6 +660,7 @@ Please check it to make sure all words are spelled out completely, e.g. write "4
     } else {
       this.studioService.audioControl$.setValue(file);
     }
+    this.has_audio.set(true);
 
     this.toastr.success(
       $localize`File ` +
