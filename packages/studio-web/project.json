@@ -84,6 +84,12 @@
     "update-browserslist": {
       "command": "npx -y update-browserslist-db@latest"
     },
+    "just-serve": {
+      "executor": "@angular-builders/custom-webpack:dev-server",
+      "options": {
+        "buildTarget": "studio-web:build:development,en"
+      }
+    },
     "serve": {
       "executor": "@angular-builders/custom-webpack:dev-server",
       "dependsOn": ["update-browserslist"],

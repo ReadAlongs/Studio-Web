@@ -4,6 +4,7 @@ import {
   ElementRef,
   inject,
   OnInit,
+  signal,
   ViewChild,
 } from "@angular/core";
 import { ToastrService } from "@openng/ngx-toastr";
@@ -27,12 +28,12 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class WcStylingComponent implements OnInit {
   protected styleText$ = new BehaviorSubject<string>("");
   private fontDeclaration$ = new BehaviorSubject<string>("");
-  protected inputType: "edit" | "upload" = "edit";
+  protected inputType = signal<"edit" | "upload">("edit");
   public collapsed$ = new BehaviorSubject<boolean>(true);
   @ViewChild("styleInputElement") private styleInputElement: ElementRef;
   @ViewChild("fontInputElement") private fontInputElement: ElementRef;
   @ViewChild("styleSection") public styleSection: ElementRef;
-  protected canUseClipBoard = false;
+  protected canUseClipBoard = signal(false);
   private toastr = inject(ToastrService);
   private wcStylingService = inject(WcStylingService);
   private dialog = inject(MatDialog);
@@ -58,14 +59,14 @@ export class WcStylingComponent implements OnInit {
       .query({ name: "clipboard-write" as PermissionName })
       .then((result) => {
         if (result.state === "granted" || result.state === "prompt") {
-          this.canUseClipBoard = true;
+          this.canUseClipBoard.set(true);
         } else {
-          this.canUseClipBoard = false;
+          this.canUseClipBoard.set(false);
         }
       })
       .catch((err) => {
         console.error("Failed to query clipboard permissions", err);
-        this.canUseClipBoard = false;
+        this.canUseClipBoard.set(false);
       });
   }
   onFontSelected(event: any) {
@@ -125,7 +126,7 @@ export class WcStylingComponent implements OnInit {
         this.styleText$.next(val);
 
         this.wcStylingService.$wcStyleInput.next(val);
-        this.inputType = "edit";
+        this.inputType.set("edit");
         this.toastr.success(
           $localize`File ` +
             file.name +
@@ -195,7 +196,7 @@ span.theme--dark.sentence__text {
     }
   }
   toggleStyleInput(event: any) {
-    this.inputType = event.value;
+    this.inputType.set(event.value);
   }
   async ngOnInit() {
     this.wcStylingService.$wcStyleInput
@@ -219,13 +220,13 @@ span.theme--dark.sentence__text {
     this.collapsed$.next(!this.collapsed$.getValue());
   }
   pasteStyle() {
-    if (this.canUseClipBoard) {
+    if (this.canUseClipBoard()) {
       navigator.clipboard
         .readText()
         .then((text) => {
           this.styleText$.next(text);
           this.wcStylingService.$wcStyleInput.next(text);
-          this.inputType = "edit";
+          this.inputType.set("edit");
           this.toastr.success(
             $localize`Style sheet pasted from clipboard.`,
             undefined,
@@ -246,7 +247,7 @@ span.theme--dark.sentence__text {
   }
 
   copyStyle() {
-    if (this.canUseClipBoard) {
+    if (this.canUseClipBoard()) {
       navigator.clipboard
         .writeText(this.styleText$.getValue())
         .then(() => {
