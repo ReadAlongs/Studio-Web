@@ -70,7 +70,7 @@
           (change)="toggleStyleInput($event)"
           name="inputMethod"
           aria-label="Input Method"
-          [value]="inputType"
+          [value]="inputType()"
         >
           <mat-button-toggle i18n="Label for style Write toggle" value="edit"
             >Write</mat-button-toggle
@@ -85,7 +85,7 @@
 
   @if (!(collapsed$ | async)) {
     <div>
-      @if (inputType === "upload") {
+      @if (inputType() === "upload") {
         <div>
           <div class="row">
             <div class="mt-4 mb-3">
@@ -111,7 +111,7 @@
         </div>
       }
 
-      @if (inputType === "edit") {
+      @if (inputType() === "edit") {
         <div>
           <div
             class="d-flex flex-column flex-md-row justify-content-between p-0 styling-toolbar"
