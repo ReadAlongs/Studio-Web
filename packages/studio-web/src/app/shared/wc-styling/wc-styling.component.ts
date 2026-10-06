@@ -28,7 +28,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class WcStylingComponent implements OnInit {
   protected styleText$ = new BehaviorSubject<string>("");
   private fontDeclaration$ = new BehaviorSubject<string>("");
-  protected inputType: "edit" | "upload" = "edit";
+  protected inputType = signal<"edit" | "upload">("edit");
   public collapsed$ = new BehaviorSubject<boolean>(true);
   @ViewChild("styleInputElement") private styleInputElement: ElementRef;
   @ViewChild("fontInputElement") private fontInputElement: ElementRef;
@@ -126,7 +126,7 @@ export class WcStylingComponent implements OnInit {
         this.styleText$.next(val);
 
         this.wcStylingService.$wcStyleInput.next(val);
-        this.inputType = "edit";
+        this.inputType.set("edit");
         this.toastr.success(
           $localize`File ` +
             file.name +
@@ -196,7 +196,7 @@ span.theme--dark.sentence__text {
     }
   }
   toggleStyleInput(event: any) {
-    this.inputType = event.value;
+    this.inputType.set(event.value);
   }
   async ngOnInit() {
     this.wcStylingService.$wcStyleInput
@@ -226,7 +226,7 @@ span.theme--dark.sentence__text {
         .then((text) => {
           this.styleText$.next(text);
           this.wcStylingService.$wcStyleInput.next(text);
-          this.inputType = "edit";
+          this.inputType.set("edit");
           this.toastr.success(
             $localize`Style sheet pasted from clipboard.`,
             undefined,
