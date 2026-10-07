@@ -92,7 +92,6 @@
     },
     "serve": {
       "executor": "@angular-builders/custom-webpack:dev-server",
-      "dependsOn": ["update-browserslist"],
       "configurations": {
         "production-en": {
           "buildTarget": "studio-web:build:production,en"
