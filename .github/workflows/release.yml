@@ -39,6 +39,7 @@ jobs:
         run: npm install -g npm@latest
       - run: npm ci
       - run: npx update-browserslist-db@latest
+        # redundant, npm ci also updates browserslist, but for release we redo it just in case
       - name: Build and bundle
         run: |
           npx nx bundle web-component

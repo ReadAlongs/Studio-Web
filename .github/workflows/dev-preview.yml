@@ -21,7 +21,6 @@ jobs:
           node-version: "24"
       - run: npm install -g npm@latest
       - run: npm ci
-      - run: npx update-browserslist-db@latest
       - name: Build web-component
         run: |
           # create the bundles required for studio-web
