@@ -21,6 +21,7 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm ci
       - run: npx update-browserslist-db@latest
+        # redundant, npm ci also updates browserslist, but for deploy we redo it just in case
       - name: Build web-component
         run: |
           # create the bundles required for studio-web
