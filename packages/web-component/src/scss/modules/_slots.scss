@@ -11,8 +11,37 @@
 }
 
 // ensure an empty contenteditable span occupies space on the page
-::slotted(span[contenteditable="true"]:empty) {
+::slotted(span[contenteditable="true"]) {
+  display: block;
+  width: 100%;
+  min-height: fit-content;
+  box-sizing: border-box;
+
+  // Caret alignment fixes
+  line-height: 1.4; // Standardizes text height to match font layout boundaries
+  padding: 6px 8px; // Balanced padding gives the cursor clearance room top and bottom
+
+  position: relative;
+  border-radius: 4px;
+  outline: none;
+  transition: box-shadow 0.15s ease-in-out;
+}
+
+// Ensure the focus box container paint is clean
+::slotted(span[contenteditable="true"]:focus) {
+  box-shadow: 0 0 0 2px #1976d2 !important;
+}
+
+// Fluid absolute positioning for the placeholder text overlay layer
+::slotted(span[contenteditable="true"][data-placeholder-active="true"]) {
   &::before {
-    content: #{'"\\feff"'};
+    content: attr(data-placeholder);
+    color: #a0a0a0;
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    pointer-events: none;
   }
 }

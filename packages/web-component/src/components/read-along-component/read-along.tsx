@@ -285,27 +285,41 @@ export class ReadAlongComponent {
   @Listen("input")
   handleInput(event: InputEvent) {
     const target = event.target as HTMLElement;
+    if (target?.tagName !== "SPAN" || !target?.hasAttribute("contenteditable"))
+      return;
 
-    // Verify the element is an empty contenteditable span
-    if (
-      target &&
-      target.tagName === "SPAN" &&
-      target.hasAttribute("contenteditable") &&
-      target.textContent === ""
-    ) {
-      // Inject a Zero-Width Space to give the browser a text node to focus on
-      target.innerHTML = "&#8203;";
+    // add data-placeholder if required
+    if (!target.hasAttribute("data-placeholder")) {
+      target.setAttribute(
+        "data-placeholder",
+        target.slot === "read-along-header"
+          ? "Enter your title here"
+          : "Enter your subtitle here",
+      );
+    }
 
-      // Force the browser selection/caret back inside our new invisible character
+    const cleanText = target.textContent.trim();
+
+    if (cleanText === "") {
+      // Elements are fully empty: Set placeholder state and clear text node artifacts
+      target.setAttribute("data-placeholder-active", "true");
+      target.innerHTML = "<br>";
+
+      // Put the cursor exactly at the beginning of the blank block
       const range = document.createRange();
       const selection = window.getSelection();
       range.selectNodeContents(target);
-      range.collapse(false);
-
+      range.collapse(true);
       if (selection) {
         selection.removeAllRanges();
         selection.addRange(range);
       }
+    } else {
+      // User typed a real character: strip the placeholder state flag immediately
+      target.removeAttribute("data-placeholder-active");
+
+      // Remove structural fallback break tags if the browser left any behind
+      target.querySelector("br")?.remove();
     }
   }
 
