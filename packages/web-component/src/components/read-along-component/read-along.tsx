@@ -281,6 +281,34 @@ export class ReadAlongComponent {
     }
   }
 
+  // Handle editing of <span contenteditable />
+  @Listen("input")
+  handleInput(event: InputEvent) {
+    const target = event.target as HTMLElement;
+
+    // Verify the element is an empty contenteditable span
+    if (
+      target &&
+      target.tagName === "SPAN" &&
+      target.hasAttribute("contenteditable") &&
+      target.textContent === ""
+    ) {
+      // Inject a Zero-Width Space to give the browser a text node to focus on
+      target.innerHTML = "&#8203;";
+
+      // Force the browser selection/caret back inside our new invisible character
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(target);
+      range.collapse(false);
+
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  }
+
   /***********
    *  UTILS  *
    ***********/

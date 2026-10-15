@@ -9,3 +9,10 @@
     margin-left: functions.em(16);
   }
 }
+
+// ensure an empty contenteditable span occupies space on the page
+::slotted(span[contenteditable="true"]:empty) {
+  &::before {
+    content: #{'"\\feff"'};
+  }
+}
