@@ -1,7 +1,7 @@
 /* -*- typescript-indent-level: 2 -*- */
 import { TestBed } from "@angular/core/testing";
 import { SoundswallowerService } from "./soundswallower.service";
-import { ToastrModule } from "ngx-toastr";
+import { ToastrModule } from "@openng/ngx-toastr";
 import { FileService } from "./file.service";
 import { HttpClient, provideHttpClient } from "@angular/common/http";
 import {

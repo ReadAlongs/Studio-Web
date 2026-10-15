@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { map, startWith } from "rxjs";
 import { ReadAlongSlots } from "../ras.service";
 
 @Injectable({
@@ -27,5 +29,14 @@ export class EditorService {
     ras: this.rasControl$,
     audioB64: this.audioB64Control$,
   });
+  public uploadFormValid = toSignal(
+    this.uploadFormGroup.statusChanges.pipe(
+      startWith(this.uploadFormGroup.status),
+      map(() => this.uploadFormGroup.valid),
+    ),
+    {
+      initialValue: this.uploadFormGroup.valid,
+    },
+  );
   temporaryBlob: Blob | undefined = undefined;
 }

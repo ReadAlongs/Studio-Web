@@ -1,4 +1,4 @@
-import { ToastrModule } from "ngx-toastr";
+import { ToastrModule } from "@openng/ngx-toastr";
 
 import { provideHttpClient } from "@angular/common/http";
 import {

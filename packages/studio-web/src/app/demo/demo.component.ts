@@ -5,7 +5,7 @@ import { B64Service } from "../b64.service";
 import { StudioService } from "../studio/studio.service";
 import { DownloadService } from "../shared/download/download.service";
 import { SupportedOutputs } from "../ras.service";
-import { ToastrService } from "ngx-toastr";
+import { ToastrService } from "@openng/ngx-toastr";
 import { type InterfaceLanguage } from "@readalongs/web-component";
 
 const localizationToRASLanguage: Record<string, InterfaceLanguage> = {

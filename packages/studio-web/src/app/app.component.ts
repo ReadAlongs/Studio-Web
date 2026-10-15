@@ -56,20 +56,21 @@ export class AppComponent implements OnInit {
 })
 export class PrivacyDialog {
   private dialogRef = inject(MatDialogRef<PrivacyDialog>);
-  protected analyticsExcluded =
-    window.localStorage.getItem("plausible_ignore") === "true";
+  protected analyticsExcluded = signal(
+    window.localStorage.getItem("plausible_ignore") === "true",
+  );
 
   ngOnInit() {
     this.dialogRef.updateSize("100%");
   }
 
   toggleAnalytics() {
-    if (this.analyticsExcluded) {
+    if (this.analyticsExcluded()) {
       window.localStorage.removeItem("plausible_ignore");
-      this.analyticsExcluded = false;
+      this.analyticsExcluded.set(false);
     } else {
       window.localStorage.setItem("plausible_ignore", "true");
-      this.analyticsExcluded = true;
+      this.analyticsExcluded.set(true);
     }
   }
 }

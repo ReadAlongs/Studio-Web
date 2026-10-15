@@ -136,6 +136,14 @@ Type: `Promise<void>`
 
 
 
+## Slots
+
+| Slot                     | Description |
+| ------------------------ | ----------- |
+| `"read-along-header"`    |             |
+| `"read-along-subheader"` |             |
+
+
 ## Dependencies
 
 ### Depends on

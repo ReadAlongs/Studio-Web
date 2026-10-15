@@ -34,7 +34,7 @@
   style="display: flex; justify-content: space-evenly; margin-top: 1em"
 >
   <div>
-    @if(analyticsExcluded) {
+    @if(analyticsExcluded()) {
     <button
       color="accent"
       (click)="toggleAnalytics()"

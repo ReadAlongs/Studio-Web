@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ToastrModule } from "ngx-toastr";
+import { ToastrModule } from "@openng/ngx-toastr";
 import { EditorComponent } from "./editor.component";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { FormsModule } from "@angular/forms";

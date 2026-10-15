@@ -1,4 +1,4 @@
-import { ToastrModule } from "ngx-toastr";
+import { ToastrModule } from "@openng/ngx-toastr";
 import { TestBed } from "@angular/core/testing";
 
 import { DownloadService } from "./download.service";

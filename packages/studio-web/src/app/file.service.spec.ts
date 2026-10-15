@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { HttpClient, provideHttpClient } from "@angular/common/http";
-import { ToastrModule } from "ngx-toastr";
+import { ToastrModule } from "@openng/ngx-toastr";
 import {
   HttpTestingController,
   provideHttpClientTesting,

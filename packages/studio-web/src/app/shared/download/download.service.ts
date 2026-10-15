@@ -2,7 +2,7 @@ import { DestroyRef, inject, Injectable } from "@angular/core";
 import { HttpErrorResponse } from "@angular/common/http";
 import { slugify } from "../../utils/utils";
 import { UploadService } from "../../upload.service";
-import { ToastrService } from "ngx-toastr";
+import { ToastrService } from "@openng/ngx-toastr";
 
 import { compress } from "image-conversion";
 import { saveAs } from "file-saver";
