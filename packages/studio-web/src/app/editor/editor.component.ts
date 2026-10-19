@@ -323,6 +323,13 @@ export class EditorComponent implements OnDestroy, AfterViewInit {
         "span[slot='read-along-subheader']",
       );
 
+      // Helper function to scrub out browser artifacts
+      const cleanValue = (span: HTMLElement | null) => {
+        if (!span) return "";
+        const text = span.textContent?.trim();
+        return text === "" || text == "<br>" ? "" : text;
+      };
+
       if (titleSlot) {
         this.editorService.slots.title = titleSlot.innerText;
         titleSlot.setAttribute("contenteditable", true);
@@ -330,7 +337,7 @@ export class EditorComponent implements OnDestroy, AfterViewInit {
         // use Angular event input event listeners like we do in the demo
         titleSlot.addEventListener(
           "input",
-          (ev: any) => (this.editorService.slots.title = ev.target?.innerHTML),
+          (ev: any) => (this.editorService.slots.title = cleanValue(ev.target)),
         );
       }
       if (subtitleSlot) {
@@ -339,7 +346,7 @@ export class EditorComponent implements OnDestroy, AfterViewInit {
         subtitleSlot.addEventListener(
           "input",
           (ev: any) =>
-            (this.editorService.slots.subtitle = ev.target?.innerHTML),
+            (this.editorService.slots.subtitle = cleanValue(ev.target)),
         );
       }
       // Make Editable
