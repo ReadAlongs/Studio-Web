@@ -82,7 +82,8 @@
     "zone.js": "~0.15.0"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "npx -y update-browserslist-db@latest"
   },
   "commitlint": {
     "extends": [
