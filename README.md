@@ -59,7 +59,7 @@ Here is the quick recipe to spin up the ReadAlongs Studio Web app locally.
 git clone https://github.com/ReadAlongs/Studio.git
 # Commands below assume the CLI folder is called "Studio", please do not rename
 cd Studio
-# Create a Python 3.8+ environment with uv or venv and activate it.
+# Create a Python 3.9+ environment with uv or venv and activate it.
 # Install the Studio CLI with its `api` dependencies:
 pip install -e '.[api]'
 cd ..
@@ -69,12 +69,13 @@ git clone https://github.com/ReadAlongs/Studio-Web.git
 cd Studio-Web
 # Using Node.js 20+, install Studio-Web:
 npm install
-
+# Build the web-component
+npx nx build web-component
 # Run all the servers
 npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
 ```
 
-After about a minute -- be patient -- six different servers will have started, and you will be able to access the ReadAlongs Studio Web App at these links:
+After a minute or two -- be patient -- six different servers will have started, and you will be able to access the ReadAlongs Studio Web App at these links:
 
 - In English: http://localhost:4200
 - In French: http://localhost:4203
@@ -173,35 +174,32 @@ Each push to `main` will deploy a [dev preview](.github/workflows/dev-preview.ym
 #### Understanding where the components come from when you run locally
 
 When you run `npx nx serve studio-web`, that process is actually serving all the files needed
-by the Studio-Web application, and it's able to import `web-component` and `ngx-web-component`,
-providing them to the application as needed.
+by the Studio-Web application. It imports and serves the `web-component` files from
+`dist/packages/web-component/`, providing them to the application as needed.
 
-However, `web-component` requires a build in order to have the .js files generated and available
-to serve or import. In the instructions above, we actually show two methods you can use:
+The files in `dist/` are generated when you build the web component, e.g.:
 
-- `npx nx build web-component --watch` will only build that component, in production mode, and
-  rebuild it any time you change that component's source code.
-
-- `npx nx serve web-component` goes further, serving that component, which also requires building
-  it. It also watches source code for changes. However, it produces a development build, which
-  may be different from the production build.
-
-  In this case, the web-component is being served on port 3333, but the Studio-Web app
-  just ignores that and uses the copy provided by `npx nx serve studio-web` instead.
+- `npx nx build web-component` builds it in **prod** mode.
+- `npx nx build web-component --watch` also rebuids it any time any time the source code changes.
+- `npx nx serve web-component` builds and serves it in **dev** mode, and also watches for changes.
+  This serves it on port 3333, but the studio-web server ignores that and just uses the files in `dist/`.
 
 ### Testing
 
 #### TL;DR
 
     npm install
+    npx cypress install  # needed at least the first time
     npx nx run-many --targets=serve-test-data,serve,test:once --projects=web-component
-    # Ctrl-C once "✔ All specs passed!  01:01  34  34" appears (34 specs as of writing)
-    npx playwright install --with-deps firefox chromium webkit
-    npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
+    # Ctrl-C once "✔ All specs passed!  01:01  35  35" appears for test:once (35 specs as of writing)
+    npx playwright install firefox chromium
+    npx nx build web-component
+    npx nx run-many --targets=serve,serve-fr,serve-es,serve-web-api --projects=studio-web --parallel 4
+    # In a different terminal window:
     npx nx e2e studio-web
-    #Expect "47 passed (4.6m)" (47 tests as of writing)
+    # Expect "63 passed (4.6m)" (63 tests as of writing); then you can stop the run-many
     npx nx test:once studio-web
-    # Expect "TOTAL: 25 SUCCESS" (25 tests as of writing)
+    # Expect "TOTAL: 33 SUCCESS" (33 tests as of writing)
     npx nx extract-i18n studio-web
     # Expect "Successfully ran...",
     git diff -w
@@ -247,16 +245,16 @@ To run the end-to-end tests for Studio-Web, please check the following:
 - Ensure that you have built the `web-component` (run `npx nx build web-component`)
 - Check that `studio-cli` is installed and running (run `npx nx serve-web-api studio-web`)
 - Confirm that `studio-web` is up and running (run `npx nx run-many --targets=serve,serve-fr,serve-es --projects=studio-web --parallel 3`). Your browser must be able to load `http://localhost:4200/` before you proceed.
-- Verify that `playwright` is installed and configured (run `npx playwright install --with-deps firefox chromium webkit`)
+- Verify that `playwright` is installed and configured (run `npx playwright install firefox chromium`)
 
-Alternatively run together as:
+Alternatively run it all together as:
 
-    npx playwright install --with-deps firefox chromium webkit &&  npx nx run-many --targets=serve-test-data,serve-web-api,serve,serve-fr,serve-es --projects=web-component,studio-web --parallel 6
+    npx playwright install firefox chromium && npx nx build web-component && npx nx run-many --targets=serve,serve-fr,serve-es,serve-web-api --projects=studio-web --parallel 4
 
-Once you have confirmed that everything is online and working run:
+Once you have confirmed that everything is online and working, run:
 `npx nx e2e studio-web` and wait for the report.
 
-**PS**: If you want to run a spec interactively you can run `npx nx e2e-ui studio-web` to get playwright interactive user interface.
+**PS**: If you want to run a spec interactively you can run `npx nx e2e-ui studio-web` to get the playwright interactive user interface.
 
 ### Internationalization (i18n) and localization (l10n)
 

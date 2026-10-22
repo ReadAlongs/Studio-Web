@@ -5,6 +5,7 @@
 # WARNING: overwrites messages.es.json and messages.fr.json, so commit any
 # changes first!
 
+export NX_TUI=false
 npx nx extract-i18n studio-web
 cd packages/studio-web/ || exit 1
 npx tsx extract-i18n-lang.ts --inplace src/i18n/messages.json src/i18n/messages.es.json
