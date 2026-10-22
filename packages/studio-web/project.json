@@ -133,13 +133,17 @@
     "serve-web-api": {
       "command": "bash -c \"cd ../Studio/readalongs && PRODUCTION= DEVELOPMENT=1 uvicorn readalongs.web_api:web_api_app --reload\""
     },
-    "extract-i18n": {
+    "extract-i18n-raw": {
       "executor": "@angular-builders/custom-webpack:extract-i18n",
       "options": {
         "format": "json",
         "outputPath": "packages/studio-web/src/i18n",
         "buildTarget": "studio-web:build"
       }
+    },
+    "extract-i18n": {
+      "dependsOn": ["extract-i18n-raw"],
+      "command": "node -e \"const fs=require('fs'), f='packages/studio-web/src/i18n/messages.json'; if(!fs.readFileSync(f,'utf8').endsWith('\\n')) fs.appendFileSync(f,'\\n')\""
     },
     "check-l10n": {
       "executor": "nx:noop",

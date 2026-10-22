@@ -131,7 +131,7 @@ try {
 
   fs.writeSync(
     writer,
-    Buffer.from(JSON.stringify(languageData, null, 2), "utf-8"),
+    Buffer.from(JSON.stringify(languageData, null, 2) + "\n", "utf-8"),
   );
 
   fs.closeSync(writer);
