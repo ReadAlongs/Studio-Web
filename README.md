@@ -192,7 +192,7 @@ The files in `dist/` are generated when you build the web component, e.g.:
     npx cypress install  # needed at least the first time
     npx nx run-many --targets=serve-test-data,serve,test:once --projects=web-component
     # Ctrl-C once "✔ All specs passed!  01:01  35  35" appears for test:once (35 specs as of writing)
-    npx playwright install firefox chromium webkit  # you might need to add --with-deps
+    npx playwright install firefox chromium
     npx nx build web-component
     npx nx run-many --targets=serve,serve-fr,serve-es,serve-web-api --projects=studio-web --parallel 4
     # In a different terminal window:
@@ -245,11 +245,11 @@ To run the end-to-end tests for Studio-Web, please check the following:
 - Ensure that you have built the `web-component` (run `npx nx build web-component`)
 - Check that `studio-cli` is installed and running (run `npx nx serve-web-api studio-web`)
 - Confirm that `studio-web` is up and running (run `npx nx run-many --targets=serve,serve-fr,serve-es --projects=studio-web --parallel 3`). Your browser must be able to load `http://localhost:4200/` before you proceed.
-- Verify that `playwright` is installed and configured (run `npx playwright install --with-deps firefox chromium webkit`)
+- Verify that `playwright` is installed and configured (run `npx playwright install firefox chromium`)
 
 Alternatively run it all together as:
 
-    npx playwright install --with-deps firefox chromium webkit && npx nx build web-component && npx nx run-many --targets=serve,serve-fr,serve-es,serve-web-api --projects=studio-web --parallel 4
+    npx playwright install firefox chromium && npx nx build web-component && npx nx run-many --targets=serve,serve-fr,serve-es,serve-web-api --projects=studio-web --parallel 4
 
 Once you have confirmed that everything is online and working, run:
 `npx nx e2e studio-web` and wait for the report.
