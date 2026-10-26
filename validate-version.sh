@@ -10,28 +10,40 @@ fi
 VERSION=${INPUT_TAG#v}
 BAD=
 
-echo "Checking that version in packages/web-component/package.json == $VERSION"
+echo -n "Checking that version in packages/web-component/package.json == $VERSION"
 if [ "$(jq -r .version packages/web-component/package.json)" != "$VERSION" ]; then
+  echo ""
   echo "ERROR: version mismatch in packages/web-component/package.json"
   BAD=1
+else
+  echo ...OK
 fi
 
-echo "Checking that version in packages/ngx-web-component/package.json == $VERSION"
+echo -n "Checking that version in packages/ngx-web-component/package.json == $VERSION"
 if [ "$(jq -r .version packages/ngx-web-component/package.json)" != "$VERSION" ]; then
+  echo ""
   echo "ERROR: version mismatch in packages/ngx-web-component/package.json"
   BAD=1
+else
+  echo ...OK
 fi
 
-echo "Checking that peer dependency on @readalongs/web-component in packages/ngx-web-component/package.json == $VERSION"
+echo -n "Checking that peer dependency on @readalongs/web-component in packages/ngx-web-component/package.json == $VERSION"
 if [ "$(jq -r '.peerDependencies."@readalongs/web-component"' packages/ngx-web-component/package.json)" != "$VERSION" ]; then
+  echo ""
   echo "ERROR: peer dependency on @readalongs/web-component version mismatch in packages/ngx-web-component/package.json"
   BAD=1
+else
+  echo ...OK
 fi
 
-echo "Checking that singleFileBundleVersion in packages/studio-web/package.json == $VERSION"
+echo -n "Checking that singleFileBundleVersion in packages/studio-web/package.json == $VERSION"
 if [ "$(jq -r .singleFileBundleVersion packages/studio-web/package.json)" != "$VERSION" ]; then
+  echo ""
   echo "ERROR: singleFileBundleVersion mismatch in packages/studio-web/package.json"
   BAD=1
+else
+  echo ...OK
 fi
 
 version_less_than() {
